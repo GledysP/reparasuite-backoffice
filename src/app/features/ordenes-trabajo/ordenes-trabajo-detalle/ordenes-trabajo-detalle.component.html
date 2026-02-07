@@ -1,0 +1,105 @@
+<div class="rs-header" *ngIf="ot as o">
+  <div>
+    <h2 style="margin:0;">OT {{ o.codigo }}</h2>
+    <mat-chip-set>
+      <mat-chip selected>{{ o.estado }}</mat-chip>
+      <mat-chip selected>{{ o.tipo }}</mat-chip>
+      <mat-chip selected>{{ o.prioridad }}</mat-chip>
+    </mat-chip-set>
+  </div>
+  <a mat-stroked-button routerLink="/ordenes-trabajo">Volver</a>
+</div>
+
+<div class="rs-detail" *ngIf="ot as o">
+  <div>
+    <mat-card>
+      <mat-card-title>Estado</mat-card-title>
+      <mat-card-content>
+        <form [formGroup]="formEstado">
+          <mat-form-field appearance="outline" class="rs-full">
+            <mat-label>Cambiar estado</mat-label>
+            <mat-select formControlName="a">
+              <mat-option *ngFor="let e of estados" [value]="e">{{ e }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+        <button mat-raised-button color="primary" (click)="cambiarEstado()">Actualizar</button>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-title>Descripción</mat-card-title>
+      <mat-card-content>
+        <p>{{ o.descripcion }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-title>Notas internas</mat-card-title>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let n of o.notas">
+            <div>
+              <div class="rs-strong">{{ n.autor.nombre }} · <span class="rs-muted">{{ n.creadoEn }}</span></div>
+              <div>{{ n.contenido }}</div>
+            </div>
+          </mat-list-item>
+        </mat-list>
+
+        <form [formGroup]="formNota">
+          <mat-form-field appearance="outline" class="rs-full">
+            <mat-label>Nueva nota</mat-label>
+            <textarea matInput rows="2" formControlName="contenido"></textarea>
+          </mat-form-field>
+        </form>
+
+        <button mat-raised-button color="primary" (click)="anadirNota()">Añadir nota</button>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-title>Fotos</mat-card-title>
+      <mat-card-content>
+        <input type="file" (change)="onFileSelected($event)" />
+        <div class="rs-fotos">
+          <a *ngFor="let f of o.fotos" [href]="f.url" target="_blank" rel="noreferrer">{{ f.nombreArchivo }}</a>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div>
+    <mat-card>
+      <mat-card-title>Cliente</mat-card-title>
+      <mat-card-content>
+        <div class="rs-strong">{{ o.cliente.nombre }}</div>
+        <div class="rs-muted">{{ o.cliente.telefono || '—' }}</div>
+        <div class="rs-muted">{{ o.cliente.email || '—' }}</div>
+        <a mat-button color="primary" [routerLink]="['/clientes', o.cliente.id]">Ver ficha cliente</a>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="o.tipo === 'DOMICILIO'">
+      <mat-card-title>Domicilio</mat-card-title>
+      <mat-card-content>
+        <div><strong>Fecha prevista:</strong> {{ o.fechaPrevista || '—' }}</div>
+        <div><strong>Dirección:</strong> {{ o.direccion || '—' }}</div>
+        <div><strong>Notas:</strong> {{ o.notasAcceso || '—' }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-title>Timeline</mat-card-title>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let e of o.eventos">
+            <div>
+              <div class="rs-strong">{{ e.tipo }} · <span class="rs-muted">{{ e.creadoEn }}</span></div>
+              <div class="rs-muted">{{ e.actor?.nombre || 'Sistema' }}</div>
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

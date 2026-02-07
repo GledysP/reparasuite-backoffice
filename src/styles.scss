@@ -1,1 +1,47 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+html, body { height: 100%; margin: 0; }
+body { font-family: Roboto, Arial, sans-serif; background: #f6f8fb; }
+
+.rs-container { height: 100vh; }
+.rs-page { padding: 16px; }
+.rs-spacer { flex: 1 1 auto; }
+.rs-full { width: 100%; }
+
+.rs-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.rs-muted { opacity: .7; font-size: 12px; }
+.rs-strong { font-weight: 600; }
+
+.rs-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+}
+.rs-span-2 { grid-column: span 2; }
+.rs-span-4 { grid-column: span 4; }
+.rs-span-6 { grid-column: span 6; }
+.rs-span-12 { grid-column: span 12; }
+
+@media (max-width: 1024px) { .rs-grid { grid-template-columns: repeat(6, 1fr); } }
+@media (max-width: 640px) { .rs-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.rs-form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+}
+.rs-col-12 { grid-column: span 12; }
+.rs-col-8 { grid-column: span 8; }
+.rs-col-6 { grid-column: span 6; }
+.rs-col-4 { grid-column: span 4; }
+.rs-col-3 { grid-column: span 3; }
+
+@media (max-width: 1024px) {
+  .rs-col-8, .rs-col-6, .rs-col-4, .rs-col-3 { grid-column: span 12; }
+}

@@ -1,0 +1,14 @@
+.rs-filtros {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+  align-items: end;
+}
+.rs-filtros > * { grid-column: span 3; }
+.rs-search-field { grid-column: span 4; }
+
+@media (max-width: 1024px) {
+  .rs-filtros > * { grid-column: span 12; }
+}
+
+.rs-table { width: 100%; }

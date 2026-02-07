@@ -1,0 +1,9 @@
+.rs-detail {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 1024px) {
+  .rs-detail { grid-template-columns: 1fr; }
+}
+.rs-fotos { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }

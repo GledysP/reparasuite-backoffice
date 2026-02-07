@@ -1,0 +1,82 @@
+<div class="rs-header">
+  <h2>Nueva OT</h2>
+</div>
+
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form">
+      <h3>Cliente</h3>
+      <div class="rs-form-grid">
+        <mat-form-field appearance="outline" class="rs-col-6">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="clienteNombre" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rs-col-3">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="clienteTelefono" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rs-col-3">
+          <mat-label>Email (opcional)</mat-label>
+          <input matInput formControlName="clienteEmail" />
+        </mat-form-field>
+      </div>
+
+      <mat-divider style="margin: 12px 0;"></mat-divider>
+
+      <h3>Servicio</h3>
+      <mat-radio-group formControlName="tipo">
+        <mat-radio-button value="TIENDA">Tienda</mat-radio-button>
+        <mat-radio-button value="DOMICILIO">Domicilio</mat-radio-button>
+      </mat-radio-group>
+
+      <div class="rs-form-grid" style="margin-top:12px;" *ngIf="form.value.tipo === 'DOMICILIO'">
+        <mat-form-field appearance="outline" class="rs-col-8">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rs-col-4">
+          <mat-label>Fecha prevista (ISO)</mat-label>
+          <input matInput formControlName="fechaPrevista" placeholder="2026-02-07T09:00:00Z" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rs-col-12">
+          <mat-label>Notas de acceso</mat-label>
+          <input matInput formControlName="notasAcceso" />
+        </mat-form-field>
+      </div>
+
+      <mat-divider style="margin: 12px 0;"></mat-divider>
+
+      <h3>Trabajo</h3>
+      <div class="rs-form-grid">
+        <mat-form-field appearance="outline" class="rs-col-12">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput rows="4" formControlName="descripcion"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rs-col-4">
+          <mat-label>Prioridad</mat-label>
+          <mat-select formControlName="prioridad">
+            <mat-option *ngFor="let p of prioridades" [value]="p">{{ p }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rs-col-8">
+          <mat-label>Técnico (opcional)</mat-label>
+          <mat-select formControlName="tecnicoId">
+            <mat-option value="">(Sin asignar)</mat-option>
+            <mat-option *ngFor="let t of tecnicos" [value]="t.id">{{ t.nombre }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-stroked-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" type="button" (click)="crear()">Crear OT</button>
+  </mat-card-actions>
+</mat-card>

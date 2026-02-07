@@ -1,0 +1,38 @@
+<div class="rs-header">
+  <h2>Ajustes del taller</h2>
+</div>
+
+<mat-card>
+  <mat-card-content [formGroup]="form">
+    <mat-form-field appearance="outline" class="rs-full">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" />
+    </mat-form-field>
+
+    <div class="rs-form-grid">
+      <mat-form-field appearance="outline" class="rs-col-6">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="rs-col-6">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="rs-full">
+      <mat-label>Dirección</mat-label>
+      <input matInput formControlName="direccion" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="rs-full">
+      <mat-label>Prefijo OT</mat-label>
+      <input matInput formControlName="prefijoOt" />
+    </mat-form-field>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-raised-button color="primary" (click)="guardar()">Guardar</button>
+  </mat-card-actions>
+</mat-card>
