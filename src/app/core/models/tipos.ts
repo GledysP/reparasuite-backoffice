@@ -3,6 +3,7 @@ import type { EstadoOt, PrioridadOt, RolUsuario, TipoEventoOt, TipoOt } from './
 
 // Usamos 'export type' para que otros archivos (como el servicio) puedan verlos
 export type { EstadoOt, PrioridadOt, RolUsuario, TipoEventoOt, TipoOt };
+
 export interface UsuarioResumen {
   id: string;
   nombre: string;
@@ -17,16 +18,21 @@ export interface ClienteResumen {
   email: string | null;
 }
 
+/**
+ * Representa un ítem en la lista general de Órdenes de Trabajo.
+ * Corregido según Swagger para manejar la respuesta simplificada del servidor.
+ */
 export interface OtListaItem {
   id: string;
   codigo: string;
   estado: EstadoOt;
   tipo: TipoOt;
   prioridad: PrioridadOt;
-  cliente: { id: string; nombre: string; telefono: string | null };
-  tecnico: { id: string; nombre: string } | null;
-  fechaPrevista: string | null;
-  actualizadoEn: string;
+  // El backend devuelve estos campos como strings directos en la lista
+  clienteNombre: string;     
+  tecnicoNombre: string | null; 
+  // La fecha de actualización en la lista se llama updatedAt
+  updatedAt: string;        
 }
 
 export interface NotaOt {
@@ -51,6 +57,10 @@ export interface EventoOt {
   creadoEn: string;
 }
 
+/**
+ * Representa el detalle completo de una Orden de Trabajo.
+ * Aquí el cliente y técnico sí vienen como objetos completos.
+ */
 export interface OtDetalle {
   id: string;
   codigo: string;
@@ -58,7 +68,12 @@ export interface OtDetalle {
   tipo: TipoOt;
   prioridad: PrioridadOt;
 
-  cliente: { id: string; nombre: string; telefono: string | null; email: string | null };
+  cliente: { 
+    id: string; 
+    nombre: string; 
+    telefono: string | null; 
+    email: string | null 
+  };
   tecnico: { id: string; nombre: string } | null;
 
   descripcion: string;

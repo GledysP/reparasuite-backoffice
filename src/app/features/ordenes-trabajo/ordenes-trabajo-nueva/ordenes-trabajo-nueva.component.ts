@@ -38,7 +38,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
   private snack = inject(MatSnackBar);
 
   tecnicos: UsuarioResumen[] = [];
-  prioridades: PrioridadOt[] = ['BAJA','MEDIA','ALTA'];
+  prioridades: PrioridadOt[] = ['BAJA', 'MEDIA', 'ALTA'];
 
   form = this.fb.group({
     clienteNombre: ['', [Validators.required]],
@@ -52,7 +52,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
 
     descripcion: ['', [Validators.required]],
     prioridad: ['MEDIA' as PrioridadOt, [Validators.required]],
-    tecnicoId: [''],
+    tecnicoId: [null as string | null],
   });
 
   ngOnInit(): void {
@@ -71,26 +71,44 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
 
     const v = this.form.getRawValue();
 
+    // Formateo de fecha para OffsetDateTime (ISO 8601 completo)
+    let fechaIso = null;
+    if (v.fechaPrevista) {
+      const d = new Date(v.fechaPrevista);
+      if (!isNaN(d.getTime())) {
+        fechaIso = d.toISOString(); 
+      }
+    }
+
+    // Usamos (v.campo || '') para asegurar a TS que no es null
     const body = {
       cliente: {
-        id: null,
-        nombre: v.clienteNombre,
-        telefono: v.clienteTelefono || null,
-        email: v.clienteEmail || null,
+        nombre: (v.clienteNombre || '').trim(),
+        telefono: v.clienteTelefono?.trim() || null,
+        email: v.clienteEmail?.trim() || null,
       },
       tipo: v.tipo,
       prioridad: v.prioridad,
-      descripcion: v.descripcion,
-      tecnicoId: v.tecnicoId || null,
+      descripcion: (v.descripcion || '').trim(),
+      tecnicoId: v.tecnicoId && v.tecnicoId !== '' ? v.tecnicoId : null,
 
-      fechaPrevista: v.tipo === 'DOMICILIO' ? (v.fechaPrevista || null) : null,
-      direccion: v.tipo === 'DOMICILIO' ? (v.direccion || null) : null,
-      notasAcceso: v.tipo === 'DOMICILIO' ? (v.notasAcceso || null) : null,
+      fechaPrevista: v.tipo === 'DOMICILIO' ? fechaIso : null,
+      direccion: v.tipo === 'DOMICILIO' ? (v.direccion?.trim() || null) : null,
+      notasAcceso: v.tipo === 'DOMICILIO' ? (v.notasAcceso?.trim() || null) : null,
     };
 
+    console.log('Payload enviado con éxito:', body);
+
     this.ordenes.crear(body).subscribe({
-      next: (res) => this.router.navigate(['/ordenes-trabajo', res.id]),
-      error: () => this.snack.open('Error creando la OT', 'OK', { duration: 2500 }),
+      next: (res) => {
+        this.snack.open('¡Orden creada con éxito!', 'Cerrar', { duration: 3000 });
+        this.router.navigate(['/ordenes-trabajo', res.id]);
+      },
+      error: (err) => {
+        console.error('Error detallado:', err);
+        const msg = err.error?.message || 'Error en el servidor';
+        this.snack.open(msg, 'OK', { duration: 5000 });
+      },
     });
   }
 }
