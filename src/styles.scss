@@ -93,3 +93,53 @@ html, body {
   white-space: nowrap;
   direction: ltr;
 }
+
+/* 9. ADAPTACIÓN VISUAL FIGMA (Work Orders) */
+
+// Variable para el color azul petróleo oscuro de los botones en Figma
+$rs-primary-petroleo: #1a4b5d; 
+
+// Contenedor principal con el espaciado entre secciones de Figma
+.rs-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; // Espacio exacto entre las "cards" de información
+  padding-bottom: 40px;
+}
+
+// Estilo para las secciones (Cards) para que no parezcan tarjetas genéricas
+.rs-form-section {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important; // Borde sutil en lugar de sombras pesadas
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important; // Sombra casi imperceptible de Figma
+
+  mat-card-header {
+    padding: 16px 20px 0;
+    mat-card-title {
+      font-size: 16px !important;
+      font-weight: 700 !important; // Títulos en negrita como en el diseño
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  mat-card-content {
+    padding: 20px !important;
+  }
+}
+
+// Clase para los botones de acción principal (Create / Select)
+.rs-btn-petroleo {
+  background-color: $rs-primary-petroleo !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  padding: 0 24px !important;
+  height: 40px !important;
+}
+
+// Ajuste para que el diálogo (modal) tenga las esquinas redondeadas de Figma
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 12px !important;
+}

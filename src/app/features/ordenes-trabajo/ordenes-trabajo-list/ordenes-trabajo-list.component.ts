@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { NgFor, NgIf, DatePipe } from '@angular/common'; // Añadido DatePipe
+import { DatePipe } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,9 +21,7 @@ import { OtListaItem, UsuarioResumen } from '../../../core/models/tipos';
   selector: 'rs-ordenes-trabajo-list',
   standalone: true,
   imports: [
-    NgIf, 
-    NgFor,
-    DatePipe, // Añadido a los imports del componente
+    DatePipe,
     RouterLink,
     ReactiveFormsModule,
     MatCardModule, 
@@ -55,20 +53,20 @@ export class OrdenesTrabajoListComponent implements OnInit {
 
   filtros = this.fb.group({
     estados: [[] as EstadoOt[]],
-    tipo: ['' as '' | TipoOt],
+    tipo: ['' as TipoOt | ''],
     tecnicoId: [''],
     query: [''],
   });
 
   ngOnInit(): void {
-    // Cargamos técnicos para el filtro superior
+    // Cargo la lista de técnicos para el filtro
     this.usuarios.listar(true).subscribe(u => {
       this.tecnicos = u.filter(x => x.rol === 'TECNICO');
     });
 
     this.cargar();
 
-    // Recargar cuando cambien los filtros
+    // Suscripción reactiva a los cambios del formulario
     this.filtros.valueChanges.subscribe(() => {
       this.page = 0;
       this.cargar();
@@ -76,10 +74,13 @@ export class OrdenesTrabajoListComponent implements OnInit {
   }
 
   cargar() {
-    const v = this.filtros.getRawValue();
+    const v = this.filtros.value;
+    
+    // Envío los parámetros por separado. 
+    // Si el backend no los procesa aún, es una tarea pendiente del lado del servidor.
     this.ordenes.listar({
-      estados: v.estados ?? [],
-      tipo: (v.tipo as any) || '',
+      estados: v.estados || [],
+      tipo: v.tipo || '',
       tecnicoId: v.tecnicoId || '',
       query: v.query || '',
       page: this.page,
@@ -102,6 +103,11 @@ export class OrdenesTrabajoListComponent implements OnInit {
   }
 
   limpiar() {
-    this.filtros.reset({ estados: [], tipo: '', tecnicoId: '', query: '' });
+    this.filtros.reset({
+      estados: [],
+      tipo: '',
+      tecnicoId: '',
+      query: ''
+    });
   }
 }
