@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, DatePipe } from '@angular/common'; // Añadido DatePipe
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,11 +21,19 @@ import { OtListaItem, UsuarioResumen } from '../../../core/models/tipos';
   selector: 'rs-ordenes-trabajo-list',
   standalone: true,
   imports: [
-    NgIf, NgFor,
+    NgIf, 
+    NgFor,
+    DatePipe, // Añadido a los imports del componente
     RouterLink,
     ReactiveFormsModule,
-    MatCardModule, MatFormFieldModule, MatSelectModule, MatInputModule,
-    MatButtonModule, MatTableModule, MatPaginatorModule, MatIconModule,
+    MatCardModule, 
+    MatFormFieldModule, 
+    MatSelectModule, 
+    MatInputModule,
+    MatButtonModule, 
+    MatTableModule, 
+    MatPaginatorModule, 
+    MatIconModule,
   ],
   templateUrl: './ordenes-trabajo-list.component.html',
   styleUrl: './ordenes-trabajo-list.component.scss',
@@ -53,10 +61,14 @@ export class OrdenesTrabajoListComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.usuarios.listar(true).subscribe(u => this.tecnicos = u.filter(x => x.rol === 'TECNICO'));
+    // Cargamos técnicos para el filtro superior
+    this.usuarios.listar(true).subscribe(u => {
+      this.tecnicos = u.filter(x => x.rol === 'TECNICO');
+    });
 
     this.cargar();
 
+    // Recargar cuando cambien los filtros
     this.filtros.valueChanges.subscribe(() => {
       this.page = 0;
       this.cargar();
@@ -72,9 +84,14 @@ export class OrdenesTrabajoListComponent implements OnInit {
       query: v.query || '',
       page: this.page,
       size: this.size,
-    }).subscribe(res => {
-      this.items = res.items;
-      this.total = res.total;
+    }).subscribe({
+      next: (res) => {
+        this.items = res.items;
+        this.total = res.total;
+      },
+      error: (err) => {
+        console.error('Error cargando OTs:', err);
+      }
     });
   }
 
