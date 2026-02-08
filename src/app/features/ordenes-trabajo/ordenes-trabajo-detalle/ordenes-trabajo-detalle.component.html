@@ -1,105 +1,138 @@
-<div class="rs-header" *ngIf="ot as o">
-  <div>
-    <h2 style="margin:0;">OT {{ o.codigo }}</h2>
-    <mat-chip-set>
-      <mat-chip selected>{{ o.estado }}</mat-chip>
-      <mat-chip selected>{{ o.tipo }}</mat-chip>
-      <mat-chip selected>{{ o.prioridad }}</mat-chip>
-    </mat-chip-set>
+<div class="rs-page-container" *ngIf="ot">
+  <div class="rs-header-compact">
+    <div class="breadcrumb">Work Orders / <span class="current">{{ ot.codigo }}</span></div>
+    <div class="header-main-row">
+      <div class="title-group">
+        <h1>{{ ot.codigo }}</h1>
+        <span class="badge-status">{{ ot.estado }}</span>
+      </div>
+      <button mat-stroked-button routerLink="/ordenes-trabajo" class="btn-back">Volver</button>
+    </div>
   </div>
-  <a mat-stroked-button routerLink="/ordenes-trabajo">Volver</a>
-</div>
 
-<div class="rs-detail" *ngIf="ot as o">
-  <div>
-    <mat-card>
-      <mat-card-title>Estado</mat-card-title>
-      <mat-card-content>
-        <form [formGroup]="formEstado">
-          <mat-form-field appearance="outline" class="rs-full">
-            <mat-label>Cambiar estado</mat-label>
-            <mat-select formControlName="a">
-              <mat-option *ngFor="let e of estados" [value]="e">{{ e }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </form>
-        <button mat-raised-button color="primary" (click)="cambiarEstado()">Actualizar</button>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card>
-      <mat-card-title>Descripción</mat-card-title>
-      <mat-card-content>
-        <p>{{ o.descripcion }}</p>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card>
-      <mat-card-title>Notas internas</mat-card-title>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item *ngFor="let n of o.notas">
-            <div>
-              <div class="rs-strong">{{ n.autor.nombre }} · <span class="rs-muted">{{ n.creadoEn }}</span></div>
-              <div>{{ n.contenido }}</div>
-            </div>
-          </mat-list-item>
-        </mat-list>
-
-        <form [formGroup]="formNota">
-          <mat-form-field appearance="outline" class="rs-full">
-            <mat-label>Nueva nota</mat-label>
-            <textarea matInput rows="2" formControlName="contenido"></textarea>
-          </mat-form-field>
-        </form>
-
-        <button mat-raised-button color="primary" (click)="anadirNota()">Añadir nota</button>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card>
-      <mat-card-title>Fotos</mat-card-title>
-      <mat-card-content>
-        <input type="file" (change)="onFileSelected($event)" />
-        <div class="rs-fotos">
-          <a *ngFor="let f of o.fotos" [href]="f.url" target="_blank" rel="noreferrer">{{ f.nombreArchivo }}</a>
+  <div class="rs-grid">
+    <div class="col-main">
+      <div class="white-card">
+        <h2 class="card-label">Summary</h2>
+        <div class="summary-flex-compact">
+          <div class="data-item"><label>Type</label><p>{{ ot.tipo }}</p></div>
+          <div class="data-item"><label>Created</label><p>{{ (ot.creadoEn || ot.createdAt) | date:'yyyy-MM-dd' }}</p></div>
+          <div class="data-item"><label>Technician</label><p>{{ ot.tecnico?.nombre || 'Sin asignar' }}</p></div>
+          <div class="data-item"><label>Scheduled</label><p>{{ ot.fechaPrevista | date:'yyyy-MM-dd HH:mm' }}</p></div>
         </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
 
-  <div>
-    <mat-card>
-      <mat-card-title>Cliente</mat-card-title>
-      <mat-card-content>
-        <div class="rs-strong">{{ o.cliente.nombre }}</div>
-        <div class="rs-muted">{{ o.cliente.telefono || '—' }}</div>
-        <div class="rs-muted">{{ o.cliente.email || '—' }}</div>
-        <a mat-button color="primary" [routerLink]="['/clientes', o.cliente.id]">Ver ficha cliente</a>
-      </mat-card-content>
-    </mat-card>
+        <div class="action-section">
+          <label class="inner-label">Change Status</label>
+          <div class="input-inline-group">
+            <mat-form-field appearance="outline" class="ultra-compact-field fit-content">
+              <mat-select [formControl]="formEstado.controls.a">
+                <mat-option *ngFor="let e of estados" [value]="e">{{ e }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-flat-button class="btn-teal-action" (click)="cambiarEstado()">Update Status</button>
+          </div>
+        </div>
+      </div>
 
-    <mat-card *ngIf="o.tipo === 'DOMICILIO'">
-      <mat-card-title>Domicilio</mat-card-title>
-      <mat-card-content>
-        <div><strong>Fecha prevista:</strong> {{ o.fechaPrevista || '—' }}</div>
-        <div><strong>Dirección:</strong> {{ o.direccion || '—' }}</div>
-        <div><strong>Notas:</strong> {{ o.notasAcceso || '—' }}</div>
-      </mat-card-content>
-    </mat-card>
+      <div class="white-card">
+        <h2 class="card-label">Issue Description</h2>
+        <p class="text-body-small">{{ ot.descripcion || 'No description provided.' }}</p>
+      </div>
 
-    <mat-card>
-      <mat-card-title>Timeline</mat-card-title>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item *ngFor="let e of o.eventos">
-            <div>
-              <div class="rs-strong">{{ e.tipo }} · <span class="rs-muted">{{ e.creadoEn }}</span></div>
-              <div class="rs-muted">{{ e.actor?.nombre || 'Sistema' }}</div>
+      <div class="white-card">
+        <h2 class="card-label">Internal Notes</h2>
+        <div class="notes-stack">
+          <div class="note-box" *ngFor="let n of ot.notas">
+            <div class="note-header">
+              <strong>{{ n.autor?.nombre || 'Técnico' }}</strong> <span>{{ n.creadoEn | date:'MMM d, h:mm a' }}</span>
             </div>
-          </mat-list-item>
-        </mat-list>
-      </mat-card-content>
-    </mat-card>
+            <p>{{ n.contenido }}</p>
+          </div>
+          
+          <div class="input-inline-group">
+            <mat-form-field appearance="outline" class="ultra-compact-field short-note-input">
+              <input matInput placeholder="Add a note..." [formControl]="formNota.controls.contenido" (keyup.enter)="anadirNota()" />
+            </mat-form-field>
+            <button mat-flat-button class="btn-teal-action" (click)="anadirNota()">
+              <mat-icon>add</mat-icon> Add
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="white-card">
+        <h2 class="card-label">Photos</h2>
+        <div class="photos-minimal">
+          <div class="photo-thumb-container" *ngIf="ot.fotos?.length; else noPhotos">
+            <div class="thumb-wrapper" *ngFor="let f of ot.fotos; let i = index" (click)="verFoto(f)">
+              <img [src]="f.url || f" class="mini-thumb" alt="Photo">
+              <span class="thumb-label" style="font-size: 10px; display: block; text-align: center;">Photo {{i+1}}</span>
+            </div>
+          </div>
+          <ng-template #noPhotos><span class="text-muted">No photos uploaded.</span></ng-template>
+          
+          <label class="upload-link-btn">
+            <input type="file" (change)="onFileSelected($event)" hidden />
+            <mat-icon>add_a_photo</mat-icon> Upload Photo
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-side">
+      <div class="white-card">
+        <h2 class="card-label">Customer</h2>
+        <div class="sidebar-data">
+          <div class="name-bold">{{ ot.cliente?.nombre }}</div>
+          <div class="row-icon">
+            <mat-icon>phone</mat-icon> <span>{{ ot.cliente?.telefono }}</span>
+            <mat-icon class="copy-btn-mini" (click)="copyToClipboard(ot.cliente?.telefono)">content_copy</mat-icon>
+          </div>
+          <div class="row-icon">
+            <mat-icon>email</mat-icon> <span>{{ ot.cliente?.email }}</span>
+            <mat-icon class="copy-btn-mini" (click)="copyToClipboard(ot.cliente?.email)">content_copy</mat-icon>
+          </div>
+          <a class="blue-link" [routerLink]="['/clientes', ot.cliente?.id]">Open customer profile</a>
+        </div>
+      </div>
+
+      <div class="white-card">
+        <h2 class="card-label">On-site Visit</h2>
+        <div class="sidebar-data">
+          <div class="visit-time">Scheduled: {{ ot.fechaPrevista | date:'yyyy-MM-dd h:mm a' }}</div>
+          <div class="address-row">
+            <mat-icon>location_on</mat-icon>
+            <span>{{ ot.direccion || '123 Main Street, Springfield' }}</span>
+          </div>
+          <button mat-button class="btn-text-icon" (click)="copyToClipboard(ot.direccion)">
+            <mat-icon>content_copy</mat-icon> Copy address
+          </button>
+        </div>
+      </div>
+
+      <div class="white-card">
+        <h2 class="card-label">Timeline</h2>
+        <div class="timeline-compact">
+          <div class="tl-node">
+            <div class="tl-txt">Work order created</div>
+            <div class="tl-date">{{ (ot.creadoEn || ot.createdAt) | date:'yyyy-MM-dd h:mm a' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <button mat-stroked-button class="btn-close-ot interactive-close" (click)="cambiarEstado('CERRADA')">Close Work Order</button>
+    </div>
   </div>
 </div>
+
+<ng-template #imageModal>
+  <div class="modal-small-container">
+    <div class="modal-header-mini">
+      <span>Photo Preview</span>
+      <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="modal-body-mini">
+      <img [src]="selectedImageUrl" class="img-contained">
+    </div>
+  </div>
+</ng-template>

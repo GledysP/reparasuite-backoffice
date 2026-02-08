@@ -20,8 +20,6 @@ export class OrdenesTrabajoService {
     size?: number;
     sort?: string;
   }): Observable<RespuestaPaginada<OtListaItem>> {
-    
-    // CORREGIDO: Usamos 'updatedAt' y HttpParams para que los filtros funcionen con el backend
     let params = new HttpParams()
       .set('page', (f.page ?? 0).toString())
       .set('size', (f.size ?? 20).toString())
@@ -31,7 +29,6 @@ export class OrdenesTrabajoService {
     if (f.tipo) params = params.set('tipo', f.tipo);
     if (f.tecnicoId) params = params.set('tecnicoId', f.tecnicoId);
 
-    // CORREGIDO: Soporte para selección múltiple de estados según Swagger
     if (f.estados && f.estados.length > 0) {
       f.estados.forEach(estado => {
         params = params.append('estado', estado);
@@ -55,11 +52,11 @@ export class OrdenesTrabajoService {
     return this.http.get<OtDetalle>(`${environment.apiBaseUrl}/ordenes-trabajo/${id}`);
   }
 
-  // RESTAURADO: Métodos necesarios para el detalle de la OT
-  cambiarEstado(id: string, a: EstadoOt): Observable<{ estado: EstadoOt; actualizadoEn: string }> {
-    return this.http.post<{ estado: EstadoOt; actualizadoEn: string }>(
-      `${environment.apiBaseUrl}/ordenes-trabajo/${id}/cambiar-estado`,
-      { a }
+  cambiarEstado(id: string, nuevoEstado: EstadoOt): Observable<any> {
+    // CORRECCIÓN SWAGGER: Método PATCH y endpoint /estado
+    return this.http.patch(
+      `${environment.apiBaseUrl}/ordenes-trabajo/${id}/estado`,
+      { estado: nuevoEstado }
     );
   }
 
