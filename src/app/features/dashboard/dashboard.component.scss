@@ -1,1 +1,128 @@
-h2 { margin: 0; }
+$row-hover: #f1f5f9;
+
+.rs-dashboard-container {
+  padding: 16px 24px; /* Misma distancia que Work Orders */
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.rs-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 20px 0; /* Sin margen superior para subir el contenido */
+  color: #0f172a;
+}
+
+.rs-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.rs-kpi-card {
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  background: #ffffff !important; /* Blanco puro */
+
+  .kpi-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .kpi-value {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    color: #0f172a;
+  }
+
+  .kpi-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+}
+
+.status-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  &.received { background: #f1f5f9; color: #475569; }
+  &.quotation { background: #fef3c7; color: #d97706; }
+  &.in-progress { background: #ccfbf1; color: #0d9488; }
+  &.completed { background: #dcfce7; color: #16a34a; }
+}
+
+.rs-dashboard-main-content {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 24px;
+}
+
+.rs-content-card {
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  background: #ffffff !important; /* Blanco puro */
+
+  .card-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #0f172a;
+  }
+}
+
+.rs-dashboard-table {
+  width: 100%;
+  background: transparent;
+
+  th { font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; padding: 12px 8px; }
+  td { font-size: 12px; padding: 12px 8px; border-bottom: 1px solid #f1f5f9; }
+  
+  /* Efecto Hover en las filas */
+  tr.mat-mdc-row:hover {
+    background-color: $row-hover !important;
+    cursor: pointer;
+  }
+
+  .bold-text { font-weight: 700; color: #0f172a; }
+}
+
+.actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  button {
+    height: 40px;
+    border-radius: 8px !important;
+    font-weight: 600;
+    font-size: 13px;
+    justify-content: flex-start;
+  }
+  .btn-primary-action { background-color: #2dd4bf !important; color: white !important; }
+  .btn-secondary-action { color: #124E59 !important; border-color: #e2e8f0 !important; }
+}
+
+.status-badge-table {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  &[data-status="EN_CURSO"] { background: #ccfbf1; color: #0d9488; }
+  &[data-status="RECIBIDA"] { background: #f1f5f9; color: #475569; }
+}
+
+.action-icon { font-size: 18px; color: #94a3b8; }
