@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, TitleCasePipe } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,21 +11,25 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { UsuariosService } from '../../usuarios/usuarios.service';
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { PrioridadOt, TipoOt } from '../../../core/models/enums';
-import { UsuarioResumen } from '../../../core/models/tipos';
+import { UsuarioResumen, ClienteResumen } from '../../../core/models/tipos';
+import { ClienteBuscarDialogComponent } from './cliente-buscar-dialog.component';
 
 @Component({
   selector: 'rs-ordenes-trabajo-nueva',
   standalone: true,
   imports: [
-    NgIf, NgFor,
-    ReactiveFormsModule,
+    NgIf, NgFor, TitleCasePipe, ReactiveFormsModule,
     MatCardModule, MatFormFieldModule, MatInputModule,
     MatRadioModule, MatSelectModule, MatButtonModule, MatDividerModule,
-    MatSnackBarModule
+    MatSnackBarModule, MatIconModule, MatDialogModule, MatDatepickerModule, MatNativeDateModule
   ],
   templateUrl: './ordenes-trabajo-nueva.component.html',
   styleUrl: './ordenes-trabajo-nueva.component.scss',
@@ -36,9 +40,11 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
   private ordenes = inject(OrdenesTrabajoService);
   private router = inject(Router);
   private snack = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   tecnicos: UsuarioResumen[] = [];
   prioridades: PrioridadOt[] = ['BAJA', 'MEDIA', 'ALTA'];
+  clienteId: string | null = null; // Para vincular cliente existente
 
   form = this.fb.group({
     clienteNombre: ['', [Validators.required]],
@@ -48,7 +54,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
     tipo: ['TIENDA' as TipoOt, [Validators.required]],
     direccion: [''],
     notasAcceso: [''],
-    fechaPrevista: [''],
+    fechaPrevista: [null as Date | null],
 
     descripcion: ['', [Validators.required]],
     prioridad: ['MEDIA' as PrioridadOt, [Validators.required]],
@@ -56,59 +62,65 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.usuarios.listar(true).subscribe(u => this.tecnicos = u.filter(x => x.rol === 'TECNICO'));
+    this.usuarios.listar(true).subscribe(u => {
+      this.tecnicos = u.filter(x => x.rol === 'TECNICO');
+    });
   }
 
-  cancelar() {
-    this.router.navigateByUrl('/ordenes-trabajo');
+  buscarCliente() {
+    const dialogRef = this.dialog.open(ClienteBuscarDialogComponent, {
+      width: '500px',
+      panelClass: 'rs-dialog-custom'
+    });
+
+    dialogRef.afterClosed().subscribe((cliente: ClienteResumen) => {
+      if (cliente) {
+        this.clienteId = cliente.id; // Guardamos el ID
+        this.form.patchValue({
+          clienteNombre: cliente.nombre,
+          clienteTelefono: cliente.telefono,
+          clienteEmail: cliente.email
+        });
+      }
+    });
   }
 
   crear() {
     if (this.form.invalid) {
-      this.snack.open('Revisa los campos obligatorios', 'OK', { duration: 2500 });
+      this.snack.open('Please review required fields', 'OK', { duration: 2500 });
       return;
     }
 
     const v = this.form.getRawValue();
-
-    // Formateo de fecha para OffsetDateTime (ISO 8601 completo)
-    let fechaIso = null;
-    if (v.fechaPrevista) {
-      const d = new Date(v.fechaPrevista);
-      if (!isNaN(d.getTime())) {
-        fechaIso = d.toISOString(); 
-      }
-    }
-
-    // Usamos (v.campo || '') para asegurar a TS que no es null
+    
     const body = {
       cliente: {
-        nombre: (v.clienteNombre || '').trim(),
+        id: this.clienteId, // Si existe, el backend lo asocia automáticamente
+        nombre: v.clienteNombre?.trim(),
         telefono: v.clienteTelefono?.trim() || null,
         email: v.clienteEmail?.trim() || null,
       },
       tipo: v.tipo,
       prioridad: v.prioridad,
-      descripcion: (v.descripcion || '').trim(),
-      tecnicoId: v.tecnicoId && v.tecnicoId !== '' ? v.tecnicoId : null,
-
-      fechaPrevista: v.tipo === 'DOMICILIO' ? fechaIso : null,
-      direccion: v.tipo === 'DOMICILIO' ? (v.direccion?.trim() || null) : null,
-      notasAcceso: v.tipo === 'DOMICILIO' ? (v.notasAcceso?.trim() || null) : null,
+      descripcion: v.descripcion?.trim(),
+      tecnicoId: v.tecnicoId || null,
+      fechaPrevista: v.fechaPrevista ? v.fechaPrevista.toISOString() : null,
+      direccion: v.tipo === 'DOMICILIO' ? v.direccion : null,
+      notasAcceso: v.tipo === 'DOMICILIO' ? v.notasAcceso : null,
     };
-
-    console.log('Payload enviado con éxito:', body);
 
     this.ordenes.crear(body).subscribe({
       next: (res) => {
-        this.snack.open('¡Orden creada con éxito!', 'Cerrar', { duration: 3000 });
+        this.snack.open('Order created successfully!', 'Close', { duration: 3000 });
         this.router.navigate(['/ordenes-trabajo', res.id]);
       },
       error: (err) => {
-        console.error('Error detallado:', err);
-        const msg = err.error?.message || 'Error en el servidor';
-        this.snack.open(msg, 'OK', { duration: 5000 });
-      },
+        this.snack.open(err.error?.message || 'Error creating order', 'OK');
+      }
     });
+  }
+
+  cancelar() {
+    this.router.navigateByUrl('/ordenes-trabajo');
   }
 }

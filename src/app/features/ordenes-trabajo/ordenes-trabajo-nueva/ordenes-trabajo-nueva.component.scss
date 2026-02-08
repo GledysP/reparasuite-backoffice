@@ -1,1 +1,159 @@
-h3 { margin: 8px 0; }
+/* Variables de estilo basadas en Figma */
+$rs-focus-color: #124E59; 
+$rs-primary-dark: #0d2e38;
+$rs-bg-light: #f8fafc;
+$rs-border-color: #e2e8f0;
+
+.rs-page-wrapper {
+  padding: 32px;
+  background-color: $rs-bg-light;
+  min-height: 100vh;
+}
+
+.rs-main-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 24px;
+  text-align: left; /* Asegura alineación a la izquierda */
+}
+
+.rs-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%; /* Ocupa el espacio junto al sidebar */
+}
+
+/* Estilo de las Tarjetas */
+.rs-section-card {
+  background-color: #ffffff !important;
+  border: 1px solid $rs-border-color !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+  padding: 12px 20px !important;
+
+  .rs-card-title {
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    color: #000000 !important; /* Títulos en negro solicitado */
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+    display: block;
+  }
+}
+
+/* --- AJUSTE DE INPUTS Y COLOR DE FOCUS --- */
+:host ::ng-deep {
+  /* Estética compacta de los inputs */
+  .mat-mdc-text-field-wrapper {
+    height: 40px !important; 
+    padding: 0 12px !important;
+    border-radius: 6px !important;
+    background-color: #ffffff !important;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: 40px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    display: flex;
+    align-items: center;
+  }
+
+  .mat-mdc-form-field-label-wrapper {
+    top: -16px !important;
+    padding-top: 16px !important;
+  }
+
+  /* ELIMINAR COLOR AZUL Y FORZAR #124E59 */
+  .mat-mdc-form-field.mat-focused {
+    /* Borde de los 3 segmentos del outline */
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: $rs-focus-color !important;
+      border-width: 2px !important;
+    }
+
+    /* Color del texto del Label */
+    .mat-mdc-floating-label {
+      color: $rs-focus-color !important;
+    }
+  }
+
+  /* Quitar espacios de error para mantener minimalismo */
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+  }
+}
+
+/* Distribución de elementos */
+.rs-flex-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.rs-radio-row {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 8px 0;
+  
+  .rs-label-text {
+    font-size: 13px;
+    color: #64748b;
+  }
+}
+
+/* Área de archivos */
+.rs-dropzone {
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  background-color: #fafbfc;
+  cursor: pointer;
+
+  .rs-dropzone-icon { font-size: 32px; width: 32px; height: 32px; color: #94a3b8; }
+  .rs-dropzone-text { font-size: 13px; color: #64748b; margin-top: 8px; }
+}
+
+/* Botones de acción */
+.rs-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-bottom: 40px;
+}
+
+.btn-guardar {
+  background-color: $rs-primary-dark !important;
+  color: white !important;
+  border-radius: 6px !important;
+  padding: 0 24px !important;
+  height: 40px;
+  font-weight: 600;
+}
+
+.btn-cancelar {
+  color: $rs-focus-color !important;
+  font-weight: 500;
+}
+
+.btn-find-client {
+  height: 40px;
+  border-radius: 6px !important;
+  font-size: 12px;
+  background-color: white !important;
+}
+
+/* Utilidades de ancho */
+.flex-grow-1 { flex: 1; }
+.flex-grow-2 { flex: 2; }
+.w-full { width: 100%; }
+.mt-10 { margin-top: 10px; }
