@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe, CommonModule } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,7 +21,9 @@ import { OtListaItem, UsuarioResumen } from '../../../core/models/tipos';
   selector: 'rs-ordenes-trabajo-list',
   standalone: true,
   imports: [
+    CommonModule,
     DatePipe,
+    TitleCasePipe,
     RouterLink,
     ReactiveFormsModule,
     MatCardModule, 
@@ -59,14 +61,12 @@ export class OrdenesTrabajoListComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // Cargo la lista de técnicos para el filtro
     this.usuarios.listar(true).subscribe(u => {
       this.tecnicos = u.filter(x => x.rol === 'TECNICO');
     });
 
     this.cargar();
 
-    // Suscripción reactiva a los cambios del formulario
     this.filtros.valueChanges.subscribe(() => {
       this.page = 0;
       this.cargar();
@@ -75,9 +75,6 @@ export class OrdenesTrabajoListComponent implements OnInit {
 
   cargar() {
     const v = this.filtros.value;
-    
-    // Envío los parámetros por separado. 
-    // Si el backend no los procesa aún, es una tarea pendiente del lado del servidor.
     this.ordenes.listar({
       estados: v.estados || [],
       tipo: v.tipo || '',
