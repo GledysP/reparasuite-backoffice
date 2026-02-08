@@ -1,53 +1,75 @@
-<div class="rs-header">
-  <h2>Clientes</h2>
+<div class="rs-page-container">
+  <div class="rs-header">
+    <h2>Customers</h2>
+  </div>
+
+  <mat-card class="search-card rs-card-white">
+    <mat-card-content>
+      <form [formGroup]="form">
+        <mat-form-field appearance="outline" class="rs-search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput formControlName="query" placeholder="Buscar por nombre, teléfono o email" />
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card rs-card-white">
+    <mat-card-content class="no-padding">
+      <div class="table-responsive">
+        <table mat-table [dataSource]="items" class="rs-table">
+          
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef> Customer </th>
+            <td mat-cell *matCellDef="let row"> <strong>{{ row.nombre }}</strong> </td>
+          </ng-container>
+
+          <ng-container matColumnDef="telefono">
+            <th mat-header-cell *matHeaderCellDef> Phone </th>
+            <td mat-cell *matCellDef="let row"> {{ row.telefono || '—' }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef> Email </th>
+            <td mat-cell *matCellDef="let row" class="text-muted"> {{ row.email || '—' }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalWos">
+            <th mat-header-cell *matHeaderCellDef class="cell-center"> Total WOs </th>
+            <td mat-cell *matCellDef="let row" class="cell-center"> {{ row.totalWos ?? 0 }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="lastWoDate">
+            <th mat-header-cell *matHeaderCellDef class="cell-center"> Last WO Date </th>
+            <td mat-cell *matCellDef="let row" class="cell-center"> {{ (row.lastWoDate | date:'yyyy-MM-dd') || '—' }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="accion">
+            <th mat-header-cell *matHeaderCellDef class="cell-right"> Action </th>
+            <td mat-cell *matCellDef="let row" class="cell-right">
+              <div class="action-btns">
+                <button mat-icon-button [routerLink]="['/clientes', row.id]">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button (click)="eliminar(row)" class="del-btn">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="total"
+        [pageIndex]="page"
+        [pageSize]="size"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="paginar($event)">
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
 </div>
-
-<mat-card>
-  <mat-card-content>
-    <form [formGroup]="form">
-      <mat-form-field appearance="outline" class="rs-full">
-        <mat-label>Buscar</mat-label>
-        <input matInput formControlName="query" placeholder="Nombre o teléfono" />
-      </mat-form-field>
-    </form>
-  </mat-card-content>
-</mat-card>
-
-<mat-card>
-  <mat-card-content>
-    <table mat-table [dataSource]="items" class="rs-table">
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef>Nombre</th>
-        <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="telefono">
-        <th mat-header-cell *matHeaderCellDef>Teléfono</th>
-        <td mat-cell *matCellDef="let row">{{ row.telefono || '—' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
-        <td mat-cell *matCellDef="let row">{{ row.email || '—' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="accion">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let row">
-          <a [routerLink]="['/clientes', row.id]">Ver</a>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <mat-paginator
-      [length]="total"
-      [pageIndex]="page"
-      [pageSize]="size"
-      [pageSizeOptions]="[10, 20, 50]"
-      (page)="paginar($event)">
-    </mat-paginator>
-  </mat-card-content>
-</mat-card>
