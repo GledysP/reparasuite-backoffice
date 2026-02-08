@@ -1,63 +1,77 @@
 <mat-sidenav-container class="rs-container">
-  <mat-sidenav mode="side" opened>
-    <mat-toolbar color="primary">Repara Suite</mat-toolbar>
+  <!-- Sidebar -->
+  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile" class="rs-sidebar">
+    <div class="rs-sidebar-header">
+      <!-- Contenedor del Logo y Título -->
+      <div class="rs-logo-container">
+        <img src="assets/logo.png" alt="Logo" class="rs-logo" />
+        <span class="rs-brand">Repara Suite</span>
+      </div>
+    </div>
 
-    <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard">
-        <mat-icon fontIcon="dashboard"></mat-icon>
-        <span>Dashboard</span>
+    <mat-nav-list class="rs-nav-list">
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
       </a>
 
-      <a mat-list-item routerLink="/ordenes-trabajo">
-        <mat-icon fontIcon="assignment"></mat-icon>
-        <span>Órdenes</span>
+      <a mat-list-item routerLink="/ordenes-trabajo" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>assignment</mat-icon>
+        <span matListItemTitle>Work Orders</span>
       </a>
 
-      <a mat-list-item routerLink="/clientes">
-        <mat-icon fontIcon="people"></mat-icon>
-        <span>Clientes</span>
+      <a mat-list-item routerLink="/clientes" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>people</mat-icon>
+        <span matListItemTitle>Customers</span>
       </a>
 
-      <a mat-list-item routerLink="/usuarios">
-        <mat-icon fontIcon="engineering"></mat-icon>
-        <span>Usuarios</span>
+      <a mat-list-item routerLink="/usuarios" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>engineering</mat-icon>
+        <span matListItemTitle>Users</span>
       </a>
 
-      <a mat-list-item routerLink="/ajustes/taller">
-        <mat-icon fontIcon="settings"></mat-icon>
-        <span>Ajustes</span>
+      <a mat-list-item routerLink="/ajustes/taller" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>settings</mat-icon>
+        <span matListItemTitle>Settings</span>
       </a>
     </mat-nav-list>
   </mat-sidenav>
 
+  <!-- Contenido -->
   <mat-sidenav-content>
-    <mat-toolbar>
-      <mat-form-field appearance="outline" style="width: 420px; max-width: 60vw;">
-        <mat-label>Buscar</mat-label>
-        <input matInput placeholder="Código OT, cliente o teléfono" />
-      </mat-form-field>
+    <mat-toolbar class="rs-header">
+      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isMobile">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <div class="rs-search-wrapper">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Search..." />
+      </div>
 
       <span class="rs-spacer"></span>
 
-      <button mat-icon-button aria-label="Notificaciones">
-        <mat-icon fontIcon="notifications"></mat-icon>
-      </button>
+      <!-- NUEVO CONTENEDOR DE ACCIONES DERECHA -->
+      <div class="rs-header-right">
+        <button mat-icon-button class="rs-header-icon">
+          <mat-icon matBadge="3" matBadgeColor="warn">notifications</mat-icon>
+        </button>
 
-      <button mat-button [matMenuTriggerFor]="menuUsuario">
-        <mat-icon fontIcon="account_circle"></mat-icon>
-        <span>Cuenta</span>
-      </button>
+        <button class="rs-avatar-btn" [matMenuTriggerFor]="menuUsuario">
+          <span>A</span>
+        </button>
+      </div>
 
       <mat-menu #menuUsuario="matMenu">
         <button mat-menu-item (click)="logout()">
-          <mat-icon fontIcon="logout"></mat-icon>
+          <mat-icon>logout</mat-icon>
           <span>Cerrar sesión</span>
         </button>
       </mat-menu>
     </mat-toolbar>
 
-    <div class="rs-page">
-      <router-outlet />
-    </div>
+    <main class="rs-content-area">
+      <router-outlet></router-outlet>
+    </main>
   </mat-sidenav-content>
 </mat-sidenav-container>

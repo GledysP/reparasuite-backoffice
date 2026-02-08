@@ -1,2 +1,152 @@
-mat-sidenav { width: 260px; }
-mat-nav-list a mat-icon { margin-right: 10px; }
+$rs-primary: #124E59; 
+$rs-border: #e2e8f0;
+$rs-hover-gray: #f1f5f9;
+
+:host ::ng-deep {
+  /* 1. ÁREA DE CONTENIDO: Elimina bloques blancos */
+  .mat-drawer-content {
+    background-color: #f6f8fb !important; 
+  }
+
+  /* 2. SIDEBAR: Identidad visual de la guía */
+  .mat-drawer.rs-sidebar {
+    width: 250px !important;
+    background-color: white !important;
+    border-right: 1px solid $rs-border !important;
+    border-radius: 0 !important;
+
+    .rs-sidebar-header {
+      padding: 35px 20px; 
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid $rs-border !important; 
+      margin-bottom: 10px;
+
+      .rs-brand { 
+        font-weight: 800; 
+        font-size: 1.25rem; 
+        color: $rs-primary;
+        letter-spacing: -0.5px;
+      }
+    }
+
+    /* 3. OPCIONES DEL SIDEBAR (Estilo Pastilla) */
+    .mat-mdc-nav-list .mat-mdc-list-item {
+      margin: 4px 16px !important; // Centra la pastilla
+      width: auto !important; 
+      height: 44px !important;
+      border-radius: 10px !important; 
+      
+      --mdc-list-list-item-hover-state-layer-color: transparent;
+      --mdc-list-list-item-focus-state-layer-color: transparent;
+
+      // ESTADO NORMAL: Letras Negras
+      .mdc-list-item__primary-text, mat-icon { 
+        color: #1e293b !important; 
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+
+      // HOVER: Sombreado Gris
+      &:hover:not(.active-link) {
+        background-color: $rs-hover-gray !important;
+        .mdc-list-item__primary-text, mat-icon { 
+          color: $rs-primary !important; 
+        }
+      }
+
+      // ACTIVO: Fondo Navy y Letras Blancas (Clave de la Guía)
+      &.active-link {
+        background-color: $rs-primary !important;
+        .mdc-list-item__primary-text, mat-icon { 
+          color: white !important; // FUERZA LETRAS BLANCAS
+        }
+      }
+    }
+  }
+
+  /* 4. HEADER: Espaciado y Buscador Innovador */
+  .mat-toolbar.rs-header {
+    background-color: white !important;
+    border-bottom: 1px solid $rs-border !important;
+    box-shadow: none !important;
+    height: 75px; 
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    justify-content: space-between; // Asegura que los elementos se repartan
+
+    .rs-search-wrapper {
+      display: flex;
+      align-items: center;
+      background-color: #f8fafc;
+      border: 1px solid $rs-border;
+      border-radius: 8px;
+      padding: 0 12px;
+      width: 320px;
+      height: 40px;
+      transition: all 0.2s ease-in-out;
+
+      mat-icon { color: #94a3b8; font-size: 20px; }
+
+      &:focus-within {
+        background-color: white;
+        border: 2px solid $rs-primary !important;
+        box-shadow: 0 0 0 3px rgba(18, 78, 89, 0.1);
+        mat-icon { color: $rs-primary; }
+      }
+
+      input {
+        border: none !important;
+        outline: none !important;
+        background: transparent;
+        width: 100%;
+        margin-left: 8px;
+        font-size: 14px;
+      }
+    }
+
+    // Contenedor para separar iconos finales
+    .rs-header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px; // SEPARACIÓN ENTRE NOTIFICACIÓN Y AVATAR
+    }
+  }
+}
+
+/* 5. AVATAR Y LOGOTIPO */
+.rs-avatar-btn {
+  background-color: $rs-primary !important;
+  color: white !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  border-radius: 50% !important; // CÍRCULO PERFECTO
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  padding: 0 !important;
+}
+
+.rs-logo {
+  height: 32px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.rs-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rs-content-area {
+  padding: 32px;
+  background-color: #f6f8fb;
+}

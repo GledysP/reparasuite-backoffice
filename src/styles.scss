@@ -1,47 +1,95 @@
+/* 1. LIBRERÍAS EXTERNAS */
 @import '@angular/material/prebuilt-themes/azure-blue.css';
-html, body { height: 100%; margin: 0; }
-body { font-family: Roboto, Arial, sans-serif; background: #f6f8fb; }
+@import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
+/* 2. CONFIGURACIÓN DE FUENTE LOCAL (Inter) */
+@font-face {
+  font-family: 'Inter';
+  src: url('/assets/fonts/Inter-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+/* 3. BASE DEL DOCUMENTO */
+html, body { 
+  height: 100%; 
+  margin: 0; 
+  // Añadimos fallbacks por si la fuente falla
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; 
+  background-color: #f6f8fb; 
+  color: #1e293b;
+  font-size: 15px; // Tamaño base profesional
+  
+  /* MEJORA DE NITIDEZ (Importante para que no se vean feas) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 4. TIPOGRAFÍA PARA COMPONENTES DE MATERIAL */
+.mat-typography, .mat-mdc-button, .mat-mdc-card, .mat-mdc-tab-link, .mdc-list-item__primary-text {
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: -0.01em; // Toque moderno e innovador
+}
+
+/* 5. ESTRUCTURA Y CONTENEDORES (Utilidades RS) */
 .rs-container { height: 100vh; }
-.rs-page { padding: 16px; }
+.rs-page { padding: 32px; } // Un poco más de aire
 .rs-spacer { flex: 1 1 auto; }
 .rs-full { width: 100%; }
 
-.rs-header {
+.rs-header-section {
   display: flex;
   align-items: center;
   gap: 12px;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 }
 
 .rs-muted { opacity: .7; font-size: 12px; }
-.rs-strong { font-weight: 600; }
+.rs-strong { font-weight: 700; }
 
+/* 6. SISTEMA DE REJILLA (Grid) */
 .rs-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 12px;
+  gap: 16px;
 }
+
 .rs-span-2 { grid-column: span 2; }
 .rs-span-4 { grid-column: span 4; }
 .rs-span-6 { grid-column: span 6; }
 .rs-span-12 { grid-column: span 12; }
 
-@media (max-width: 1024px) { .rs-grid { grid-template-columns: repeat(6, 1fr); } }
-@media (max-width: 640px) { .rs-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1024px) { 
+  .rs-grid { grid-template-columns: repeat(6, 1fr); } 
+}
+@media (max-width: 640px) { 
+  .rs-grid { grid-template-columns: repeat(4, 1fr); } 
+}
 
+/* 7. SISTEMA DE FORMULARIOS */
 .rs-form-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 12px;
 }
+
 .rs-col-12 { grid-column: span 12; }
 .rs-col-8 { grid-column: span 8; }
 .rs-col-6 { grid-column: span 6; }
-.rs-col-4 { grid-column: span 4; }
-.rs-col-3 { grid-column: span 3; }
 
-@media (max-width: 1024px) {
-  .rs-col-8, .rs-col-6, .rs-col-4, .rs-col-3 { grid-column: span 12; }
+/* 8. AJUSTES DE ICONOS MATERIAL */
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
 }

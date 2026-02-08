@@ -1,5 +1,8 @@
-import { EstadoOt, PrioridadOt, RolUsuario, TipoEventoOt, TipoOt } from './enums';
+// Usamos 'import type' para traerlos y que se puedan usar aquí abajo
+import type { EstadoOt, PrioridadOt, RolUsuario, TipoEventoOt, TipoOt } from './enums';
 
+// Usamos 'export type' para que otros archivos (como el servicio) puedan verlos
+export type { EstadoOt, PrioridadOt, RolUsuario, TipoEventoOt, TipoOt };
 export interface UsuarioResumen {
   id: string;
   nombre: string;

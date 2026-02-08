@@ -2,13 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable, map, tap } from 'rxjs';
-import { UsuarioResumen } from '../models/tipos';
+import { UsuarioResumen, RolUsuario } from '../models/tipos'; // Importamos RolUsuario
 
 type LoginReq = { usuario: string; password: string };
+
 type LoginRes = {
-  accessToken: string;
-  tokenType: 'Bearer';
-  usuario: { id: string; nombre: string; rol: any };
+  token: string;
+  usuario: {
+    id: string;
+    nombre: string;
+    usuario: string;
+    rol: string; // El backend envía un string
+    activo: boolean;
+  };
 };
 
 @Injectable({ providedIn: 'root' })
@@ -19,10 +25,22 @@ export class AuthService {
 
   login(usuario: string, password: string): Observable<UsuarioResumen> {
     const body: LoginReq = { usuario, password };
-    return this.http.post<LoginRes>(`${environment.apiBaseUrl}/auth/login`, body).pipe(
-      tap(res => localStorage.setItem(this.tokenKey, res.accessToken)),
-      map(res => ({ id: res.usuario.id, nombre: res.usuario.nombre, rol: res.usuario.rol }))
-    );
+
+    return this.http
+      .post<LoginRes>(`${environment.apiBaseUrl}/auth/login`, body)
+      .pipe(
+        tap((res) => {
+          if (res.token) {
+            localStorage.setItem(this.tokenKey, res.token);
+          }
+        }),
+        map((res) => ({
+          id: res.usuario.id,
+          nombre: res.usuario.nombre,
+          // Forzamos el casting a RolUsuario para que TS no se queje
+          rol: res.usuario.rol as RolUsuario, 
+        }))
+      );
   }
 
   logout(): void {
@@ -34,6 +52,8 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    // Una validación extra: que el token no sea "undefined" o "null" en string
+    return !!token && token !== 'undefined' && token !== 'null';
   }
 }

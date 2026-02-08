@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Component, inject, ViewChild } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
 
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,8 +18,10 @@ import { AuthService } from '../services/auth.service';
   selector: 'rs-layout',
   standalone: true,
   imports: [
+    CommonModule,
     RouterOutlet,
     RouterLink,
+    RouterLinkActive,
     MatSidenavModule,
     MatToolbarModule,
     MatListModule,
@@ -31,10 +35,29 @@ import { AuthService } from '../services/auth.service';
   styleUrl: './layout.component.scss',
 })
 export class LayoutComponent {
-  constructor(private auth: AuthService, private router: Router) {}
+  @ViewChild('sidenav') sidenav!: MatSidenav;
+  
+  private breakpointObserver = inject(BreakpointObserver);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
+  isMobile = false;
+
+  constructor() {
+    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
+      this.isMobile = result.matches;
+    });
+  }
 
   logout() {
     this.auth.logout();
     this.router.navigateByUrl('/login');
+  }
+
+  // Cierra el menú al hacer click en móvil
+  closeMobileSidenav() {
+    if (this.isMobile) {
+      this.sidenav.close();
+    }
   }
 }
