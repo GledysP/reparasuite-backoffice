@@ -143,3 +143,83 @@ $rs-primary-petroleo: #1a4b5d;
 .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 12px !important;
 }
+
+
+/* =========================
+   FIX GLOBAL: eliminar “línea” en mat-form-field outlined (MDC)
+   (proviene del ripple interno del text-field)
+========================= */
+.mat-mdc-form-field {
+  /* quita subrayado/ripple interno que a veces se ve como una línea */
+  .mdc-text-field__ripple,
+  .mdc-line-ripple {
+    display: none !important;
+    opacity: 0 !important;
+    height: 0 !important;
+  }
+
+  .mdc-text-field__ripple::before,
+  .mdc-text-field__ripple::after,
+  .mdc-line-ripple::before,
+  .mdc-line-ripple::after {
+    display: none !important;
+    opacity: 0 !important;
+  }
+}
+
+
+/* =========================
+   FIGMA DROPDOWN (mat-select overlay)
+   Aplica a los selects con panelClass="rs-figma-select-panel"
+========================= */
+.cdk-overlay-container .rs-figma-select-panel.mat-mdc-select-panel {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 8px !important;
+
+  /* Más ancho para ver todo el contenido */
+  min-width: 320px !important;
+  max-width: 520px !important;
+
+  /* Sombra tipo Figma */
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18) !important;
+}
+
+/* Opciones */
+.cdk-overlay-container .rs-figma-select-panel .mat-mdc-option {
+  border-radius: 10px !important;
+  margin: 4px 0 !important;
+  min-height: 42px !important;
+}
+
+/* Texto completo (no truncar) */
+.cdk-overlay-container .rs-figma-select-panel .mat-mdc-option .mdc-list-item__primary-text {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: initial !important;
+  line-height: 18px !important;
+  font-size: 13px !important;
+  color: #0f172a !important;
+}
+
+/* Hover suave */
+.cdk-overlay-container .rs-figma-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Seleccionado */
+.cdk-overlay-container .rs-figma-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: rgba(18, 78, 89, 0.10) !important;
+}
+
+/* Checkbox (multi-select) */
+.cdk-overlay-container .rs-figma-select-panel .mat-pseudo-checkbox {
+  border-color: #94a3b8 !important;
+}
+
+/* Mejor padding interno del item */
+.cdk-overlay-container .rs-figma-select-panel .mdc-list-item {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}

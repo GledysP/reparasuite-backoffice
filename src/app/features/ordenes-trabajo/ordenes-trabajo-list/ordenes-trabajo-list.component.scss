@@ -1,18 +1,36 @@
 $focus-color: #124E59;
-$text-black: #000000;
-$row-hover: #f1f5f9;
+
+$rs-border: #cbd5e1;
+$rs-border-soft: #e2e8f0;
+$rs-text: #334155;
+$rs-placeholder: #94a3b8;
+$rs-label: #64748b;
+
+$rs-hover-row: #f7f7f8;
+$rs-table-divider: rgba(15, 23, 42, 0.55);
 
 .rs-page-container {
-  padding: 16px 24px; /* Reducido el padding superior para acercarlo al header */
+  padding: 16px 24px;
   background-color: #f8fafc;
   min-height: 100vh;
+}
+
+@media (max-width: 600px) {
+  .rs-page-container { padding: 12px; }
 }
 
 .rs-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px; /* Reducido el margen */
+  margin-bottom: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .rs-header-row { flex-direction: column; align-items: stretch; }
+  .btn-new-ot { width: 100%; justify-content: center; }
 }
 
 .rs-title {
@@ -23,87 +41,192 @@ $row-hover: #f1f5f9;
 }
 
 .btn-new-ot {
-  background-color: #2dd4bf !important; /* Color turquesa Figma */
-  color: white !important;
+  background-color: #2dd4bf !important;
+  color: #fff !important;
   border-radius: 6px !important;
   font-weight: 600;
   height: 36px;
 }
 
+/* Filters */
 .rs-filter-card {
   box-shadow: none !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid $rs-border-soft !important;
   border-radius: 8px !important;
   margin-bottom: 12px;
-  background-color: #ffffff !important; /* Fondo blanco */
+  background-color: #fff !important;
 
   .rs-filtros-grid {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+    display: grid;
+    gap: 12px;
+    align-items: end;
+    grid-template-columns: 160px 120px 140px 1fr auto;
   }
 }
 
-:host ::ng-deep {
-  .mat-mdc-form-field {
-    .mat-mdc-text-field-wrapper {
-      height: 36px !important; /* Más compactos */
-      border-radius: 6px !important;
-      background: white !important;
-    }
-    .mat-mdc-form-field-infix { min-height: 36px !important; padding: 6px 0 !important; }
-    
-    &.mat-focused {
-      .mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing {
-        border-color: $focus-color !important;
-        border-width: 2px !important;
-      }
-    }
-  }
-  .mat-mdc-form-field-subscript-wrapper { display: none !important; }
+@media (max-width: 960px) {
+  .rs-filter-card .rs-filtros-grid { grid-template-columns: 1fr 1fr; }
+  .rs-field-search { grid-column: 1 / -1; }
+  .btn-clear { justify-self: start; }
 }
 
-.filter-field { width: 150px; }
-.search-field { flex-grow: 1; }
+@media (max-width: 600px) {
+  .rs-filter-card .rs-filtros-grid { grid-template-columns: 1fr; }
+  .btn-clear { width: 100%; text-align: center; }
+}
+
+/* ✅ Wrapper de cada campo (para título arriba) */
+.rs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rs-field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: $rs-label;
+  letter-spacing: -0.01em;
+  line-height: 14px;
+  padding-left: 4px; /* leve como figma */
+}
+
+.filter-field { width: 100%; }
+.search-field { width: 100%; }
 
 .btn-clear {
   color: $focus-color !important;
   font-weight: 500;
   font-size: 13px;
+  height: 40px !important;
+  align-self: end;
 }
 
+/* Material input Figma */
+:host ::ng-deep {
+  .mat-mdc-form-field .mdc-text-field__ripple,
+  .mat-mdc-form-field .mdc-line-ripple {
+    display: none !important;
+    opacity: 0 !important;
+    height: 0 !important;
+  }
+
+  .mat-mdc-form-field .mdc-notched-outline {
+    display: none !important;
+  }
+
+  /* ocultamos mat-label interno para evitar duplicado */
+  .mat-mdc-form-field .mdc-floating-label {
+    display: none !important;
+  }
+
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+    height: 40px !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    border: 1px solid $rs-border !important;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-form-field .mat-mdc-form-field-infix {
+    min-height: 40px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Focus fino */
+  .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    border-color: $focus-color !important;
+    border-width: 2px !important;
+    box-shadow: none !important;
+  }
+
+  input.mat-mdc-input-element {
+    color: $rs-text !important;
+    caret-color: $focus-color !important;
+    text-align: left !important;
+    line-height: 20px !important;
+  }
+
+  input.mat-mdc-input-element::placeholder {
+    color: $rs-placeholder !important;
+    opacity: 1;
+  }
+
+  .mat-mdc-select-value,
+  .mat-mdc-select-value-text {
+    color: $rs-text !important;
+    text-align: left !important;
+  }
+
+  .mat-mdc-select-trigger {
+    height: 20px;
+    display: flex;
+    align-items: center;
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+  }
+
+  /* checkbox seleccionado (multi-select) */
+  .mat-pseudo-checkbox-checked,
+  .mat-pseudo-checkbox-indeterminate {
+    background: $focus-color !important;
+  }
+
+  .mat-pseudo-checkbox-checked::after,
+  .mat-pseudo-checkbox-indeterminate::after {
+    color: #ffffff !important;
+  }
+
+  .mat-pseudo-checkbox {
+    border-color: #94a3b8 !important;
+  }
+}
+
+/* TABLE */
 .rs-table-card {
   box-shadow: none !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid $rs-border-soft !important;
   border-radius: 8px !important;
   overflow: hidden;
-  background-color: #ffffff !important; /* Fondo blanco */
+  background-color: #fff !important;
+}
+
+.rs-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .rs-custom-table {
   width: 100%;
+  min-width: 860px;
+  background: #fff !important;
 
   th.mat-mdc-header-cell {
-    color: $text-black !important;
+    color: #000 !important;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    background: white;
-    padding: 10px 16px; /* Altura reducida */
-    border-bottom: 1px solid #f1f5f9;
+    background: #fff !important;
+    padding: 14px 16px 12px;
+    border-bottom: 2px solid $rs-table-divider !important;
   }
 
   td.mat-mdc-cell {
-    padding: 8px 16px; /* Altura reducida */
+    padding: 12px 16px;
     font-size: 13px;
     color: #475569;
-    border-bottom: 1px solid #f1f5f9;
+    background: transparent !important;
+    border-bottom: none !important;
   }
 
-  /* Efecto hover en las filas */
-  tr.mat-mdc-row:hover {
-    background-color: $row-hover !important;
-    cursor: pointer;
+  tr.mat-mdc-row:hover td.mat-mdc-cell {
+    background-color: $rs-hover-row !important;
   }
 }
 
