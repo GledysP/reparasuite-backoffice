@@ -1,0 +1,111 @@
+$rs-teal-repara: #124E59; 
+$rs-hover-gray: #f1f5f9;
+$rs-black-pure: #000000;
+$rs-border-gray: #cbd5e1;
+
+/* Evitar desbordamiento horizontal */
+.rs-dialog-content-custom {
+  max-width: 100%;
+  overflow-x: hidden !important;
+  padding: 0 24px !important;
+  margin: 0 !important;
+}
+
+.rs-dialog-title-centered {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: $rs-black-pure !important;
+  text-align: center;
+  padding: 20px 24px 10px 24px !important;
+}
+
+.rs-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 10px 0;
+  width: 100%;
+}
+
+.rs-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .rs-label-dark {
+    font-size: 11px;
+    font-weight: 700;
+    color: $rs-black-pure;
+    text-transform: uppercase;
+  }
+
+  .rs-input-white {
+    background-color: #ffffff !important; 
+    padding: 10px 12px;
+    border: 1.5px solid $rs-border-gray;
+    border-radius: 8px;
+    font-size: 14px;
+    color: $rs-black-pure;
+    width: 100%;
+    box-sizing: border-box;
+    
+    &:focus {
+      outline: none;
+      border-color: $rs-teal-repara !important;
+    }
+
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+    }
+  }
+}
+
+.rs-mat-select-fix {
+  display: flex;
+  align-items: center;
+  height: 40px;
+}
+
+/* Control total de los colores y la ALTURA del menú de Material */
+::ng-deep {
+  /* Reducimos la altura de cada opción para que no sea muy alta */
+  .mat-mdc-option {
+    min-height: 38px !important; 
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .mat-mdc-option .mdc-list-item__primary-text {
+    font-size: 14px !important;
+  }
+
+  .mat-mdc-select-panel {
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 0 !important;
+  }
+
+  /* Hover en Gris */
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+    background-color: $rs-hover-gray !important;
+  }
+
+  /* Selección en tu color Teal #124E59 */
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+    background-color: $rs-teal-repara !important;
+    .mdc-list-item__primary-text {
+      color: #ffffff !important;
+    }
+  }
+}
+
+.rs-dialog-actions {
+  padding: 12px 24px 20px 24px !important;
+  .btn-save {
+    background-color: #0d2e38 !important;
+    color: white !important;
+    font-weight: 600;
+    height: 38px;
+  }
+  .btn-cancel { color: #64748b; font-weight: 600; }
+}

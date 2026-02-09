@@ -1,27 +1,71 @@
-<div class="rs-header">
-  <h2>Usuarios</h2>
+<div class="rs-page-container">
+  <div class="rs-header-row">
+    <h2 class="rs-title">Usuarios</h2>
+    <button mat-raised-button class="btn-create" (click)="crearUsuario()">
+      <mat-icon>add</mat-icon> 
+      <span class="btn-text">Crear usuario</span>
+    </button>
+  </div>
+
+  <mat-card class="rs-table-card">
+    <mat-card-content>
+      <div class="rs-table-responsive">
+        <table mat-table [dataSource]="items" class="rs-table">
+          
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef> Nombre </th>
+            <td mat-cell *matCellDef="let row" class="fw-bold text-nowrap"> {{ row.nombre }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef> Correo electrónico </th>
+            <td mat-cell *matCellDef="let row" class="rs-text-secondary text-nowrap"> 
+              {{ row.email }} 
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="rol">
+            <th mat-header-cell *matHeaderCellDef> Rol </th>
+            <td mat-cell *matCellDef="let row"> 
+              <span class="rs-badge" [ngClass]="row.rol.toLowerCase()">
+                {{ row.rol }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="activo">
+            <th mat-header-cell *matHeaderCellDef> Activo </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-slide-toggle [checked]="row.activo" color="primary" class="rs-compact-toggle"></mat-slide-toggle>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <td mat-cell *matCellDef="let row">
+              <div class="rs-actions-container">
+                <button mat-icon-button class="rs-btn-action" (click)="verUsuario(row)" title="Ver detalle">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                
+                <button mat-icon-button class="rs-btn-action" (click)="editarUsuario(row)" title="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+
+                <button mat-icon-button class="rs-btn-action btn-delete" 
+                        *ngIf="row.rol.toLowerCase() !== 'admin'"
+                        (click)="borrarUsuario(row)" 
+                        title="Eliminar">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="rs-table-row"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>
-
-<mat-card>
-  <mat-card-content>
-    <table mat-table [dataSource]="items" class="rs-table">
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef>Nombre</th>
-        <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="rol">
-        <th mat-header-cell *matHeaderCellDef>Rol</th>
-        <td mat-cell *matCellDef="let row">{{ row.rol }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="activo">
-        <th mat-header-cell *matHeaderCellDef>Activo</th>
-        <td mat-cell *matCellDef="let row">{{ row.activo ? 'Sí' : 'No' }}</td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </mat-card-content>
-</mat-card>

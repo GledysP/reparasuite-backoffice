@@ -1,0 +1,33 @@
+<mat-dialog-content class="rs-detail-container">
+  <div class="rs-profile-header">
+    <div class="rs-avatar-circle">
+      <mat-icon>person</mat-icon>
+    </div>
+    <h2 class="rs-user-name">{{ data.nombre }}</h2>
+  </div>
+
+  <div class="rs-info-list">
+    <div class="rs-info-item">
+      <label>Email</label>
+      <span class="rs-data-text">{{ data.email }}</span>
+    </div>
+
+    <div class="rs-info-item">
+      <label>Rol</label>
+      <span class="rs-role-badge">{{ data.rol }}</span>
+    </div>
+
+    <div class="rs-info-item">
+      <label>Estado</label>
+      <span [class.status-active]="data.activo" [class.status-inactive]="!data.activo">
+        {{ data.activo ? 'Activo' : 'Inactivo' }}
+      </span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center" class="rs-detail-actions">
+  <button mat-stroked-button (click)="cerrar()" class="btn-minimal">
+    Regresar a usuarios
+  </button>
+</mat-dialog-actions>

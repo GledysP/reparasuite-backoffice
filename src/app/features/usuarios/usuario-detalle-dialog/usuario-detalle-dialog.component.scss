@@ -1,0 +1,107 @@
+$rs-teal-repara: #124E59;
+$rs-black-pure: #000000;
+$rs-gray-text: #64748b;
+$rs-border: #e2e8f0;
+
+.rs-detail-container {
+  padding: 40px 30px 20px 30px !important;
+  text-align: center;
+  overflow: hidden;
+}
+
+.rs-profile-header {
+  margin-bottom: 30px;
+
+  .rs-avatar-circle {
+    width: 80px;
+    height: 80px;
+    background-color: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+
+    mat-icon {
+      font-size: 45px;
+      width: 45px;
+      height: 45px;
+      color: $rs-teal-repara;
+    }
+  }
+
+  .rs-user-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: $rs-black-pure;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+}
+
+.rs-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 10px;
+
+  .rs-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    label {
+      font-size: 10px;
+      font-weight: 700;
+      color: $rs-gray-text;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .rs-data-text {
+      font-size: 15px;
+      color: $rs-black-pure;
+      font-weight: 500;
+    }
+
+    .rs-role-badge {
+      color: $rs-teal-repara;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .status-active { 
+      color: #10b981; 
+      font-weight: 700;
+      &::before { content: '● '; font-size: 10px; vertical-align: middle; }
+    }
+    
+    .status-inactive { 
+      color: #ef4444; 
+      font-weight: 700; 
+      &::before { content: '● '; font-size: 10px; vertical-align: middle; }
+    }
+  }
+}
+
+.rs-detail-actions {
+  padding: 0 0 40px 0 !important;
+  
+  /* Botón Minimalista Estilo 'Stroked' */
+  .btn-minimal {
+    border-color: $rs-border !important;
+    color: $rs-gray-text !important;
+    border-radius: 25px !important;
+    padding: 0 30px !important;
+    height: 40px !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: $rs-teal-repara !important;
+      color: white !important;
+      border-color: $rs-teal-repara !important;
+      box-shadow: 0 4px 12px rgba(18, 78, 89, 0.2);
+    }
+  }
+}
