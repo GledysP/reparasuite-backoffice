@@ -1,8 +1,9 @@
-/* Variables de estilo basadas en Figma */
+/* Variables de estilo */
 $rs-focus-color: #124E59; 
 $rs-primary-dark: #0d2e38;
 $rs-bg-light: #f8fafc;
 $rs-border-color: #e2e8f0;
+$rs-input-border: #cbd5e1; 
 
 .rs-page-wrapper {
   padding: 32px;
@@ -15,17 +16,15 @@ $rs-border-color: #e2e8f0;
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 24px;
-  text-align: left; /* Asegura alineación a la izquierda */
 }
 
 .rs-form-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 100%; /* Ocupa el espacio junto al sidebar */
+  width: 100%;
 }
 
-/* Estilo de las Tarjetas */
 .rs-section-card {
   background-color: #ffffff !important;
   border: 1px solid $rs-border-color !important;
@@ -36,7 +35,7 @@ $rs-border-color: #e2e8f0;
   .rs-card-title {
     font-size: 11px !important;
     font-weight: 800 !important;
-    color: #000000 !important; /* Títulos en negro solicitado */
+    color: #000000 !important; 
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 12px;
@@ -44,14 +43,25 @@ $rs-border-color: #e2e8f0;
   }
 }
 
-/* --- AJUSTE DE INPUTS Y COLOR DE FOCUS --- */
 :host ::ng-deep {
-  /* Estética compacta de los inputs */
   .mat-mdc-text-field-wrapper {
     height: 40px !important; 
     padding: 0 12px !important;
     border-radius: 6px !important;
     background-color: #ffffff !important;
+  }
+
+  /* Unificación de bordes gris suave */
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: $rs-input-border !important;
+  }
+
+  /* Eliminar la línea de la muesca */
+  .mdc-notched-outline__notch {
+    border-right: none !important;
+    border-left: none !important;
   }
 
   .mat-mdc-form-field-infix {
@@ -62,67 +72,76 @@ $rs-border-color: #e2e8f0;
     align-items: center;
   }
 
+  /* CORRECCIÓN DE ALINEACIÓN PARA SELECTS (PRIORIDAD/TÉCNICO) */
+  .mat-mdc-select-trigger {
+    text-align: left !important;
+  }
+
+  .mat-mdc-select-value {
+    display: inline-block !important; /* Rompe el flex centrado */
+    text-align: left !important;
+    width: 100% !important;
+  }
+
+  .mat-mdc-input-element {
+    text-align: left !important;
+  }
+
   .mat-mdc-form-field-label-wrapper {
     top: -16px !important;
     padding-top: 16px !important;
   }
 
-  /* ELIMINAR COLOR AZUL Y FORZAR #124E59 */
+  /* COLOR FOCUS #124E59 */
   .mat-mdc-form-field.mat-focused {
-    /* Borde de los 3 segmentos del outline */
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
     .mdc-notched-outline__trailing {
       border-color: $rs-focus-color !important;
       border-width: 2px !important;
     }
-
-    /* Color del texto del Label */
-    .mat-mdc-floating-label {
-      color: $rs-focus-color !important;
+    .mat-mdc-floating-label { 
+      color: $rs-focus-color !important; 
     }
   }
 
-  /* Quitar espacios de error para mantener minimalismo */
-  .mat-mdc-form-field-subscript-wrapper {
-    display: none !important;
-  }
+  .mat-mdc-form-field-subscript-wrapper { display: none !important; }
 }
 
-/* Distribución de elementos */
-.rs-flex-row {
+/* Layout */
+.rs-flex-row, .rs-form-grid {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
   width: 100%;
 }
 
+.flex-grow-1 { flex: 1 1 200px; }
+.flex-grow-2 { flex: 2 1 300px; }
+.rs-col-8 { flex: 2 1 400px; }
+.rs-col-12 { flex: 1 1 100%; }
+
 .rs-radio-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 32px;
+  gap: 20px;
   padding: 8px 0;
-  
-  .rs-label-text {
-    font-size: 13px;
-    color: #64748b;
-  }
+  .rs-label-text { font-size: 13px; color: #64748b; }
 }
 
-/* Área de archivos */
 .rs-dropzone {
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed $rs-input-border;
   border-radius: 8px;
   padding: 30px;
   text-align: center;
   background-color: #fafbfc;
   cursor: pointer;
-
-  .rs-dropzone-icon { font-size: 32px; width: 32px; height: 32px; color: #94a3b8; }
+  .rs-dropzone-icon { font-size: 32px; color: #94a3b8; }
   .rs-dropzone-text { font-size: 13px; color: #64748b; margin-top: 8px; }
 }
 
-/* Botones de acción */
 .rs-footer {
   display: flex;
   justify-content: flex-end;
@@ -140,20 +159,8 @@ $rs-border-color: #e2e8f0;
   font-weight: 600;
 }
 
-.btn-cancelar {
-  color: $rs-focus-color !important;
-  font-weight: 500;
-}
+.btn-cancelar { color: $rs-focus-color !important; font-weight: 500; }
+.btn-find-client { height: 40px; font-size: 12px; background-color: white !important; }
 
-.btn-find-client {
-  height: 40px;
-  border-radius: 6px !important;
-  font-size: 12px;
-  background-color: white !important;
-}
-
-/* Utilidades de ancho */
-.flex-grow-1 { flex: 1; }
-.flex-grow-2 { flex: 2; }
 .w-full { width: 100%; }
 .mt-10 { margin-top: 10px; }

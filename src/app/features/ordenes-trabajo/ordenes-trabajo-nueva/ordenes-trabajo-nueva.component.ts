@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgFor, NgIf, TitleCasePipe } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common'; // Eliminado TitleCasePipe
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,13 +20,15 @@ import { UsuariosService } from '../../usuarios/usuarios.service';
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { PrioridadOt, TipoOt } from '../../../core/models/enums';
 import { UsuarioResumen, ClienteResumen } from '../../../core/models/tipos';
+
+
 import { ClienteBuscarDialogComponent } from './cliente-buscar-dialog.component';
 
 @Component({
   selector: 'rs-ordenes-trabajo-nueva',
   standalone: true,
   imports: [
-    NgIf, NgFor, TitleCasePipe, ReactiveFormsModule,
+    NgIf, NgFor, ReactiveFormsModule, 
     MatCardModule, MatFormFieldModule, MatInputModule,
     MatRadioModule, MatSelectModule, MatButtonModule, MatDividerModule,
     MatSnackBarModule, MatIconModule, MatDialogModule, MatDatepickerModule, MatNativeDateModule
@@ -44,7 +46,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
 
   tecnicos: UsuarioResumen[] = [];
   prioridades: PrioridadOt[] = ['BAJA', 'MEDIA', 'ALTA'];
-  clienteId: string | null = null; // Para vincular cliente existente
+  clienteId: string | null = null; 
+
+  fotos: File[] = []; 
 
   form = this.fb.group({
     clienteNombre: ['', [Validators.required]],
@@ -67,6 +71,21 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
     });
   }
 
+  get selectedFileName(): string | null {
+    if (this.fotos.length === 0) return null;
+    return this.fotos.length === 1 
+      ? this.fotos[0].name 
+      : `${this.fotos.length} archivos seleccionados`;
+  }
+
+  onFileSelected(event: any) {
+    const files: FileList = event.target.files;
+    if (files.length > 0) {
+      this.fotos = Array.from(files);
+      this.snack.open(`${this.fotos.length} archivo(s) listo(s)`, 'OK', { duration: 2000 });
+    }
+  }
+
   buscarCliente() {
     const dialogRef = this.dialog.open(ClienteBuscarDialogComponent, {
       width: '500px',
@@ -75,7 +94,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((cliente: ClienteResumen) => {
       if (cliente) {
-        this.clienteId = cliente.id; // Guardamos el ID
+        this.clienteId = cliente.id; 
         this.form.patchValue({
           clienteNombre: cliente.nombre,
           clienteTelefono: cliente.telefono,
@@ -87,7 +106,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
 
   crear() {
     if (this.form.invalid) {
-      this.snack.open('Please review required fields', 'OK', { duration: 2500 });
+      this.snack.open('Por favor revisa los campos requeridos', 'OK', { duration: 2500 });
       return;
     }
 
@@ -95,7 +114,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
     
     const body = {
       cliente: {
-        id: this.clienteId, // Si existe, el backend lo asocia automáticamente
+        id: this.clienteId, 
         nombre: v.clienteNombre?.trim(),
         telefono: v.clienteTelefono?.trim() || null,
         email: v.clienteEmail?.trim() || null,
@@ -111,11 +130,11 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
 
     this.ordenes.crear(body).subscribe({
       next: (res) => {
-        this.snack.open('Order created successfully!', 'Close', { duration: 3000 });
+        this.snack.open('¡Orden creada con éxito!', 'Cerrar', { duration: 3000 });
         this.router.navigate(['/ordenes-trabajo', res.id]);
       },
       error: (err) => {
-        this.snack.open(err.error?.message || 'Error creating order', 'OK');
+        this.snack.open(err.error?.message || 'Error al crear la orden', 'OK');
       }
     });
   }

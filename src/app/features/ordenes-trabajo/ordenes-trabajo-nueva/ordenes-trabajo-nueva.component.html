@@ -1,27 +1,27 @@
 <div class="rs-page-wrapper">
-  <h2 class="rs-main-title">New Work Order</h2>
+  <h2 class="rs-main-title">Nueva Orden</h2>
 
   <form [formGroup]="form" class="rs-form-container">
     
     <mat-card class="rs-section-card">
       <mat-card-header>
-        <mat-card-title class="rs-card-title">CUSTOMER INFORMATION</mat-card-title>
+        <mat-card-title class="rs-card-title">Cliente</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="rs-flex-row">
           <button mat-stroked-button type="button" (click)="buscarCliente()" class="btn-find-client">
-            <mat-icon>search</mat-icon> Find existing customer
+            <mat-icon>search</mat-icon> Encontrar cliente existente
           </button>
           <mat-form-field appearance="outline" class="flex-grow-2">
-            <mat-label>Customer Name*</mat-label>
+            <mat-label>Nombre</mat-label>
             <input matInput formControlName="clienteNombre">
           </mat-form-field>
           <mat-form-field appearance="outline" class="flex-grow-1">
-            <mat-label>Phone</mat-label>
+            <mat-label>Telefono</mat-label>
             <input matInput formControlName="clienteTelefono">
           </mat-form-field>
           <mat-form-field appearance="outline" class="flex-grow-1">
-            <mat-label>Email (Optional)</mat-label>
+            <mat-label>Correo(Optional)</mat-label>
             <input matInput formControlName="clienteEmail">
           </mat-form-field>
         </div>
@@ -30,47 +30,66 @@
 
     <mat-card class="rs-section-card">
       <mat-card-header>
-        <mat-card-title class="rs-card-title">SERVICE DETAILS</mat-card-title>
+        <mat-card-title class="rs-card-title">DETALLES DEL SERVICIO</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="rs-radio-row">
-          <span class="rs-label-text">Service Type</span>
+          <span class="rs-label-text">Tipo de servicio</span>
           <mat-radio-group formControlName="tipo" class="rs-radio-group">
-            <mat-radio-button value="TIENDA">In-store</mat-radio-button>
-            <mat-radio-button value="DOMICILIO">On-site</mat-radio-button>
+            <mat-radio-button value="TIENDA">En tienda</mat-radio-button>
+            <mat-radio-button value="DOMICILIO">En sitio</mat-radio-button>
           </mat-radio-group>
         </div>
       </mat-card-content>
+      
+      <div class="rs-form-grid" style="margin-top: 12px;" *ngIf="form.value.tipo === 'DOMICILIO'">
+        <mat-form-field appearance="outline" class="rs-col-8">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-grow-1">
+          <mat-label>Fecha prevista</mat-label>
+          <input matInput [matDatepicker]="pickerPrevista" formControlName="fechaPrevista">
+          <mat-datepicker-toggle matSuffix [for]="pickerPrevista"></mat-datepicker-toggle>
+          <mat-datepicker #pickerPrevista></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rs-col-12">
+          <mat-label>Notas de acceso</mat-label>
+          <input matInput formControlName="notasAcceso" />
+        </mat-form-field>
+      </div>
     </mat-card>
 
     <mat-card class="rs-section-card">
       <mat-card-header>
-        <mat-card-title class="rs-card-title">JOB DETAILS</mat-card-title>
+        <mat-card-title class="rs-card-title">DETALLES DEL TRABAJO</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Issue Description*</mat-label>
+          <mat-label>Descripción del problema</mat-label>
           <textarea matInput rows="3" formControlName="descripcion"></textarea>
         </mat-form-field>
         
         <div class="rs-flex-row mt-10">
           <mat-form-field appearance="outline" class="flex-grow-1">
-            <mat-label>Priority*</mat-label>
+            <mat-label>Prioridad</mat-label>
             <mat-select formControlName="prioridad">
               <mat-option *ngFor="let p of prioridades" [value]="p">{{p}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline" class="flex-grow-2">
-            <mat-label>Assign Technician</mat-label>
+            <mat-label>Asignar técnico</mat-label>
             <mat-select formControlName="tecnicoId">
               <mat-option *ngFor="let t of tecnicos" [value]="t.id">{{t.nombre}}</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline" class="flex-grow-1">
-            <mat-label>Scheduled Date</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="fechaPrevista">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <mat-label>Fecha programada</mat-label>
+            <input matInput [matDatepicker]="pickerProg" formControlName="fechaPrevista">
+            <mat-datepicker-toggle matSuffix [for]="pickerProg"></mat-datepicker-toggle>
+            <mat-datepicker #pickerProg></mat-datepicker>
           </mat-form-field>
         </div>
       </mat-card-content>
@@ -78,12 +97,16 @@
 
     <mat-card class="rs-section-card">
       <mat-card-header>
-        <mat-card-title class="rs-card-title">PHOTOS / ATTACHMENTS</mat-card-title>
+        <mat-card-title class="rs-card-title">FOTOS / ADJUNTOS</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="rs-dropzone">
+        <div class="rs-dropzone" (click)="fileInput.click()">
+          <input #fileInput type="file" style="display:none" (change)="onFileSelected($event)" accept="image/*" multiple>
           <mat-icon class="rs-dropzone-icon">cloud_upload</mat-icon>
-          <p class="rs-dropzone-text">Click to upload</p>
+          <p class="rs-dropzone-text" *ngIf="!selectedFileName">Clic para cargar</p>
+          <p *ngIf="selectedFileName" class="rs-dropzone-text" style="color: #124E59; font-weight: 600;">
+            {{ selectedFileName }}
+          </p>
         </div>
       </mat-card-content>
     </mat-card>
@@ -91,7 +114,7 @@
     <div class="rs-footer">
       <button mat-button type="button" (click)="cancelar()" class="btn-cancelar">Cancel</button>
       <button mat-raised-button class="btn-guardar" type="button" (click)="crear()">
-        Create Work Order
+        Crear orden de trabajo
       </button>
     </div>
   </form>
