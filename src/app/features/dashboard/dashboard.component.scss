@@ -1,7 +1,8 @@
 $row-hover: #f1f5f9;
+$rs-border-light: #e2e8f0;
 
 .rs-dashboard-container {
-  padding: 16px 24px; /* Misma distancia que Work Orders */
+  padding: 16px 24px;
   background-color: #f8fafc;
   min-height: 100vh;
 }
@@ -9,10 +10,11 @@ $row-hover: #f1f5f9;
 .rs-page-title {
   font-size: 24px;
   font-weight: 700;
-  margin: 0 0 20px 0; /* Sin margen superior para subir el contenido */
+  margin: 0 0 20px 0;
   color: #0f172a;
 }
 
+/* KPIs (Igual que antes) */
 .rs-kpi-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -22,35 +24,13 @@ $row-hover: #f1f5f9;
 
 .rs-kpi-card {
   box-shadow: none !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid $rs-border-light !important;
   border-radius: 12px !important;
   padding: 16px !important;
-  background: #ffffff !important; /* Blanco puro */
-
-  .kpi-main {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .kpi-value {
-    font-size: 36px;
-    font-weight: 700;
-    line-height: 1;
-    color: #0f172a;
-  }
-
-  .kpi-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .kpi-label {
-    font-size: 11px;
-    color: #94a3b8;
-    font-weight: 500;
-  }
+  background: #ffffff !important;
+  .kpi-main { display: flex; align-items: flex-start; gap: 12px; }
+  .kpi-value { font-size: 36px; font-weight: 700; color: #0f172a; }
+  .kpi-label { font-size: 11px; color: #94a3b8; font-weight: 500; }
 }
 
 .status-badge {
@@ -72,52 +52,83 @@ $row-hover: #f1f5f9;
 
 .rs-content-card {
   box-shadow: none !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid $rs-border-light !important;
   border-radius: 12px !important;
-  padding: 20px !important;
-  background: #ffffff !important; /* Blanco puro */
+  background: #ffffff !important;
+  padding: 0 !important; // Quitamos padding general para que la tabla toque bordes
+  
+  .mat-mdc-card-content {
+    padding: 0 !important;
+  }
 
   .card-section-title {
     font-size: 14px;
     font-weight: 700;
-    margin-bottom: 20px;
+    padding: 20px 20px 10px 20px; // Padding solo al título
+    margin: 0;
     color: #0f172a;
   }
+}
+
+/* ===== TABLA DEFINITIVA (BORDE A BORDE) ===== */
+.rs-table-full-width {
+  width: 100%;
+  overflow: hidden;
+}
+
+.rs-table-responsive {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .rs-dashboard-table {
   width: 100%;
   background: transparent;
+  border-collapse: collapse;
 
-  th { font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; padding: 12px 8px; }
-  td { font-size: 12px; padding: 12px 8px; border-bottom: 1px solid #f1f5f9; }
+  th.mat-mdc-header-cell { 
+    font-size: 11px; 
+    font-weight: 600; 
+    color: #64748b; 
+    text-transform: uppercase; 
+    padding: 16px 20px; 
+    background-color: #ffffff;
+    border-bottom: 1px solid $rs-border-light; // Línea igual a Usuarios
+  }
   
-  /* Efecto Hover en las filas */
-  tr.mat-mdc-row:hover {
-    background-color: $row-hover !important;
-    cursor: pointer;
+  td.mat-mdc-cell { 
+    font-size: 13px; 
+    padding: 12px 20px; 
+    color: #0f172a;
+    border-bottom: 1px solid rgba(0,0,0,0.03) !important; // Línea sutil igual a Usuarios
+  }
+  
+  .rs-table-row {
+    transition: background-color 0.2s ease;
+    &:hover { background-color: $row-hover !important; }
+    &:last-child td.mat-mdc-cell { border-bottom: none !important; }
   }
 
   .bold-text { font-weight: 700; color: #0f172a; }
 }
 
+/* Sidebar (Igual que antes) */
 .actions-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding: 0 20px 20px 20px;
   button {
     height: 40px;
     border-radius: 8px !important;
     font-weight: 600;
-    font-size: 13px;
-    justify-content: flex-start;
   }
   .btn-primary-action { background-color: #2dd4bf !important; color: white !important; }
   .btn-secondary-action { color: #124E59 !important; border-color: #e2e8f0 !important; }
 }
 
 .status-badge-table {
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 6px;
   font-size: 10px;
   font-weight: 700;
@@ -125,4 +136,4 @@ $row-hover: #f1f5f9;
   &[data-status="RECIBIDA"] { background: #f1f5f9; color: #475569; }
 }
 
-.action-icon { font-size: 18px; color: #94a3b8; }
+.rs-btn-action { color: #94a3b8; }

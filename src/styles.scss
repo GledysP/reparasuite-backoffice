@@ -12,30 +12,60 @@
 }
 
 /* 3. BASE DEL DOCUMENTO */
-html, body { 
-  height: 100%; 
-  margin: 0; 
-  // Añadimos fallbacks por si la fuente falla
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; 
-  background-color: #f6f8fb; 
+html, body {
+  height: 100%;
+  margin: 0;
+
+  /* Inter con fallbacks */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  background-color: #f6f8fb;
   color: #1e293b;
-  font-size: 15px; // Tamaño base profesional
-  
-  /* MEJORA DE NITIDEZ (Importante para que no se vean feas) */
+
+  /* ✅ Más cómodo para toda la app */
+  font-size: 16px;
+  line-height: 1.45;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
 /* 4. TIPOGRAFÍA PARA COMPONENTES DE MATERIAL */
-.mat-typography, .mat-mdc-button, .mat-mdc-card, .mat-mdc-tab-link, .mdc-list-item__primary-text {
+.mat-typography,
+.mat-mdc-button,
+.mat-mdc-card,
+.mat-mdc-tab-link,
+.mdc-list-item__primary-text,
+.mat-mdc-form-field,
+.mat-mdc-select,
+.mat-mdc-input-element,
+.mat-mdc-table,
+.mat-mdc-paginator {
   font-family: 'Inter', sans-serif !important;
-  letter-spacing: -0.01em; // Toque moderno e innovador
+  letter-spacing: -0.01em;
+}
+
+/* ✅ Ajuste de tamaños Material (global) */
+.mat-mdc-button,
+.mat-mdc-outlined-button,
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button {
+  font-size: 13px !important;
+}
+
+.mat-mdc-form-field .mdc-floating-label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+.mat-mdc-input-element,
+.mat-mdc-select-value-text {
+  font-size: 13px !important;
 }
 
 /* 5. ESTRUCTURA Y CONTENEDORES (Utilidades RS) */
 .rs-container { height: 100vh; }
-.rs-page { padding: 32px; } // Un poco más de aire
+.rs-page { padding: 32px; }
 .rs-spacer { flex: 1 1 auto; }
 .rs-full { width: 100%; }
 
@@ -62,11 +92,11 @@ html, body {
 .rs-span-6 { grid-column: span 6; }
 .rs-span-12 { grid-column: span 12; }
 
-@media (max-width: 1024px) { 
-  .rs-grid { grid-template-columns: repeat(6, 1fr); } 
+@media (max-width: 1024px) {
+  .rs-grid { grid-template-columns: repeat(6, 1fr); }
 }
-@media (max-width: 640px) { 
-  .rs-grid { grid-template-columns: repeat(4, 1fr); } 
+@media (max-width: 640px) {
+  .rs-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 /* 7. SISTEMA DE FORMULARIOS */
@@ -95,30 +125,26 @@ html, body {
 }
 
 /* 9. ADAPTACIÓN VISUAL FIGMA (Work Orders) */
+$rs-primary-petroleo: #1a4b5d;
 
-// Variable para el color azul petróleo oscuro de los botones en Figma
-$rs-primary-petroleo: #1a4b5d; 
-
-// Contenedor principal con el espaciado entre secciones de Figma
 .rs-form-container {
   display: flex;
   flex-direction: column;
-  gap: 24px; // Espacio exacto entre las "cards" de información
+  gap: 24px;
   padding-bottom: 40px;
 }
 
-// Estilo para las secciones (Cards) para que no parezcan tarjetas genéricas
 .rs-form-section {
   background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important; // Borde sutil en lugar de sombras pesadas
+  border: 1px solid #e2e8f0 !important;
   border-radius: 8px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important; // Sombra casi imperceptible de Figma
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 
   mat-card-header {
     padding: 16px 20px 0;
     mat-card-title {
       font-size: 16px !important;
-      font-weight: 700 !important; // Títulos en negrita como en el diseño
+      font-weight: 700 !important;
       color: #0f172a;
       letter-spacing: -0.02em;
     }
@@ -129,7 +155,6 @@ $rs-primary-petroleo: #1a4b5d;
   }
 }
 
-// Clase para los botones de acción principal (Create / Select)
 .rs-btn-petroleo {
   background-color: $rs-primary-petroleo !important;
   color: white !important;
@@ -139,18 +164,14 @@ $rs-primary-petroleo: #1a4b5d;
   height: 40px !important;
 }
 
-// Ajuste para que el diálogo (modal) tenga las esquinas redondeadas de Figma
 .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 12px !important;
 }
 
-
 /* =========================
    FIX GLOBAL: eliminar “línea” en mat-form-field outlined (MDC)
-   (proviene del ripple interno del text-field)
 ========================= */
 .mat-mdc-form-field {
-  /* quita subrayado/ripple interno que a veces se ve como una línea */
   .mdc-text-field__ripple,
   .mdc-line-ripple {
     display: none !important;
@@ -167,10 +188,8 @@ $rs-primary-petroleo: #1a4b5d;
   }
 }
 
-
 /* =========================
    FIGMA DROPDOWN (mat-select overlay)
-   Aplica a los selects con panelClass="rs-figma-select-panel"
 ========================= */
 .cdk-overlay-container .rs-figma-select-panel.mat-mdc-select-panel {
   background: #ffffff !important;
@@ -178,22 +197,18 @@ $rs-primary-petroleo: #1a4b5d;
   border-radius: 12px !important;
   padding: 8px !important;
 
-  /* Más ancho para ver todo el contenido */
   min-width: 320px !important;
   max-width: 520px !important;
 
-  /* Sombra tipo Figma */
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18) !important;
 }
 
-/* Opciones */
 .cdk-overlay-container .rs-figma-select-panel .mat-mdc-option {
   border-radius: 10px !important;
   margin: 4px 0 !important;
   min-height: 42px !important;
 }
 
-/* Texto completo (no truncar) */
 .cdk-overlay-container .rs-figma-select-panel .mat-mdc-option .mdc-list-item__primary-text {
   white-space: normal !important;
   overflow: visible !important;
@@ -203,23 +218,65 @@ $rs-primary-petroleo: #1a4b5d;
   color: #0f172a !important;
 }
 
-/* Hover suave */
 .cdk-overlay-container .rs-figma-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
   background: rgba(15, 23, 42, 0.04) !important;
 }
 
-/* Seleccionado */
 .cdk-overlay-container .rs-figma-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
   background: rgba(18, 78, 89, 0.10) !important;
 }
 
-/* Checkbox (multi-select) */
 .cdk-overlay-container .rs-figma-select-panel .mat-pseudo-checkbox {
   border-color: #94a3b8 !important;
 }
 
-/* Mejor padding interno del item */
 .cdk-overlay-container .rs-figma-select-panel .mdc-list-item {
   padding-left: 12px !important;
   padding-right: 12px !important;
+}
+
+
+/* --- ESTILOS GLOBALES PARA INPUTS REPARA SUITE --- */
+
+// Color de marca
+$rs-brand-focus: #124E59; 
+
+.mat-mdc-form-field {
+  width: 100%;
+  
+  // Quitamos la estructura de "caja" por defecto de Material
+  .mdc-notched-outline { display: none !important; }
+  
+  .mat-mdc-text-field-wrapper {
+    background-color: white !important;
+    border: 1px solid #E2E8F0 !important; // Slate-200
+    border-radius: 8px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    
+    // EFECTO HOVER GLOBAL
+    &:hover { 
+      border-color: #94A3B8 !important; // Slate-400
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+  }
+
+  // EFECTO FOCUS GLOBAL (Al hacer clic)
+  &.mat-focused .mat-mdc-text-field-wrapper {
+    border: 2px solid $rs-brand-focus !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(18, 78, 89, 0.1) !important;
+  }
+
+  // Centrado de texto interno
+  .mat-mdc-form-field-infix {
+    padding: 0 12px !important;
+    min-height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  // Ocultar línea de error vacía para que no ocupe espacio si no se usa
+  .mat-mdc-form-field-subscript-wrapper { display: none; }
+  &.mat-form-field-invalid .mat-mdc-form-field-subscript-wrapper { display: block; }
 }

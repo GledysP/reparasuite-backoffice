@@ -1,116 +1,96 @@
 $brand-teal: #124E59; 
 $slate-200: #E2E8F0;
 $slate-50: #F8FAFC;
+$rs-line-soft: rgba(0, 0, 0, 0.03); // Línea sutil de referencia
 
 .rs-page-container { padding: 16px 24px; }
 
-h2 { font-size: 24px; font-weight: 700; margin: 0 0 16px 0; color: #0F172A; }
+.rs-page-title { 
+  font-size: 24px; 
+  font-weight: 700; 
+  margin: 0 0 16px 0; 
+  color: #0F172A; 
+}
 
 .rs-card-white {
-    background: #FFFFFF !important;
-    border: 1px solid $slate-200;
-    box-shadow: none !important;
-    border-radius: 8px;
-    margin-bottom: 12px;
+  background: #FFFFFF !important;
+  border: 1px solid $slate-200;
+  box-shadow: none !important;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
 }
 
+/* Buscador (Se mantiene igual) */
 .rs-search-field {
-    width: 100%;
-
-    ::ng-deep {
-        // Eliminamos las capas que causan el color azul y el grosor excesivo de Material
-        .mdc-notched-outline, 
-        .mdc-line-ripple,
-        .mat-mdc-form-field-focus-indicator {
-            display: none !important;
-        }
-
-        .mat-mdc-text-field-wrapper { 
-            height: 40px !important; 
-            border-radius: 8px !important; 
-            border: 1px solid $slate-200 !important; 
-            background-color: white !important;
-            box-shadow: none !important;
-            padding: 0 12px !important;
-            display: flex !important;
-            align-items: center !important;
-            transition: all 0.2s ease;
-        }
-
-        // Centrado vertical del texto y placeholder
-        .mat-mdc-form-field-infix {
-            padding: 0 !important;
-            min-height: 40px !important;
-            display: flex !important;
-            align-items: center !important;
-        }
-
-        .mat-mdc-input-element {
-            margin: 0 !important;
-            padding: 0 !important;
-            line-height: normal !important;
-        }
+  width: 100%;
+  ::ng-deep {
+    .mdc-notched-outline, .mdc-line-ripple, .mat-mdc-form-field-focus-indicator { display: none !important; }
+    .mat-mdc-text-field-wrapper { 
+      height: 40px !important; 
+      border-radius: 8px !important; 
+      border: 1px solid $slate-200 !important; 
+      background-color: white !important;
+      padding: 0 12px !important;
     }
-
-    // FOCUS VERDE (2px para que el color #124E59 se aprecie claramente)
-    &.mat-focused {
-        ::ng-deep .mat-mdc-text-field-wrapper {
-            border: 2px solid $brand-teal !important; // Grosor suficiente para ver el color
-            outline: none !important;
-        }
-    }
-
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none !important; }
-    mat-icon { color: #94A3B8; }
+  }
+  &.mat-focused { ::ng-deep .mat-mdc-text-field-wrapper { border: 2px solid $brand-teal !important; } }
 }
 
-/* TABLA - Se mantiene igual con el hover suave */
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
+/* ===== TABLA UNIFICADA ===== */
+.rs-table-full-width { width: 100%; }
 
 .rs-table {
-    width: 100%;
-    min-width: 900px;
-    background: white;
+  width: 100%;
+  background: white;
+  border-collapse: collapse;
 
-    tr.mat-mdc-row:hover {
-        background-color: $slate-50 !important;
-    }
+  th.mat-mdc-header-cell {
+    color: #64748B !important;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid $slate-200; 
+  }
 
-    th.mat-mdc-header-cell {
-        color: #000000 !important;
-        font-weight: 700;
-        font-size: 13px;
-        border-bottom: 1px solid $slate-200;
-        padding: 0 16px !important;
-    }
+  td.mat-mdc-cell {
+    padding: 12px 20px !important;
+    font-size: 13px;
+    color: #0F172A;
+    border-bottom: 1px solid $rs-line-soft !important; // Línea clara
+  }
 
-    td.mat-mdc-cell {
-        border-bottom: none !important;
-        padding: 8px 16px !important;
-        font-size: 13px;
-    }
+  .rs-table-row {
+    transition: background-color 0.2s ease;
+    &:hover { background-color: $slate-50 !important; }
+    // Quitamos la línea de la última fila para que no se sume a la del paginador
+    &:last-child td.mat-mdc-cell { border-bottom: none !important; }
+  }
 
-    .mat-column-nombre   { width: 25%; }
-    .mat-column-telefono { width: 15%; }
-    .mat-column-email    { width: 25%; }
-    .mat-column-totalWos { width: 10%; }
-    .mat-column-lastWoDate { width: 15%; }
-    .mat-column-accion   { width: 10%; }
+  .fw-bold { font-weight: 700; color: #0F172A; }
+  .cell-center { text-align: center !important; }
+  .cell-right { text-align: right !important; }
+}
 
-    .cell-center { text-align: center !important; }
-    .cell-right { text-align: right !important; }
-    .text-muted { color: #64748B; }
+/* ===== PAGINADOR CORREGIDO ===== */
+::ng-deep .mat-mdc-paginator.rs-custom-paginator {
+  background: transparent !important;
+  /* Aquí forzamos que la línea sea del mismo color sutil que la tabla */
+  border-top: 1px solid $rs-line-soft !important; 
+  
+  .mat-mdc-paginator-container {
+    min-height: 48px !important;
+    padding: 0 10px !important;
+  }
 }
 
 .action-btns {
-    display: flex;
-    justify-content: flex-end;
-    button { color: #94A3B8; }
-    .del-btn:hover { color: #EF4444; }
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  .rs-btn-action { color: #94A3B8; }
+  .del-btn:hover { color: #EF4444 !important; }
 }
 
 .no-padding { padding: 0 !important; }

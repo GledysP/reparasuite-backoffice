@@ -1,10 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
+// Angular Material
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon'; // <--- Importante añadir este
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AjustesService } from '../ajustes.service';
@@ -14,7 +16,11 @@ import { AjustesService } from '../ajustes.service';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule,
+    MatCardModule, 
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatButtonModule,
+    MatIconModule, // <--- Y registrarlo aquí
     MatSnackBarModule
   ],
   templateUrl: './ajustes-taller.component.html',

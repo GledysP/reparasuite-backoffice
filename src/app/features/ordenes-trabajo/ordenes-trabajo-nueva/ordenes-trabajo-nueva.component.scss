@@ -1,166 +1,391 @@
-/* Variables de estilo */
-$rs-focus-color: #124E59; 
+$rs-focus-color: #124E59;
 $rs-primary-dark: #0d2e38;
 $rs-bg-light: #f8fafc;
 $rs-border-color: #e2e8f0;
-$rs-input-border: #cbd5e1; 
+$rs-input-border: #cbd5e1;
+
+$rs-text: #334155;
+$rs-muted: #64748b;
 
 .rs-page-wrapper {
-  padding: 32px;
+  padding: 16px 24px;
   background-color: $rs-bg-light;
   min-height: 100vh;
+  font-family: inherit;
+}
+
+@media (max-width: 600px) {
+  .rs-page-wrapper { padding: 12px; }
+}
+
+.rs-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
 .rs-main-title {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: #0f172a;
-  margin-bottom: 24px;
+  margin: 0;
+  font-family: inherit;
+}
+
+.btn-cancelar-top {
+  height: 38px;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
 }
 
 .rs-form-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
+  font-family: inherit;
 }
 
 .rs-section-card {
   background-color: #ffffff !important;
   border: 1px solid $rs-border-color !important;
   box-shadow: none !important;
-  border-radius: 8px !important;
-  padding: 12px 20px !important;
+  border-radius: 12px !important;
+  padding: 6px 16px 14px !important;
+
+  mat-card-header { padding: 10px 0 0 !important; }
+  mat-card-content { padding: 12px 0 0 !important; }
 
   .rs-card-title {
     font-size: 11px !important;
     font-weight: 800 !important;
-    color: #000000 !important; 
+    color: #0f172a !important;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 12px;
-    display: block;
+    letter-spacing: 0.08em;
+    margin: 0 !important;
   }
 }
 
-:host ::ng-deep {
-  .mat-mdc-text-field-wrapper {
-    height: 40px !important; 
-    padding: 0 12px !important;
-    border-radius: 6px !important;
-    background-color: #ffffff !important;
-  }
-
-  /* Unificación de bordes gris suave */
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    border-color: $rs-input-border !important;
-  }
-
-  /* Eliminar la línea de la muesca */
-  .mdc-notched-outline__notch {
-    border-right: none !important;
-    border-left: none !important;
-  }
-
-  .mat-mdc-form-field-infix {
-    min-height: 40px !important;
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
-    display: flex;
-    align-items: center;
-  }
-
-  /* CORRECCIÓN DE ALINEACIÓN PARA SELECTS (PRIORIDAD/TÉCNICO) */
-  .mat-mdc-select-trigger {
-    text-align: left !important;
-  }
-
-  .mat-mdc-select-value {
-    display: inline-block !important; /* Rompe el flex centrado */
-    text-align: left !important;
-    width: 100% !important;
-  }
-
-  .mat-mdc-input-element {
-    text-align: left !important;
-  }
-
-  .mat-mdc-form-field-label-wrapper {
-    top: -16px !important;
-    padding-top: 16px !important;
-  }
-
-  /* COLOR FOCUS #124E59 */
-  .mat-mdc-form-field.mat-focused {
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      border-color: $rs-focus-color !important;
-      border-width: 2px !important;
-    }
-    .mat-mdc-floating-label { 
-      color: $rs-focus-color !important; 
-    }
-  }
-
-  .mat-mdc-form-field-subscript-wrapper { display: none !important; }
-}
-
-/* Layout */
-.rs-flex-row, .rs-form-grid {
-  display: flex;
-  flex-wrap: wrap;
+/* =========================
+   GRID RESPONSIVE
+========================= */
+.rs-form-grid,
+.rs-grid-client,
+.rs-grid-work {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
   gap: 12px;
-  align-items: center;
+  align-items: end;
   width: 100%;
 }
 
-.flex-grow-1 { flex: 1 1 200px; }
-.flex-grow-2 { flex: 2 1 300px; }
-.rs-col-8 { flex: 2 1 400px; }
-.rs-col-12 { flex: 1 1 100%; }
+.rs-span-3 { grid-column: span 3; }
+.rs-span-6 { grid-column: span 6; }
+.rs-span-8 { grid-column: span 8; }
+.rs-span-12 { grid-column: span 12; }
 
+@media (max-width: 1024px) {
+  .rs-form-grid, .rs-grid-client, .rs-grid-work { grid-template-columns: repeat(6, 1fr); }
+  .rs-span-3 { grid-column: span 3; }
+  .rs-span-6 { grid-column: span 6; }
+  .rs-span-8 { grid-column: span 6; }
+  .rs-span-12 { grid-column: span 6; }
+}
+
+@media (max-width: 640px) {
+  .rs-form-grid, .rs-grid-client, .rs-grid-work { grid-template-columns: repeat(4, 1fr); }
+  .rs-span-3, .rs-span-6, .rs-span-8, .rs-span-12 { grid-column: span 4; }
+}
+
+/* =========================
+   TITULOS ARRIBA (Figma)
+========================= */
+.rs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rs-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: $rs-muted;
+  letter-spacing: -0.01em;
+  line-height: 14px;
+  padding-left: 4px;
+}
+
+.rs-actions-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.btn-find-client {
+  height: 40px;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  background-color: #fff !important;
+}
+
+@media (max-width: 640px) {
+  .btn-find-client { width: 100%; justify-content: center; }
+}
+
+/* =========================
+   RADIO
+========================= */
 .rs-radio-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 20px;
-  padding: 8px 0;
-  .rs-label-text { font-size: 13px; color: #64748b; }
+  gap: 14px;
+  padding: 6px 0;
+
+  .rs-label-text {
+    font-size: 13px;
+    font-weight: 800;
+    color: $rs-muted;
+  }
 }
 
-.rs-dropzone {
-  border: 1px dashed $rs-input-border;
-  border-radius: 8px;
-  padding: 30px;
-  text-align: center;
-  background-color: #fafbfc;
-  cursor: pointer;
-  .rs-dropzone-icon { font-size: 32px; color: #94a3b8; }
-  .rs-dropzone-text { font-size: 13px; color: #64748b; margin-top: 8px; }
+.rs-radio-group {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
+.rs-w-full { width: 100%; }
+.rs-mt-12 { margin-top: 12px; }
+
+/* =========================
+   FOOTER
+========================= */
 .rs-footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 24px;
-  padding-bottom: 40px;
+  margin-top: 6px;
+  padding-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .rs-footer { flex-direction: column; }
+  .btn-guardar, .btn-cancelar { width: 100%; }
 }
 
 .btn-guardar {
   background-color: $rs-primary-dark !important;
   color: white !important;
-  border-radius: 6px !important;
-  padding: 0 24px !important;
+  border-radius: 10px !important;
+  padding: 0 22px !important;
   height: 40px;
-  font-weight: 600;
+  font-weight: 900 !important;
 }
 
-.btn-cancelar { color: $rs-focus-color !important; font-weight: 500; }
-.btn-find-client { height: 40px; font-size: 12px; background-color: white !important; }
+.btn-cancelar {
+  color: $rs-focus-color !important;
+  font-weight: 900 !important;
+  border-radius: 10px !important;
+}
 
-.w-full { width: 100%; }
-.mt-10 { margin-top: 10px; }
+/* =========================
+   DROPZONE (Figma/minimal)
+========================= */
+.rs-dropzone {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  border: 1px dashed $rs-input-border;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+
+  &:hover {
+    background: #f6f8fb;
+    border-color: rgba(18, 78, 89, 0.35);
+  }
+}
+
+.rs-dropzone-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #94a3b8;
+}
+
+.rs-dropzone-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rs-dropzone-title {
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 18px;
+}
+
+.rs-dropzone-sub {
+  font-size: 12px;
+  color: $rs-muted;
+  margin-top: 2px;
+
+  .rs-link {
+    color: $rs-focus-color;
+    font-weight: 900;
+  }
+}
+
+.rs-dropzone-count {
+  font-size: 12px;
+  color: $rs-focus-color;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* Lista de archivos */
+.rs-files {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rs-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  border: 1px solid $rs-border-color;
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+}
+
+.rs-file-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.rs-file-ic { color: #94a3b8; }
+
+.rs-file-meta { min-width: 0; }
+
+.rs-file-name {
+  font-size: 13px;
+  font-weight: 900;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 520px;
+}
+
+.rs-file-size {
+  font-size: 11px;
+  color: $rs-muted;
+  margin-top: 2px;
+}
+
+.rs-file-remove {
+  color: #94a3b8;
+  &:hover { color: $rs-focus-color; }
+}
+
+.rs-clear-files {
+  align-self: flex-start;
+  color: $rs-focus-color !important;
+  font-weight: 900 !important;
+  padding: 0 !important;
+}
+
+/* =========================
+   MATERIAL FORM FIELDS
+========================= */
+:host ::ng-deep {
+  .mat-mdc-form-field { width: 100%; font-family: inherit !important; }
+
+  /* elimina ripple interno */
+  .mat-mdc-form-field .mdc-text-field__ripple,
+  .mat-mdc-form-field .mdc-line-ripple {
+    display: none !important;
+    opacity: 0 !important;
+    height: 0 !important;
+  }
+
+  /* ocultamos outline notched para usar border del wrapper */
+  .mat-mdc-form-field .mdc-notched-outline { display: none !important; }
+
+  .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+    height: 40px !important;
+    border-radius: 10px !important;
+    background: #fff !important;
+    border: 1px solid $rs-input-border !important;
+    box-sizing: border-box;
+    font-family: inherit !important;
+  }
+
+  .mat-mdc-form-field .mat-mdc-form-field-infix {
+    min-height: 40px !important;
+    padding: 10px 12px !important;
+    display: flex;
+    align-items: center;
+    font-family: inherit !important;
+  }
+
+  /* texto input */
+  input.mat-mdc-input-element {
+    font-family: inherit !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: $rs-text !important;
+    line-height: 20px !important;
+  }
+
+  /* textarea */
+  textarea.mat-mdc-input-element {
+    font-family: inherit !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: $rs-text !important;
+  }
+
+  /* select */
+  .mat-mdc-select-trigger {
+    display: flex;
+    align-items: center;
+    height: 20px;
+  }
+
+  .mat-mdc-select-value,
+  .mat-mdc-select-value-text {
+    font-family: inherit !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: $rs-text !important;
+  }
+
+  /* como usamos label externo, ocultamos el floating label visual */
+  .mat-mdc-floating-label {
+    display: none !important;
+  }
+
+  /* focus #124E59 */
+  .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    border-color: $rs-focus-color !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 2px rgba(18, 78, 89, 0.08) !important;
+  }
+
+  .mat-mdc-form-field-subscript-wrapper { display: none !important; }
+}

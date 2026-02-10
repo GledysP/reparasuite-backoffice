@@ -6,119 +6,121 @@
       <div class="kpi-main">
         <span class="kpi-value">{{ stats.received }}</span>
         <div class="kpi-info">
-          <span class="kpi-label">Received</span>
-          <span class="status-badge received">Received</span>
+          <span class="kpi-label">Recibido</span>
+          <span class="status-badge received">Recibido</span>
         </div>
       </div>
     </mat-card>
-
     <mat-card class="rs-kpi-card">
       <div class="kpi-main">
         <span class="kpi-value">{{ stats.quotation }}</span>
         <div class="kpi-info">
-          <span class="kpi-label">Quotation</span>
-          <span class="status-badge quotation">Quotation</span>
+          <span class="kpi-label">Cotización</span>
+          <span class="status-badge quotation">Cotización</span>
         </div>
       </div>
     </mat-card>
-
     <mat-card class="rs-kpi-card">
       <div class="kpi-main">
         <span class="kpi-value">{{ stats.inProgress }}</span>
         <div class="kpi-info">
-          <span class="kpi-label">In Progress</span>
-          <span class="status-badge in-progress">In progress</span>
+          <span class="kpi-label">En proceso</span>
+          <span class="status-badge in-progress">En proceso</span>
         </div>
       </div>
     </mat-card>
-
     <mat-card class="rs-kpi-card">
       <div class="kpi-main">
         <span class="kpi-value">{{ stats.completed }}</span>
         <div class="kpi-info">
-          <span class="kpi-label">Completed</span>
-          <span class="status-badge completed">Completed</span>
+          <span class="kpi-label">Completado</span>
+          <span class="status-badge completed">Completado</span>
         </div>
       </div>
     </mat-card>
-
     <mat-card class="rs-kpi-card no-badge">
       <div class="kpi-main">
         <span class="kpi-value">{{ stats.today }}</span>
-        <div class="kpi-info"><span class="kpi-label">Today</span></div>
+        <div class="kpi-info"><span class="kpi-label">Hoy</span></div>
       </div>
     </mat-card>
-
     <mat-card class="rs-kpi-card no-badge">
       <div class="kpi-main">
         <span class="kpi-value">{{ stats.overdue }}</span>
-        <div class="kpi-info"><span class="kpi-label">Overdue</span></div>
+        <div class="kpi-info"><span class="kpi-label">Vencido</span></div>
       </div>
     </mat-card>
   </div>
 
   <div class="rs-dashboard-main-content">
     <mat-card class="rs-content-card table-section">
-      <h3 class="card-section-title">Recent Work Orders</h3>
-      <table mat-table [dataSource]="recentOrders" class="rs-dashboard-table">
-        <ng-container matColumnDef="codigo">
-          <th mat-header-cell *matHeaderCellDef>WO #</th>
-          <td mat-cell *matCellDef="let row" class="bold-text">{{ row.codigo }}</td>
-        </ng-container>
+      <mat-card-content>
+        <h3 class="card-section-title">Órdenes de trabajo recientes</h3>
+        
+        <div class="rs-table-full-width">
+          <div class="rs-table-responsive">
+            <table mat-table [dataSource]="recentOrders" class="rs-dashboard-table">
+              <ng-container matColumnDef="codigo">
+                <th mat-header-cell *matHeaderCellDef>OT #</th>
+                <td mat-cell *matCellDef="let row" class="bold-text">{{ row.codigo }}</td>
+              </ng-container>
 
-        <ng-container matColumnDef="cliente">
-          <th mat-header-cell *matHeaderCellDef>Customer</th>
-          <td mat-cell *matCellDef="let row">{{ row.clienteNombre }}</td>
-        </ng-container>
+              <ng-container matColumnDef="cliente">
+                <th mat-header-cell *matHeaderCellDef>cliente</th>
+                <td mat-cell *matCellDef="let row">{{ row.clienteNombre }}</td>
+              </ng-container>
 
-        <ng-container matColumnDef="estado">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="status-badge-table" [attr.data-status]="row.estado">{{ row.estado }}</span>
-          </td>
-        </ng-container>
+              <ng-container matColumnDef="estado">
+                <th mat-header-cell *matHeaderCellDef>Estado </th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="status-badge-table" [attr.data-status]="row.estado">{{ row.estado }}</span>
+                </td>
+              </ng-container>
 
-        <ng-container matColumnDef="tipo">
-          <th mat-header-cell *matHeaderCellDef>Type</th>
-          <td mat-cell *matCellDef="let row">{{ row.tipo }}</td>
-        </ng-container>
+              <ng-container matColumnDef="tipo">
+                <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                <td mat-cell *matCellDef="let row">{{ row.tipo }}</td>
+              </ng-container>
 
-        <ng-container matColumnDef="tecnico">
-          <th mat-header-cell *matHeaderCellDef>Technician</th>
-          <td mat-cell *matCellDef="let row">{{ row.tecnicoNombre || '—' }}</td>
-        </ng-container>
+              <ng-container matColumnDef="tecnico">
+                <th mat-header-cell *matHeaderCellDef>Técnico</th>
+                <td mat-cell *matCellDef="let row">{{ row.tecnicoNombre || '—' }}</td>
+              </ng-container>
 
-        <ng-container matColumnDef="fecha">
-          <th mat-header-cell *matHeaderCellDef>Date</th>
-          <td mat-cell *matCellDef="let row">{{ row.createdAt | date:'yyyy-MM-dd' }}</td>
-        </ng-container>
+              <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let row">{{ row.createdAt | date:'yyyy-MM-dd' }}</td>
+              </ng-container>
 
-        <ng-container matColumnDef="accion">
-          <th mat-header-cell *matHeaderCellDef>Action</th>
-          <td mat-cell *matCellDef="let row">
-            <button mat-icon-button [routerLink]="['/ordenes-trabajo', row.id]">
-              <mat-icon class="action-icon">visibility</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+              <ng-container matColumnDef="accion">
+                <th mat-header-cell *matHeaderCellDef>Acción</th>
+                <td mat-cell *matCellDef="let row">
+                  <button mat-icon-button [routerLink]="['/ordenes-trabajo', row.id]" class="rs-btn-action">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="rs-table-row"></tr>
+            </table>
+          </div>
+        </div>
+      </mat-card-content>
     </mat-card>
 
     <div class="rs-sidebar">
       <mat-card class="rs-content-card">
-        <h3 class="card-section-title">Quick Actions</h3>
+        <h3 class="card-section-title">Acciones Rápidas</h3>
         <div class="actions-list">
           <button mat-raised-button class="btn-primary-action" routerLink="/ordenes-trabajo/nueva">
-            <mat-icon>add</mat-icon> New Work Order
+            <mat-icon>add</mat-icon> Nueva orden de trabajo
           </button>
           <button mat-stroked-button class="btn-secondary-action" routerLink="/ordenes-trabajo">
-            View Work Orders
+            <mat-icon class="action-icon">visibility</mat-icon> Ver órdenes de trabajo
           </button>
           <button mat-stroked-button class="btn-secondary-action" routerLink="/clientes">
-            View Customers
+            <mat-icon class="action-icon">visibility</mat-icon>Ver clientes
           </button>
         </div>
       </mat-card>

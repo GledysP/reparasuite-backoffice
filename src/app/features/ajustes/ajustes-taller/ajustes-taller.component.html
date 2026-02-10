@@ -1,38 +1,83 @@
-<div class="rs-header">
-  <h2>Ajustes del taller</h2>
+<div class="rs-page-container">
+  <div class="rs-header">
+    <h2 class="rs-page-title">Configuración del Taller</h2>
+  </div>
+
+  <mat-card class="rs-settings-card">
+    <mat-card-content [formGroup]="form" class="rs-content-padding">
+      
+      <div class="settings-section">
+        <h3 class="section-subtitle">Detalles de la Empresa</h3>
+        <div class="horizontal-form-row">
+          <div class="field-group">
+            <label>Nombre del Negocio</label>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="nombre" placeholder="Ej. Taller Central">
+            </mat-form-field>
+          </div>
+
+          <div class="field-group">
+            <label>RUT / ID Fiscal</label>
+            <mat-form-field appearance="outline">
+              <input matInput placeholder="12.345.678-0">
+            </mat-form-field>
+          </div>
+
+          <div class="field-group flex-grow">
+            <label>Dirección</label>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="direccion" placeholder="Calle Principal #123">
+            </mat-form-field>
+          </div>
+
+          <div class="field-group">
+            <label>Teléfono</label>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="telefono" placeholder="+56 9 ...">
+            </mat-form-field>
+          </div>
+
+          <div class="field-group">
+            <label>Email de Contacto</label>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="email" placeholder="contacto@taller.com">
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 class="section-subtitle">Numeración de Órdenes</h3>
+        <div class="horizontal-form-row">
+          <div class="field-group small">
+            <label>Prefijo</label>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="prefijoOt">
+            </mat-form-field>
+          </div>
+
+          <div class="field-group small">
+            <label>Contador Inicial</label>
+            <mat-form-field appearance="outline">
+              <input matInput value="1" readonly>
+            </mat-form-field>
+          </div>
+
+          <div class="preview-box alive">
+            <span class="preview-label">Vista previa de la próxima orden:</span>
+            <span class="preview-value">OT-000001</span>
+          </div>
+        </div>
+      </div>
+
+    </mat-card-content>
+
+    <mat-card-actions class="rs-settings-actions">
+      <button mat-stroked-button class="btn-cancel">Cancelar</button>
+      <button mat-raised-button class="btn-save" (click)="guardar()">
+        <mat-icon>check_circle</mat-icon>
+        Guardar Cambios
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </div>
-
-<mat-card>
-  <mat-card-content [formGroup]="form">
-    <mat-form-field appearance="outline" class="rs-full">
-      <mat-label>Nombre</mat-label>
-      <input matInput formControlName="nombre" />
-    </mat-form-field>
-
-    <div class="rs-form-grid">
-      <mat-form-field appearance="outline" class="rs-col-6">
-        <mat-label>Teléfono</mat-label>
-        <input matInput formControlName="telefono" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="rs-col-6">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" />
-      </mat-form-field>
-    </div>
-
-    <mat-form-field appearance="outline" class="rs-full">
-      <mat-label>Dirección</mat-label>
-      <input matInput formControlName="direccion" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="rs-full">
-      <mat-label>Prefijo OT</mat-label>
-      <input matInput formControlName="prefijoOt" />
-    </mat-form-field>
-  </mat-card-content>
-
-  <mat-card-actions align="end">
-    <button mat-raised-button color="primary" (click)="guardar()">Guardar</button>
-  </mat-card-actions>
-</mat-card>

@@ -1,93 +1,131 @@
 <div class="rs-page-wrapper">
-  <h2 class="rs-main-title">Nueva Orden</h2>
+  <div class="rs-header-row">
+    <h2 class="rs-main-title">Nueva orden</h2>
+
+    <button mat-stroked-button type="button" class="btn-cancelar-top" (click)="cancelar()">
+      Volver
+    </button>
+  </div>
 
   <form [formGroup]="form" class="rs-form-container">
-    
+    <!-- CLIENTE -->
     <mat-card class="rs-section-card">
-      <mat-card-header>
+      <mat-card-header class="rs-card-header-actions">
         <mat-card-title class="rs-card-title">Cliente</mat-card-title>
+
+        <button mat-stroked-button type="button" (click)="buscarCliente()" class="btn-find-client">
+          <mat-icon>search</mat-icon>
+          Buscar cliente
+        </button>
       </mat-card-header>
+
       <mat-card-content>
-        <div class="rs-flex-row">
-          <button mat-stroked-button type="button" (click)="buscarCliente()" class="btn-find-client">
-            <mat-icon>search</mat-icon> Encontrar cliente existente
-          </button>
-          <mat-form-field appearance="outline" class="flex-grow-2">
+        <div class="rs-grid-client">
+          <mat-form-field appearance="outline" class="rs-field rs-span-6">
             <mat-label>Nombre</mat-label>
-            <input matInput formControlName="clienteNombre">
+            <input matInput formControlName="clienteNombre" autocomplete="off" />
           </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-grow-1">
-            <mat-label>Telefono</mat-label>
-            <input matInput formControlName="clienteTelefono">
+
+          <mat-form-field appearance="outline" class="rs-field rs-span-3">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="clienteTelefono" autocomplete="off" />
           </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-grow-1">
-            <mat-label>Correo(Optional)</mat-label>
-            <input matInput formControlName="clienteEmail">
+
+          <mat-form-field appearance="outline" class="rs-field rs-span-3">
+            <mat-label>Correo (opcional)</mat-label>
+            <input matInput formControlName="clienteEmail" autocomplete="off" />
           </mat-form-field>
         </div>
       </mat-card-content>
     </mat-card>
 
+    <!-- DETALLES DEL SERVICIO -->
     <mat-card class="rs-section-card">
       <mat-card-header>
-        <mat-card-title class="rs-card-title">DETALLES DEL SERVICIO</mat-card-title>
+        <mat-card-title class="rs-card-title">Detalles del servicio</mat-card-title>
       </mat-card-header>
+
       <mat-card-content>
         <div class="rs-radio-row">
           <span class="rs-label-text">Tipo de servicio</span>
+
           <mat-radio-group formControlName="tipo" class="rs-radio-group">
             <mat-radio-button value="TIENDA">En tienda</mat-radio-button>
             <mat-radio-button value="DOMICILIO">En sitio</mat-radio-button>
           </mat-radio-group>
         </div>
+
+        <!-- Solo si es DOMICILIO -->
+        <div class="rs-form-grid rs-mt-12" *ngIf="form.value.tipo === 'DOMICILIO'">
+          <mat-form-field appearance="outline" class="rs-field rs-span-8">
+            <mat-label>Dirección</mat-label>
+            <input matInput formControlName="direccion" autocomplete="off" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="rs-field rs-span-4">
+            <mat-label>Fecha prevista (opcional)</mat-label>
+            <input matInput [matDatepicker]="pickerPrevista" formControlName="fechaPrevistaDomicilio" />
+            <mat-datepicker-toggle matSuffix [for]="pickerPrevista"></mat-datepicker-toggle>
+            <mat-datepicker #pickerPrevista></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="rs-field rs-span-12">
+            <mat-label>Notas de acceso</mat-label>
+            <input matInput formControlName="notasAcceso" autocomplete="off" />
+          </mat-form-field>
+        </div>
       </mat-card-content>
-      
-      <div class="rs-form-grid" style="margin-top: 12px;" *ngIf="form.value.tipo === 'DOMICILIO'">
-        <mat-form-field appearance="outline" class="rs-col-8">
-          <mat-label>Dirección</mat-label>
-          <input matInput formControlName="direccion" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="flex-grow-1">
-          <mat-label>Fecha prevista</mat-label>
-          <input matInput [matDatepicker]="pickerPrevista" formControlName="fechaPrevista">
-          <mat-datepicker-toggle matSuffix [for]="pickerPrevista"></mat-datepicker-toggle>
-          <mat-datepicker #pickerPrevista></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="rs-col-12">
-          <mat-label>Notas de acceso</mat-label>
-          <input matInput formControlName="notasAcceso" />
-        </mat-form-field>
-      </div>
     </mat-card>
 
+    <!-- DETALLES DEL TRABAJO -->
     <mat-card class="rs-section-card">
       <mat-card-header>
-        <mat-card-title class="rs-card-title">DETALLES DEL TRABAJO</mat-card-title>
+        <mat-card-title class="rs-card-title">Detalles del trabajo</mat-card-title>
       </mat-card-header>
+
       <mat-card-content>
-        <mat-form-field appearance="outline" class="w-full">
+        <mat-form-field appearance="outline" class="rs-field rs-w-full rs-textarea">
           <mat-label>Descripción del problema</mat-label>
           <textarea matInput rows="3" formControlName="descripcion"></textarea>
         </mat-form-field>
-        
-        <div class="rs-flex-row mt-10">
-          <mat-form-field appearance="outline" class="flex-grow-1">
-            <mat-label>Prioridad</mat-label>
-            <mat-select formControlName="prioridad">
-              <mat-option *ngFor="let p of prioridades" [value]="p">{{p}}</mat-option>
-            </mat-select>
+
+        <div class="rs-grid-work rs-mt-12">
+          <!-- Prioridad como chips -->
+          <div class="rs-field rs-span-3">
+            <div class="rs-field-label">Prioridad</div>
+            <mat-chip-listbox
+              class="rs-chipbox"
+              [formControl]="form.controls.prioridad"
+              aria-label="Seleccionar prioridad">
+              <mat-chip-option *ngFor="let p of prioridades" [value]="p">
+                {{ p }}
+              </mat-chip-option>
+            </mat-chip-listbox>
+          </div>
+
+          <!-- Técnico con autocomplete -->
+          <mat-form-field appearance="outline" class="rs-field rs-span-6">
+            <mat-label>Asignar técnico (opcional)</mat-label>
+            <input
+              type="text"
+              matInput
+              [matAutocomplete]="autoTec"
+              [formControl]="tecnicoQuery"
+              placeholder="Escribe para buscar..."
+              autocomplete="off"
+            />
+            <mat-autocomplete #autoTec="matAutocomplete" (optionSelected)="onTecnicoSelected($event.option.value)">
+              <mat-option [value]="null">Sin asignar</mat-option>
+              <mat-option *ngFor="let t of tecnicosFiltrados" [value]="t">
+                {{ t.nombre }}
+              </mat-option>
+            </mat-autocomplete>
           </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-grow-2">
-            <mat-label>Asignar técnico</mat-label>
-            <mat-select formControlName="tecnicoId">
-              <mat-option *ngFor="let t of tecnicos" [value]="t.id">{{t.nombre}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-grow-1">
-            <mat-label>Fecha programada</mat-label>
-            <input matInput [matDatepicker]="pickerProg" formControlName="fechaPrevista">
+
+          <!-- Fecha programada (siempre disponible) -->
+          <mat-form-field appearance="outline" class="rs-field rs-span-3">
+            <mat-label>Fecha programada (opcional)</mat-label>
+            <input matInput [matDatepicker]="pickerProg" formControlName="fechaProgramada" />
             <mat-datepicker-toggle matSuffix [for]="pickerProg"></mat-datepicker-toggle>
             <mat-datepicker #pickerProg></mat-datepicker>
           </mat-form-field>
@@ -95,24 +133,67 @@
       </mat-card-content>
     </mat-card>
 
+    <!-- FOTOS -->
     <mat-card class="rs-section-card">
       <mat-card-header>
-        <mat-card-title class="rs-card-title">FOTOS / ADJUNTOS</mat-card-title>
+        <mat-card-title class="rs-card-title">Fotos / Adjuntos</mat-card-title>
       </mat-card-header>
+
       <mat-card-content>
-        <div class="rs-dropzone" (click)="fileInput.click()">
-          <input #fileInput type="file" style="display:none" (change)="onFileSelected($event)" accept="image/*" multiple>
+        <div
+          class="rs-dropzone"
+          (click)="fileInput.click()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          [class.is-dragover]="isDragOver"
+        >
+          <input
+            #fileInput
+            type="file"
+            hidden
+            (change)="onFileSelected($event)"
+            accept="image/*"
+            multiple
+          />
+
           <mat-icon class="rs-dropzone-icon">cloud_upload</mat-icon>
-          <p class="rs-dropzone-text" *ngIf="!selectedFileName">Clic para cargar</p>
-          <p *ngIf="selectedFileName" class="rs-dropzone-text" style="color: #124E59; font-weight: 600;">
+
+          <div class="rs-dropzone-main">
+            <div class="rs-dropzone-title">Subir fotos</div>
+            <div class="rs-dropzone-sub">
+              Arrastra y suelta aquí o <span class="rs-link">haz clic para seleccionar</span>
+            </div>
+          </div>
+
+          <div class="rs-dropzone-count" *ngIf="selectedFileName">
             {{ selectedFileName }}
-          </p>
+          </div>
         </div>
+
+        <!-- Thumbnails -->
+        <div class="rs-thumbs" *ngIf="fotoPreviews.length > 0">
+          <div class="rs-thumb" *ngFor="let p of fotoPreviews; let i = index">
+            <img [src]="p.url" alt="Foto" />
+            <button mat-icon-button type="button" class="rs-thumb-remove" (click)="removeFile(i)">
+              <mat-icon>close</mat-icon>
+            </button>
+            <div class="rs-thumb-name">{{ p.name }}</div>
+          </div>
+        </div>
+
+        <button mat-button type="button" class="rs-clear-files" *ngIf="fotos.length > 0" (click)="clearFiles()">
+          Quitar todo
+        </button>
       </mat-card-content>
     </mat-card>
 
-    <div class="rs-footer">
-      <button mat-button type="button" (click)="cancelar()" class="btn-cancelar">Cancel</button>
+    <!-- FOOTER -->
+    <div class="rs-footer rs-footer-sticky">
+      <button mat-button type="button" (click)="cancelar()" class="btn-cancelar">
+        Cancelar
+      </button>
+
       <button mat-raised-button class="btn-guardar" type="button" (click)="crear()">
         Crear orden de trabajo
       </button>
