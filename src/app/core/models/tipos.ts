@@ -97,3 +97,12 @@ export interface AjustesTaller {
   direccion: string | null;
   prefijoOt: string;
 }
+
+export interface ClienteOrdenItem {
+  id: string;
+  codigo: string;
+  estado: EstadoOt;
+  tipo: TipoOt;
+  updatedAt: string; // Usamos el nombre que ya viene en OtListaItem
+  tecnicoNombre: string | null;
+}

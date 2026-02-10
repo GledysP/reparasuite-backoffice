@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon'; // <--- 1. Importar esto
 
 @Component({
   selector: 'rs-usuario-form-dialog',
@@ -17,7 +18,8 @@ import { MatOptionModule } from '@angular/material/core';
     MatButtonModule,
     MatInputModule,
     MatSelectModule,
-    MatOptionModule
+    MatOptionModule,
+    MatIconModule // <--- 2. Agregar esto aquí
   ],
   templateUrl: './usuario-form-dialog.component.html',
   styleUrl: './usuario-form-dialog.component.scss'

@@ -1,54 +1,74 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { NgIf } from '@angular/common';
-
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 import { ClientesService } from '../clientes.service';
-import { ClienteResumen } from '../../../core/models/tipos';
+import { ClienteResumen, ClienteOrdenItem } from '../../../core/models/tipos';
 
 @Component({
-  selector: 'rs-clientes-detalle',
+  selector: 'app-clientes-detalle',
   standalone: true,
   imports: [
-    NgIf,
-    RouterLink,
-    MatCardModule, MatTabsModule, MatTableModule, MatPaginatorModule
+    CommonModule, RouterLink, MatCardModule, MatTabsModule, 
+    MatTableModule, MatIconModule, MatButtonModule, MatPaginatorModule
   ],
   templateUrl: './clientes-detalle.component.html',
-  styleUrl: './clientes-detalle.component.scss',
+  styleUrls: ['./clientes-detalle.component.scss']
 })
 export class ClientesDetalleComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private clientesService = inject(ClientesService);
+
   id!: string;
   cliente: ClienteResumen | null = null;
-
-  displayedColumns = ['codigo','estado','tipo','actualizadoEn','accion'];
-  ordenes: any[] = [];
+  ordenes: ClienteOrdenItem[] = [];
+  displayedColumns = ['codigo', 'estado', 'tipo', 'updatedAt', 'accion'];
+  
   total = 0;
+  totalOpen = 0;
   page = 0;
-  size = 20;
-
-  constructor(private route: ActivatedRoute, private clientes: ClientesService) {}
+  size = 10;
 
   ngOnInit(): void {
-    this.id = this.route.snapshot.paramMap.get('id')!;
-    this.clientes.obtener(this.id).subscribe(c => this.cliente = c);
-    this.cargarOrdenes();
+    const routeId = this.route.snapshot.paramMap.get('id');
+    if (routeId) {
+      this.id = routeId;
+      this.cargarTodo();
+    }
   }
 
-  cargarOrdenes() {
-    this.clientes.ordenesDelCliente(this.id, this.page, this.size).subscribe(res => {
-      this.ordenes = res.items;
-      this.total = res.total;
-    });
+  cargarTodo(): void {
+    // Info del cliente
+    this.clientesService.obtener(this.id).subscribe(res => this.cliente = res);
+    // Historial
+    this.cargarHistorial();
   }
 
-  paginar(e: PageEvent) {
+  cargarHistorial(): void {
+    this.clientesService.ordenesDelCliente(this.id, this.page, this.size)
+      .pipe(catchError(() => of({ items: [], total: 0 })))
+      .subscribe(res => {
+        this.ordenes = res.items;
+        this.total = res.total;
+        // Contador de órdenes que no están completadas
+        this.totalOpen = this.ordenes.filter(o => 
+          String(o.estado).toUpperCase() !== 'COMPLETADA' && 
+          String(o.estado).toUpperCase() !== 'CLOSED'
+        ).length;
+      });
+  }
+
+  onPageChange(e: PageEvent): void {
     this.page = e.pageIndex;
     this.size = e.pageSize;
-    this.cargarOrdenes();
+    this.cargarHistorial();
   }
 }

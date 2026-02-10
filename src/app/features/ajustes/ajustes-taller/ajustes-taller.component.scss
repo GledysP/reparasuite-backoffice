@@ -1,127 +1,125 @@
-/* Defino mis variables de color para mantener la consistencia */
-$rs-dark-blue: #124E59; 
+$rs-dark-blue: #124E59;
 $slate-200: #E2E8F0;
 $slate-400: #94A3B8;
-$slate-600: #475569; 
-$rs-line-soft: rgba(0, 0, 0, 0.03);
+$slate-600: #475569;
+$rs-border: #cbd5e1;
 
-/* Ajusto el contenedor: bajé el padding superior a 20px para alinear el título con las otras páginas */
-.rs-page-container { 
-  padding: 20px 24px 24px 24px; 
-}
-
-/* Mi título con el ajuste de margen superior para que no se vea más arriba que en Customers */
-.rs-page-title { 
-  font-size: 24px; 
-  font-weight: 700; 
-  color: #0F172A; 
-  margin: 8px 0 20px 0; /* Aumenté el margen superior a 8px */
-  line-height: 1.2;
-}
-
-/* Configuro mi tarjeta principal con el borde fino y la sombra sutil de Figma */
+/* Tarjeta principal */
 .rs-settings-card {
   background: white !important;
   border: 1px solid $slate-200;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
   border-radius: 12px;
   overflow: hidden;
 }
 
-/* Espaciado interno generoso para que el formulario respire */
-.rs-content-padding { 
-  padding: 32px !important; 
+.rs-content-padding {
+  padding: 32px !important;
 }
 
-/* Estilizo las secciones para que los subtítulos sean claros y oscuros */
+/* Inputs locales */
+:host ::ng-deep {
+  .mat-mdc-form-field .mdc-notched-outline { display: none !important; }
+  .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+    height: 40px !important;
+    border-radius: 8px !important;
+    border: 1px solid $rs-border !important;
+    background-color: white !important;
+  }
+  .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    border-color: $rs-dark-blue !important;
+    border-width: 2px !important;
+  }
+  .mat-mdc-form-field-subscript-wrapper { display: none !important; }
+}
+
+/* Espaciado de secciones */
 .settings-section {
-  margin-bottom: 32px;
+  margin-bottom: 40px; /* Más espacio entre bloques */
+
   .section-subtitle {
-    font-size: 15px;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 16px;
+    margin-bottom: 24px !important; /* ✅ Espacio entre título y campos */
+    display: block;
   }
 }
 
-/* Mi fila flexible para que los inputs se acomoden horizontalmente */
 .horizontal-form-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
   align-items: flex-end;
 }
 
-/* Agrupo label e input, asegurando que las letras sean oscuras y legibles */
 .field-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px; 
   min-width: 200px;
+
   &.flex-grow { flex: 1; min-width: 300px; }
   &.small { width: 120px; min-width: 120px; }
 
   label {
-    font-size: 12px;
-    font-weight: 600;
-    color: $slate-600; 
+    font-size: 11px;
+    font-weight: 700;
+    color: $slate-600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 }
 
-/* Cuadro de Vista Previa: le di ese tono verde/teal vivo que pediste */
+/* Preview Box */
 .preview-box.alive {
-  background-color: #f0fdfa; 
+  background-color: #f0fdfa;
   padding: 8px 20px;
   border-radius: 8px;
-  height: 44px;
+  height: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   border: 1px solid #99f6e4;
 
-  .preview-label { 
-    font-size: 10px; 
-    color: #0d9488; 
-    font-weight: 600;
+  .preview-label {
+    font-size: 9px;
+    color: #0d9488;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
   }
-  .preview-value { 
-    font-size: 15px; 
-    font-weight: 800; 
-    color: $rs-dark-blue; 
+  .preview-value {
+    font-size: 14px;
+    font-weight: 800;
+    color: $rs-dark-blue;
   }
 }
 
-/* Barra de acciones al pie de la tarjeta con fondo sutil */
+/* Acciones  */
 .rs-settings-actions {
-  padding: 16px 32px !important;
-  border-top: 1px solid $rs-line-soft;
+  padding: 24px 32px 32px 32px !important;
+  border-top: none !important; 
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  background: #f8fafc;
+  background: white !important; 
 
   button {
     height: 44px;
     border-radius: 8px !important;
     font-weight: 700;
     padding: 0 24px !important;
-    
+
     mat-icon {
       margin-right: 8px;
       font-size: 20px;
     }
   }
 
-  .btn-cancel { 
-    color: $slate-600; 
-    border-color: $slate-200 !important; 
+  .btn-cancel {
+    color: $slate-600;
+    border: 1px solid $slate-200 !important;
   }
 
-  .btn-save { 
-    background-color: $rs-dark-blue !important; 
+  .btn-save {
+    background-color: $rs-dark-blue !important;
     color: white !important;
-    box-shadow: 0 4px 12px rgba(18, 78, 89, 0.2) !important;
   }
 }

@@ -1,39 +1,46 @@
-<h2 mat-dialog-title class="rs-dialog-title-centered">
-  {{ data ? 'Editar Usuario' : 'Crear nuevo usuario' }}
-</h2>
-
-<mat-dialog-content class="rs-dialog-content-custom">
-  <form [formGroup]="form" class="rs-form-container" autocomplete="off">
-    
-    <div class="rs-form-group">
-      <label class="rs-label-dark">Nombre completo</label>
-      <input type="text" formControlName="nombre" class="rs-input-white" autocomplete="new-password">
+<div class="rs-modal-card">
+  <div class="rs-modal-header">
+    <div class="rs-icon-circle">
+      <mat-icon>{{ data ? 'person_edit' : 'person_add' }}</mat-icon>
     </div>
+    <h1 class="rs-modal-title">{{ data ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}</h1>
+  </div>
 
-    <div class="rs-form-group">
-      <label class="rs-label-dark">Correo electrónico</label>
-      <input type="email" formControlName="email" class="rs-input-white" autocomplete="new-password">
-    </div>
+  <mat-dialog-content class="rs-dialog-content-custom">
+    <form [formGroup]="form" class="rs-form-container" autocomplete="off">
+      
+      <div class="rs-form-group">
+        <label>Nombre completo</label>
+        <input type="text" formControlName="nombre" class="rs-input-base" placeholder="Nombre del usuario">
+      </div>
 
-    <div class="rs-form-group">
-      <label class="rs-label-dark">Rol del sistema</label>
-      <mat-select formControlName="rol" class="rs-input-white rs-mat-select-fix" placeholder="Selecciona un rol">
-        <mat-option value="ADMIN">ADMIN</mat-option>
-        <mat-option value="TECNICO">TECNICO</mat-option>
-      </mat-select>
-    </div>
+      <div class="rs-form-group">
+        <label>Correo electrónico</label>
+        <input type="email" formControlName="email" class="rs-input-base" placeholder="correo@ejemplo.com">
+      </div>
 
-    <div class="rs-form-group" *ngIf="!data">
-      <label class="rs-label-dark">Contraseña</label>
-      <input type="password" formControlName="password" class="rs-input-white" autocomplete="new-password">
-    </div>
+      <div class="rs-form-group">
+        <label>Rol del sistema</label>
+        <mat-select formControlName="rol" 
+                    class="rs-input-base rs-select-custom" 
+                    placeholder="Selecciona un rol"
+                    panelClass="rs-select-panel-white">
+          <mat-option value="ADMIN">ADMIN</mat-option>
+          <mat-option value="TECNICO">TECNICO</mat-option>
+        </mat-select>
+      </div>
 
-  </form>
-</mat-dialog-content>
+      <div class="rs-form-group" *ngIf="!data">
+        <label>Contraseña</label>
+        <input type="password" formControlName="password" class="rs-input-base" placeholder="••••••••">
+      </div>
+    </form>
+  </mat-dialog-content>
 
-<mat-dialog-actions align="end" class="rs-dialog-actions">
-  <button mat-button (click)="cancelar()" class="btn-cancel">Cancelar</button>
-  <button mat-raised-button (click)="guardar()" [disabled]="form.invalid" class="btn-save">
-    {{ data ? 'Actualizar' : 'Guardar usuario' }}
-  </button>
-</mat-dialog-actions>
+  <mat-dialog-actions class="rs-dialog-actions-right">
+    <button mat-button (click)="cancelar()" class="btn-cancel">Cancelar</button>
+    <button mat-raised-button (click)="guardar()" [disabled]="form.invalid" class="btn-save">
+      {{ data ? 'Actualizar' : 'Guardar' }}
+    </button>
+  </mat-dialog-actions>
+</div>

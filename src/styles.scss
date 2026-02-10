@@ -11,17 +11,60 @@
   font-style: normal;
 }
 
+/* =========================
+   RS DESIGN TOKENS (Responsive)
+   - Control único de spacing + tipografía
+========================= */
+:root {
+  /* Layout */
+  --rs-page-pad: 32px;
+  --rs-page-gap: 16px;
+
+  /* Typography scale */
+  --rs-title: 24px;     /* h1 page title */
+  --rs-subtitle: 15px;  /* section titles */
+  --rs-body: 13px;      /* general UI text */
+  --rs-small: 12px;
+
+  /* Table */
+  --rs-th-size: 11px;
+  --rs-td-size: 13px;
+  --rs-th-pad-y: 16px;
+  --rs-th-pad-x: 20px;
+  --rs-td-pad-y: 12px;
+  --rs-td-pad-x: 20px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --rs-page-pad: 24px;
+    --rs-page-gap: 14px;
+    --rs-title: 22px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --rs-page-pad: 16px;
+    --rs-page-gap: 12px;
+    --rs-title: 20px;
+
+    --rs-th-pad-y: 14px;
+    --rs-th-pad-x: 16px;
+    --rs-td-pad-y: 10px;
+    --rs-td-pad-x: 16px;
+  }
+}
+
 /* 3. BASE DEL DOCUMENTO */
 html, body {
   height: 100%;
   margin: 0;
 
-  /* Inter con fallbacks */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   background-color: #f6f8fb;
   color: #1e293b;
 
-  /* ✅ Más cómodo para toda la app */
   font-size: 16px;
   line-height: 1.45;
 
@@ -63,6 +106,98 @@ html, body {
   font-size: 13px !important;
 }
 
+/* =========================
+   RS PAGE LAYOUT (Uniform)
+   - Solo spacing (no colores de negocio)
+========================= */
+.rs-main-container,
+.rs-page-container,
+.rs-page-wrapper {
+  min-height: 100vh;
+  padding: var(--rs-page-pad) !important;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--rs-page-gap);
+}
+
+/* Cabecera consistente */
+.rs-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* =========================
+   RS TYPOGRAPHY (Uniform)
+   - Solo capa de texto
+========================= */
+.rs-page-title {
+  margin: 0 !important;
+  font-size: var(--rs-title) !important;
+  font-weight: 700 !important;          /* ✅ adiós 800 */
+  letter-spacing: -0.02em !important;
+  line-height: 1.2;
+}
+
+.section-subtitle,
+.rs-section-title,
+.card-section-title,
+.card-label {
+  font-size: var(--rs-subtitle) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.rs-muted { opacity: .7; font-size: var(--rs-small); }
+.rs-strong { font-weight: 700; }
+
+/* =========================
+   RS TABLE SYSTEM (Global)
+   - SOLO tipografía + spacing
+   - NO colores, NO backgrounds, NO borders
+========================= */
+.rs-table {
+  width: 100%;
+  background: transparent;
+
+  th.mat-mdc-header-cell {
+    font-size: var(--rs-th-size) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase;
+    padding: var(--rs-th-pad-y) var(--rs-th-pad-x) !important;
+    line-height: 1.2;
+  }
+
+  td.mat-mdc-cell {
+    font-size: var(--rs-td-size) !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.01em !important;
+    padding: var(--rs-td-pad-y) var(--rs-td-pad-x) !important;
+    line-height: 1.35;
+  }
+
+  .fw-bold,
+  .bold-text,
+  .col-code {
+    font-weight: 700 !important;
+  }
+}
+
+/* Overflow en móvil (sin tocar estilos visuales) */
+.rs-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* 5. ESTRUCTURA Y CONTENEDORES (Utilidades RS) */
 .rs-container { height: 100vh; }
 .rs-page { padding: 32px; }
@@ -76,9 +211,6 @@ html, body {
   justify-content: space-between;
   margin-bottom: 20px;
 }
-
-.rs-muted { opacity: .7; font-size: 12px; }
-.rs-strong { font-weight: 700; }
 
 /* 6. SISTEMA DE REJILLA (Grid) */
 .rs-grid {
@@ -236,47 +368,19 @@ $rs-primary-petroleo: #1a4b5d;
 }
 
 
-/* --- ESTILOS GLOBALES PARA INPUTS REPARA SUITE --- */
-
-// Color de marca
-$rs-brand-focus: #124E59; 
-
+/* Animación de Inputs Global */
 .mat-mdc-form-field {
-  width: 100%;
-  
-  // Quitamos la estructura de "caja" por defecto de Material
-  .mdc-notched-outline { display: none !important; }
-  
   .mat-mdc-text-field-wrapper {
-    background-color: white !important;
-    border: 1px solid #E2E8F0 !important; // Slate-200
-    border-radius: 8px !important;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    
-    // EFECTO HOVER GLOBAL
-    &:hover { 
-      border-color: #94A3B8 !important; // Slate-400
+    transition: all 0.2s ease-in-out !important;
+    &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05) !important;
+      border-color: #94A3B8 !important;
     }
   }
 
-  // EFECTO FOCUS GLOBAL (Al hacer clic)
   &.mat-focused .mat-mdc-text-field-wrapper {
-    border: 2px solid $rs-brand-focus !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(18, 78, 89, 0.1) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(18, 78, 89, 0.15) !important;
   }
-
-  // Centrado de texto interno
-  .mat-mdc-form-field-infix {
-    padding: 0 12px !important;
-    min-height: 40px !important;
-    display: flex !important;
-    align-items: center !important;
-  }
-
-  // Ocultar línea de error vacía para que no ocupe espacio si no se usa
-  .mat-mdc-form-field-subscript-wrapper { display: none; }
-  &.mat-form-field-invalid .mat-mdc-form-field-subscript-wrapper { display: block; }
 }

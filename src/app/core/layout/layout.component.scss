@@ -3,12 +3,12 @@ $rs-border: #e2e8f0;
 $rs-hover-gray: #f1f5f9;
 
 :host ::ng-deep {
-  /* 1. ÁREA DE CONTENIDO: Elimina bloques blancos */
+  /* 1. ÁREA DE CONTENIDO */
   .mat-drawer-content {
     background-color: #f6f8fb !important; 
   }
 
-  /* 2. SIDEBAR: Identidad visual de la guía */
+  /* 2. SIDEBAR */
   .mat-drawer.rs-sidebar {
     width: 250px !important;
     background-color: white !important;

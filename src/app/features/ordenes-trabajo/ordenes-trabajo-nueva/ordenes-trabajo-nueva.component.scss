@@ -7,41 +7,17 @@ $rs-input-border: #cbd5e1;
 $rs-text: #334155;
 $rs-muted: #64748b;
 
-.rs-page-wrapper {
-  padding: 16px 24px;
-  background-color: $rs-bg-light;
-  min-height: 100vh;
-  font-family: inherit;
-}
+/* Layout / header / title vienen del styles.scss (rs-main-container + rs-header-row + rs-page-title) */
+/* Eliminamos rs-page-wrapper / rs-main-title duplicados */
 
-@media (max-width: 600px) {
-  .rs-page-wrapper { padding: 12px; }
-}
-
-.rs-header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.rs-main-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #0f172a;
-  margin: 0;
-  font-family: inherit;
-}
-
+/* Botón volver (top) */
 .btn-cancelar-top {
   height: 38px;
   border-radius: 10px !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important; /* antes 800 */
 }
 
+/* Contenedor del form (ya existe global pero aquí mantiene tu ritmo visual) */
 .rs-form-container {
   display: flex;
   flex-direction: column;
@@ -50,6 +26,7 @@ $rs-muted: #64748b;
   font-family: inherit;
 }
 
+/* Cards de secciones */
 .rs-section-card {
   background-color: #ffffff !important;
   border: 1px solid $rs-border-color !important;
@@ -62,7 +39,7 @@ $rs-muted: #64748b;
 
   .rs-card-title {
     font-size: 11px !important;
-    font-weight: 800 !important;
+    font-weight: 700 !important; /* antes 800 */
     color: #0f172a !important;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -102,7 +79,7 @@ $rs-muted: #64748b;
 }
 
 /* =========================
-   TITULOS ARRIBA (Figma)
+   Labels arriba 
 ========================= */
 .rs-field {
   display: flex;
@@ -119,15 +96,11 @@ $rs-muted: #64748b;
   padding-left: 4px;
 }
 
-.rs-actions-row {
-  display: flex;
-  justify-content: flex-start;
-}
-
+/* Buscar cliente */
 .btn-find-client {
   height: 40px;
   border-radius: 10px !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important; /* antes 800 */
   background-color: #fff !important;
 }
 
@@ -147,8 +120,9 @@ $rs-muted: #64748b;
 
   .rs-label-text {
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 700; /* antes 800 */
     color: $rs-muted;
+    letter-spacing: -0.01em;
   }
 }
 
@@ -173,6 +147,15 @@ $rs-muted: #64748b;
   flex-wrap: wrap;
 }
 
+/* sticky footer (si tu layout lo requiere) */
+.rs-footer-sticky {
+  position: sticky;
+  bottom: 0;
+  background: rgba(248, 250, 252, 0.92);
+  backdrop-filter: blur(6px);
+  padding-top: 12px;
+}
+
 @media (max-width: 640px) {
   .rs-footer { flex-direction: column; }
   .btn-guardar, .btn-cancelar { width: 100%; }
@@ -184,12 +167,12 @@ $rs-muted: #64748b;
   border-radius: 10px !important;
   padding: 0 22px !important;
   height: 40px;
-  font-weight: 900 !important;
+  font-weight: 700 !important; /* antes 900 */
 }
 
 .btn-cancelar {
   color: $rs-focus-color !important;
-  font-weight: 900 !important;
+  font-weight: 700 !important; /* antes 900 */
   border-radius: 10px !important;
 }
 
@@ -227,9 +210,10 @@ $rs-muted: #64748b;
 }
 
 .rs-dropzone-title {
-  font-weight: 900;
+  font-weight: 700; /* antes 900 */
   color: #0f172a;
   line-height: 18px;
+  letter-spacing: -0.01em;
 }
 
 .rs-dropzone-sub {
@@ -239,83 +223,72 @@ $rs-muted: #64748b;
 
   .rs-link {
     color: $rs-focus-color;
-    font-weight: 900;
+    font-weight: 700; 
   }
 }
 
 .rs-dropzone-count {
   font-size: 12px;
   color: $rs-focus-color;
-  font-weight: 900;
+  font-weight: 700; 
   white-space: nowrap;
 }
 
-/* Lista de archivos */
-.rs-files {
+
+.rs-thumbs {
   margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
 }
 
-.rs-file {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-
+.rs-thumb {
+  position: relative;
   border: 1px solid $rs-border-color;
   border-radius: 12px;
   background: #fff;
-  padding: 10px 12px;
+  overflow: hidden;
+  padding: 10px;
+
+  img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+  }
 }
 
-.rs-file-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+.rs-thumb-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(255, 255, 255, 0.9);
 }
 
-.rs-file-ic { color: #94a3b8; }
-
-.rs-file-meta { min-width: 0; }
-
-.rs-file-name {
-  font-size: 13px;
-  font-weight: 900;
-  color: #0f172a;
+.rs-thumb-name {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $rs-text;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 520px;
-}
-
-.rs-file-size {
-  font-size: 11px;
-  color: $rs-muted;
-  margin-top: 2px;
-}
-
-.rs-file-remove {
-  color: #94a3b8;
-  &:hover { color: $rs-focus-color; }
 }
 
 .rs-clear-files {
   align-self: flex-start;
   color: $rs-focus-color !important;
-  font-weight: 900 !important;
+  font-weight: 700 !important; /* antes 900 */
   padding: 0 !important;
 }
 
 /* =========================
-   MATERIAL FORM FIELDS
+   MATERIAL FORM FIELDS (solo esta pantalla)
 ========================= */
 :host ::ng-deep {
   .mat-mdc-form-field { width: 100%; font-family: inherit !important; }
 
-  /* elimina ripple interno */
   .mat-mdc-form-field .mdc-text-field__ripple,
   .mat-mdc-form-field .mdc-line-ripple {
     display: none !important;
@@ -323,7 +296,6 @@ $rs-muted: #64748b;
     height: 0 !important;
   }
 
-  /* ocultamos outline notched para usar border del wrapper */
   .mat-mdc-form-field .mdc-notched-outline { display: none !important; }
 
   .mat-mdc-form-field .mat-mdc-text-field-wrapper {
@@ -343,44 +315,31 @@ $rs-muted: #64748b;
     font-family: inherit !important;
   }
 
-  /* texto input */
   input.mat-mdc-input-element {
     font-family: inherit !important;
     font-size: 13px !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important; 
     color: $rs-text !important;
     line-height: 20px !important;
   }
 
-  /* textarea */
   textarea.mat-mdc-input-element {
     font-family: inherit !important;
     font-size: 13px !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important; 
     color: $rs-text !important;
-  }
-
-  /* select */
-  .mat-mdc-select-trigger {
-    display: flex;
-    align-items: center;
-    height: 20px;
   }
 
   .mat-mdc-select-value,
   .mat-mdc-select-value-text {
     font-family: inherit !important;
     font-size: 13px !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important; 
     color: $rs-text !important;
   }
 
-  /* como usamos label externo, ocultamos el floating label visual */
-  .mat-mdc-floating-label {
-    display: none !important;
-  }
+  .mat-mdc-floating-label { display: none !important; }
 
-  /* focus #124E59 */
   .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
     border-color: $rs-focus-color !important;
     border-width: 2px !important;

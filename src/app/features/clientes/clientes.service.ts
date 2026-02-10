@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
-
 import { RespuestaPaginada } from '../../core/models/api';
-import { ClienteResumen } from '../../core/models/tipos';
+import { ClienteResumen, ClienteOrdenItem } from '../../core/models/tipos';
 
 @Injectable({ providedIn: 'root' })
 export class ClientesService {
@@ -20,8 +19,14 @@ export class ClientesService {
     return this.http.get<ClienteResumen>(`${environment.apiBaseUrl}/clientes/${id}`);
   }
 
-  ordenesDelCliente(id: string, page = 0, size = 20): Observable<RespuestaPaginada<any>> {
-    const params: any = { page, size };
-    return this.http.get<RespuestaPaginada<any>>(`${environment.apiBaseUrl}/clientes/${id}/ordenes-trabajo`, { params });
+  /**
+   * Este método ya espera el endpoint: /api/v1/clientes/{id}/ordenes-trabajo
+   */
+  ordenesDelCliente(id: string, page = 0, size = 10): Observable<RespuestaPaginada<ClienteOrdenItem>> {
+    const params = { page: page.toString(), size: size.toString() };
+    return this.http.get<RespuestaPaginada<ClienteOrdenItem>>(
+      `${environment.apiBaseUrl}/clientes/${id}/ordenes-trabajo`, 
+      { params }
+    );
   }
 }

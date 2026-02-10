@@ -4,11 +4,8 @@ $text-main: #1E293B;
 $text-muted: #64748B;
 $danger-red: #EF4444;
 
-.rs-page-container {
-  padding: 16px 24px;
-  background: #F8FAFC;
-  min-height: 100vh;
-}
+/* ✅ Layout/padding/background vienen del styles.scss (.rs-page-container) */
+/* Eliminamos padding/background/min-height duplicados */
 
 /* HEADER */
 .rs-header-compact {
@@ -18,6 +15,7 @@ $danger-red: #EF4444;
     font-size: 12px;
     color: $text-muted;
     margin-bottom: 6px;
+
     .current { color: $text-main; font-weight: 700; }
   }
 
@@ -35,18 +33,19 @@ $danger-red: #EF4444;
       flex-wrap: wrap;
 
       h1 {
-        font-size: 26px;
-        font-weight: 800;
+        font-size: 24px;          /* ✅ alineado con rs-page-title */
+        font-weight: 700;        
         margin: 0;
         color: #0F172A;
         letter-spacing: -0.02em;
+        line-height: 1.2;
       }
 
       .badge-status {
         padding: 3px 10px;
         border-radius: 999px;
         font-size: 11px;
-        font-weight: 800;
+        font-weight: 700;         /* antes 800 */
         letter-spacing: 0.02em;
         text-transform: uppercase;
         white-space: nowrap;
@@ -62,9 +61,7 @@ $danger-red: #EF4444;
   }
 }
 
-.btn-back {
-  border-radius: 10px !important;
-}
+.btn-back { border-radius: 10px !important; }
 
 /* GRID LAYOUT */
 .rs-grid {
@@ -74,14 +71,13 @@ $danger-red: #EF4444;
   align-items: start;
 }
 
-/* ✅ STICKY sidebar SOLO en desktop */
+/* Sticky sidebar solo desktop */
 .col-side {
   position: sticky;
-  top: 16px;           /* separación desde arriba */
-  align-self: start;   /* asegura que sticky funcione en grid */
+  top: 16px;
+  align-self: start;
 }
 
-/* En pantallas medianas/móvil se apila y NO sticky */
 @media (max-width: 1100px) {
   .rs-grid { grid-template-columns: 1fr; }
   .col-side { position: static; order: 2; }
@@ -97,7 +93,7 @@ $danger-red: #EF4444;
 
   .card-label {
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 700;          /* antes 800 */
     color: $text-main;
     margin: 0 0 14px 0;
     padding-bottom: 10px;
@@ -128,7 +124,7 @@ $danger-red: #EF4444;
     }
     p {
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 700;        /* antes 800 */
       margin: 6px 0 0 0;
       color: $text-main;
       line-height: 1.2;
@@ -211,7 +207,7 @@ $danger-red: #EF4444;
       margin-bottom: 6px;
       color: $text-muted;
 
-      strong { color: $text-main; font-weight: 800; }
+      strong { color: $text-main; font-weight: 700; } /* antes 800 */
       span { white-space: nowrap; }
     }
 
@@ -289,7 +285,7 @@ $danger-red: #EF4444;
 /* SIDEBAR */
 .sidebar-data {
   .name-bold {
-    font-weight: 900;
+    font-weight: 700;        
     font-size: 16px;
     margin-bottom: 10px;
     color: $text-main;
@@ -314,7 +310,7 @@ $danger-red: #EF4444;
   .visit-time {
     font-size: 13px;
     color: $text-main;
-    font-weight: 800;
+    font-weight: 700;        
     margin-bottom: 10px;
   }
 
@@ -347,7 +343,7 @@ $danger-red: #EF4444;
 .blue-link {
   font-size: 13px;
   color: #0EA5E9;
-  font-weight: 800;
+  font-weight: 700;          /* antes 800 */
   text-decoration: none;
   margin-top: 12px;
   display: inline-block;
@@ -355,9 +351,7 @@ $danger-red: #EF4444;
   &:hover { text-decoration: underline; }
 }
 
-.btn-text-icon {
-  border-radius: 10px !important;
-}
+.btn-text-icon { border-radius: 10px !important; }
 
 /* TIMELINE */
 .timeline-compact {
@@ -381,7 +375,7 @@ $danger-red: #EF4444;
 
     .tl-txt {
       font-size: 13px;
-      font-weight: 900;
+      font-weight: 700;       /* antes 900 */
       color: $text-main;
     }
 
@@ -406,7 +400,7 @@ $danger-red: #EF4444;
   width: 100%;
   border-color: #FECACA !important;
   color: $danger-red !important;
-  font-weight: 900;
+  font-weight: 700;          /* antes 900 */
   margin-top: 10px;
   transition: all 0.25s ease !important;
   border-radius: 12px !important;
@@ -419,7 +413,7 @@ $danger-red: #EF4444;
   }
 }
 
-/* FOCUS color #124E59 */
+/* Focus */
 ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
 ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
 ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
@@ -449,7 +443,7 @@ $danger-red: #EF4444;
 
     span {
       font-size: 13px;
-      font-weight: 900;
+      font-weight: 700;       /* antes 900 */
       color: $teal-dark;
     }
   }

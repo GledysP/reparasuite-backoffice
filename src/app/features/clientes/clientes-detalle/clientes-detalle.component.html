@@ -1,65 +1,122 @@
-<div class="rs-header" *ngIf="cliente as c">
-  <div>
-    <h2 style="margin:0;">{{ c.nombre }}</h2>
-    <div class="rs-muted">{{ c.telefono || '—' }} · {{ c.email || '—' }}</div>
+<div class="rs-page-container" *ngIf="cliente as c">
+  
+  <header class="rs-header">
+    <div class="rs-title-section">
+      <h1 class="rs-customer-name">{{ c.nombre }}</h1>
+      <div class="rs-contact-info">
+        <span><mat-icon>phone</mat-icon> {{ c.telefono || 'Sin teléfono' }}</span>
+        <span><mat-icon>mail</mat-icon> {{ c.email || 'Sin email' }}</span>
+      </div>
+      <div class="rs-tag-vip">VIP</div>
+    </div>
+
+    <div class="rs-header-actions">
+      <button mat-flat-button class="rs-btn-primary" [routerLink]="['/ordenes-trabajo/nueva']">
+        <mat-icon>add</mat-icon> Nueva OT
+      </button>
+      <button mat-stroked-button class="rs-btn-outline">
+        <mat-icon>edit_note</mat-icon> Editar
+      </button>
+    </div>
+  </header>
+
+  <div class="rs-main-layout">
+    
+    <div class="rs-content-area">
+      <mat-card class="white-card-full">
+        <mat-tab-group animationDuration="0ms">
+          
+          <mat-tab label="HISTORIAL DE ÓRDENES">
+            <div class="table-container">
+              <table mat-table [dataSource]="ordenes" class="rs-table" *ngIf="ordenes.length > 0">
+                
+                <ng-container matColumnDef="codigo">
+                  <th mat-header-cell *matHeaderCellDef> OT # </th>
+                  <td mat-cell *matCellDef="let row"> <strong>{{row.codigo}}</strong> </td>
+                </ng-container>
+
+                <ng-container matColumnDef="estado">
+                  <th mat-header-cell *matHeaderCellDef> ESTADO </th>
+                  <td mat-cell *matCellDef="let row"> 
+                    <span class="rs-status-badge" [attr.data-status]="row.estado">{{row.estado}}</span> 
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef> TIPO </th>
+                  <td mat-cell *matCellDef="let row"> {{row.tipo}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="updatedAt">
+                  <th mat-header-cell *matHeaderCellDef> FECHA </th>
+                  <td mat-cell *matCellDef="let row"> {{row.updatedAt | date:'yyyy-MM-dd'}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="accion">
+                  <th mat-header-cell *matHeaderCellDef> ACCIONES </th>
+                  <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button color="primary" [routerLink]="['/ordenes-trabajo', row.id]">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+
+              <div class="rs-empty-container" *ngIf="ordenes.length === 0">
+                <div class="rs-empty-content">
+                  <mat-icon class="rs-empty-icon">inventory_2</mat-icon>
+                  <p class="rs-empty-text">Este cliente aún no tiene órdenes de trabajo.</p>
+                  <button mat-stroked-button class="rs-btn-empty" [routerLink]="['/ordenes-trabajo/nueva']">
+                    Crear primera orden
+                  </button>
+                </div>
+              </div>
+
+              <mat-paginator [length]="total" [pageSize]="size" (page)="onPageChange($event)"></mat-paginator>
+            </div>
+          </mat-tab>
+
+          <mat-tab label="DETALLES">
+            <div class="rs-details-form">
+              <div class="rs-field">
+                <label>Nombre</label>
+                <div class="rs-box">{{c.nombre}}</div>
+              </div>
+              <div class="rs-field">
+                <label>Teléfono</label>
+                <div class="rs-box">{{c.telefono || 'No registrado'}}</div>
+              </div>
+              <div class="rs-field">
+                <label>Email</label>
+                <div class="rs-box">{{c.email || 'No registrado'}}</div>
+              </div>
+            </div>
+          </mat-tab>
+
+        </mat-tab-group>
+      </mat-card>
+    </div>
+
+    <aside class="rs-sidebar">
+      <mat-card class="white-card-full summary-card">
+        <h3 class="summary-title">Summary</h3>
+        <div class="kpi-box">
+          <span class="kpi-value">{{total}}</span>
+          <span class="kpi-label">Total Work Orders</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-value accent">{{totalOpen}}</span>
+          <span class="kpi-label">Open Work Orders</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-value date">{{ (ordenes[0]?.updatedAt | date:'yyyy-MM-dd') || 'N/A' }}</span>
+          <span class="kpi-label">Last Visit</span>
+        </div>
+      </mat-card>
+    </aside>
+
   </div>
-  <a mat-stroked-button routerLink="/clientes">Volver</a>
 </div>
-
-<mat-card *ngIf="cliente as c">
-  <mat-card-content>
-    <mat-tab-group>
-      <mat-tab label="Órdenes">
-        <div style="padding-top:12px;">
-          <table mat-table [dataSource]="ordenes" class="rs-table">
-            <ng-container matColumnDef="codigo">
-              <th mat-header-cell *matHeaderCellDef>Código</th>
-              <td mat-cell *matCellDef="let row">{{ row.codigo }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="estado">
-              <th mat-header-cell *matHeaderCellDef>Estado</th>
-              <td mat-cell *matCellDef="let row">{{ row.estado }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="tipo">
-              <th mat-header-cell *matHeaderCellDef>Tipo</th>
-              <td mat-cell *matCellDef="let row">{{ row.tipo }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="actualizadoEn">
-              <th mat-header-cell *matHeaderCellDef>Actualizado</th>
-              <td mat-cell *matCellDef="let row">{{ row.actualizadoEn }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="accion">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let row">
-                <a [routerLink]="['/ordenes-trabajo', row.id]">Ver</a>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </table>
-
-          <mat-paginator
-            [length]="total"
-            [pageIndex]="page"
-            [pageSize]="size"
-            [pageSizeOptions]="[10, 20, 50]"
-            (page)="paginar($event)">
-          </mat-paginator>
-        </div>
-      </mat-tab>
-
-      <mat-tab label="Datos">
-        <div style="padding-top:12px;">
-          <p><strong>Nombre:</strong> {{ c.nombre }}</p>
-          <p><strong>Teléfono:</strong> {{ c.telefono || '—' }}</p>
-          <p><strong>Email:</strong> {{ c.email || '—' }}</p>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
-  </mat-card-content>
-</mat-card>
