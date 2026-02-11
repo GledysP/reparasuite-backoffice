@@ -1,8 +1,16 @@
-<mat-sidenav-container class="rs-container">
+<mat-sidenav-container class="rs-container" autosize>
   <!-- Sidebar -->
-  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile" class="rs-sidebar">
+  <mat-sidenav
+    #sidenav
+    class="rs-sidebar"
+    [class.is-mini]="!isMobile && isCollapsed"
+    [style.width.px]="sidebarWidth"
+    [style.minWidth.px]="sidebarWidth"
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="isMobile ? mobileOpened : true"
+    (closedStart)="onSidenavClosed()"
+  >
     <div class="rs-sidebar-header">
-      <!-- Contenedor del Logo y Título -->
       <div class="rs-logo-container">
         <img src="assets/logo.png" alt="Logo" class="rs-logo" />
         <span class="rs-brand">Repara Suite</span>
@@ -10,29 +18,29 @@
     </div>
 
     <mat-nav-list class="rs-nav-list">
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" (click)="closeMobileSidenav()">
         <mat-icon matListItemIcon>dashboard</mat-icon>
-        <span matListItemTitle>Panel</span>
+        <span class="rs-nav-text" matListItemTitle>Panel</span>
       </a>
 
-      <a mat-list-item routerLink="/ordenes-trabajo" routerLinkActive="active-link">
+      <a mat-list-item routerLink="/ordenes-trabajo" routerLinkActive="active-link" (click)="closeMobileSidenav()">
         <mat-icon matListItemIcon>assignment</mat-icon>
-        <span matListItemTitle>Órdenes de trabajo</span>
+        <span class="rs-nav-text" matListItemTitle>Órdenes de trabajo</span>
       </a>
 
-      <a mat-list-item routerLink="/clientes" routerLinkActive="active-link">
+      <a mat-list-item routerLink="/clientes" routerLinkActive="active-link" (click)="closeMobileSidenav()">
         <mat-icon matListItemIcon>people</mat-icon>
-        <span matListItemTitle>Clientes</span>
+        <span class="rs-nav-text" matListItemTitle>Clientes</span>
       </a>
 
-      <a mat-list-item routerLink="/usuarios" routerLinkActive="active-link">
+      <a mat-list-item routerLink="/usuarios" routerLinkActive="active-link" (click)="closeMobileSidenav()">
         <mat-icon matListItemIcon>engineering</mat-icon>
-        <span matListItemTitle>Usuarios</span>
+        <span class="rs-nav-text" matListItemTitle>Usuarios</span>
       </a>
 
-      <a mat-list-item routerLink="/ajustes/taller" routerLinkActive="active-link">
+      <a mat-list-item routerLink="/ajustes/taller" routerLinkActive="active-link" (click)="closeMobileSidenav()">
         <mat-icon matListItemIcon>settings</mat-icon>
-        <span matListItemTitle>Ajustes</span>
+        <span class="rs-nav-text" matListItemTitle>Ajustes</span>
       </a>
     </mat-nav-list>
   </mat-sidenav>
@@ -40,18 +48,17 @@
   <!-- Contenido -->
   <mat-sidenav-content>
     <mat-toolbar class="rs-header">
-      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isMobile">
+      <button mat-icon-button class="rs-menu-btn" (click)="toggleMenu()">
         <mat-icon>menu</mat-icon>
       </button>
 
       <div class="rs-search-wrapper">
         <mat-icon>search</mat-icon>
-        <input type="text" placeholder="Search..." />
+        <input type="text" placeholder="Buscar..." />
       </div>
 
       <span class="rs-spacer"></span>
 
-      <!-- NUEVO CONTENEDOR DE ACCIONES DERECHA -->
       <div class="rs-header-right">
         <button mat-icon-button class="rs-header-icon">
           <mat-icon matBadge="3" matBadgeColor="warn">notifications</mat-icon>

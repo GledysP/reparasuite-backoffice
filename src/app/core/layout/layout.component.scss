@@ -1,152 +1,223 @@
-$rs-primary: #124E59; 
+$rs-primary: #124E59;
 $rs-border: #e2e8f0;
-$rs-hover-gray: #f1f5f9;
+$rs-hover: rgba(15, 23, 42, 0.04);
+
+$rs-header-h: 64px;
 
 :host ::ng-deep {
-  /* 1. ÁREA DE CONTENIDO */
-  .mat-drawer-content {
-    background-color: #f6f8fb !important; 
+  .rs-container {
+    height: 100vh;
   }
 
-  /* 2. SIDEBAR */
+  .mat-drawer-content {
+    background-color: #f6f8fb !important;
+  }
+
+  /* SIDEBAR */
   .mat-drawer.rs-sidebar {
-    width: 250px !important;
-    background-color: white !important;
+    background: #fff !important;
     border-right: 1px solid $rs-border !important;
     border-radius: 0 !important;
+    overflow: hidden;
 
-    .rs-sidebar-header {
-      padding: 35px 20px; 
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid $rs-border !important; 
-      margin-bottom: 10px;
+    /* ✅ Transición SUAVE (no lag raro, no brusco) */
+    transition: width 160ms cubic-bezier(0.2, 0, 0, 1);
+    will-change: width;
+  }
 
-      .rs-brand { 
-        font-weight: 800; 
-        font-size: 1.25rem; 
-        color: $rs-primary;
-        letter-spacing: -0.5px;
-      }
+  .rs-sidebar-header {
+    height: $rs-header-h;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid $rs-border !important;
+  }
+
+  .rs-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .rs-logo {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .rs-brand {
+    font-weight: 850;
+    font-size: 15px;
+    color: $rs-primary;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rs-nav-list {
+    padding-top: 14px; /* baja un poquito “Panel” */
+  }
+
+  .rs-nav-list a.mat-mdc-list-item {
+    margin: 6px 14px !important;
+    width: auto !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+
+    --mdc-list-list-item-hover-state-layer-color: transparent;
+    --mdc-list-list-item-focus-state-layer-color: transparent;
+
+    .mdc-list-item__primary-text,
+    mat-icon {
+      color: #1e293b !important;
+      font-weight: 650;
+      transition: color 0.16s ease;
     }
 
-    /* 3. OPCIONES DEL SIDEBAR (Estilo Pastilla) */
-    .mat-mdc-nav-list .mat-mdc-list-item {
-      margin: 4px 16px !important; // Centra la pastilla
-      width: auto !important; 
-      height: 44px !important;
-      border-radius: 10px !important; 
-      
-      --mdc-list-list-item-hover-state-layer-color: transparent;
-      --mdc-list-list-item-focus-state-layer-color: transparent;
+    &:hover:not(.active-link) {
+      background: $rs-hover !important;
 
-      // ESTADO NORMAL: Letras Negras
-      .mdc-list-item__primary-text, mat-icon { 
-        color: #1e293b !important; 
-        font-weight: 500;
-        transition: all 0.2s ease;
-      }
-
-      // HOVER: Sombreado Gris
-      &:hover:not(.active-link) {
-        background-color: $rs-hover-gray !important;
-        .mdc-list-item__primary-text, mat-icon { 
-          color: $rs-primary !important; 
-        }
-      }
-
-      // ACTIVO: Fondo Navy y Letras Blancas (Clave de la Guía)
-      &.active-link {
-        background-color: $rs-primary !important;
-        .mdc-list-item__primary-text, mat-icon { 
-          color: white !important; // FUERZA LETRAS BLANCAS
-        }
+      .mdc-list-item__primary-text,
+      mat-icon {
+        color: $rs-primary !important;
       }
     }
   }
 
-  /* 4. HEADER: Espaciado y Buscador Innovador */
+  /* ✅ ACTIVO (verde #124E59) */
+  .rs-nav-list a.mat-mdc-list-item.active-link {
+    background: rgba(18, 78, 89, 0.14) !important;
+    border: 1px solid rgba(18, 78, 89, 0.22) !important;
+
+    .mdc-list-item__primary-text,
+    mat-icon {
+      color: $rs-primary !important;
+      font-weight: 800 !important;
+    }
+  }
+
+  /* HEADER */
   .mat-toolbar.rs-header {
-    background-color: white !important;
+    height: $rs-header-h;
+    background: #fff !important;
     border-bottom: 1px solid $rs-border !important;
     box-shadow: none !important;
-    height: 75px; 
+
     display: flex;
     align-items: center;
-    padding: 0 24px;
-    justify-content: space-between; // Asegura que los elementos se repartan
+    gap: 14px;
+    padding: 0 18px;
+  }
 
-    .rs-search-wrapper {
-      display: flex;
-      align-items: center;
-      background-color: #f8fafc;
-      border: 1px solid $rs-border;
-      border-radius: 8px;
-      padding: 0 12px;
-      width: 320px;
-      height: 40px;
-      transition: all 0.2s ease-in-out;
+  .rs-search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
-      mat-icon { color: #94a3b8; font-size: 20px; }
+    background: #f8fafc;
+    border: 1px solid $rs-border;
+    border-radius: 10px;
+    padding: 0 12px;
+    height: 40px;
+    width: 420px;
 
-      &:focus-within {
-        background-color: white;
-        border: 2px solid $rs-primary !important;
-        box-shadow: 0 0 0 3px rgba(18, 78, 89, 0.1);
-        mat-icon { color: $rs-primary; }
-      }
-
-      input {
-        border: none !important;
-        outline: none !important;
-        background: transparent;
-        width: 100%;
-        margin-left: 8px;
-        font-size: 14px;
-      }
+    mat-icon {
+      color: #94a3b8;
+      font-size: 20px;
     }
 
-    // Contenedor para separar iconos finales
-    .rs-header-right {
-      display: flex;
-      align-items: center;
-      gap: 16px; // SEPARACIÓN ENTRE NOTIFICACIÓN Y AVATAR
+    &:focus-within {
+      background: #fff;
+      border: 2px solid $rs-primary !important;
+      box-shadow: 0 0 0 3px rgba(18, 78, 89, 0.1);
+      mat-icon { color: $rs-primary; }
     }
+
+    input {
+      border: none !important;
+      outline: none !important;
+      background: transparent;
+      width: 100%;
+      font-size: 14px;
+      font-weight: 650;
+      color: #0f172a;
+    }
+  }
+
+  .rs-header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
 }
 
-/* 5. AVATAR Y LOGOTIPO */
+/* Avatar */
 .rs-avatar-btn {
-  background-color: $rs-primary !important;
-  color: white !important;
+  background: $rs-primary !important;
+  color: #fff !important;
   width: 38px !important;
   height: 38px !important;
   min-width: 38px !important;
-  border-radius: 50% !important; // CÍRCULO PERFECTO
-  display: flex;
+  border-radius: 50% !important;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 800;
   border: none;
   cursor: pointer;
   padding: 0 !important;
 }
 
-.rs-logo {
-  height: 32px;
-  width: auto;
-  display: block;
-  object-fit: contain;
-}
-
-.rs-logo-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
+/* Contenido */
 .rs-content-area {
   padding: 32px;
   background-color: #f6f8fb;
+}
+
+/* =========================
+   MINI SIDEBAR: iconos centrados
+========================= */
+:host ::ng-deep .rs-sidebar.is-mini {
+  .rs-brand {
+    display: none !important;
+  }
+
+  .rs-sidebar-header {
+    padding: 0 10px;
+    justify-content: center;
+  }
+
+  .rs-logo-container {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .rs-nav-list a.mat-mdc-list-item {
+    margin: 8px 10px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+
+  .rs-nav-text {
+    display: none !important;
+  }
+
+  mat-icon {
+    margin: 0 !important;
+  }
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  :host ::ng-deep .rs-search-wrapper {
+    width: 100% !important;
+    max-width: 520px;
+  }
+
+  .rs-content-area {
+    padding: 16px;
+  }
 }

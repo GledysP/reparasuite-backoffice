@@ -1,15 +1,19 @@
 <div class="rs-main-container"> 
   <div class="rs-header-row">
     <h1 class="rs-page-title">Clientes</h1>
-   </div>
+  </div>
 
   <mat-card class="rs-filter-card">
     <mat-card-content>
       <form [formGroup]="form">
-        <mat-form-field appearance="outline" class="rs-search-field">
-          <mat-icon matPrefix>search</mat-icon>
-          <input matInput formControlName="query" placeholder="Buscar por nombre, teléfono o email" />
-        </mat-form-field>
+        <div class="rs-field">
+          <div class="rs-field-label">Buscar por nombre, teléfono o email</div>
+          
+          <mat-form-field appearance="outline" class="rs-search-field">
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput formControlName="query" placeholder="Ej: Juan Pérez..." />
+          </mat-form-field>
+        </div>
       </form>
     </mat-card-content>
   </mat-card>
