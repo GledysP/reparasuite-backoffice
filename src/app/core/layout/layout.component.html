@@ -1,11 +1,9 @@
 <mat-sidenav-container class="rs-container" autosize>
-  <!-- Sidebar -->
   <mat-sidenav
     #sidenav
     class="rs-sidebar"
     [class.is-mini]="!isMobile && isCollapsed"
     [style.width.px]="sidebarWidth"
-    [style.minWidth.px]="sidebarWidth"
     [mode]="isMobile ? 'over' : 'side'"
     [opened]="isMobile ? mobileOpened : true"
     (closedStart)="onSidenavClosed()"
@@ -45,7 +43,6 @@
     </mat-nav-list>
   </mat-sidenav>
 
-  <!-- Contenido -->
   <mat-sidenav-content>
     <mat-toolbar class="rs-header">
       <button mat-icon-button class="rs-menu-btn" (click)="toggleMenu()">

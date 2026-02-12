@@ -1,16 +1,17 @@
 $rs-primary: #124E59;
+$rs-green: #1db954;
+// Degradado innovador para el módulo activo
+$rs-gradient: linear-gradient(135deg, #124E59 0%, #1db954 100%);
 $rs-border: #e2e8f0;
 $rs-hover: rgba(15, 23, 42, 0.04);
-
 $rs-header-h: 64px;
+
+/* ✅ Sincronización Global de Animación */
+$layout-transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
 
 :host ::ng-deep {
   .rs-container {
     height: 100vh;
-  }
-
-  .mat-drawer-content {
-    background-color: #f6f8fb !important;
   }
 
   /* SIDEBAR */
@@ -19,10 +20,18 @@ $rs-header-h: 64px;
     border-right: 1px solid $rs-border !important;
     border-radius: 0 !important;
     overflow: hidden;
-
-    /* ✅ Transición SUAVE (no lag raro, no brusco) */
-    transition: width 160ms cubic-bezier(0.2, 0, 0, 1);
+    
+    // Forzamos la transición sincronizada
+    transition: $layout-transition !important;
     will-change: width;
+  }
+
+  /* ✅ SINCRONIZACIÓN DEL CONTENIDO (Header y Main) */
+  .mat-drawer-content {
+    background-color: #f6f8fb !important;
+    // Esto hace que el margen del contenido se anime igual que el sidebar
+    transition: $layout-transition !important;
+    will-change: margin-left;
   }
 
   .rs-sidebar-header {
@@ -44,7 +53,6 @@ $rs-header-h: 64px;
     height: 30px;
     width: auto;
     object-fit: contain;
-    display: block;
   }
 
   .rs-brand {
@@ -53,12 +61,10 @@ $rs-header-h: 64px;
     color: $rs-primary;
     letter-spacing: -0.02em;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   .rs-nav-list {
-    padding-top: 14px; /* baja un poquito “Panel” */
+    padding-top: 14px;
   }
 
   .rs-nav-list a.mat-mdc-list-item {
@@ -66,12 +72,12 @@ $rs-header-h: 64px;
     width: auto !important;
     height: 44px !important;
     border-radius: 12px !important;
+    transition: $layout-transition;
 
     --mdc-list-list-item-hover-state-layer-color: transparent;
     --mdc-list-list-item-focus-state-layer-color: transparent;
 
-    .mdc-list-item__primary-text,
-    mat-icon {
+    .mdc-list-item__primary-text, mat-icon {
       color: #1e293b !important;
       font-weight: 650;
       transition: color 0.16s ease;
@@ -79,23 +85,19 @@ $rs-header-h: 64px;
 
     &:hover:not(.active-link) {
       background: $rs-hover !important;
-
-      .mdc-list-item__primary-text,
-      mat-icon {
-        color: $rs-primary !important;
-      }
+      .mdc-list-item__primary-text, mat-icon { color: $rs-primary !important; }
     }
   }
 
-  /* ✅ ACTIVO (verde #124E59) */
+  /* ✅ MÓDULO ACTIVO CON COLOR INNOVADOR */
   .rs-nav-list a.mat-mdc-list-item.active-link {
-    background: rgba(18, 78, 89, 0.14) !important;
-    border: 1px solid rgba(18, 78, 89, 0.22) !important;
+    background: $rs-gradient !important; // Aplicamos el degradado del botón
+    box-shadow: 0 4px 12px rgba(18, 78, 89, 0.2) !important;
+    border: none !important;
 
-    .mdc-list-item__primary-text,
-    mat-icon {
-      color: $rs-primary !important;
-      font-weight: 800 !important;
+    .mdc-list-item__primary-text, mat-icon {
+      color: #ffffff !important; // Texto blanco para contraste con el degradado
+      font-weight: 700 !important;
     }
   }
 
@@ -105,18 +107,17 @@ $rs-header-h: 64px;
     background: #fff !important;
     border-bottom: 1px solid $rs-border !important;
     box-shadow: none !important;
-
     display: flex;
     align-items: center;
     gap: 14px;
     padding: 0 18px;
+    // No necesita transición propia porque hereda la del mat-drawer-content
   }
 
   .rs-search-wrapper {
     display: flex;
     align-items: center;
     gap: 8px;
-
     background: #f8fafc;
     border: 1px solid $rs-border;
     border-radius: 10px;
@@ -124,16 +125,10 @@ $rs-header-h: 64px;
     height: 40px;
     width: 420px;
 
-    mat-icon {
-      color: #94a3b8;
-      font-size: 20px;
-    }
-
     &:focus-within {
       background: #fff;
       border: 2px solid $rs-primary !important;
-      box-shadow: 0 0 0 3px rgba(18, 78, 89, 0.1);
-      mat-icon { color: $rs-primary; }
+      input { color: #0f172a; }
     }
 
     input {
@@ -143,81 +138,23 @@ $rs-header-h: 64px;
       width: 100%;
       font-size: 14px;
       font-weight: 650;
-      color: #0f172a;
     }
   }
-
-  .rs-header-right {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
 }
 
-/* Avatar */
-.rs-avatar-btn {
-  background: $rs-primary !important;
-  color: #fff !important;
-  width: 38px !important;
-  height: 38px !important;
-  min-width: 38px !important;
-  border-radius: 50% !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  border: none;
-  cursor: pointer;
-  padding: 0 !important;
-}
-
-/* Contenido */
 .rs-content-area {
   padding: 32px;
   background-color: #f6f8fb;
 }
 
-/* =========================
-   MINI SIDEBAR: iconos centrados
-========================= */
+/* MINI SIDEBAR */
 :host ::ng-deep .rs-sidebar.is-mini {
-  .rs-brand {
-    display: none !important;
-  }
-
-  .rs-sidebar-header {
-    padding: 0 10px;
-    justify-content: center;
-  }
-
-  .rs-logo-container {
-    justify-content: center;
-    width: 100%;
-  }
-
+  .rs-brand { display: none !important; }
+  .rs-sidebar-header { justify-content: center; padding: 0; }
+  .rs-logo-container { justify-content: center; }
   .rs-nav-list a.mat-mdc-list-item {
     margin: 8px 10px !important;
-    padding: 0 !important;
-    justify-content: center !important;
+    .mdc-list-item__content { justify-content: center !important; display: flex; }
   }
-
-  .rs-nav-text {
-    display: none !important;
-  }
-
-  mat-icon {
-    margin: 0 !important;
-  }
-}
-
-/* Responsive */
-@media (max-width: 700px) {
-  :host ::ng-deep .rs-search-wrapper {
-    width: 100% !important;
-    max-width: 520px;
-  }
-
-  .rs-content-area {
-    padding: 16px;
-  }
+  .rs-nav-text { display: none !important; }
 }

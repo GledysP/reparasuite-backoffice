@@ -78,20 +78,19 @@ export class LayoutComponent {
     });
   }
 
-  toggleMenu() {
-    if (this.isMobile) {
-      this.mobileOpened = !this.mobileOpened;
-      this.sidenav.toggle();
-      return;
-    }
-
-    // Desktop: mini/full
-    this.isCollapsed = !this.isCollapsed;
-
-    // ✅ CLAVE: recalcular márgenes para que header/content NO se corten
-    // (sin setTimeout largo -> no “lag raro”)
-    queueMicrotask(() => this.sidenavContainer.updateContentMargins());
+ toggleMenu() {
+  if (this.isMobile) {
+    this.mobileOpened = !this.mobileOpened;
+    this.sidenav.toggle();
+    return;
   }
+
+  // Desktop: mini/full
+  this.isCollapsed = !this.isCollapsed;
+
+  // ✅ Recalcular márgenes inmediatamente para que la transición de CSS tome el control
+  this.sidenavContainer.updateContentMargins();
+}
 
   onSidenavClosed() {
     if (this.isMobile) this.mobileOpened = false;

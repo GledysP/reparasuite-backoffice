@@ -1,14 +1,16 @@
 $focus-color: #124E59;
+$rs-primary: #124E59;
+$rs-green: #1db954;
+$rs-gradient: linear-gradient(135deg, #124E59 0%, #1db954 100%);
 $rs-border: #cbd5e1;
 $rs-border-soft: #e2e8f0;
 $rs-text: #334155;
 $rs-label: #64748b;
-$rs-hover-color: #f1f5f9;
+$rs-hover-color: #f8fafc;
 
-/* ✅ Layout + title global */
-
+/* Botón Nueva OT */
 .btn-new-ot {
-  background-color: #2dd4bf !important;
+  background: $rs-gradient !important;
   color: #fff !important;
   border-radius: 8px !important;
   font-weight: 700 !important;
@@ -17,11 +19,18 @@ $rs-hover-color: #f1f5f9;
   display: flex;
   align-items: center;
   gap: 8px;
+  box-shadow: 0 4px 10px rgba(18, 78, 89, 0.2) !important;
+  transition: all 0.3s ease !important;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(18, 78, 89, 0.3) !important;
+  }
 
   mat-icon { font-size: 20px; width: 20px; height: 20px; }
 }
 
-/* Mis filtros: se quedan igual */
+/* Filtros */
 .rs-filter-card {
   box-shadow: none !important;
   border: 1px solid $rs-border-soft !important;
@@ -36,19 +45,15 @@ $rs-hover-color: #f1f5f9;
     grid-template-columns: 160px 120px 140px 1fr auto;
     padding: 16px;
 
-    @media (max-width: 1024px) {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    @media (max-width: 640px) {
-      grid-template-columns: 1fr;
-    }
+    @media (max-width: 1024px) { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 640px) { grid-template-columns: 1fr; }
   }
 }
 
 .rs-field { display: flex; flex-direction: column; gap: 6px; }
 .rs-field-label { font-size: 11px; font-weight: 700; color: $rs-label; text-transform: uppercase; }
 
+/* Inputs y Selects */
 :host ::ng-deep {
   .mat-mdc-form-field .mdc-notched-outline { display: none !important; }
   .mat-mdc-form-field .mat-mdc-text-field-wrapper {
@@ -64,7 +69,7 @@ $rs-hover-color: #f1f5f9;
   .mat-mdc-form-field-subscript-wrapper { display: none !important; }
 }
 
-/* Tabla se mantiene igual */
+/* Tabla */
 .rs-table-card {
   background-color: #ffffff !important;
   border: 1px solid $rs-border-soft !important;
@@ -74,10 +79,7 @@ $rs-hover-color: #f1f5f9;
   mat-card-content { padding: 0 !important; }
 }
 
-.rs-table-responsive {
-  width: 100%;
-  overflow-x: auto;
-}
+.rs-table-responsive { width: 100%; overflow-x: auto; }
 
 .rs-table {
   width: 100%;
@@ -87,6 +89,8 @@ $rs-hover-color: #f1f5f9;
     color: $rs-label;
     border-bottom: 1px solid $rs-border-soft;
     background: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
   }
 
   td.mat-mdc-cell {
@@ -99,18 +103,40 @@ $rs-hover-color: #f1f5f9;
 
 .col-code { font-weight: 800; color: #0f172a; }
 
+/* ✅ BADGES CON DEGRADADOS ACTUALIZADOS */
 .status-badge {
-  padding: 4px 10px;
-  border-radius: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   display: inline-block;
+  color: white !important;
+  text-transform: uppercase;
 
-  &[data-status="EN_CURSO"], &[data-status="En_curso"] { background: #ccfbf1; color: #0d9488; }
-  &[data-status="RECIBIDA"], &[data-status="Recibida"] { background: #f1f5f9; color: #475569; }
-  &[data-status="PRESUPUESTO"] { background: #fef3c7; color: #d97706; }
+  &[data-status="EN_CURSO"], &[data-status="En_curso"] { background: $rs-gradient !important; }
+  &[data-status="RECIBIDA"], &[data-status="Recibida"] { background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%) !important; }
+  &[data-status="PRESUPUESTO"] { background: linear-gradient(135deg, #eab308 0%, #facc15 100%) !important; }
+  &[data-status="APROBADA"] { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%) !important; }
+  &[data-status="FINALIZADA"] { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%) !important; }
+  &[data-status="CERRADA"] { background: linear-gradient(135deg, #dc2626 0%, #f87171 100%) !important; }
 }
 
+/* ✅ BOTONES DE ACCIÓN SIN AZUL */
 .rs-actions-container { display: flex; gap: 8px; }
-.rs-btn-action { color: $rs-label; }
+
+.rs-btn-action { 
+  color: $rs-label !important; 
+  transition: all 0.2s ease !important;
+
+  // Mata el azul de Material definitivamente
+  ::ng-deep .mat-mdc-button-state-layer { background-color: transparent !important; }
+  ::ng-deep .mat-mdc-button-persistent-ripple::before { display: none !important; }
+
+  &:hover {
+    color: $rs-primary !important;
+    background-color: $rs-hover-color !important;
+    transform: translateY(-1px);
+  }
+}
+
 .rs-paginator { background: white !important; }
