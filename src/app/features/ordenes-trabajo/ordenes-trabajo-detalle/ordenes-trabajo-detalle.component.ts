@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, inject, TemplateRef, ViewChild, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgFor, NgIf, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
+// Imports de Angular Material necesarios para tu HTML
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -14,12 +15,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { EstadoOt } from '../../../core/models/enums';
+import { OtDetalle } from '../../../core/models/tipos';
 
 @Component({
   selector: 'rs-ordenes-trabajo-detalle',
   standalone: true,
   imports: [
-    NgIf, NgFor, DatePipe, RouterLink, ReactiveFormsModule,
+    DatePipe, RouterLink, ReactiveFormsModule,
     MatCardModule, MatFormFieldModule, MatSelectModule,
     MatInputModule, MatButtonModule, MatSnackBarModule, MatIconModule,
     MatDialogModule 
@@ -36,86 +38,84 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
 
   @ViewChild('imageModal') imageModal!: TemplateRef<any>;
 
-  id!: string;
-  ot: any = null;
-  selectedImageUrl: string = '';
+  // Signal para la data principal
+  ot = signal<OtDetalle | null>(null);
+  selectedImageUrl = signal<string>('');
+  
+  id = this.route.snapshot.paramMap.get('id')!;
   estados: EstadoOt[] = ['RECIBIDA','PRESUPUESTO','APROBADA','EN_CURSO','FINALIZADA','CERRADA'];
 
-  formEstado = this.fb.group({ a: ['RECIBIDA' as EstadoOt, Validators.required] });
-  formNota = this.fb.group({ contenido: ['', [Validators.required]] });
+  // Formulario para el cambio de estado
+  formEstado = this.fb.group({
+    a: [null as EstadoOt | null, Validators.required]
+  });
+
+  // Formulario para las notas
+  formNota = this.fb.group({
+    contenido: ['', [Validators.required]]
+  });
 
   ngOnInit(): void {
-    this.id = this.route.snapshot.paramMap.get('id')!;
     this.cargar();
   }
 
-  cargar() {
+  cargar(): void {
     this.ordenes.obtener(this.id).subscribe({
-      next: (ot) => {
-        this.ot = ot;
-        if (ot.estado) this.formEstado.controls.a.setValue(ot.estado);
+      next: (res) => {
+        this.ot.set(res);
+        if (res.estado) {
+          this.formEstado.controls.a.setValue(res.estado);
+        }
       },
-      error: () => this.snack.open('Error loading order', 'OK', { duration: 2500 }),
+      error: () => this.snack.open('Error al cargar la orden', 'OK', { duration: 2500 }),
     });
   }
 
-  cambiarEstado(nuevo?: EstadoOt) {
-    const estadoFinal = nuevo || this.formEstado.controls.a.value!;
-    console.log('Intentando cambiar estado a:', estadoFinal); // Para debug
-    
+  cambiarEstado(nuevo?: EstadoOt): void {
+    const estadoFinal = nuevo || this.formEstado.controls.a.value;
+    if (!estadoFinal) return;
+
     this.ordenes.cambiarEstado(this.id, estadoFinal).subscribe({
       next: () => { 
-        this.snack.open('Status updated', 'OK', { duration: 2000 }); 
+        this.snack.open('Estado actualizado', 'OK', { duration: 2000 }); 
         this.cargar(); 
       },
-      error: (err) => {
-        console.error('Error en la petición:', err);
-        this.snack.open('Error updating status', 'OK', { duration: 2500 });
-      }
+      error: () => this.snack.open('Error al actualizar', 'OK', { duration: 2500 })
     });
   }
 
-  verFoto(foto: any) {
-    this.selectedImageUrl = foto?.url || foto;
-    this.dialog.open(this.imageModal, {
-      width: 'auto',
-      maxWidth: '90vw',
-      panelClass: 'custom-modal-box'
-    });
-  }
-
-  anadirNota() {
+  anadirNota(): void {
     if (this.formNota.invalid) return;
-    const contenido = this.formNota.getRawValue().contenido!;
+    const contenido = this.formNota.controls.contenido.value!;
     this.ordenes.anadirNota(this.id, contenido).subscribe({
       next: () => { 
         this.formNota.reset(); 
-        this.snack.open('Note added', 'OK', { duration: 2000 }); 
+        this.snack.open('Nota añadida', 'OK', { duration: 2000 }); 
         this.cargar(); 
       },
-      error: () => this.snack.open('Error adding note', 'OK', { duration: 2500 }),
+      error: () => this.snack.open('Error al añadir nota', 'OK', { duration: 2500 }),
     });
   }
 
-  onFileSelected(ev: Event) {
+  verFoto(foto: any): void {
+    // Soportamos si viene el objeto FotoOt o solo el string
+    const url = foto?.url || foto;
+    this.selectedImageUrl.set(url);
+    this.dialog.open(this.imageModal, { width: 'auto', maxWidth: '90vw' });
+  }
+
+  onFileSelected(ev: Event): void {
     const input = ev.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
       this.ordenes.subirFoto(this.id, file).subscribe({
         next: () => { 
-          this.snack.open('Photo uploaded', 'OK', { duration: 2000 }); 
+          this.snack.open('Foto subida', 'OK', { duration: 2000 }); 
           this.cargar(); 
         },
-        error: () => this.snack.open('Error uploading photo', 'OK', { duration: 2500 }),
+        error: () => this.snack.open('Error al subir foto', 'OK', { duration: 2500 }),
       });
     }
     input.value = '';
-  }
-
-  copyToClipboard(text: string | undefined) {
-    if (!text) return;
-    navigator.clipboard.writeText(text).then(() => {
-      this.snack.open('Copied to clipboard', 'OK', { duration: 1500 });
-    });
   }
 }

@@ -6,20 +6,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import { MatIconModule } from '@angular/material/icon'; // <--- 1. Importar esto
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'rs-usuario-form-dialog',
   standalone: true,
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatInputModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatIconModule // <--- 2. Agregar esto aquí
+    CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule,
+    MatInputModule, MatSelectModule, MatOptionModule, MatIconModule
   ],
   templateUrl: './usuario-form-dialog.component.html',
   styleUrl: './usuario-form-dialog.component.scss'
@@ -36,7 +30,7 @@ export class UsuarioFormDialogComponent {
       nombre: [data?.nombre || '', Validators.required],
       email: [data?.email || '', [Validators.required, Validators.email]],
       rol: [data?.rol || '', Validators.required],
-      password: ['', data ? [] : [Validators.required]]
+      password: ['', data ? [] : [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -46,7 +40,9 @@ export class UsuarioFormDialogComponent {
 
   guardar(): void {
     if (this.form.valid) {
-      this.dialogRef.close(this.form.value);
+      const payload = { ...this.form.value };
+      if (this.data) delete payload.password; // No enviar password si es edición
+      this.dialogRef.close(payload);
     }
   }
 }

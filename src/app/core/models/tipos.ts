@@ -1,9 +1,12 @@
-// Usamos 'import type' para traerlos y que se puedan usar aquí abajo
+// Importo los enums para definir las reglas de negocio de los estados y tipos
 import type { EstadoOt, PrioridadOt, RolUsuario, TipoEventoOt, TipoOt } from './enums';
 
-// Usamos 'export type' para que otros archivos (como el servicio) puedan verlos
+// Exporto los tipos para que los servicios y componentes hablen el mismo idioma
 export type { EstadoOt, PrioridadOt, RolUsuario, TipoEventoOt, TipoOt };
 
+/**
+ * Represento la información mínima de un usuario para mostrar en listas o asignaciones.
+ */
 export interface UsuarioResumen {
   id: string;
   nombre: string;
@@ -11,6 +14,9 @@ export interface UsuarioResumen {
   activo?: boolean;
 }
 
+/**
+ * Gestiono los datos de contacto básicos de un cliente vinculados a una orden.
+ */
 export interface ClienteResumen {
   id: string;
   nombre: string;
@@ -19,8 +25,7 @@ export interface ClienteResumen {
 }
 
 /**
- * Representa un ítem en la lista general de Órdenes de Trabajo.
- * Corregido según Swagger para manejar la respuesta simplificada del servidor.
+ * Estructuro cada fila de la tabla principal de Órdenes de Trabajo para que sea ligera y rápida.
  */
 export interface OtListaItem {
   id: string;
@@ -28,13 +33,14 @@ export interface OtListaItem {
   estado: EstadoOt;
   tipo: TipoOt;
   prioridad: PrioridadOt;
-  // El backend devuelve estos campos como strings directos en la lista
   clienteNombre: string;     
   tecnicoNombre: string | null; 
-  // La fecha de actualización en la lista se llama updatedAt
-  updatedAt: string;        
+  updatedAt: string;         
 }
 
+/**
+ * Defino el formato de los comentarios internos que los técnicos dejan en la orden.
+ */
 export interface NotaOt {
   id: string;
   autor: { id: string; nombre: string };
@@ -42,6 +48,9 @@ export interface NotaOt {
   creadoEn: string;
 }
 
+/**
+ * Registro la ubicación y metadatos de las imágenes subidas como evidencia del trabajo.
+ */
 export interface FotoOt {
   id: string;
   nombreArchivo: string;
@@ -49,6 +58,9 @@ export interface FotoOt {
   creadoEn: string;
 }
 
+/**
+ * Documento eventos técnicos del sistema para auditoría interna.
+ */
 export interface EventoOt {
   id: string;
   tipo: TipoEventoOt;
@@ -58,8 +70,7 @@ export interface EventoOt {
 }
 
 /**
- * Representa el detalle completo de una Orden de Trabajo.
- * Aquí el cliente y técnico sí vienen como objetos completos.
+ * Soy la fuente de verdad detallada de una Orden de Trabajo, uniendo cliente, técnicos y multimedia.
  */
 export interface OtDetalle {
   id: string;
@@ -85,11 +96,17 @@ export interface OtDetalle {
   notas: NotaOt[];
   fotos: FotoOt[];
   eventos: EventoOt[];
+  
+  // Añado este campo para recibir la implementación automatizada del backend
+  historial: HistorialItem[]; 
 
   creadoEn: string;
   actualizadoEn: string;
 }
 
+/**
+ * Almaceno la configuración global de identidad y formato del taller.
+ */
 export interface AjustesTaller {
   nombre: string;
   telefono: string | null;
@@ -98,11 +115,29 @@ export interface AjustesTaller {
   prefijoOt: string;
 }
 
+/**
+ * Represento las órdenes asociadas a un cliente específico dentro de su perfil.
+ */
 export interface ClienteOrdenItem {
   id: string;
   codigo: string;
   estado: EstadoOt;
   tipo: TipoOt;
-  updatedAt: string; // Usamos el nombre que ya viene en OtListaItem
+  updatedAt: string; 
   tecnicoNombre: string | null;
+}
+
+// --- AGREGADO PARA EL NUEVO TIMELINE DEL BACKEND ---
+
+/**
+ * Defino la estructura de los eventos del historial que el backend generará automáticamente.
+ * Estos objetos alimentan el Timeline visual en el detalle de la orden.
+ */
+export interface HistorialItem {
+  fecha: string;
+  evento: string; // Ej: 'ESTADO_CAMBIADO', 'NOTA_AGREGADA', 'FOTO_SUBIDA'
+  descripcion: string; // Texto enriquecido: "Orden creada (TIENDA/ALTA) para Carlos Pérez..."
+  usuario: {
+    nombre: string; // Nombre del usuario que disparó la acción obtenido del JWT
+  };
 }

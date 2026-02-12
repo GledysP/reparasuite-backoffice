@@ -1,159 +1,152 @@
-<div class="rs-page-container" *ngIf="ot">
-  <div class="rs-header-compact">
-    <div class="breadcrumb">Órdenes de trabajo / <span class="current">{{ ot.codigo }}</span></div>
-
+@if (ot(); as data) {
+<div class="rs-page-container">
+  <header class="rs-header-compact">
+    <div class="breadcrumb">Órdenes de trabajo / <span class="current">{{ data.codigo }}</span></div>
     <div class="header-main-row">
       <div class="title-group">
-        <h1>{{ ot.codigo }}</h1>
-        <span class="badge-status" [attr.data-estado]="ot.estado">{{ ot.estado }}</span>
+        <h1>{{ data.codigo }}</h1>
+        <span class="badge-status" [attr.data-estado]="data.estado">{{ data.estado }}</span>
       </div>
-
       <button mat-stroked-button routerLink="/ordenes-trabajo" class="btn-back">Volver</button>
     </div>
-  </div>
+  </header>
 
   <div class="rs-grid">
-    <div class="col-main">
-      <div class="white-card">
+    <main class="col-main">
+      <section class="white-card">
         <h2 class="card-label">Resumen</h2>
-
         <div class="summary-grid">
-          <div class="data-item"><label>Tipo</label><p>{{ ot.tipo }}</p></div>
-          <div class="data-item"><label>Creada</label><p>{{ (ot.creadoEn || ot.createdAt) | date:'yyyy-MM-dd' }}</p></div>
-          <div class="data-item"><label>Técnico</label><p>{{ ot.tecnico?.nombre || 'Sin asignar' }}</p></div>
-          <div class="data-item"><label>Programada</label><p>{{ ot.fechaPrevista | date:'yyyy-MM-dd HH:mm' }}</p></div>
+          <div class="data-item"><label>Tipo</label><p>{{ data.tipo }}</p></div>
+          <div class="data-item"><label>Prioridad</label><p>{{ data.prioridad }}</p></div>
+          <div class="data-item">
+            <label>Técnico</label>
+            <p>{{ data.tecnico ? data.tecnico.nombre : 'Sin asignar' }}</p>
+          </div>
+          <div class="data-item">
+            <label>Programada</label>
+            <p>{{ data.fechaPrevista ? (data.fechaPrevista | date:'yyyy-MM-dd HH:mm') : 'No programada' }}</p>
+          </div>
         </div>
 
         <div class="action-section">
           <label class="inner-label">Cambiar estado</label>
-
           <div class="input-inline-group">
             <mat-form-field appearance="outline" class="ultra-compact-field field-grow">
               <mat-select [formControl]="formEstado.controls.a">
-                <mat-option *ngFor="let e of estados" [value]="e">{{ e }}</mat-option>
+                @for (e of estados; track e) {
+                  <mat-option [value]="e">{{ e }}</mat-option>
+                }
               </mat-select>
             </mat-form-field>
-
-            <button mat-flat-button class="btn-teal-action btn-fixed" (click)="cambiarEstado()">
-              Actualizar
-            </button>
+            <button mat-flat-button class="btn-teal-action btn-fixed" (click)="cambiarEstado()">Actualizar</button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="white-card">
+      <section class="white-card">
         <h2 class="card-label">Descripción del problema</h2>
-        <p class="text-body-small">{{ ot.descripcion || 'No hay descripción.' }}</p>
-      </div>
+        <p class="text-body-small">{{ data.descripcion || 'Sin descripción' }}</p>
+      </section>
 
-      <div class="white-card">
+      <section class="white-card">
         <h2 class="card-label">Notas internas</h2>
-
         <div class="notes-stack">
-          <div class="note-box" *ngFor="let n of ot.notas">
-            <div class="note-header">
-              <strong>{{ n.autor?.nombre || 'Técnico' }}</strong>
-              <span>{{ n.creadoEn | date:'MMM d, h:mm a' }}</span>
+          @for (n of data.notas; track n.id) {
+            <div class="note-box">
+              <div class="note-header">
+                <strong>{{ n.autor ? n.autor.nombre : 'Usuario' }}</strong>
+                <span>{{ n.creadoEn | date:'MMM d, h:mm a' }}</span>
+              </div>
+              <p>{{ n.contenido }}</p>
             </div>
-            <p>{{ n.contenido }}</p>
-          </div>
-
-          <div class="input-inline-group">
+          } @empty {
+            <p class="text-muted">No hay notas registradas.</p>
+          }
+          
+          <div class="input-inline-group note-input-area">
             <mat-form-field appearance="outline" class="ultra-compact-field field-grow">
-              <input
-                matInput
-                placeholder="Agregar nota..."
-                [formControl]="formNota.controls.contenido"
-                (keyup.enter)="anadirNota()" />
+              <input matInput placeholder="Agregar nota..." [formControl]="formNota.controls.contenido" (keyup.enter)="anadirNota()" />
             </mat-form-field>
-
             <button mat-flat-button class="btn-teal-action btn-fixed" (click)="anadirNota()">
               <mat-icon>add</mat-icon> Agregar
             </button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="white-card">
+      <section class="white-card">
         <h2 class="card-label">Fotos</h2>
-
         <div class="photos-minimal">
-          <div class="photo-thumb-container" *ngIf="ot.fotos?.length; else noPhotos">
-            <div class="thumb-wrapper" *ngFor="let f of ot.fotos; let i = index" (click)="verFoto(f)">
-              <img [src]="f.url || f" class="mini-thumb" alt="Foto">
-              <span class="thumb-label">Foto {{ i + 1 }}</span>
-            </div>
+          <div class="photo-thumb-container">
+            @for (f of data.fotos; track f.id; let i = $index) {
+              <div class="thumb-wrapper" (click)="verFoto(f)">
+                <img [src]="f.url" class="mini-thumb" [alt]="f.nombreArchivo">
+                <span class="thumb-label">Foto {{ i + 1 }}</span>
+                <div class="thumb-overlay"><mat-icon>visibility</mat-icon></div>
+              </div>
+            } @empty {
+              <p class="text-muted">Sin fotos registradas.</p>
+            }
           </div>
-
-          <ng-template #noPhotos>
-            <span class="text-muted">Sin fotos.</span>
-          </ng-template>
-
           <label class="upload-link-btn">
             <input type="file" (change)="onFileSelected($event)" hidden />
             <mat-icon>add_a_photo</mat-icon> Subir foto
           </label>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
-    <div class="col-side">
-      <div class="white-card side-card">
+    <aside class="col-side">
+      <section class="white-card side-card">
         <h2 class="card-label">Cliente</h2>
-
         <div class="sidebar-data">
-          <div class="name-bold">{{ ot.cliente?.nombre }}</div>
-
-          <div class="row-icon">
-            <mat-icon>phone</mat-icon>
-            <span class="truncate">{{ ot.cliente?.telefono }}</span>
-            <mat-icon class="copy-btn-mini" (click)="copyToClipboard(ot.cliente?.telefono)">content_copy</mat-icon>
-          </div>
-
-          <div class="row-icon">
-            <mat-icon>email</mat-icon>
-            <span class="truncate">{{ ot.cliente?.email }}</span>
-            <mat-icon class="copy-btn-mini" (click)="copyToClipboard(ot.cliente?.email)">content_copy</mat-icon>
-          </div>
-
-          <a class="blue-link" [routerLink]="['/clientes', ot.cliente?.id]">Abrir perfil del cliente</a>
+          <div class="name-bold">{{ data.cliente.nombre }}</div>
+          <div class="row-icon"><mat-icon>phone</mat-icon><span>{{ data.cliente.telefono || 'Sin teléfono' }}</span></div>
+          <div class="row-icon"><mat-icon>email</mat-icon><span>{{ data.cliente.email || 'Sin correo' }}</span></div>
+          <a class="blue-link" [routerLink]="['/clientes', data.cliente.id]">Ver perfil completo</a>
         </div>
-      </div>
+      </section>
 
-      <div class="white-card side-card">
+      <section class="white-card side-card">
         <h2 class="card-label">Visita a domicilio</h2>
-
         <div class="sidebar-data">
-          <div class="visit-time">Programada: {{ ot.fechaPrevista | date:'yyyy-MM-dd h:mm a' }}</div>
-
           <div class="address-row">
             <mat-icon>location_on</mat-icon>
-            <span class="truncate">{{ ot.direccion || 'Sin dirección' }}</span>
+            <span class="truncate" [title]="data.direccion || ''">{{ data.direccion || 'No especificada' }}</span>
           </div>
-
-          <button mat-button class="btn-text-icon" (click)="copyToClipboard(ot.direccion)">
-            <mat-icon>content_copy</mat-icon> Copiar dirección
-          </button>
+          @if (data.notasAcceso) {
+            <p class="text-muted-xs"><strong>Nota:</strong> {{ data.notasAcceso }}</p>
+          }
         </div>
-      </div>
+      </section>
 
-      <div class="white-card side-card">
+      <section class="white-card side-card">
         <h2 class="card-label">Timeline</h2>
-
         <div class="timeline-compact">
-          <div class="tl-node">
-            <div class="tl-txt">Orden creada</div>
-            <div class="tl-date">{{ (ot.creadoEn || ot.createdAt) | date:'yyyy-MM-dd h:mm a' }}</div>
-          </div>
+          @for (h of data.historial; track $index) {
+            <div class="tl-node">
+              <div class="tl-content">
+                <div class="tl-txt">{{ h.descripcion }}</div>
+                <div class="tl-date">
+                  <span class="tl-user">&#64;{{ h.usuario ? h.usuario.nombre : 'sistema' }}</span>
+                  <span> &bull; </span>
+                  <span>{{ h.fecha | date:'h:mm a' }}</span>
+                </div>
+              </div>
+            </div>
+          }
         </div>
-      </div>
+      </section>
 
-      <button mat-stroked-button class="btn-close-ot interactive-close" (click)="cambiarEstado('CERRADA')">
-        Cerrar orden de trabajo
+      <button mat-stroked-button class="btn-close-ot w-full" (click)="cambiarEstado('CERRADA')">
+        Cerrar Orden
       </button>
-    </div>
+    </aside>
   </div>
 </div>
+} @else {
+  <div class="loading-overlay">Cargando...</div>
+}
 
 <ng-template #imageModal>
   <div class="modal-small-container">
@@ -162,7 +155,7 @@
       <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
     </div>
     <div class="modal-body-mini">
-      <img [src]="selectedImageUrl" class="img-contained">
+      <img [src]="selectedImageUrl()" class="img-contained">
     </div>
   </div>
 </ng-template>

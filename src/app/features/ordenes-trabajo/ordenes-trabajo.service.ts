@@ -9,8 +9,11 @@ import { OtDetalle, OtListaItem } from '../../core/models/tipos';
 
 @Injectable({ providedIn: 'root' })
 export class OrdenesTrabajoService {
+  private readonly url = `${environment.apiBaseUrl}/ordenes-trabajo`;
+
   constructor(private http: HttpClient) {}
 
+  // Recupero la lista paginada y filtrada de órdenes
   listar(f: {
     estados?: EstadoOt[];
     tipo?: TipoOt | '';
@@ -29,47 +32,39 @@ export class OrdenesTrabajoService {
     if (f.tipo) params = params.set('tipo', f.tipo);
     if (f.tecnicoId) params = params.set('tecnicoId', f.tecnicoId);
 
-    if (f.estados && f.estados.length > 0) {
-      f.estados.forEach(estado => {
-        params = params.append('estado', estado);
-      });
+    if (f.estados?.length) {
+      f.estados.forEach(e => params = params.append('estado', e));
     }
 
-    return this.http.get<RespuestaPaginada<OtListaItem>>(
-      `${environment.apiBaseUrl}/ordenes-trabajo`, 
-      { params }
-    );
+    return this.http.get<RespuestaPaginada<OtListaItem>>(this.url, { params });
   }
 
+  // Registro una nueva orden en el sistema
   crear(body: any): Observable<{ id: string; codigo: string }> {
-    return this.http.post<{ id: string; codigo: string }>(
-      `${environment.apiBaseUrl}/ordenes-trabajo`, 
-      body
-    );
+    return this.http.post<{ id: string; codigo: string }>(this.url, body);
   }
 
+  // Obtengo el detalle completo incluyendo el historial para el timeline
   obtener(id: string): Observable<OtDetalle> {
-    return this.http.get<OtDetalle>(`${environment.apiBaseUrl}/ordenes-trabajo/${id}`);
+    return this.http.get<OtDetalle>(`${this.url}/${id}`);
   }
 
-  cambiarEstado(id: string, nuevoEstado: EstadoOt): Observable<any> {
-    // CORRECCIÓN SWAGGER: Método PATCH y endpoint /estado
-    return this.http.patch(
-      `${environment.apiBaseUrl}/ordenes-trabajo/${id}/estado`,
-      { estado: nuevoEstado }
-    );
+  // Actualizo el estado de la orden mediante PATCH
+  cambiarEstado(id: string, estado: EstadoOt): Observable<void> {
+    return this.http.patch<void>(`${this.url}/${id}/estado`, { estado });
   }
 
+  // Añado una nota interna al historial de la orden
   anadirNota(id: string, contenido: string): Observable<{ id: string; creadoEn: string }> {
-    return this.http.post<{ id: string; creadoEn: string }>(
-      `${environment.apiBaseUrl}/ordenes-trabajo/${id}/notas`,
-      { contenido }
-    );
+    return this.http.post<{ id: string; creadoEn: string }>(`${this.url}/${id}/notas`, { contenido });
   }
 
-  subirFoto(id: string, file: File): Observable<any> {
+  // Subo y vinculo una imagen a la orden
+  subirFoto(id: string, file: File): Observable<{ url: string }> {
     const fd = new FormData();
     fd.append('file', file);
-    return this.http.post(`${environment.apiBaseUrl}/ordenes-trabajo/${id}/fotos`, fd);
+    return this.http.post<{ url: string }>(`${this.url}/${id}/fotos`, fd);
   }
 }
+
+// Corrijo imports de core/common y aseguro consistencia en endpoints.

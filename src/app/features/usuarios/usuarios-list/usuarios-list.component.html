@@ -37,7 +37,13 @@
           <ng-container matColumnDef="activo">
             <th mat-header-cell *matHeaderCellDef> Activo </th>
             <td mat-cell *matCellDef="let row">
-              <mat-slide-toggle [checked]="row.activo" color="primary" class="rs-compact-toggle"></mat-slide-toggle>
+              <mat-slide-toggle 
+                [checked]="row.activo" 
+                color="primary" 
+                class="rs-compact-toggle"
+                (change)="toggleEstado(row)"
+                (click)="$event.stopPropagation()">
+              </mat-slide-toggle>
             </td>
           </ng-container>
 
@@ -54,9 +60,9 @@
                 </button>
 
                 <button mat-icon-button class="rs-btn-action btn-delete" 
-                        *ngIf="row.rol.toLowerCase() !== 'admin'"
+                        *ngIf="!row.activo && row.rol.toLowerCase() !== 'admin'"
                         (click)="borrarUsuario(row)" 
-                        title="Eliminar">
+                        title="Eliminar permanentemente">
                   <mat-icon>delete_outline</mat-icon>
                 </button>
               </div>
@@ -64,7 +70,11 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="rs-table-row"></tr>
+          <tr mat-row 
+              *matRowDef="let row; columns: displayedColumns;" 
+              class="rs-table-row"
+              [ngClass]="{'usuario-desactivado': !row.activo}">
+          </tr>
         </table>
       </div>
     </mat-card-content>

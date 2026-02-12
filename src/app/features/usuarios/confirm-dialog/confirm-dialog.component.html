@@ -1,0 +1,23 @@
+<div class="rs-confirm-modal">
+  <div class="rs-alert-header">
+    <div class="rs-alert-icon-bg">
+      <mat-icon>delete_outline</mat-icon>
+    </div>
+  </div>
+
+  <div class="rs-confirm-content">
+    <h2 class="rs-confirm-title">¿Eliminar usuario?</h2>
+    <p class="rs-confirm-subtitle">
+      Confirmar la eliminación de <span class="rs-user-name">{{ data.nombre }}</span>
+    </p>
+  </div>
+
+  <div class="rs-confirm-footer">
+    <button mat-button (click)="ref.close(false)" class="rs-btn-cancel">
+      Cancelar
+    </button>
+    <button mat-raised-button (click)="ref.close(true)" class="rs-btn-confirm">
+      Confirmar eliminación
+    </button>
+  </div>
+</div>

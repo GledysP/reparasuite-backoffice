@@ -7,12 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'rs-usuario-detalle-dialog',
   standalone: true,
-  imports: [
-    CommonModule, 
-    MatDialogModule, 
-    MatButtonModule, 
-    MatIconModule
-  ],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   templateUrl: './usuario-detalle-dialog.component.html',
   styleUrl: './usuario-detalle-dialog.component.scss'
 })

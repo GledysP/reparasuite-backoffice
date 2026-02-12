@@ -1,4 +1,5 @@
-<div class="rs-page-container" *ngIf="cliente as c">
+@if (cliente; as c) {
+<div class="rs-page-container">
   
   <header class="rs-header">
     <div class="rs-title-section">
@@ -28,52 +29,54 @@
           
           <mat-tab label="HISTORIAL DE ÓRDENES">
             <div class="table-container">
-              <table mat-table [dataSource]="ordenes" class="rs-table" *ngIf="ordenes.length > 0">
-                
-                <ng-container matColumnDef="codigo">
-                  <th mat-header-cell *matHeaderCellDef> OT # </th>
-                  <td mat-cell *matCellDef="let row"> <strong>{{row.codigo}}</strong> </td>
-                </ng-container>
+              @if (ordenes && ordenes.length > 0) {
+                <table mat-table [dataSource]="ordenes" class="rs-table">
+                  
+                  <ng-container matColumnDef="codigo">
+                    <th mat-header-cell *matHeaderCellDef> OT # </th>
+                    <td mat-cell *matCellDef="let row"> <strong>{{row.codigo}}</strong> </td>
+                  </ng-container>
 
-                <ng-container matColumnDef="estado">
-                  <th mat-header-cell *matHeaderCellDef> ESTADO </th>
-                  <td mat-cell *matCellDef="let row"> 
-                    <span class="rs-status-badge" [attr.data-status]="row.estado">{{row.estado}}</span> 
-                  </td>
-                </ng-container>
+                  <ng-container matColumnDef="estado">
+                    <th mat-header-cell *matHeaderCellDef> ESTADO </th>
+                    <td mat-cell *matCellDef="let row"> 
+                      <span class="rs-status-badge" [attr.data-status]="row.estado">{{row.estado}}</span> 
+                    </td>
+                  </ng-container>
 
-                <ng-container matColumnDef="tipo">
-                  <th mat-header-cell *matHeaderCellDef> TIPO </th>
-                  <td mat-cell *matCellDef="let row"> {{row.tipo}} </td>
-                </ng-container>
+                  <ng-container matColumnDef="tipo">
+                    <th mat-header-cell *matHeaderCellDef> TIPO </th>
+                    <td mat-cell *matCellDef="let row"> {{row.tipo}} </td>
+                  </ng-container>
 
-                <ng-container matColumnDef="updatedAt">
-                  <th mat-header-cell *matHeaderCellDef> FECHA </th>
-                  <td mat-cell *matCellDef="let row"> {{row.updatedAt | date:'yyyy-MM-dd'}} </td>
-                </ng-container>
+                  <ng-container matColumnDef="updatedAt">
+                    <th mat-header-cell *matHeaderCellDef> FECHA </th>
+                    <td mat-cell *matCellDef="let row"> {{row.updatedAt | date:'yyyy-MM-dd'}} </td>
+                  </ng-container>
 
-                <ng-container matColumnDef="accion">
-                  <th mat-header-cell *matHeaderCellDef> ACCIONES </th>
-                  <td mat-cell *matCellDef="let row">
-                    <button mat-icon-button color="primary" [routerLink]="['/ordenes-trabajo', row.id]">
-                      <mat-icon>visibility</mat-icon>
+                  <ng-container matColumnDef="accion">
+                    <th mat-header-cell *matHeaderCellDef> ACCIONES </th>
+                    <td mat-cell *matCellDef="let row">
+                      <button mat-icon-button color="primary" [routerLink]="['/ordenes-trabajo', row.id]">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              } @else {
+                <div class="rs-empty-container">
+                  <div class="rs-empty-content">
+                    <mat-icon class="rs-empty-icon">inventory_2</mat-icon>
+                    <p class="rs-empty-text">Este cliente aún no tiene órdenes de trabajo.</p>
+                    <button mat-stroked-button class="rs-btn-empty" [routerLink]="['/ordenes-trabajo/nueva']">
+                      Crear primera orden
                     </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              </table>
-
-              <div class="rs-empty-container" *ngIf="ordenes.length === 0">
-                <div class="rs-empty-content">
-                  <mat-icon class="rs-empty-icon">inventory_2</mat-icon>
-                  <p class="rs-empty-text">Este cliente aún no tiene órdenes de trabajo.</p>
-                  <button mat-stroked-button class="rs-btn-empty" [routerLink]="['/ordenes-trabajo/nueva']">
-                    Crear primera orden
-                  </button>
+                  </div>
                 </div>
-              </div>
+              }
 
               <mat-paginator [length]="total" [pageSize]="size" (page)="onPageChange($event)"></mat-paginator>
             </div>
@@ -102,21 +105,26 @@
 
     <aside class="rs-sidebar">
       <mat-card class="white-card-full summary-card">
-        <h3 class="summary-title">Summary</h3>
+        <h3 class="summary-title">Resumen</h3>
         <div class="kpi-box">
           <span class="kpi-value">{{total}}</span>
-          <span class="kpi-label">Total Work Orders</span>
+          <span class="kpi-label">Total Órdenes</span>
         </div>
         <div class="kpi-box">
           <span class="kpi-value accent">{{totalOpen}}</span>
-          <span class="kpi-label">Open Work Orders</span>
+          <span class="kpi-label">Abiertas</span>
         </div>
         <div class="kpi-box">
-          <span class="kpi-value date">{{ (ordenes[0]?.updatedAt | date:'yyyy-MM-dd') || 'N/A' }}</span>
-          <span class="kpi-label">Last Visit</span>
+          <span class="kpi-value date">
+            {{ (ordenes && ordenes.length > 0) ? (ordenes[0].updatedAt | date:'yyyy-MM-dd') : 'N/A' }}
+          </span>
+          <span class="kpi-label">Última Visita</span>
         </div>
       </mat-card>
     </aside>
 
   </div>
 </div>
+} @else {
+  <div class="loading-overlay">Cargando datos del cliente...</div>
+}

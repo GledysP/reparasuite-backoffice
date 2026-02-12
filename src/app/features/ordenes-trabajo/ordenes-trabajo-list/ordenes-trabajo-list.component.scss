@@ -25,9 +25,39 @@ $rs-hover-color: #f8fafc;
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 12px rgba(18, 78, 89, 0.3) !important;
+    filter: brightness(1.05);
   }
 
   mat-icon { font-size: 20px; width: 20px; height: 20px; }
+}
+
+/* Botón Clear con borde degradado e icono */
+.btn-clear {
+  height: 40px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  color: $rs-primary !important;
+  border: 2px solid transparent !important;
+  padding: 0 16px !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  background-image: linear-gradient(#fff, #fff), $rs-gradient !important;
+  background-origin: border-box !important;
+  background-clip: padding-box, border-box !important;
+  transition: all 0.2s ease !important;
+
+  ::ng-deep .mat-mdc-button-state-layer { background-color: transparent !important; }
+  ::ng-deep .mat-mdc-button-persistent-ripple::before { display: none !important; }
+
+  &:hover {
+    background-image: linear-gradient($rs-hover-color, $rs-hover-color), $rs-gradient !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
 }
 
 /* Filtros */
@@ -53,7 +83,7 @@ $rs-hover-color: #f8fafc;
 .rs-field { display: flex; flex-direction: column; gap: 6px; }
 .rs-field-label { font-size: 11px; font-weight: 700; color: $rs-label; text-transform: uppercase; }
 
-/* Inputs y Selects */
+/* Estilos de Formulario y eliminación de azul en Checkboxes */
 :host ::ng-deep {
   .mat-mdc-form-field .mdc-notched-outline { display: none !important; }
   .mat-mdc-form-field .mat-mdc-text-field-wrapper {
@@ -67,6 +97,14 @@ $rs-hover-color: #f8fafc;
     border-width: 2px !important;
   }
   .mat-mdc-form-field-subscript-wrapper { display: none !important; }
+
+  /* Checkbox Verde */
+  .mat-mdc-checkbox-checked .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+  .mat-primary .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-full {
+    background-color: $rs-green !important;
+    border-color: $rs-green !important;
+  }
+  .mat-mdc-checkbox .mat-ripple-element { background-color: rgba(29, 185, 84, 0.1) !important; }
 }
 
 /* Tabla */
@@ -79,8 +117,6 @@ $rs-hover-color: #f8fafc;
   mat-card-content { padding: 0 !important; }
 }
 
-.rs-table-responsive { width: 100%; overflow-x: auto; }
-
 .rs-table {
   width: 100%;
   background-color: transparent;
@@ -91,11 +127,13 @@ $rs-hover-color: #f8fafc;
     background: #ffffff;
     font-size: 11px;
     font-weight: 700;
+    padding: 12px 24px !important;
   }
 
   td.mat-mdc-cell {
     color: #0f172a;
     border-bottom: 1px solid rgba(0,0,0,0.03) !important;
+    padding: 16px 24px !important;
   }
 
   .rs-table-row:hover { background-color: $rs-hover-color !important; }
@@ -103,7 +141,7 @@ $rs-hover-color: #f8fafc;
 
 .col-code { font-weight: 800; color: #0f172a; }
 
-/* ✅ BADGES CON DEGRADADOS ACTUALIZADOS */
+/* Badges con Degradados */
 .status-badge {
   padding: 6px 10px;
   border-radius: 8px;
@@ -121,22 +159,13 @@ $rs-hover-color: #f8fafc;
   &[data-status="CERRADA"] { background: linear-gradient(135deg, #dc2626 0%, #f87171 100%) !important; }
 }
 
-/* ✅ BOTONES DE ACCIÓN SIN AZUL */
+/* Botones de Acción Sin Azul */
 .rs-actions-container { display: flex; gap: 8px; }
-
 .rs-btn-action { 
   color: $rs-label !important; 
-  transition: all 0.2s ease !important;
-
-  // Mata el azul de Material definitivamente
   ::ng-deep .mat-mdc-button-state-layer { background-color: transparent !important; }
   ::ng-deep .mat-mdc-button-persistent-ripple::before { display: none !important; }
-
-  &:hover {
-    color: $rs-primary !important;
-    background-color: $rs-hover-color !important;
-    transform: translateY(-1px);
-  }
+  &:hover { color: $rs-primary !important; background-color: $rs-hover-color !important; }
 }
 
 .rs-paginator { background: white !important; }
