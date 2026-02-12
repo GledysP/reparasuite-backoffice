@@ -11,15 +11,15 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { UsuariosService } from '../usuarios.service';
 import { UsuarioFormDialogComponent } from '../usuario-form-dialog/usuario-form-dialog.component';
 import { UsuarioDetalleDialogComponent } from '../usuario-detalle-dialog/usuario-detalle-dialog.component';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component'; // Añadido
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'rs-usuarios-list',
   standalone: true,
   imports: [
     CommonModule, NgIf, NgClass, MatCardModule, MatTableModule, MatIconModule, 
-    MatButtonModule, MatSlideToggleModule, MatDialogModule, MatSnackBarModule,
-    ConfirmDialogComponent // Añadido
+    MatButtonModule, MatSlideToggleModule, MatDialogModule, MatSnackBarModule
+    // ConfirmDialogComponent eliminado de aquí para limpiar el warning
   ],
   templateUrl: './usuarios-list.component.html',
   styleUrl: './usuarios-list.component.scss',
@@ -111,9 +111,8 @@ export class UsuariosListComponent implements OnInit {
 
     this.usuariosService.cambiarEstado(usuario.id, nuevoEstado).subscribe({
       next: () => {
-        usuario.activo = nuevoEstado; // Actualiza el estado localmente
+        usuario.activo = nuevoEstado; 
         this.notificar(`Estado de ${usuario.nombre} actualizado`);
-       
       },
       error: (err) => {
         console.error('Error en Toggle:', err);

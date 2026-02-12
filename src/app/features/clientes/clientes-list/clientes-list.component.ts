@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { NgFor, DatePipe, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common'; // NgFor y NgIf eliminados
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,7 +18,7 @@ import { ClienteResumen } from '../../../core/models/tipos';
   selector: 'rs-clientes-list',
   standalone: true,
   imports: [
-    NgFor, NgIf, DatePipe, RouterLink, ReactiveFormsModule,
+    DatePipe, RouterLink, ReactiveFormsModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatTableModule, 
     MatPaginatorModule, MatIconModule, MatButtonModule
   ],

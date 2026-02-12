@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { NgIf, NgFor } from '@angular/common';
+import { NgFor } from '@angular/common'; // NgIf eliminado
 import { debounceTime, switchMap, filter, of } from 'rxjs';
 import { ClientesService } from '../../clientes/clientes.service';
 import { ClienteResumen } from '../../../core/models/tipos';
@@ -14,7 +14,7 @@ import { ClienteResumen } from '../../../core/models/tipos';
 @Component({
   standalone: true,
   imports: [
-    NgIf, NgFor, ReactiveFormsModule, MatDialogModule, 
+    NgFor, ReactiveFormsModule, MatDialogModule, 
     MatFormFieldModule, MatInputModule, MatButtonModule, MatListModule, MatIconModule
   ],
   template: `
