@@ -26,6 +26,11 @@
         <span class="rs-nav-text" matListItemTitle>Órdenes de trabajo</span>
       </a>
 
+      <a mat-list-item routerLink="/tickets" routerLinkActive="active-link" (click)="closeMobileSidenav()">
+        <mat-icon matListItemIcon>support_agent</mat-icon>
+        <span class="rs-nav-text" matListItemTitle>Tickets</span>
+      </a>
+
       <a mat-list-item routerLink="/clientes" routerLinkActive="active-link" (click)="closeMobileSidenav()">
         <mat-icon matListItemIcon>people</mat-icon>
         <span class="rs-nav-text" matListItemTitle>Clientes</span>

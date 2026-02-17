@@ -2,100 +2,364 @@
 <div class="rs-page-container">
   <header class="rs-header-compact">
     <div class="breadcrumb">Órdenes de trabajo / <span class="current">{{ data.codigo }}</span></div>
+
     <div class="header-main-row">
       <div class="title-group">
         <h1>{{ data.codigo }}</h1>
         <span class="badge-status" [attr.data-estado]="data.estado">{{ data.estado }}</span>
       </div>
-      <button mat-stroked-button routerLink="/ordenes-trabajo" class="btn-back">Volver</button>
+
+      <div class="header-actions">
+        <button mat-stroked-button routerLink="/ordenes-trabajo" class="btn-back">Volver</button>
+        <button mat-stroked-button color="warn" class="btn-close" (click)="cambiarEstado('CERRADA')" [disabled]="busy()">
+          Cerrar OT
+        </button>
+      </div>
     </div>
+
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
   </header>
 
   <div class="rs-grid">
     <main class="col-main">
-      <section class="white-card">
-        <h2 class="card-label">Resumen</h2>
-        <div class="summary-grid">
-          <div class="data-item"><label>Tipo</label><p>{{ data.tipo }}</p></div>
-          <div class="data-item"><label>Prioridad</label><p>{{ data.prioridad }}</p></div>
-          <div class="data-item">
-            <label>Técnico</label>
-            <p>{{ data.tecnico ? data.tecnico.nombre : 'Sin asignar' }}</p>
-          </div>
-          <div class="data-item">
-            <label>Programada</label>
-            <p>{{ data.fechaPrevista ? (data.fechaPrevista | date:'yyyy-MM-dd HH:mm') : 'No programada' }}</p>
-          </div>
-        </div>
+      <mat-card class="white-card">
+        <mat-card-content>
 
-        <div class="action-section">
-          <label class="inner-label">Cambiar estado</label>
-          <div class="input-inline-group">
-            <mat-form-field appearance="outline" class="ultra-compact-field field-grow">
-              <mat-select [formControl]="formEstado.controls.a">
-                @for (e of estados; track e) {
-                  <mat-option [value]="e">{{ e }}</mat-option>
+          <mat-tab-group animationDuration="0ms" class="rs-tabs">
+
+            <!-- TAB: Resumen -->
+            <mat-tab label="Resumen">
+              <div class="tab-pad">
+                <div class="summary-grid">
+                  <div class="data-item"><label>Tipo</label><p>{{ data.tipo }}</p></div>
+                  <div class="data-item"><label>Prioridad</label><p>{{ data.prioridad }}</p></div>
+                  <div class="data-item"><label>Técnico</label><p>{{ data.tecnico ? data.tecnico.nombre : 'Sin asignar' }}</p></div>
+                  <div class="data-item"><label>Actualizada</label><p>{{ data.updatedAt | date:'yyyy-MM-dd HH:mm' }}</p></div>
+                </div>
+
+                <mat-divider class="mt16"></mat-divider>
+
+                <div class="action-section">
+                  <label class="inner-label">Cambiar estado</label>
+                  <div class="input-inline-group">
+                    <mat-form-field appearance="outline" class="ultra-compact-field field-grow">
+                      <mat-select [formControl]="formEstado.controls.estado">
+                        @for (e of estados; track e) {
+                          <mat-option [value]="e">{{ e }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+
+                    <button mat-flat-button class="btn-teal-action btn-fixed" (click)="cambiarEstado()"
+                            [disabled]="busy() || formEstado.invalid">
+                      Actualizar
+                    </button>
+                  </div>
+                </div>
+
+                <mat-divider class="mt16"></mat-divider>
+
+                <h3 class="section-title">Descripción</h3>
+                <p class="text-body-small">{{ data.descripcion || 'Sin descripción' }}</p>
+
+                @if (data.tipo === 'DOMICILIO') {
+                  <mat-divider class="mt16"></mat-divider>
+                  <h3 class="section-title">Domicilio</h3>
+                  <div class="kv">
+                    <div><strong>Dirección:</strong> {{ data.direccion || '—' }}</div>
+                    <div><strong>Notas acceso:</strong> {{ data.notasAcceso || '—' }}</div>
+                    <div><strong>Fecha prevista:</strong> {{ data.fechaPrevista ? (data.fechaPrevista | date:'yyyy-MM-dd HH:mm') : '—' }}</div>
+                  </div>
                 }
-              </mat-select>
-            </mat-form-field>
-            <button mat-flat-button class="btn-teal-action btn-fixed" (click)="cambiarEstado()">Actualizar</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="white-card">
-        <h2 class="card-label">Descripción del problema</h2>
-        <p class="text-body-small">{{ data.descripcion || 'Sin descripción' }}</p>
-      </section>
-
-      <section class="white-card">
-        <h2 class="card-label">Notas internas</h2>
-        <div class="notes-stack">
-          @for (n of data.notas; track n.id) {
-            <div class="note-box">
-              <div class="note-header">
-                <strong>{{ n.autor ? n.autor.nombre : 'Usuario' }}</strong>
-                <span>{{ n.creadoEn | date:'MMM d, h:mm a' }}</span>
               </div>
-              <p>{{ n.contenido }}</p>
-            </div>
-          } @empty {
-            <p class="text-muted">No hay notas registradas.</p>
-          }
-          
-          <div class="input-inline-group note-input-area">
-            <mat-form-field appearance="outline" class="ultra-compact-field field-grow">
-              <input matInput placeholder="Agregar nota..." [formControl]="formNota.controls.contenido" (keyup.enter)="anadirNota()" />
-            </mat-form-field>
-            <button mat-flat-button class="btn-teal-action btn-fixed" (click)="anadirNota()">
-              <mat-icon>add</mat-icon> Agregar
-            </button>
-          </div>
-        </div>
-      </section>
+            </mat-tab>
 
-      <section class="white-card">
-        <h2 class="card-label">Fotos</h2>
-        <div class="photos-minimal">
-          <div class="photo-thumb-container">
-            @for (f of data.fotos; track f.id; let i = $index) {
-              <div class="thumb-wrapper" (click)="verFoto(f)">
-                <img [src]="f.url" class="mini-thumb" [alt]="f.nombreArchivo">
-                <span class="thumb-label">Foto {{ i + 1 }}</span>
-                <div class="thumb-overlay"><mat-icon>visibility</mat-icon></div>
+            <!-- TAB: Notas -->
+            <mat-tab label="Notas">
+              <div class="tab-pad">
+                <div class="notes-stack">
+                  @for (n of data.notas; track n.id) {
+                    <div class="note-box">
+                      <div class="note-header">
+                       <strong>Usuario</strong>
+                        <span>{{ n.createdAt | date:'MMM d, h:mm a' }}</span>
+                      </div>
+                      <p>{{ n.contenido }}</p>
+                    </div>
+                  } @empty {
+                    <p class="text-muted">No hay notas registradas.</p>
+                  }
+
+                  <div class="input-inline-group note-input-area">
+                    <mat-form-field appearance="outline" class="ultra-compact-field field-grow">
+                      <input matInput placeholder="Agregar nota..." [formControl]="formNota.controls.contenido"
+                             (keyup.enter)="anadirNota()" />
+                    </mat-form-field>
+
+                    <button mat-flat-button class="btn-teal-action btn-fixed" (click)="anadirNota()"
+                            [disabled]="busy() || formNota.invalid">
+                      <mat-icon>add</mat-icon> Agregar
+                    </button>
+                  </div>
+                </div>
               </div>
-            } @empty {
-              <p class="text-muted">Sin fotos registradas.</p>
-            }
-          </div>
-          <label class="upload-link-btn">
-            <input type="file" (change)="onFileSelected($event)" hidden />
-            <mat-icon>add_a_photo</mat-icon> Subir foto
-          </label>
-        </div>
-      </section>
+            </mat-tab>
+
+            <!-- TAB: Fotos -->
+            <mat-tab label="Fotos">
+              <div class="tab-pad">
+                <div class="photos-minimal">
+                  <div class="photo-thumb-container">
+                    @for (f of data.fotos; track f.id; let i = $index) {
+                      <div class="thumb-wrapper" (click)="verFoto(f)">
+                        <img [src]="f.url" class="mini-thumb" [alt]="'Foto ' + (i + 1)">
+                        <span class="thumb-label">Foto {{ i + 1 }}</span>
+                        <div class="thumb-overlay"><mat-icon>visibility</mat-icon></div>
+                      </div>
+                    } @empty {
+                      <p class="text-muted">Sin fotos registradas.</p>
+                    }
+                  </div>
+
+                  <label class="upload-link-btn">
+                    <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
+                    <mat-icon>add_a_photo</mat-icon> Subir foto
+                  </label>
+                </div>
+              </div>
+            </mat-tab>
+
+            <!-- TAB: Presupuesto -->
+            <mat-tab label="Presupuesto">
+              <div class="tab-pad">
+
+                <div class="row-between">
+                  <div>
+                    <div class="muted">Estado:</div>
+                    <div class="pill">{{ data.presupuesto?.estado || 'SIN_PRESUPUESTO' }}</div>
+                  </div>
+
+                  <div class="actions-right">
+                    <button mat-stroked-button (click)="enviarPresupuesto()"
+                            [disabled]="busy() || !data.presupuesto">
+                      Enviar
+                    </button>
+                    <button mat-stroked-button color="warn" (click)="rechazarPresupuesto()"
+                            [disabled]="busy() || !data.presupuesto">
+                      Rechazar
+                    </button>
+                    <button mat-flat-button class="btn-teal-action" (click)="aceptarPresupuesto()"
+                            [disabled]="busy() || !data.presupuesto">
+                      Aceptar
+                    </button>
+                  </div>
+                </div>
+
+                <mat-divider class="mt16"></mat-divider>
+
+                <div class="grid-2">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Importe</mat-label>
+                    <input matInput type="number" [formControl]="formPresupuesto.controls.importe" />
+                  </mat-form-field>
+
+                  <div class="check-wrap">
+                    <mat-checkbox [formControl]="formPresupuesto.controls.aceptacionCheck">
+                      Requiere check de aceptación
+                    </mat-checkbox>
+                  </div>
+                </div>
+
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Detalle</mat-label>
+                  <textarea matInput rows="5" [formControl]="formPresupuesto.controls.detalle"></textarea>
+                </mat-form-field>
+
+                <div class="actions-row">
+                  <button mat-stroked-button (click)="crearPresupuesto()"
+                          [disabled]="busy() || formPresupuesto.invalid">
+                    Guardar presupuesto
+                  </button>
+                </div>
+
+                <!-- ✅ FIX null-safety: encierro presupuesto en bloque -->
+                @if (data.presupuesto; as p) {
+                  @if (p.sentAt) {
+                    <div class="muted mt12">Enviado: {{ p.sentAt | date:'yyyy-MM-dd HH:mm' }}</div>
+                  }
+                  @if (p.respondedAt) {
+                    <div class="muted">Respondido: {{ p.respondedAt | date:'yyyy-MM-dd HH:mm' }}</div>
+                  }
+                }
+              </div>
+            </mat-tab>
+
+            <!-- TAB: Pago -->
+            <mat-tab label="Pago">
+              <div class="tab-pad">
+                <div class="row-between">
+                  <div>
+                    <div class="muted">Estado:</div>
+                    <div class="pill">{{ data.pago?.estado || 'SIN_PAGO' }}</div>
+                    <div class="muted mt8">Importe: {{ data.pago?.importe ?? data.presupuesto?.importe ?? '—' }}</div>
+                  </div>
+
+                  <div class="actions-right">
+                    <button mat-stroked-button (click)="marcarTransferencia()" [disabled]="busy()">
+                      Marcar transferencia
+                    </button>
+                  </div>
+                </div>
+
+                <mat-divider class="mt16"></mat-divider>
+
+                <div class="upload-line">
+                  <label class="upload-link-btn">
+                    <input type="file" (change)="onPagoFileSelected($event)" hidden />
+                    <mat-icon>upload</mat-icon> Seleccionar comprobante
+                  </label>
+
+                  <span class="muted" *ngIf="pagoFile">{{ pagoFile.name }}</span>
+
+                  <button mat-flat-button class="btn-teal-action" (click)="subirComprobante()"
+                          [disabled]="busy() || !pagoFile">
+                    Subir comprobante
+                  </button>
+                </div>
+
+                <!-- ✅ FIX null-safety: encierro pago en bloque -->
+                @if (data.pago; as pay) {
+                  @if (pay.comprobanteUrl) {
+                    <div class="mt12">
+                      <a [href]="pay.comprobanteUrl" target="_blank" rel="noopener" class="blue-link">
+                        Ver comprobante
+                      </a>
+                    </div>
+                  }
+                }
+              </div>
+            </mat-tab>
+
+            <!-- TAB: Citas -->
+            <mat-tab label="Citas">
+              <div class="tab-pad">
+                <div class="grid-2">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Inicio</mat-label>
+                    <input matInput type="datetime-local" [formControl]="formCita.controls.inicio">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Fin</mat-label>
+                    <input matInput type="datetime-local" [formControl]="formCita.controls.fin">
+                  </mat-form-field>
+                </div>
+
+                <div class="actions-row">
+                  <button mat-stroked-button (click)="crearCita()" [disabled]="busy() || formCita.invalid">
+                    Crear cita
+                  </button>
+
+                  <!-- ✅ NG8107: aquí data.citas NO es opcional según tu tipo, quitamos ?. -->
+                  <button mat-flat-button class="btn-teal-action" (click)="reprogramarPrimera()"
+                          [disabled]="busy() || formCita.invalid || !data.citas.length">
+                    Reprogramar primera cita
+                  </button>
+                </div>
+
+                <mat-divider class="mt16"></mat-divider>
+
+                <h3 class="section-title">Listado</h3>
+
+                <!-- ✅ NG8107: quitamos ?. -->
+                @if (data.citas.length) {
+                  <mat-list>
+                    @for (c of data.citas; track c.id) {
+                      <mat-list-item>
+                        <mat-icon matListItemIcon>event</mat-icon>
+                        <div matListItemTitle>{{ c.inicio | date:'yyyy-MM-dd HH:mm' }} → {{ c.fin | date:'HH:mm' }}</div>
+                        <div matListItemLine class="muted">Estado: {{ c.estado }}</div>
+                      </mat-list-item>
+                    }
+                  </mat-list>
+                } @else {
+                  <p class="text-muted">No hay citas registradas.</p>
+                }
+              </div>
+            </mat-tab>
+
+            <!-- TAB: Mensajes -->
+            <mat-tab label="Mensajes">
+              <div class="tab-pad">
+
+                <!-- ✅ NG8107: quitamos ?. -->
+                @if (data.mensajes.length) {
+                  <div class="msg-list">
+                    @for (m of data.mensajes; track m.id) {
+                      <div class="msg-item">
+                        <div class="msg-head">
+                          <strong>{{ m.remitenteNombre }}</strong>
+                          <span class="muted">{{ m.createdAt | date:'MMM d, h:mm a' }}</span>
+                        </div>
+                        <div class="muted xs">Tipo: {{ m.remitenteTipo }}</div>
+                        <p class="msg-body">{{ m.contenido }}</p>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="text-muted">Sin mensajes.</p>
+                }
+
+                <mat-divider class="mt16"></mat-divider>
+
+                <div class="input-inline-group">
+                  <mat-form-field appearance="outline" class="field-grow">
+                    <mat-label>Enviar mensaje</mat-label>
+                    <input matInput [formControl]="formMsg.controls.contenido" (keyup.enter)="enviarMensaje()">
+                  </mat-form-field>
+
+                  <button mat-flat-button class="btn-teal-action btn-fixed"
+                          (click)="enviarMensaje()" [disabled]="busy() || formMsg.invalid">
+                    Enviar
+                  </button>
+                </div>
+              </div>
+            </mat-tab>
+
+            <!-- TAB: Timeline -->
+            <mat-tab label="Timeline">
+              <div class="tab-pad">
+                <!-- ✅ NG8107: quitamos ?. -->
+                @if (data.historial.length) {
+                  <div class="timeline-compact">
+                    @for (h of data.historial; track $index) {
+                      <div class="tl-node">
+                        <div class="tl-content">
+                          <div class="tl-txt">{{ h.descripcion }}</div>
+                          <div class="tl-date">
+                            <span class="tl-user">&#64;{{ h.usuario?.nombre || 'sistema' }}</span>
+                            <span> &bull; </span>
+                            <span>{{ h.fecha | date:'MMM d, h:mm a' }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="text-muted">Sin historial.</p>
+                }
+              </div>
+            </mat-tab>
+
+          </mat-tab-group>
+
+        </mat-card-content>
+      </mat-card>
     </main>
 
+    <!-- SIDEBAR -->
     <aside class="col-side">
       <section class="white-card side-card">
         <h2 class="card-label">Cliente</h2>
@@ -107,45 +371,28 @@
         </div>
       </section>
 
-      <section class="white-card side-card">
-        <h2 class="card-label">Visita a domicilio</h2>
-        <div class="sidebar-data">
-          <div class="address-row">
-            <mat-icon>location_on</mat-icon>
-            <span class="truncate" [title]="data.direccion || ''">{{ data.direccion || 'No especificada' }}</span>
-          </div>
-          @if (data.notasAcceso) {
-            <p class="text-muted-xs"><strong>Nota:</strong> {{ data.notasAcceso }}</p>
-          }
-        </div>
-      </section>
-
-      <section class="white-card side-card">
-        <h2 class="card-label">Timeline</h2>
-        <div class="timeline-compact">
-          @for (h of data.historial; track $index) {
-            <div class="tl-node">
-              <div class="tl-content">
-                <div class="tl-txt">{{ h.descripcion }}</div>
-                <div class="tl-date">
-                  <span class="tl-user">&#64;{{ h.usuario ? h.usuario.nombre : 'sistema' }}</span>
-                  <span> &bull; </span>
-                  <span>{{ h.fecha | date:'h:mm a' }}</span>
-                </div>
-              </div>
+      @if (data.tipo === 'DOMICILIO') {
+        <section class="white-card side-card">
+          <h2 class="card-label">Visita a domicilio</h2>
+          <div class="sidebar-data">
+            <div class="address-row">
+              <mat-icon>location_on</mat-icon>
+              <span class="truncate" [title]="data.direccion || ''">{{ data.direccion || 'No especificada' }}</span>
             </div>
-          }
-        </div>
-      </section>
-
-      <button mat-stroked-button class="btn-close-ot w-full" (click)="cambiarEstado('CERRADA')">
-        Cerrar Orden
-      </button>
+            @if (data.notasAcceso) {
+              <p class="text-muted-xs"><strong>Nota:</strong> {{ data.notasAcceso }}</p>
+            }
+          </div>
+        </section>
+      }
     </aside>
   </div>
 </div>
 } @else {
-  <div class="loading-overlay">Cargando...</div>
+  <div class="loading-overlay">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <div class="muted mt12">Cargando...</div>
+  </div>
 }
 
 <ng-template #imageModal>

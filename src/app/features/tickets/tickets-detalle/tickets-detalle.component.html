@@ -1,0 +1,63 @@
+<div class="rs-page-container">
+  <header class="rs-header-row">
+    <h1 class="rs-page-title">Ticket</h1>
+    <button mat-stroked-button routerLink="/tickets">Volver</button>
+  </header>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (ticket; as t) {
+    <mat-card class="white-card">
+      <mat-card-content>
+        <div class="top">
+          <div>
+            <div class="muted">Estado</div>
+            <div class="status-pill">{{ t.estado }}</div>
+          </div>
+          <div class="right muted">
+            Actualizado: {{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}
+          </div>
+        </div>
+
+        <h2 class="title">{{ t.asunto }}</h2>
+        <p class="desc">{{ t.descripcion }}</p>
+
+        <mat-divider class="mt16"></mat-divider>
+
+        <h3 class="section-title">Mensajes</h3>
+
+        @if (t.mensajes.length) {
+          <div class="msg-list">
+            @for (m of t.mensajes; track m.id) {
+              <div class="msg-item">
+                <div class="msg-head">
+                  <strong>{{ m.remitenteNombre }}</strong>
+                  <span class="muted">{{ m.createdAt | date:'MMM d, h:mm a' }}</span>
+                </div>
+                <div class="muted xs">Tipo: {{ m.remitenteTipo }}</div>
+                <p class="msg-body">{{ m.contenido }}</p>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="muted">Sin mensajes todavía.</p>
+        }
+
+        <mat-divider class="mt16"></mat-divider>
+
+        <div class="input-inline">
+          <mat-form-field appearance="outline" class="field-grow">
+            <mat-label>Responder</mat-label>
+            <input matInput [formControl]="formMsg.controls.contenido" (keyup.enter)="enviar()" />
+          </mat-form-field>
+
+          <button mat-flat-button class="btn-teal-action" (click)="enviar()" [disabled]="busy || formMsg.invalid">
+            Enviar
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

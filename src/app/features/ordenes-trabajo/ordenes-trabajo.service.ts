@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
 
 import { RespuestaPaginada } from '../../core/models/api';
 import { EstadoOt, TipoOt } from '../../core/models/enums';
-import { OtDetalle, OtListaItem } from '../../core/models/tipos';
+import {
+  OtDetalle,
+  OtListaItem,
+  PresupuestoDto,
+  CitaDto,
+  MensajeOtDto
+} from '../../core/models/tipos';
 
 @Injectable({ providedIn: 'root' })
 export class OrdenesTrabajoService {
@@ -13,7 +20,9 @@ export class OrdenesTrabajoService {
 
   constructor(private http: HttpClient) {}
 
-  // Recupero la lista paginada y filtrada de órdenes
+  // -----------------------------
+  // LISTADO (paginado + filtros)
+  // -----------------------------
   listar(f: {
     estados?: EstadoOt[];
     tipo?: TipoOt | '';
@@ -21,50 +30,134 @@ export class OrdenesTrabajoService {
     query?: string | '';
     page?: number;
     size?: number;
-    sort?: string;
+    sort?: string; // opcional: si tu backend lo soporta
   }): Observable<RespuestaPaginada<OtListaItem>> {
     let params = new HttpParams()
-      .set('page', (f.page ?? 0).toString())
-      .set('size', (f.size ?? 20).toString())
-      .set('sort', f.sort ?? 'updatedAt,desc'); 
+      .set('page', String(f.page ?? 0))
+      .set('size', String(f.size ?? 20));
 
-    if (f.query) params = params.set('query', f.query);
+    // Si tu backend NO soporta sort, elimina estas líneas:
+    if (f.sort) params = params.set('sort', f.sort);
+
+    if (f.query && f.query.trim()) params = params.set('query', f.query.trim());
     if (f.tipo) params = params.set('tipo', f.tipo);
     if (f.tecnicoId) params = params.set('tecnicoId', f.tecnicoId);
 
     if (f.estados?.length) {
-      f.estados.forEach(e => params = params.append('estado', e));
+      f.estados.forEach((e) => (params = params.append('estado', e)));
     }
 
     return this.http.get<RespuestaPaginada<OtListaItem>>(this.url, { params });
   }
 
-  // Registro una nueva orden en el sistema
-  crear(body: any): Observable<{ id: string; codigo: string }> {
-    return this.http.post<{ id: string; codigo: string }>(this.url, body);
+  // -----------------------------
+  // CREAR OT
+  // -----------------------------
+  crear(body: any): Observable<{ id: string; codigo?: string }> {
+    return this.http.post<{ id: string; codigo?: string }>(this.url, body);
   }
 
-  // Obtengo el detalle completo incluyendo el historial para el timeline
-  obtener(id: string): Observable<OtDetalle> {
-    return this.http.get<OtDetalle>(`${this.url}/${id}`);
+  // -----------------------------
+  // DETALLE OT
+  // -----------------------------
+  obtener(idOrCodigo: string): Observable<OtDetalle> {
+    return this.http.get<OtDetalle>(`${this.url}/${encodeURIComponent(idOrCodigo)}`);
   }
 
-  // Actualizo el estado de la orden mediante PATCH
-  cambiarEstado(id: string, estado: EstadoOt): Observable<void> {
-    return this.http.patch<void>(`${this.url}/${id}/estado`, { estado });
+  // -----------------------------
+  // ESTADO OT
+  // -----------------------------
+  cambiarEstado(idOrCodigo: string, estado: EstadoOt): Observable<void> {
+    return this.http.patch<void>(`${this.url}/${encodeURIComponent(idOrCodigo)}/estado`, { estado });
   }
 
-  // Añado una nota interna al historial de la orden
-  anadirNota(id: string, contenido: string): Observable<{ id: string; creadoEn: string }> {
-    return this.http.post<{ id: string; creadoEn: string }>(`${this.url}/${id}/notas`, { contenido });
+  // -----------------------------
+  // NOTAS
+  // -----------------------------
+  anadirNota(idOrCodigo: string, contenido: string): Observable<void> {
+    return this.http.post<void>(`${this.url}/${encodeURIComponent(idOrCodigo)}/notas`, { contenido });
   }
 
-  // Subo y vinculo una imagen a la orden
-  subirFoto(id: string, file: File): Observable<{ url: string }> {
+  // -----------------------------
+  // FOTOS
+  // -----------------------------
+  subirFoto(idOrCodigo: string, file: File): Observable<any> {
     const fd = new FormData();
     fd.append('file', file);
-    return this.http.post<{ url: string }>(`${this.url}/${id}/fotos`, fd);
+    return this.http.post(`${this.url}/${encodeURIComponent(idOrCodigo)}/fotos`, fd);
+  }
+
+  // -----------------------------
+  // PRESUPUESTO
+  // -----------------------------
+  crearPresupuesto(
+    idOrCodigo: string,
+    body: { importe: number; detalle: string; aceptacionCheck: boolean }
+  ): Observable<PresupuestoDto> {
+    return this.http.post<PresupuestoDto>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/presupuesto`,
+      body
+    );
+  }
+
+  enviarPresupuesto(idOrCodigo: string): Observable<PresupuestoDto> {
+    return this.http.post<PresupuestoDto>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/presupuesto/enviar`,
+      {}
+    );
+  }
+
+  aceptarPresupuesto(idOrCodigo: string): Observable<PresupuestoDto> {
+    return this.http.post<PresupuestoDto>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/presupuesto/aceptar`,
+      {}
+    );
+  }
+
+  rechazarPresupuesto(idOrCodigo: string): Observable<PresupuestoDto> {
+    return this.http.post<PresupuestoDto>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/presupuesto/rechazar`,
+      {}
+    );
+  }
+
+  // -----------------------------
+  // PAGO
+  // -----------------------------
+  marcarTransferencia(idOrCodigo: string): Observable<any> {
+    return this.http.post(`${this.url}/${encodeURIComponent(idOrCodigo)}/pago/transferencia`, {});
+  }
+
+  subirComprobante(idOrCodigo: string, file: File): Observable<any> {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post(`${this.url}/${encodeURIComponent(idOrCodigo)}/pago/comprobante`, fd);
+  }
+
+  // -----------------------------
+  // CITAS
+  // -----------------------------
+  crearCita(idOrCodigo: string, body: { inicio: string; fin: string }): Observable<CitaDto> {
+    return this.http.post<CitaDto>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/citas`,
+      body
+    );
+  }
+
+  reprogramarCita(citaId: string, body: { inicio: string; fin: string }): Observable<CitaDto> {
+    return this.http.put<CitaDto>(
+      `${this.url}/citas/${encodeURIComponent(citaId)}`,
+      body
+    );
+  }
+
+  // -----------------------------
+  // MENSAJES
+  // -----------------------------
+  enviarMensaje(idOrCodigo: string, contenido: string): Observable<MensajeOtDto> {
+    return this.http.post<MensajeOtDto>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/mensajes`,
+      { contenido }
+    );
   }
 }
-
-// Corrijo imports de core/common y aseguro consistencia en endpoints.

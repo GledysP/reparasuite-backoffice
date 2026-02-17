@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common'; // <--- 1. IMPORTAR ESTO
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,6 +17,7 @@ import { AuthService } from '../../core/services/auth.service';
   selector: 'rs-login',
   standalone: true,
   imports: [
+    CommonModule,       
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
