@@ -152,6 +152,7 @@ export interface TicketDetalleDto {
   mensajes: TicketMensajeDto[];
   createdAt: string;
   updatedAt: string;
+  ordenTrabajoId?: string | null; // ✅ NUEVO
 }
 
 export interface TicketBackofficeListaItem {

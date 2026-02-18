@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { MatCardModule } from '@angular/material/card';
@@ -37,6 +37,7 @@ import { TicketDetalleDto } from '../../../core/models/tipos';
 })
 export class TicketsDetalleComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private ticketsService = inject(TicketsService);
   private snack = inject(MatSnackBar);
   private fb = inject(FormBuilder);
@@ -79,5 +80,33 @@ export class TicketsDetalleComponent implements OnInit {
       error: () => this.snack.open('No se pudo enviar el mensaje', 'OK', { duration: 2500 }),
       complete: () => (this.busy = false)
     });
+  }
+
+  // ✅ NUEVO
+  crearOt(): void {
+    if (!this.ticket) return;
+
+    // si ya está ligada, solo navegar
+    const existente = this.ticket.ordenTrabajoId;
+    if (existente) {
+      this.router.navigate(['/ordenes-trabajo', existente]);
+      return;
+    }
+
+    this.busy = true;
+    this.ticketsService.crearOtDesdeTicket(this.id).subscribe({
+      next: (res) => {
+        this.snack.open('OT creada desde el ticket', 'OK', { duration: 1800 });
+        this.router.navigate(['/ordenes-trabajo', res.ordenTrabajoId]);
+      },
+      error: () => this.snack.open('No se pudo crear la OT', 'OK', { duration: 2500 }),
+      complete: () => (this.busy = false)
+    });
+  }
+
+  verOt(): void {
+    const otId = this.ticket?.ordenTrabajoId;
+    if (!otId) return;
+    this.router.navigate(['/ordenes-trabajo', otId]);
   }
 }

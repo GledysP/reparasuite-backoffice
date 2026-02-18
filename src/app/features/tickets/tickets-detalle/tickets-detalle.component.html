@@ -1,7 +1,27 @@
-<div class="rs-page-container">
-  <header class="rs-header-row">
-    <h1 class="rs-page-title">Ticket</h1>
-    <button mat-stroked-button routerLink="/tickets">Volver</button>
+<div class="rs-page">
+  <header class="rs-topbar">
+    <div class="left">
+      <div class="kicker">Tickets / Detalle</div>
+      <h1 class="title">Ticket</h1>
+    </div>
+
+    <div class="actions">
+      <button mat-stroked-button routerLink="/tickets">
+        Volver
+      </button>
+
+      @if (ticket?.ordenTrabajoId) {
+        <button mat-stroked-button (click)="verOt()" [disabled]="busy">
+          <mat-icon>open_in_new</mat-icon>
+          Ver OT
+        </button>
+      } @else {
+        <button mat-flat-button class="btn-primary" (click)="crearOt()" [disabled]="busy || loading">
+          <mat-icon>add</mat-icon>
+          Crear OT
+        </button>
+      }
+    </div>
   </header>
 
   @if (loading) {
@@ -9,35 +29,35 @@
   }
 
   @if (ticket; as t) {
-    <mat-card class="white-card">
+    <mat-card class="card">
       <mat-card-content>
-        <div class="top">
-          <div>
-            <div class="muted">Estado</div>
-            <div class="status-pill">{{ t.estado }}</div>
-          </div>
-          <div class="right muted">
-            Actualizado: {{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}
-          </div>
+        <div class="meta">
+          <div class="pill" [attr.data-estado]="t.estado">{{ t.estado }}</div>
+          <div class="muted">Actualizado: {{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}</div>
         </div>
 
-        <h2 class="title">{{ t.asunto }}</h2>
+        <h2 class="subject">{{ t.asunto }}</h2>
         <p class="desc">{{ t.descripcion }}</p>
 
-        <mat-divider class="mt16"></mat-divider>
+        <mat-divider class="sep"></mat-divider>
 
-        <h3 class="section-title">Mensajes</h3>
+        <div class="section-head">
+          <h3>Mensajes</h3>
+          <span class="muted">{{ t.mensajes.length }} total</span>
+        </div>
 
         @if (t.mensajes.length) {
           <div class="msg-list">
             @for (m of t.mensajes; track m.id) {
-              <div class="msg-item">
-                <div class="msg-head">
-                  <strong>{{ m.remitenteNombre }}</strong>
-                  <span class="muted">{{ m.createdAt | date:'MMM d, h:mm a' }}</span>
+              <div class="msg">
+                <div class="msg-top">
+                  <div class="who">
+                    <strong>{{ m.remitenteNombre }}</strong>
+                    <span class="tag">{{ m.remitenteTipo }}</span>
+                  </div>
+                  <span class="muted">{{ m.createdAt | date:'MMM d, HH:mm' }}</span>
                 </div>
-                <div class="muted xs">Tipo: {{ m.remitenteTipo }}</div>
-                <p class="msg-body">{{ m.contenido }}</p>
+                <div class="body">{{ m.contenido }}</div>
               </div>
             }
           </div>
@@ -45,15 +65,16 @@
           <p class="muted">Sin mensajes todavía.</p>
         }
 
-        <mat-divider class="mt16"></mat-divider>
+        <mat-divider class="sep"></mat-divider>
 
-        <div class="input-inline">
-          <mat-form-field appearance="outline" class="field-grow">
+        <div class="reply">
+          <mat-form-field appearance="outline" class="field">
             <mat-label>Responder</mat-label>
             <input matInput [formControl]="formMsg.controls.contenido" (keyup.enter)="enviar()" />
           </mat-form-field>
 
-          <button mat-flat-button class="btn-teal-action" (click)="enviar()" [disabled]="busy || formMsg.invalid">
+          <button mat-flat-button class="btn-primary" (click)="enviar()"
+                  [disabled]="busy || formMsg.invalid">
             Enviar
           </button>
         </div>
