@@ -1,397 +1,464 @@
 @if (ot(); as data) {
-<div class="rs-page-container">
-  <header class="rs-header-compact">
-    <div class="breadcrumb">Órdenes de trabajo / <span class="current">{{ data.codigo }}</span></div>
+  <div class="rs-page">
 
-    <div class="header-main-row">
-      <div class="title-group">
-        <h1>{{ data.codigo }}</h1>
-        <span class="badge-status" [attr.data-estado]="data.estado">{{ data.estado }}</span>
-      </div>
+    <!-- HEADER -->
+    <header class="rs-header">
+      <div class="rs-breadcrumb">Órdenes de trabajo / <span class="current">{{ data.codigo }}</span></div>
 
-      <div class="header-actions">
-        <button mat-stroked-button routerLink="/ordenes-trabajo" class="btn-back">Volver</button>
-        <button mat-stroked-button color="warn" class="btn-close" (click)="cambiarEstado('CERRADA')" [disabled]="busy()">
-          Cerrar OT
-        </button>
-      </div>
-    </div>
-
-    @if (loading()) {
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    }
-  </header>
-
-  <div class="rs-grid">
-    <main class="col-main">
-      <mat-card class="white-card">
-        <mat-card-content>
-
-          <mat-tab-group animationDuration="0ms" class="rs-tabs">
-
-            <!-- TAB: Resumen -->
-            <mat-tab label="Resumen">
-              <div class="tab-pad">
-                <div class="summary-grid">
-                  <div class="data-item"><label>Tipo</label><p>{{ data.tipo }}</p></div>
-                  <div class="data-item"><label>Prioridad</label><p>{{ data.prioridad }}</p></div>
-                  <div class="data-item"><label>Técnico</label><p>{{ data.tecnico ? data.tecnico.nombre : 'Sin asignar' }}</p></div>
-                  <div class="data-item"><label>Actualizada</label><p>{{ data.updatedAt | date:'yyyy-MM-dd HH:mm' }}</p></div>
-                </div>
-
-                <mat-divider class="mt16"></mat-divider>
-
-                <div class="action-section">
-                  <label class="inner-label">Cambiar estado</label>
-                  <div class="input-inline-group">
-                    <mat-form-field appearance="outline" class="ultra-compact-field field-grow">
-                      <mat-select [formControl]="formEstado.controls.estado">
-                        @for (e of estados; track e) {
-                          <mat-option [value]="e">{{ e }}</mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-
-                    <button mat-flat-button class="btn-teal-action btn-fixed" (click)="cambiarEstado()"
-                            [disabled]="busy() || formEstado.invalid">
-                      Actualizar
-                    </button>
-                  </div>
-                </div>
-
-                <mat-divider class="mt16"></mat-divider>
-
-                <h3 class="section-title">Descripción</h3>
-                <p class="text-body-small">{{ data.descripcion || 'Sin descripción' }}</p>
-
-                @if (data.tipo === 'DOMICILIO') {
-                  <mat-divider class="mt16"></mat-divider>
-                  <h3 class="section-title">Domicilio</h3>
-                  <div class="kv">
-                    <div><strong>Dirección:</strong> {{ data.direccion || '—' }}</div>
-                    <div><strong>Notas acceso:</strong> {{ data.notasAcceso || '—' }}</div>
-                    <div><strong>Fecha prevista:</strong> {{ data.fechaPrevista ? (data.fechaPrevista | date:'yyyy-MM-dd HH:mm') : '—' }}</div>
-                  </div>
-                }
-              </div>
-            </mat-tab>
-
-            <!-- TAB: Notas -->
-            <mat-tab label="Notas">
-              <div class="tab-pad">
-                <div class="notes-stack">
-                  @for (n of data.notas; track n.id) {
-                    <div class="note-box">
-                      <div class="note-header">
-                       <strong>Usuario</strong>
-                        <span>{{ n.createdAt | date:'MMM d, h:mm a' }}</span>
-                      </div>
-                      <p>{{ n.contenido }}</p>
-                    </div>
-                  } @empty {
-                    <p class="text-muted">No hay notas registradas.</p>
-                  }
-
-                  <div class="input-inline-group note-input-area">
-                    <mat-form-field appearance="outline" class="ultra-compact-field field-grow">
-                      <input matInput placeholder="Agregar nota..." [formControl]="formNota.controls.contenido"
-                             (keyup.enter)="anadirNota()" />
-                    </mat-form-field>
-
-                    <button mat-flat-button class="btn-teal-action btn-fixed" (click)="anadirNota()"
-                            [disabled]="busy() || formNota.invalid">
-                      <mat-icon>add</mat-icon> Agregar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </mat-tab>
-
-            <!-- TAB: Fotos -->
-            <mat-tab label="Fotos">
-              <div class="tab-pad">
-                <div class="photos-minimal">
-                  <div class="photo-thumb-container">
-                    @for (f of data.fotos; track f.id; let i = $index) {
-                      <div class="thumb-wrapper" (click)="verFoto(f)">
-                        <img [src]="f.url" class="mini-thumb" [alt]="'Foto ' + (i + 1)">
-                        <span class="thumb-label">Foto {{ i + 1 }}</span>
-                        <div class="thumb-overlay"><mat-icon>visibility</mat-icon></div>
-                      </div>
-                    } @empty {
-                      <p class="text-muted">Sin fotos registradas.</p>
-                    }
-                  </div>
-
-                  <label class="upload-link-btn">
-                    <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
-                    <mat-icon>add_a_photo</mat-icon> Subir foto
-                  </label>
-                </div>
-              </div>
-            </mat-tab>
-
-            <!-- TAB: Presupuesto -->
-            <mat-tab label="Presupuesto">
-              <div class="tab-pad">
-
-                <div class="row-between">
-                  <div>
-                    <div class="muted">Estado:</div>
-                    <div class="pill">{{ data.presupuesto?.estado || 'SIN_PRESUPUESTO' }}</div>
-                  </div>
-
-                  <div class="actions-right">
-                    <button mat-stroked-button (click)="enviarPresupuesto()"
-                            [disabled]="busy() || !data.presupuesto">
-                      Enviar
-                    </button>
-                    <button mat-stroked-button color="warn" (click)="rechazarPresupuesto()"
-                            [disabled]="busy() || !data.presupuesto">
-                      Rechazar
-                    </button>
-                    <button mat-flat-button class="btn-teal-action" (click)="aceptarPresupuesto()"
-                            [disabled]="busy() || !data.presupuesto">
-                      Aceptar
-                    </button>
-                  </div>
-                </div>
-
-                <mat-divider class="mt16"></mat-divider>
-
-                <div class="grid-2">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Importe</mat-label>
-                    <input matInput type="number" [formControl]="formPresupuesto.controls.importe" />
-                  </mat-form-field>
-
-                  <div class="check-wrap">
-                    <mat-checkbox [formControl]="formPresupuesto.controls.aceptacionCheck">
-                      Requiere check de aceptación
-                    </mat-checkbox>
-                  </div>
-                </div>
-
-                <mat-form-field appearance="outline" class="w-full">
-                  <mat-label>Detalle</mat-label>
-                  <textarea matInput rows="5" [formControl]="formPresupuesto.controls.detalle"></textarea>
-                </mat-form-field>
-
-                <div class="actions-row">
-                  <button mat-stroked-button (click)="crearPresupuesto()"
-                          [disabled]="busy() || formPresupuesto.invalid">
-                    Guardar presupuesto
-                  </button>
-                </div>
-
-                <!-- ✅ FIX null-safety: encierro presupuesto en bloque -->
-                @if (data.presupuesto; as p) {
-                  @if (p.sentAt) {
-                    <div class="muted mt12">Enviado: {{ p.sentAt | date:'yyyy-MM-dd HH:mm' }}</div>
-                  }
-                  @if (p.respondedAt) {
-                    <div class="muted">Respondido: {{ p.respondedAt | date:'yyyy-MM-dd HH:mm' }}</div>
-                  }
-                }
-              </div>
-            </mat-tab>
-
-            <!-- TAB: Pago -->
-            <mat-tab label="Pago">
-              <div class="tab-pad">
-                <div class="row-between">
-                  <div>
-                    <div class="muted">Estado:</div>
-                    <div class="pill">{{ data.pago?.estado || 'SIN_PAGO' }}</div>
-                    <div class="muted mt8">Importe: {{ data.pago?.importe ?? data.presupuesto?.importe ?? '—' }}</div>
-                  </div>
-
-                  <div class="actions-right">
-                    <button mat-stroked-button (click)="marcarTransferencia()" [disabled]="busy()">
-                      Marcar transferencia
-                    </button>
-                  </div>
-                </div>
-
-                <mat-divider class="mt16"></mat-divider>
-
-                <div class="upload-line">
-                  <label class="upload-link-btn">
-                    <input type="file" (change)="onPagoFileSelected($event)" hidden />
-                    <mat-icon>upload</mat-icon> Seleccionar comprobante
-                  </label>
-
-                  <span class="muted" *ngIf="pagoFile">{{ pagoFile.name }}</span>
-
-                  <button mat-flat-button class="btn-teal-action" (click)="subirComprobante()"
-                          [disabled]="busy() || !pagoFile">
-                    Subir comprobante
-                  </button>
-                </div>
-
-                <!-- ✅ FIX null-safety: encierro pago en bloque -->
-                @if (data.pago; as pay) {
-                  @if (pay.comprobanteUrl) {
-                    <div class="mt12">
-                      <a [href]="pay.comprobanteUrl" target="_blank" rel="noopener" class="blue-link">
-                        Ver comprobante
-                      </a>
-                    </div>
-                  }
-                }
-              </div>
-            </mat-tab>
-
-            <!-- TAB: Citas -->
-            <mat-tab label="Citas">
-              <div class="tab-pad">
-                <div class="grid-2">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Inicio</mat-label>
-                    <input matInput type="datetime-local" [formControl]="formCita.controls.inicio">
-                  </mat-form-field>
-
-                  <mat-form-field appearance="outline">
-                    <mat-label>Fin</mat-label>
-                    <input matInput type="datetime-local" [formControl]="formCita.controls.fin">
-                  </mat-form-field>
-                </div>
-
-                <div class="actions-row">
-                  <button mat-stroked-button (click)="crearCita()" [disabled]="busy() || formCita.invalid">
-                    Crear cita
-                  </button>
-
-                  <!-- ✅ NG8107: aquí data.citas NO es opcional según tu tipo, quitamos ?. -->
-                  <button mat-flat-button class="btn-teal-action" (click)="reprogramarPrimera()"
-                          [disabled]="busy() || formCita.invalid || !data.citas.length">
-                    Reprogramar primera cita
-                  </button>
-                </div>
-
-                <mat-divider class="mt16"></mat-divider>
-
-                <h3 class="section-title">Listado</h3>
-
-                <!-- ✅ NG8107: quitamos ?. -->
-                @if (data.citas.length) {
-                  <mat-list>
-                    @for (c of data.citas; track c.id) {
-                      <mat-list-item>
-                        <mat-icon matListItemIcon>event</mat-icon>
-                        <div matListItemTitle>{{ c.inicio | date:'yyyy-MM-dd HH:mm' }} → {{ c.fin | date:'HH:mm' }}</div>
-                        <div matListItemLine class="muted">Estado: {{ c.estado }}</div>
-                      </mat-list-item>
-                    }
-                  </mat-list>
-                } @else {
-                  <p class="text-muted">No hay citas registradas.</p>
-                }
-              </div>
-            </mat-tab>
-
-            <!-- TAB: Mensajes -->
-            <mat-tab label="Mensajes">
-              <div class="tab-pad">
-
-                <!-- ✅ NG8107: quitamos ?. -->
-                @if (data.mensajes.length) {
-                  <div class="msg-list">
-                    @for (m of data.mensajes; track m.id) {
-                      <div class="msg-item">
-                        <div class="msg-head">
-                          <strong>{{ m.remitenteNombre }}</strong>
-                          <span class="muted">{{ m.createdAt | date:'MMM d, h:mm a' }}</span>
-                        </div>
-                        <div class="muted xs">Tipo: {{ m.remitenteTipo }}</div>
-                        <p class="msg-body">{{ m.contenido }}</p>
-                      </div>
-                    }
-                  </div>
-                } @else {
-                  <p class="text-muted">Sin mensajes.</p>
-                }
-
-                <mat-divider class="mt16"></mat-divider>
-
-                <div class="input-inline-group">
-                  <mat-form-field appearance="outline" class="field-grow">
-                    <mat-label>Enviar mensaje</mat-label>
-                    <input matInput [formControl]="formMsg.controls.contenido" (keyup.enter)="enviarMensaje()">
-                  </mat-form-field>
-
-                  <button mat-flat-button class="btn-teal-action btn-fixed"
-                          (click)="enviarMensaje()" [disabled]="busy() || formMsg.invalid">
-                    Enviar
-                  </button>
-                </div>
-              </div>
-            </mat-tab>
-
-            <!-- TAB: Timeline -->
-            <mat-tab label="Timeline">
-              <div class="tab-pad">
-                <!-- ✅ NG8107: quitamos ?. -->
-                @if (data.historial.length) {
-                  <div class="timeline-compact">
-                    @for (h of data.historial; track $index) {
-                      <div class="tl-node">
-                        <div class="tl-content">
-                          <div class="tl-txt">{{ h.descripcion }}</div>
-                          <div class="tl-date">
-                            <span class="tl-user">&#64;{{ h.usuario?.nombre || 'sistema' }}</span>
-                            <span> &bull; </span>
-                            <span>{{ h.fecha | date:'MMM d, h:mm a' }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    }
-                  </div>
-                } @else {
-                  <p class="text-muted">Sin historial.</p>
-                }
-              </div>
-            </mat-tab>
-
-          </mat-tab-group>
-
-        </mat-card-content>
-      </mat-card>
-    </main>
-
-    <!-- SIDEBAR -->
-    <aside class="col-side">
-      <section class="white-card side-card">
-        <h2 class="card-label">Cliente</h2>
-        <div class="sidebar-data">
-          <div class="name-bold">{{ data.cliente.nombre }}</div>
-          <div class="row-icon"><mat-icon>phone</mat-icon><span>{{ data.cliente.telefono || 'Sin teléfono' }}</span></div>
-          <div class="row-icon"><mat-icon>email</mat-icon><span>{{ data.cliente.email || 'Sin correo' }}</span></div>
-          <a class="blue-link" [routerLink]="['/clientes', data.cliente.id]">Ver perfil completo</a>
-        </div>
-      </section>
-
-      @if (data.tipo === 'DOMICILIO') {
-        <section class="white-card side-card">
-          <h2 class="card-label">Visita a domicilio</h2>
-          <div class="sidebar-data">
-            <div class="address-row">
-              <mat-icon>location_on</mat-icon>
-              <span class="truncate" [title]="data.direccion || ''">{{ data.direccion || 'No especificada' }}</span>
-            </div>
-            @if (data.notasAcceso) {
-              <p class="text-muted-xs"><strong>Nota:</strong> {{ data.notasAcceso }}</p>
-            }
+      <div class="rs-head-row">
+        <div class="rs-title-block">
+          <div class="rs-title-line">
+            <h1 class="rs-h1">Detalle de OT</h1>
+            <span class="rs-badge" [attr.data-estado]="data.estado">{{ data.estado }}</span>
+            <span class="rs-muted">Actualizada: {{ data.updatedAt | date:'d MMM, y HH:mm' }}</span>
           </div>
-        </section>
+          <div class="rs-h2">{{ data.codigo }}</div>
+        </div>
+
+        <div class="rs-actions">
+          <button mat-stroked-button routerLink="/ordenes-trabajo">Volver</button>
+          <button mat-stroked-button color="warn" (click)="cambiarEstado('CERRADA')" [disabled]="busy()">
+            Cerrar OT
+          </button>
+        </div>
+      </div>
+
+      @if (loading()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
-    </aside>
+    </header>
+
+    <div class="layout">
+      <!-- MAIN -->
+      <main class="main">
+
+        <!-- ROW 1: DETALLE OT (compacto, 6 en línea) -->
+        <mat-card class="card card-soft pop">
+          <div class="card-head">
+            <div class="card-title">
+              <mat-icon>assignment</mat-icon>
+              <span>Detalle de OT</span>
+            </div>
+
+            <button mat-stroked-button class="btn-compact" (click)="cambiarEstado()" [disabled]="busy() || formEstado.invalid">
+              Actualizar
+            </button>
+          </div>
+
+          <div class="detail-grid">
+            <div class="mini-kv">
+              <div class="k">Tipo</div>
+              <div class="v">{{ data.tipo }}</div>
+            </div>
+
+            <div class="mini-kv">
+              <div class="k">Prioridad</div>
+              <div class="v">{{ data.prioridad }}</div>
+            </div>
+
+            <div class="mini-field">
+              <mat-form-field appearance="outline" class="mf mf-xs">
+                <mat-label>Estado</mat-label>
+                <mat-select [formControl]="formEstado.controls.estado">
+                  @for (e of estados; track e) {
+                    <mat-option [value]="e">{{ e }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="mini-kv">
+              <div class="k">Presupuesto</div>
+              <div class="v">
+                @if (presupuestoImporte(data) !== null) {
+                  <span class="money">{{ presupuestoImporte(data) | number:'1.0-2' }} €</span>
+                  <span class="pill" [attr.data-state]="data.presupuesto?.estado || 'SIN'">
+                    {{ data.presupuesto?.estado || 'SIN' }}
+                  </span>
+                } @else {
+                  —
+                }
+              </div>
+            </div>
+
+            <div class="mini-kv">
+              <div class="k">Técnico</div>
+              <div class="v">{{ data.tecnico ? data.tecnico.nombre : 'Sin asignar' }}</div>
+            </div>
+
+            <div class="mini-kv">
+              <div class="k">Actualizada</div>
+              <div class="v">{{ data.updatedAt | date:'yyyy-MM-dd HH:mm' }}</div>
+            </div>
+          </div>
+
+          <div class="desc-row">
+            <div class="desc-k">Descripción</div>
+            <div class="desc-v">{{ data.descripcion || 'Sin descripción' }}</div>
+          </div>
+        </mat-card>
+
+        <!-- ROW 2: PRESUPUESTO + CITA + CHAT -->
+        <div class="row3">
+
+          <!-- PRESUPUESTO -->
+          <mat-card class="card pop">
+            <div class="card-head">
+              <div class="card-title">
+                <mat-icon>request_quote</mat-icon>
+                <span>Presupuesto</span>
+              </div>
+
+              @if (data.presupuesto?.sentAt) {
+                <div class="rs-muted">Enviado: {{ data.presupuesto?.sentAt | date:'d MMM HH:mm' }}</div>
+              }
+            </div>
+
+            <div class="budget-top">
+              <div class="pill" [attr.data-state]="data.presupuesto?.estado || 'SIN_PRESUPUESTO'">
+                {{ data.presupuesto?.estado || 'SIN_PRESUPUESTO' }}
+              </div>
+
+              <div class="amount">
+                @if (data.presupuesto?.importe != null) {
+                  {{ data.presupuesto?.importe | number:'1.0-2' }} €
+                } @else {
+                  —
+                }
+              </div>
+
+              @if (data.presupuesto?.estado === 'ACEPTADO') {
+                <div class="okline">
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Presupuesto aceptado</span>
+                </div>
+              }
+            </div>
+
+            <mat-divider class="mt12"></mat-divider>
+
+            <div class="form-stack">
+              <mat-form-field appearance="outline" class="mf">
+                <mat-label>Importe</mat-label>
+                <input matInput type="number" [formControl]="formPresupuesto.controls.importe" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="mf">
+                <mat-label>Detalle</mat-label>
+                <textarea matInput rows="4" [formControl]="formPresupuesto.controls.detalle"></textarea>
+              </mat-form-field>
+
+              <mat-checkbox [formControl]="formPresupuesto.controls.aceptacionCheck">
+                Requiere check de aceptación
+              </mat-checkbox>
+
+              <div class="btn-row">
+                <button mat-stroked-button (click)="guardarPresupuesto()"
+                        [disabled]="busy() || formPresupuesto.invalid || data.presupuesto?.estado === 'ACEPTADO'">
+                  Guardar
+                </button>
+
+                <button mat-flat-button class="btn-primary"
+                        (click)="enviarPresupuesto()"
+                        [disabled]="busy() || !data.presupuesto || data.presupuesto.estado === 'ENVIADO' || data.presupuesto.estado === 'ACEPTADO'">
+                  Enviar al cliente
+                </button>
+              </div>
+            </div>
+          </mat-card>
+
+          <!-- CITA (calendario) -->
+          <mat-card class="card pop">
+            <div class="card-head">
+              <div class="card-title">
+                <mat-icon>event</mat-icon>
+                <span>Cita</span>
+              </div>
+
+              <div class="rs-muted">
+                @if (data.citas.length) { {{ data.citas[0].estado }} } @else { Aún no programada }
+              </div>
+            </div>
+
+            <div class="cita-grid">
+              <mat-form-field appearance="outline" class="mf">
+                <mat-label>Fecha inicio</mat-label>
+                <input matInput [matDatepicker]="dp1" [formControl]="formCita.controls.fechaInicio">
+                <mat-datepicker-toggle matIconSuffix [for]="dp1"></mat-datepicker-toggle>
+                <mat-datepicker #dp1></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="mf">
+                <mat-label>Hora inicio</mat-label>
+                <input matInput type="time" [formControl]="formCita.controls.horaInicio">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="mf">
+                <mat-label>Fecha fin</mat-label>
+                <input matInput [matDatepicker]="dp2" [formControl]="formCita.controls.fechaFin">
+                <mat-datepicker-toggle matIconSuffix [for]="dp2"></mat-datepicker-toggle>
+                <mat-datepicker #dp2></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="mf">
+                <mat-label>Hora fin</mat-label>
+                <input matInput type="time" [formControl]="formCita.controls.horaFin">
+              </mat-form-field>
+            </div>
+
+            <div class="btn-row">
+              <button mat-stroked-button (click)="crearCita()" [disabled]="busy() || formCita.invalid">
+                Reservar
+              </button>
+
+              <button mat-flat-button class="btn-primary" (click)="reprogramarPrimera()"
+                      [disabled]="busy() || formCita.invalid || !data.citas.length">
+                Reprogramar
+              </button>
+            </div>
+
+            <mat-divider class="mt12"></mat-divider>
+
+            <div class="rs-muted">
+              @if (data.citas.length) {
+                Próxima: {{ data.citas[0].inicio | date:'d MMM y HH:mm' }} → {{ data.citas[0].fin | date:'HH:mm' }}
+              } @else {
+                No hay citas registradas.
+              }
+            </div>
+          </mat-card>
+
+          <!-- CHAT (Burbujas + composer abajo) -->
+          <mat-card class="card pop chat-card">
+            <div class="card-head">
+              <div class="card-title">
+                <mat-icon>chat</mat-icon>
+                <span>Mensajes</span>
+              </div>
+              <button mat-button class="linklike" (click)="cargar()" [disabled]="busy()">
+                <mat-icon>refresh</mat-icon>
+                Actualizar
+              </button>
+            </div>
+
+            <div class="chat-body">
+              @if (data.mensajes.length) {
+                <div class="chat-scroll">
+                  @for (m of data.mensajes; track trackById) {
+                    <div class="bubble-row" [class.me]="m.remitenteTipo === 'CLIENTE'">
+                      <div class="bubble">
+                        <div class="bubble-meta">
+                          <span class="name">{{ m.remitenteNombre }}</span>
+                          <span class="time">{{ m.createdAt | date:'d MMM, HH:mm' }}</span>
+                        </div>
+                        <div class="bubble-text">{{ m.contenido }}</div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-chat">Aún no hay mensajes.</div>
+              }
+            </div>
+
+            <div class="composer">
+              <textarea
+                class="composer-input"
+                placeholder="Escribe un mensaje…"
+                [formControl]="formMsg.controls.contenido"
+                (keydown)="onMsgKeydown($event)"></textarea>
+
+              <button
+                mat-icon-button
+                class="send-btn"
+                (click)="enviarMensaje()"
+                [disabled]="busy() || formMsg.invalid"
+                aria-label="Enviar">
+                <mat-icon>send</mat-icon>
+              </button>
+            </div>
+          </mat-card>
+
+        </div>
+
+        <!-- ROW 3: FOTOS + NOTAS + PAGO -->
+        <div class="row3">
+
+          <!-- FOTOS -->
+          <mat-card class="card pop">
+            <div class="card-head">
+              <div class="card-title">
+                <mat-icon>photo</mat-icon>
+                <span>Fotos</span>
+              </div>
+
+              <label class="upload-btn">
+                <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
+                <mat-icon>add_a_photo</mat-icon>
+                Subir
+              </label>
+            </div>
+
+            <div class="photo-grid">
+              @for (f of data.fotos; track trackById; let i = $index) {
+                <button class="thumb" type="button" (click)="verFoto(f)">
+                  <img [src]="f.url" [alt]="'Foto '+(i+1)" />
+                  <span>Foto {{ i + 1 }}</span>
+                </button>
+              } @empty {
+                <div class="rs-muted">Sin fotos registradas.</div>
+              }
+            </div>
+          </mat-card>
+
+          <!-- NOTAS -->
+          <mat-card class="card pop">
+            <div class="card-head">
+              <div class="card-title">
+                <mat-icon>note</mat-icon>
+                <span>Notas</span>
+              </div>
+            </div>
+
+            <div class="note-list">
+              @for (n of data.notas; track trackById) {
+                <div class="note-item">
+                  <div class="note-meta">
+                    <span class="rs-strong">Usuario</span>
+                    <span class="rs-muted">{{ n.createdAt | date:'d MMM, HH:mm' }}</span>
+                  </div>
+                  <div class="note-text">{{ n.contenido }}</div>
+                </div>
+              } @empty {
+                <div class="rs-muted">No hay notas registradas.</div>
+              }
+            </div>
+
+            <div class="note-add">
+              <mat-form-field appearance="outline" class="mf w100">
+                <mat-label>Agregar nota</mat-label>
+                <input matInput [formControl]="formNota.controls.contenido" (keyup.enter)="anadirNota()" />
+              </mat-form-field>
+
+              <button mat-flat-button class="btn-primary" (click)="anadirNota()" [disabled]="busy() || formNota.invalid">
+                <mat-icon>add</mat-icon>
+                Agregar
+              </button>
+            </div>
+          </mat-card>
+
+          <!-- PAGO -->
+          <mat-card class="card pop">
+            <div class="card-head">
+              <div class="card-title">
+                <mat-icon>payments</mat-icon>
+                <span>Pago</span>
+              </div>
+
+              <div class="pill" [attr.data-state]="data.pago?.estado || 'SIN_PAGO'">
+                {{ data.pago?.estado || 'SIN_PAGO' }}
+              </div>
+            </div>
+
+            <div class="rs-muted">
+              Beneficiario (MVP): ReparaSuite <br />
+              IBAN: ES00 0000 0000 0000 0000 0000 <br />
+              Concepto: {{ data.codigo }}
+            </div>
+
+            <div class="btn-row mt12">
+              <button mat-stroked-button (click)="marcarTransferencia()" [disabled]="busy()">
+                He pagado por transferencia
+              </button>
+            </div>
+
+            <div class="dropzone mt12">
+              <label class="drop-label">
+                <input type="file" (change)="onPagoFileSelected($event)" hidden />
+                <mat-icon>upload</mat-icon>
+                <div>
+                  <div class="dz-title">Subir comprobante</div>
+                  <div class="dz-sub">Arrastra o selecciona un archivo</div>
+                </div>
+              </label>
+
+              <div class="dz-file" *ngIf="pagoFile">
+                {{ pagoFile.name }}
+              </div>
+
+              <button mat-flat-button class="btn-primary w100"
+                      (click)="subirComprobante()"
+                      [disabled]="busy() || !pagoFile">
+                Enviar
+              </button>
+            </div>
+          </mat-card>
+
+        </div>
+      </main>
+
+      <!-- SIDEBAR -->
+      <aside class="side">
+
+        <mat-card class="card side-card pop">
+          <div class="side-title">Cliente</div>
+          <div class="side-body">
+            <div class="name">{{ data.cliente.nombre }}</div>
+            <div class="rowi"><mat-icon>phone</mat-icon><span>{{ data.cliente.telefono || 'Sin teléfono' }}</span></div>
+            <div class="rowi"><mat-icon>email</mat-icon><span>{{ data.cliente.email || 'Sin correo' }}</span></div>
+            <a class="link" [routerLink]="['/clientes', data.cliente.id]">Ver perfil completo</a>
+          </div>
+        </mat-card>
+
+        @if (data.tipo === 'DOMICILIO') {
+          <mat-card class="card side-card pop">
+            <div class="side-title">Visita a domicilio</div>
+            <div class="side-body">
+              <div class="rowi">
+                <mat-icon>location_on</mat-icon>
+                <span class="truncate" [title]="data.direccion || ''">{{ data.direccion || 'No especificada' }}</span>
+              </div>
+              <div class="rs-muted mt8"><strong>Notas acceso:</strong> {{ data.notasAcceso || '—' }}</div>
+              <div class="rs-muted"><strong>Fecha prevista:</strong> {{ data.fechaPrevista ? (data.fechaPrevista | date:'d MMM y HH:mm') : '—' }}</div>
+            </div>
+          </mat-card>
+        }
+
+        <mat-card class="card side-card pop">
+          <div class="side-title-row">
+            <div class="side-title">Historial</div>
+            <div class="rs-muted">{{ data.historial.length }} eventos</div>
+          </div>
+
+          @if (data.historial.length) {
+            <div class="audit">
+              @for (h of data.historial; track $index) {
+                <div class="audit-row">
+                  <div class="dot"></div>
+                  <div class="audit-body">
+                    <div class="audit-text">{{ h.descripcion }}</div>
+                    <div class="audit-meta">
+                      <span>&#64;{{ h.usuario?.nombre || 'sistema' }}</span>
+                      <span class="sep">•</span>
+                      <span>{{ h.fecha | date:'d MMM, HH:mm' }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="rs-muted">Sin historial.</div>
+          }
+        </mat-card>
+
+      </aside>
+    </div>
   </div>
-</div>
+
 } @else {
   <div class="loading-overlay">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    <div class="muted mt12">Cargando...</div>
+    <div class="rs-muted mt12">Cargando...</div>
   </div>
 }
 
@@ -402,7 +469,7 @@
       <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
     </div>
     <div class="modal-body-mini">
-      <img [src]="selectedImageUrl()" class="img-contained">
+      <img [src]="selectedImageUrl() || ''" class="img-contained" alt="Vista previa">
     </div>
   </div>
 </ng-template>

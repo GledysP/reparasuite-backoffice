@@ -30,13 +30,12 @@ export class OrdenesTrabajoService {
     query?: string | '';
     page?: number;
     size?: number;
-    sort?: string; // opcional: si tu backend lo soporta
+    sort?: string;
   }): Observable<RespuestaPaginada<OtListaItem>> {
     let params = new HttpParams()
       .set('page', String(f.page ?? 0))
       .set('size', String(f.size ?? 20));
 
-    // Si tu backend NO soporta sort, elimina estas líneas:
     if (f.sort) params = params.set('sort', f.sort);
 
     if (f.query && f.query.trim()) params = params.set('query', f.query.trim());
@@ -107,15 +106,18 @@ export class OrdenesTrabajoService {
     );
   }
 
-  aceptarPresupuesto(idOrCodigo: string): Observable<PresupuestoDto> {
-    return this.http.post<PresupuestoDto>(
+  // ✅ En backoffice no deberías llamarlos, pero quedan por si haces testing.
+  // Backend exige body { acepto: boolean } y devuelve 204.
+  aceptarPresupuesto(idOrCodigo: string, acepto: boolean): Observable<void> {
+    return this.http.post<void>(
       `${this.url}/${encodeURIComponent(idOrCodigo)}/presupuesto/aceptar`,
-      {}
+      { acepto }
     );
   }
 
-  rechazarPresupuesto(idOrCodigo: string): Observable<PresupuestoDto> {
-    return this.http.post<PresupuestoDto>(
+  // Backend devuelve 204.
+  rechazarPresupuesto(idOrCodigo: string): Observable<void> {
+    return this.http.post<void>(
       `${this.url}/${encodeURIComponent(idOrCodigo)}/presupuesto/rechazar`,
       {}
     );

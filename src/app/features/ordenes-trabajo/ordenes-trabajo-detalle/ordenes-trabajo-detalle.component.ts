@@ -11,11 +11,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatListModule } from '@angular/material/list';
+
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { EstadoOt } from '../../../core/models/enums';
@@ -38,11 +40,13 @@ import { OtDetalle, CitaDto } from '../../../core/models/tipos';
     MatSnackBarModule,
     MatIconModule,
     MatDialogModule,
-    MatTabsModule,
     MatDividerModule,
     MatProgressBarModule,
     MatCheckboxModule,
-    MatListModule
+    MatListModule,
+
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   templateUrl: './ordenes-trabajo-detalle.component.html',
   styleUrl: './ordenes-trabajo-detalle.component.scss',
@@ -52,8 +56,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   private ordenes = inject(OrdenesTrabajoService);
   private snack = inject(MatSnackBar);
   private dialog = inject(MatDialog);
-
-  // ✅ IMPORTANTE: fb antes de usarlo en inicializadores de forms
   private fb = inject(FormBuilder);
 
   @ViewChild('imageModal') imageModal!: TemplateRef<any>;
@@ -64,9 +66,12 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   busy = signal(false);
 
   ot = signal<OtDetalle | null>(null);
+
+  // Modal foto
   selectedImageUrl = signal<string>('');
 
-  estados: EstadoOt[] = ['RECIBIDA', 'PRESUPUESTO', 'APROBADA', 'EN_CURSO', 'FINALIZADA', 'CERRADA'];
+  // UI helpers
+  readonly estados: EstadoOt[] = ['RECIBIDA', 'PRESUPUESTO', 'APROBADA', 'EN_CURSO', 'FINALIZADA', 'CERRADA'];
 
   // ---- Form: cambiar estado
   formEstado = this.fb.group({
@@ -88,10 +93,12 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   // ---- Form: pago comprobante
   pagoFile: File | null = null;
 
-  // ---- Form: citas
+  // ---- Form: citas (datepicker + hora)
   formCita = this.fb.group({
-    inicio: ['', Validators.required], // datetime-local
-    fin: ['', Validators.required],    // datetime-local
+    fechaInicio: [null as Date | null, Validators.required],
+    horaInicio: ['', Validators.required],
+    fechaFin: [null as Date | null, Validators.required],
+    horaFin: ['', Validators.required],
   });
 
   // ---- Form: mensajes
@@ -109,10 +116,8 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
       next: (res) => {
         this.ot.set(res);
 
-        // Estado actual en selector
         if (res.estado) this.formEstado.controls.estado.setValue(res.estado as EstadoOt);
 
-        // Precargar presupuesto si existe (sin “machacar” input del usuario)
         if (res.presupuesto) {
           const p = res.presupuesto;
           this.formPresupuesto.patchValue({
@@ -174,7 +179,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   // -------------------------
   verFoto(foto: any): void {
     const url = foto?.url || foto;
-    this.selectedImageUrl.set(url);
+    this.selectedImageUrl.set(url ?? '');
     this.dialog.open(this.imageModal, { width: 'auto', maxWidth: '92vw' });
   }
 
@@ -198,9 +203,9 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   }
 
   // -------------------------
-  // Presupuesto
+  // Presupuesto (backoffice)
   // -------------------------
-  crearPresupuesto(): void {
+  guardarPresupuesto(): void {
     if (this.formPresupuesto.invalid) {
       this.snack.open('Revisa importe y detalle', 'OK', { duration: 2500 });
       return;
@@ -236,30 +241,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     });
   }
 
-  aceptarPresupuesto(): void {
-    this.busy.set(true);
-    this.ordenes.aceptarPresupuesto(this.id).subscribe({
-      next: () => {
-        this.snack.open('Presupuesto aceptado', 'OK', { duration: 2000 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al aceptar', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false)
-    });
-  }
-
-  rechazarPresupuesto(): void {
-    this.busy.set(true);
-    this.ordenes.rechazarPresupuesto(this.id).subscribe({
-      next: () => {
-        this.snack.open('Presupuesto rechazado', 'OK', { duration: 2000 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al rechazar', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false)
-    });
-  }
-
   // -------------------------
   // Pago
   // -------------------------
@@ -278,8 +259,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   onPagoFileSelected(ev: Event): void {
     const input = ev.target as HTMLInputElement;
     this.pagoFile = input.files?.[0] ?? null;
-
-    // ✅ permite volver a seleccionar el mismo archivo
     input.value = '';
   }
 
@@ -299,16 +278,19 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   }
 
   // -------------------------
-  // Citas
+  // Citas (datepicker + hora)
   // -------------------------
   crearCita(): void {
     if (this.formCita.invalid) {
       this.snack.open('Selecciona inicio y fin', 'OK', { duration: 2500 });
       return;
     }
-    const v = this.formCita.getRawValue();
-    const inicioIso = this.toIso(v.inicio!);
-    const finIso = this.toIso(v.fin!);
+
+    const { inicioIso, finIso } = this.getCitaIso();
+    if (!inicioIso || !finIso) {
+      this.snack.open('Revisa fecha y hora', 'OK', { duration: 2500 });
+      return;
+    }
 
     this.busy.set(true);
     this.ordenes.crearCita(this.id, { inicio: inicioIso, fin: finIso }).subscribe({
@@ -334,9 +316,11 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
       return;
     }
 
-    const v = this.formCita.getRawValue();
-    const inicioIso = this.toIso(v.inicio!);
-    const finIso = this.toIso(v.fin!);
+    const { inicioIso, finIso } = this.getCitaIso();
+    if (!inicioIso || !finIso) {
+      this.snack.open('Revisa fecha y hora', 'OK', { duration: 2500 });
+      return;
+    }
 
     this.busy.set(true);
     this.ordenes.reprogramarCita(first.id, { inicio: inicioIso, fin: finIso }).subscribe({
@@ -350,8 +334,30 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     });
   }
 
+  private getCitaIso(): { inicioIso: string | null; finIso: string | null } {
+    const v = this.formCita.getRawValue();
+
+    const inicio = this.combineDateTime(v.fechaInicio, v.horaInicio);
+    const fin = this.combineDateTime(v.fechaFin, v.horaFin);
+
+    return {
+      inicioIso: inicio ? inicio.toISOString() : null,
+      finIso: fin ? fin.toISOString() : null
+    };
+  }
+
+  private combineDateTime(date: Date | null, hhmm: string | null): Date | null {
+    if (!date || !hhmm) return null;
+    const [h, m] = hhmm.split(':').map(n => Number(n));
+    if (Number.isNaN(h) || Number.isNaN(m)) return null;
+
+    const d = new Date(date);
+    d.setHours(h, m, 0, 0);
+    return d;
+  }
+
   // -------------------------
-  // Mensajes
+  // Mensajes (Chat premium)
   // -------------------------
   enviarMensaje(): void {
     if (this.formMsg.invalid) return;
@@ -360,10 +366,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     if (!contenido) return;
 
     this.busy.set(true);
-
-    // ✅ FIX: firma segura (service suele pedir { contenido })
     this.ordenes.enviarMensaje(this.id, contenido).subscribe({
-
       next: () => {
         this.formMsg.reset();
         this.snack.open('Mensaje enviado', 'OK', { duration: 1500 });
@@ -374,9 +377,20 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     });
   }
 
-  // Helpers
-  private toIso(dtLocal: string): string {
-    // dtLocal viene como "YYYY-MM-DDTHH:mm"
-    return new Date(dtLocal).toISOString();
+  onMsgKeydown(ev: KeyboardEvent): void {
+    // Enter envía; Shift+Enter hace salto de línea
+    if (ev.key !== 'Enter') return;
+    if (ev.shiftKey) return;
+
+    ev.preventDefault();
+    this.enviarMensaje();
   }
+
+  // Helpers UI
+  presupuestoImporte(data: OtDetalle): number | null {
+    const p = data.presupuesto?.importe;
+    return typeof p === 'number' ? p : null;
+  }
+
+  trackById(_: number, x: any) { return x?.id ?? _; }
 }
