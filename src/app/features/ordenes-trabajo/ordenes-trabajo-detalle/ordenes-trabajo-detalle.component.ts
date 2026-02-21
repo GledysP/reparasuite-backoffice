@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ElementRef, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,14 +14,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatListModule } from '@angular/material/list';
 
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
+import { UsuariosService } from '../../usuarios/usuarios.service';
+
 import { EstadoOt } from '../../../core/models/enums';
-import { OtDetalle, CitaDto } from '../../../core/models/tipos';
+import { OtDetalle, UsuarioResumen } from '../../../core/models/tipos';
 
 @Component({
   selector: 'rs-ordenes-trabajo-detalle',
@@ -43,7 +44,6 @@ import { OtDetalle, CitaDto } from '../../../core/models/tipos';
     MatDividerModule,
     MatProgressBarModule,
     MatCheckboxModule,
-    MatListModule,
 
     MatDatepickerModule,
     MatNativeDateModule
@@ -54,11 +54,13 @@ import { OtDetalle, CitaDto } from '../../../core/models/tipos';
 export class OrdenesTrabajoDetalleComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private ordenes = inject(OrdenesTrabajoService);
+  private usuarios = inject(UsuariosService);
   private snack = inject(MatSnackBar);
-  private dialog = inject(MatDialog);
+  public dialog = inject(MatDialog);
   private fb = inject(FormBuilder);
 
   @ViewChild('imageModal') imageModal!: TemplateRef<any>;
+  @ViewChild('chatScroll') chatScroll?: ElementRef<HTMLDivElement>;
 
   id = this.route.snapshot.paramMap.get('id')!;
 
@@ -67,47 +69,47 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
 
   ot = signal<OtDetalle | null>(null);
 
-  // Modal foto
+  tecnicos = signal<UsuarioResumen[]>([]);
+  tecnicoNombre = signal<string>('Sin asignar');
+
   selectedImageUrl = signal<string>('');
 
-  // UI helpers
   readonly estados: EstadoOt[] = ['RECIBIDA', 'PRESUPUESTO', 'APROBADA', 'EN_CURSO', 'FINALIZADA', 'CERRADA'];
 
-  // ---- Form: cambiar estado
   formEstado = this.fb.group({
     estado: [null as EstadoOt | null, Validators.required]
   });
 
-  // ---- Form: nota
   formNota = this.fb.group({
     contenido: ['', [Validators.required, Validators.minLength(2)]]
   });
 
-  // ---- Form: presupuesto
   formPresupuesto = this.fb.group({
     importe: [null as number | null, [Validators.required, Validators.min(0)]],
     detalle: ['', [Validators.required, Validators.minLength(3)]],
     aceptacionCheck: [true]
   });
 
-  // ---- Form: pago comprobante
-  pagoFile: File | null = null;
-
-  // ---- Form: citas (datepicker + hora)
   formCita = this.fb.group({
     fechaInicio: [null as Date | null, Validators.required],
     horaInicio: ['', Validators.required],
-    fechaFin: [null as Date | null, Validators.required],
-    horaFin: ['', Validators.required],
   });
 
-  // ---- Form: mensajes
   formMsg = this.fb.group({
     contenido: ['', [Validators.required, Validators.minLength(1)]]
   });
 
   ngOnInit(): void {
-    this.cargar();
+    this.usuarios.listar(true).subscribe({
+      next: (u) => {
+        this.tecnicos.set(u.filter(x => x.rol === 'TECNICO'));
+        this.cargar();
+      },
+      error: () => {
+        this.tecnicos.set([]);
+        this.cargar();
+      }
+    });
   }
 
   cargar(): void {
@@ -119,13 +121,17 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
         if (res.estado) this.formEstado.controls.estado.setValue(res.estado as EstadoOt);
 
         if (res.presupuesto) {
-          const p = res.presupuesto;
           this.formPresupuesto.patchValue({
-            importe: p.importe ?? null,
-            detalle: p.detalle ?? '',
-            aceptacionCheck: !!p.aceptacionCheck
+            importe: res.presupuesto.importe ?? null,
+            detalle: res.presupuesto.detalle ?? '',
+            aceptacionCheck: !!res.presupuesto.aceptacionCheck
           }, { emitEvent: false });
         }
+
+        this.resolveTecnicoNombre(res);
+
+        queueMicrotask(() => this.scrollChatToBottom());
+        setTimeout(() => this.scrollChatToBottom(), 0);
       },
       error: () => {
         this.snack.open('Error al cargar la orden', 'OK', { duration: 2500 });
@@ -135,9 +141,32 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     });
   }
 
-  // -------------------------
-  // Estado
-  // -------------------------
+  private scrollChatToBottom(): void {
+    const el = this.chatScroll?.nativeElement;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  private resolveTecnicoNombre(res: OtDetalle) {
+    if (res.tecnico && typeof res.tecnico === 'object' && (res.tecnico as any).nombre) {
+      this.tecnicoNombre.set((res.tecnico as any).nombre);
+      return;
+    }
+    const tId = typeof (res as any).tecnico === 'string' ? (res as any).tecnico : (res as any).tecnicoId;
+    if (tId) {
+      const match = this.tecnicos().find(t => t.id === tId);
+      if (match) {
+        this.tecnicoNombre.set(match.nombre);
+        return;
+      }
+    }
+    this.tecnicoNombre.set('Sin asignar');
+  }
+
+  asignarTecnico(tecnicoId: string | null): void {
+    console.log('Asignación manual no implementada en el service:', tecnicoId);
+  }
+
   cambiarEstado(forzado?: EstadoOt): void {
     const estadoFinal = forzado ?? this.formEstado.controls.estado.value;
     if (!estadoFinal) return;
@@ -153,12 +182,8 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     });
   }
 
-  // -------------------------
-  // Notas
-  // -------------------------
   anadirNota(): void {
     if (this.formNota.invalid) return;
-
     const contenido = (this.formNota.controls.contenido.value ?? '').trim();
     if (!contenido) return;
 
@@ -174,9 +199,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     });
   }
 
-  // -------------------------
-  // Fotos
-  // -------------------------
   verFoto(foto: any): void {
     const url = foto?.url || foto;
     this.selectedImageUrl.set(url ?? '');
@@ -202,24 +224,16 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     });
   }
 
-  // -------------------------
-  // Presupuesto (backoffice)
-  // -------------------------
   guardarPresupuesto(): void {
-    if (this.formPresupuesto.invalid) {
-      this.snack.open('Revisa importe y detalle', 'OK', { duration: 2500 });
-      return;
-    }
+    if (this.formPresupuesto.invalid) return;
 
     const v = this.formPresupuesto.getRawValue();
-    const body = {
+    this.busy.set(true);
+    this.ordenes.crearPresupuesto(this.id, {
       importe: Number(v.importe ?? 0),
       detalle: (v.detalle ?? '').trim(),
       aceptacionCheck: !!v.aceptacionCheck
-    };
-
-    this.busy.set(true);
-    this.ordenes.crearPresupuesto(this.id, body).subscribe({
+    }).subscribe({
       next: () => {
         this.snack.open('Presupuesto guardado', 'OK', { duration: 2000 });
         this.cargar();
@@ -233,67 +247,33 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     this.busy.set(true);
     this.ordenes.enviarPresupuesto(this.id).subscribe({
       next: () => {
-        this.snack.open('Presupuesto enviado al cliente', 'OK', { duration: 2000 });
+        this.snack.open('Presupuesto enviado', 'OK', { duration: 2000 });
         this.cargar();
       },
-      error: () => this.snack.open('Error al enviar presupuesto', 'OK', { duration: 2500 }),
+      error: () => this.snack.open('Error al enviar', 'OK', { duration: 2500 }),
       complete: () => this.busy.set(false)
     });
   }
 
-  // -------------------------
-  // Pago
-  // -------------------------
   marcarTransferencia(): void {
     this.busy.set(true);
     this.ordenes.marcarTransferencia(this.id).subscribe({
       next: () => {
-        this.snack.open('Marcado como transferencia', 'OK', { duration: 2000 });
+        this.snack.open('Pago por transferencia registrado', 'OK', { duration: 2000 });
         this.cargar();
       },
-      error: () => this.snack.open('Error al marcar transferencia', 'OK', { duration: 2500 }),
+      error: () => this.snack.open('Error al marcar pago', 'OK', { duration: 2500 }),
       complete: () => this.busy.set(false)
     });
   }
 
-  onPagoFileSelected(ev: Event): void {
-    const input = ev.target as HTMLInputElement;
-    this.pagoFile = input.files?.[0] ?? null;
-    input.value = '';
-  }
-
-  subirComprobante(): void {
-    if (!this.pagoFile) return;
-
-    this.busy.set(true);
-    this.ordenes.subirComprobante(this.id, this.pagoFile).subscribe({
-      next: () => {
-        this.snack.open('Comprobante subido', 'OK', { duration: 2000 });
-        this.pagoFile = null;
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al subir comprobante', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false)
-    });
-  }
-
-  // -------------------------
-  // Citas (datepicker + hora)
-  // -------------------------
   crearCita(): void {
-    if (this.formCita.invalid) {
-      this.snack.open('Selecciona inicio y fin', 'OK', { duration: 2500 });
-      return;
-    }
-
-    const { inicioIso, finIso } = this.getCitaIso();
-    if (!inicioIso || !finIso) {
-      this.snack.open('Revisa fecha y hora', 'OK', { duration: 2500 });
-      return;
-    }
+    if (this.formCita.invalid) return;
+    const inicioIso = this.getInicioIso();
+    if (!inicioIso) return;
 
     this.busy.set(true);
-    this.ordenes.crearCita(this.id, { inicio: inicioIso, fin: finIso }).subscribe({
+    this.ordenes.crearCita(this.id, { inicio: inicioIso, fin: this.addMinutesIso(inicioIso, 60) }).subscribe({
       next: () => {
         this.snack.open('Cita creada', 'OK', { duration: 2000 });
         this.formCita.reset();
@@ -305,25 +285,14 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   }
 
   reprogramarPrimera(): void {
-    const data = this.ot();
-    const first: CitaDto | undefined = data?.citas?.[0];
-    if (!first) {
-      this.snack.open('No hay citas para reprogramar', 'OK', { duration: 2200 });
-      return;
-    }
-    if (this.formCita.invalid) {
-      this.snack.open('Selecciona inicio y fin', 'OK', { duration: 2500 });
-      return;
-    }
+    const first = this.ot()?.citas?.[0];
+    if (!first || this.formCita.invalid) return;
 
-    const { inicioIso, finIso } = this.getCitaIso();
-    if (!inicioIso || !finIso) {
-      this.snack.open('Revisa fecha y hora', 'OK', { duration: 2500 });
-      return;
-    }
+    const inicioIso = this.getInicioIso();
+    if (!inicioIso) return;
 
     this.busy.set(true);
-    this.ordenes.reprogramarCita(first.id, { inicio: inicioIso, fin: finIso }).subscribe({
+    this.ordenes.reprogramarCita(first.id, { inicio: inicioIso, fin: this.addMinutesIso(inicioIso, 60) }).subscribe({
       next: () => {
         this.snack.open('Cita reprogramada', 'OK', { duration: 2000 });
         this.formCita.reset();
@@ -334,34 +303,26 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     });
   }
 
-  private getCitaIso(): { inicioIso: string | null; finIso: string | null } {
+  private getInicioIso(): string | null {
     const v = this.formCita.getRawValue();
+    if (!v.fechaInicio || !v.horaInicio) return null;
 
-    const inicio = this.combineDateTime(v.fechaInicio, v.horaInicio);
-    const fin = this.combineDateTime(v.fechaFin, v.horaFin);
-
-    return {
-      inicioIso: inicio ? inicio.toISOString() : null,
-      finIso: fin ? fin.toISOString() : null
-    };
-  }
-
-  private combineDateTime(date: Date | null, hhmm: string | null): Date | null {
-    if (!date || !hhmm) return null;
-    const [h, m] = hhmm.split(':').map(n => Number(n));
+    const [h, m] = v.horaInicio.split(':').map(Number);
     if (Number.isNaN(h) || Number.isNaN(m)) return null;
 
-    const d = new Date(date);
+    const d = new Date(v.fechaInicio);
     d.setHours(h, m, 0, 0);
-    return d;
+    return d.toISOString();
   }
 
-  // -------------------------
-  // Mensajes (Chat premium)
-  // -------------------------
+  private addMinutesIso(iso: string, minutes: number): string {
+    const d = new Date(iso);
+    d.setMinutes(d.getMinutes() + minutes);
+    return d.toISOString();
+  }
+
   enviarMensaje(): void {
     if (this.formMsg.invalid) return;
-
     const contenido = (this.formMsg.controls.contenido.value ?? '').trim();
     if (!contenido) return;
 
@@ -371,26 +332,21 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
         this.formMsg.reset();
         this.snack.open('Mensaje enviado', 'OK', { duration: 1500 });
         this.cargar();
+        queueMicrotask(() => this.scrollChatToBottom());
       },
-      error: () => this.snack.open('Error al enviar mensaje', 'OK', { duration: 2500 }),
+      error: () => this.snack.open('Error al enviar', 'OK', { duration: 2500 }),
       complete: () => this.busy.set(false)
     });
   }
 
   onMsgKeydown(ev: KeyboardEvent): void {
-    // Enter envía; Shift+Enter hace salto de línea
-    if (ev.key !== 'Enter') return;
-    if (ev.shiftKey) return;
-
-    ev.preventDefault();
-    this.enviarMensaje();
+    if (ev.key === 'Enter' && !ev.shiftKey) {
+      ev.preventDefault();
+      this.enviarMensaje();
+    }
   }
 
-  // Helpers UI
-  presupuestoImporte(data: OtDetalle): number | null {
-    const p = data.presupuesto?.importe;
-    return typeof p === 'number' ? p : null;
+  trackById(index: number, item: any): any {
+    return item?.id ?? index;
   }
-
-  trackById(_: number, x: any) { return x?.id ?? _; }
 }

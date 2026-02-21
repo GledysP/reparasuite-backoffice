@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NgFor, NgIf } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
@@ -23,9 +23,10 @@ import { catchError, switchMap, startWith, map } from 'rxjs/operators';
 import { UsuariosService } from '../../usuarios/usuarios.service';
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { PrioridadOt, TipoOt } from '../../../core/models/enums';
-import { UsuarioResumen, ClienteResumen } from '../../../core/models/tipos';
+import { UsuarioResumen, ClienteResumen, TicketDetalleDto } from '../../../core/models/tipos';
 
 import { ClienteBuscarDialogComponent } from './cliente-buscar-dialog.component';
+import { TicketsService } from '../../tickets/tickets.service';
 
 type FotoPreview = { file: File; url: string; name: string; size: number };
 
@@ -47,12 +48,13 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
   private fb = inject(FormBuilder);
   private usuarios = inject(UsuariosService);
   private ordenes = inject(OrdenesTrabajoService);
+  private tickets = inject(TicketsService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private snack = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
   tecnicos: UsuarioResumen[] = [];
-  tecnicosFiltrados: UsuarioResumen[] = [];
   prioridades: PrioridadOt[] = ['BAJA', 'MEDIA', 'ALTA'];
 
   clienteId: string | null = null;
@@ -61,8 +63,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
   fotoPreviews: FotoPreview[] = [];
   isDragOver = false;
 
-  // Autocomplete
-  tecnicoQuery = new FormControl<string>('', { nonNullable: true });
+  // si vienes desde ticket
+  ticketId: string | null = null;
 
   form = this.fb.group({
     clienteNombre: ['', [Validators.required]],
@@ -72,7 +74,6 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
     tipo: ['TIENDA' as TipoOt, [Validators.required]],
     direccion: [''],
     notasAcceso: [''],
-    // ✅ separar fechas para evitar “duplicado” entre domicilio y programada
     fechaPrevistaDomicilio: [null as Date | null],
     fechaProgramada: [null as Date | null],
 
@@ -82,30 +83,26 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.ticketId = this.route.snapshot.queryParamMap.get('ticketId');
+
+    // cargar técnicos
     this.usuarios.listar(true).subscribe(u => {
       this.tecnicos = u.filter(x => x.rol === 'TECNICO');
-      this.setupTecnicoFilter();
     });
-  }
 
-  private setupTecnicoFilter() {
-    this.tecnicoQuery.valueChanges.pipe(
-      startWith(''),
-      map(v => (v || '').toLowerCase().trim()),
-      map(q => this.tecnicos.filter(t => (t.nombre || '').toLowerCase().includes(q)))
-    ).subscribe(list => {
-      this.tecnicosFiltrados = list;
-    });
-  }
-
-  onTecnicoSelected(value: UsuarioResumen | null) {
-    if (!value) {
-      this.form.controls.tecnicoId.setValue(null);
-      this.tecnicoQuery.setValue('');
-      return;
+    // Prefill desde ticket
+    if (this.ticketId) {
+      this.tickets.obtener(this.ticketId).subscribe({
+        next: (t: TicketDetalleDto) => {
+          this.form.patchValue({
+            descripcion: `${t.asunto}\n${t.descripcion}`.trim(),
+          }, { emitEvent: false });
+        },
+        error: () => {
+          this.snack.open('No se pudo leer el ticket para prellenar', 'OK', { duration: 2500 });
+        }
+      });
     }
-    this.form.controls.tecnicoId.setValue(value.id);
-    this.tecnicoQuery.setValue(value.nombre);
   }
 
   get selectedFileName(): string | null {
@@ -138,7 +135,6 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
     if (files && files.length > 0) {
       this.setFiles(Array.from(files));
     }
-    // permite volver a seleccionar el mismo archivo
     input.value = '';
   }
 
@@ -149,7 +145,6 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
       return;
     }
 
-    // reemplaza lista completa (si quieres “append”, lo cambiamos)
     this.clearPreviews();
     this.fotos = onlyImages;
     this.fotoPreviews = onlyImages.map(file => ({
@@ -207,7 +202,6 @@ export class OrdenesTrabajoNuevaComponent implements OnInit {
 
     const v = this.form.getRawValue();
 
-    // regla: si es DOMICILIO usamos fechaPrevistaDomicilio; si no, fechaProgramada
     const fechaFinal =
       v.tipo === 'DOMICILIO'
         ? v.fechaPrevistaDomicilio

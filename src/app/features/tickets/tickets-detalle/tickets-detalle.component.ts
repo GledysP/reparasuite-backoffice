@@ -15,6 +15,12 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TicketsService } from '../tickets.service';
 import { TicketDetalleDto } from '../../../core/models/tipos';
 
+type ParsedFromTicket = {
+  telefono?: string;
+  tipo?: 'TIENDA' | 'DOMICILIO';
+  direccion?: string;
+};
+
 @Component({
   selector: 'rs-tickets-detalle',
   standalone: true,
@@ -82,31 +88,59 @@ export class TicketsDetalleComponent implements OnInit {
     });
   }
 
-  // ✅ NUEVO
+  // ✅ FASE 1: NO tocar backend.
+  // En vez de POST /crear-ot => ir a /ordenes-trabajo/nueva con prefill desde ticket.
   crearOt(): void {
     if (!this.ticket) return;
 
-    // si ya está ligada, solo navegar
-    const existente = this.ticket.ordenTrabajoId;
+    const existente = (this.ticket as any).ordenTrabajoId;
     if (existente) {
       this.router.navigate(['/ordenes-trabajo', existente]);
       return;
     }
 
-    this.busy = true;
-    this.ticketsService.crearOtDesdeTicket(this.id).subscribe({
-      next: (res) => {
-        this.snack.open('OT creada desde el ticket', 'OK', { duration: 1800 });
-        this.router.navigate(['/ordenes-trabajo', res.ordenTrabajoId]);
-      },
-      error: () => this.snack.open('No se pudo crear la OT', 'OK', { duration: 2500 }),
-      complete: () => (this.busy = false)
+    const asunto = (this.ticket.asunto || '').trim();
+    const descripcion = (this.ticket.descripcion || '').trim();
+    const parsed = this.parseTicketText(descripcion);
+
+    this.router.navigate(['/ordenes-trabajo/nueva'], {
+      queryParams: {
+        fromTicket: '1',
+        ticketId: this.id,
+        asunto,
+        descripcion,
+        tipo: parsed.tipo ?? '',
+        telefono: parsed.telefono ?? '',
+        direccion: parsed.direccion ?? ''
+      }
     });
   }
 
   verOt(): void {
-    const otId = this.ticket?.ordenTrabajoId;
+    const otId = (this.ticket as any)?.ordenTrabajoId;
     if (!otId) return;
     this.router.navigate(['/ordenes-trabajo', otId]);
+  }
+
+  private parseTicketText(text: string): ParsedFromTicket {
+    const raw = text || '';
+    const lower = raw.toLowerCase();
+
+    const telMatch =
+      raw.match(/(tel[eé]fono|tel|tlf)\s*[:\-]?\s*([0-9+\s]{7,})/i) ||
+      raw.match(/(\+?\d[\d\s]{7,}\d)/);
+
+    const telefono = telMatch
+      ? (telMatch[2] || telMatch[1]).replace(/\s+/g, '').trim()
+      : undefined;
+
+    let tipo: 'TIENDA' | 'DOMICILIO' | undefined;
+    if (lower.includes('domicilio') || lower.includes('en sitio') || lower.includes('en casa')) tipo = 'DOMICILIO';
+    if (lower.includes('tienda') || lower.includes('en tienda')) tipo = 'TIENDA';
+
+    const dirMatch = raw.match(/(direcci[oó]n|ubicaci[oó]n)\s*[:\-]\s*(.+)/i);
+    const direccion = dirMatch ? dirMatch[2].trim() : undefined;
+
+    return { telefono, tipo, direccion };
   }
 }

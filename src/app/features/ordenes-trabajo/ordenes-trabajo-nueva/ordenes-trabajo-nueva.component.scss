@@ -7,17 +7,14 @@ $rs-input-border: #cbd5e1;
 $rs-text: #334155;
 $rs-muted: #64748b;
 
-/* Layout / header / title vienen del styles.scss (rs-main-container + rs-header-row + rs-page-title) */
-/* Eliminamos rs-page-wrapper / rs-main-title duplicados */
-
 /* Botón volver (top) */
 .btn-cancelar-top {
   height: 38px;
   border-radius: 10px !important;
-  font-weight: 700 !important; /* antes 800 */
+  font-weight: 700 !important;
 }
 
-/* Contenedor del form (ya existe global pero aquí mantiene tu ritmo visual) */
+/* Contenedor del form */
 .rs-form-container {
   display: flex;
   flex-direction: column;
@@ -39,7 +36,7 @@ $rs-muted: #64748b;
 
   .rs-card-title {
     font-size: 11px !important;
-    font-weight: 700 !important; /* antes 800 */
+    font-weight: 700 !important;
     color: #0f172a !important;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -47,9 +44,7 @@ $rs-muted: #64748b;
   }
 }
 
-/* =========================
-   GRID RESPONSIVE
-========================= */
+/* GRID RESPONSIVE */
 .rs-form-grid,
 .rs-grid-client,
 .rs-grid-work {
@@ -78,9 +73,7 @@ $rs-muted: #64748b;
   .rs-span-3, .rs-span-6, .rs-span-8, .rs-span-12 { grid-column: span 4; }
 }
 
-/* =========================
-   Labels arriba 
-========================= */
+/* Labels arriba (para los que usas fuera del mat-form-field como Prioridad) */
 .rs-field {
   display: flex;
   flex-direction: column;
@@ -100,7 +93,7 @@ $rs-muted: #64748b;
 .btn-find-client {
   height: 40px;
   border-radius: 10px !important;
-  font-weight: 700 !important; /* antes 800 */
+  font-weight: 700 !important;
   background-color: #fff !important;
 }
 
@@ -108,9 +101,7 @@ $rs-muted: #64748b;
   .btn-find-client { width: 100%; justify-content: center; }
 }
 
-/* =========================
-   RADIO
-========================= */
+/* RADIO */
 .rs-radio-row {
   display: flex;
   flex-wrap: wrap;
@@ -120,7 +111,7 @@ $rs-muted: #64748b;
 
   .rs-label-text {
     font-size: 13px;
-    font-weight: 700; /* antes 800 */
+    font-weight: 700;
     color: $rs-muted;
     letter-spacing: -0.01em;
   }
@@ -135,9 +126,7 @@ $rs-muted: #64748b;
 .rs-w-full { width: 100%; }
 .rs-mt-12 { margin-top: 12px; }
 
-/* =========================
-   FOOTER
-========================= */
+/* FOOTER */
 .rs-footer {
   display: flex;
   justify-content: flex-end;
@@ -147,7 +136,6 @@ $rs-muted: #64748b;
   flex-wrap: wrap;
 }
 
-/* sticky footer (si tu layout lo requiere) */
 .rs-footer-sticky {
   position: sticky;
   bottom: 0;
@@ -167,18 +155,16 @@ $rs-muted: #64748b;
   border-radius: 10px !important;
   padding: 0 22px !important;
   height: 40px;
-  font-weight: 700 !important; /* antes 900 */
+  font-weight: 700 !important;
 }
 
 .btn-cancelar {
   color: $rs-focus-color !important;
-  font-weight: 700 !important; /* antes 900 */
+  font-weight: 700 !important;
   border-radius: 10px !important;
 }
 
-/* =========================
-   DROPZONE (Figma/minimal)
-========================= */
+/* DROPZONE */
 .rs-dropzone {
   display: flex;
   align-items: center;
@@ -210,7 +196,7 @@ $rs-muted: #64748b;
 }
 
 .rs-dropzone-title {
-  font-weight: 700; /* antes 900 */
+  font-weight: 700;
   color: #0f172a;
   line-height: 18px;
   letter-spacing: -0.01em;
@@ -223,17 +209,16 @@ $rs-muted: #64748b;
 
   .rs-link {
     color: $rs-focus-color;
-    font-weight: 700; 
+    font-weight: 700;
   }
 }
 
 .rs-dropzone-count {
   font-size: 12px;
   color: $rs-focus-color;
-  font-weight: 700; 
+  font-weight: 700;
   white-space: nowrap;
 }
-
 
 .rs-thumbs {
   margin-top: 12px;
@@ -279,13 +264,11 @@ $rs-muted: #64748b;
 .rs-clear-files {
   align-self: flex-start;
   color: $rs-focus-color !important;
-  font-weight: 700 !important; /* antes 900 */
+  font-weight: 700 !important;
   padding: 0 !important;
 }
 
-/* =========================
-   MATERIAL FORM FIELDS (solo esta pantalla)
-========================= */
+/* MATERIAL FORM FIELDS (solo esta pantalla) */
 :host ::ng-deep {
   .mat-mdc-form-field { width: 100%; font-family: inherit !important; }
 
@@ -296,15 +279,17 @@ $rs-muted: #64748b;
     height: 0 !important;
   }
 
+  /* quitamos outline notch porque tú lo estás haciendo caja */
   .mat-mdc-form-field .mdc-notched-outline { display: none !important; }
 
   .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-    height: 40px !important;
     border-radius: 10px !important;
     background: #fff !important;
     border: 1px solid $rs-input-border !important;
     box-sizing: border-box;
     font-family: inherit !important;
+    padding-top: 6px; /* ✅ espacio para label */
+    padding-bottom: 2px;
   }
 
   .mat-mdc-form-field .mat-mdc-form-field-infix {
@@ -318,7 +303,7 @@ $rs-muted: #64748b;
   input.mat-mdc-input-element {
     font-family: inherit !important;
     font-size: 13px !important;
-    font-weight: 600 !important; 
+    font-weight: 600 !important;
     color: $rs-text !important;
     line-height: 20px !important;
   }
@@ -326,7 +311,7 @@ $rs-muted: #64748b;
   textarea.mat-mdc-input-element {
     font-family: inherit !important;
     font-size: 13px !important;
-    font-weight: 600 !important; 
+    font-weight: 600 !important;
     color: $rs-text !important;
   }
 
@@ -334,11 +319,23 @@ $rs-muted: #64748b;
   .mat-mdc-select-value-text {
     font-family: inherit !important;
     font-size: 13px !important;
-    font-weight: 600 !important; 
+    font-weight: 600 !important;
     color: $rs-text !important;
   }
 
-  .mat-mdc-floating-label { display: none !important; }
+  /* ✅ MOSTRAR LABELS */
+  .mat-mdc-floating-label,
+  .mdc-floating-label {
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    position: static !important;
+    padding: 0 12px !important;
+    margin: 6px 0 -6px 0 !important;
+    font-size: 12px !important;
+    font-weight: 650 !important;
+    color: $rs-muted !important;
+  }
 
   .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
     border-color: $rs-focus-color !important;

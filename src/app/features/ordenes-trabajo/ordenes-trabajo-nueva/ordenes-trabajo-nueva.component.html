@@ -1,6 +1,6 @@
 <div class="rs-main-container">
   <div class="rs-header-row">
-    <h1 class="rs-page-title">Nueva orden</h1> 
+    <h1 class="rs-page-title">Nueva orden</h1>
 
     <button mat-stroked-button type="button" class="btn-cancelar-top" (click)="cancelar()">
       Volver
@@ -20,20 +20,31 @@
 
       <mat-card-content>
         <div class="rs-grid-client">
-          <mat-form-field appearance="outline" class="rs-field rs-span-6">
-            <mat-label>Nombre</mat-label>
-            <input matInput formControlName="clienteNombre" autocomplete="off" />
-          </mat-form-field>
 
-          <mat-form-field appearance="outline" class="rs-field rs-span-3">
-            <mat-label>Teléfono</mat-label>
-            <input matInput formControlName="clienteTelefono" autocomplete="off" />
-          </mat-form-field>
+          <!-- NOMBRE -->
+          <div class="rs-field rs-span-6">
+            <div class="rs-field-label">Nombre</div>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="clienteNombre" autocomplete="off" />
+            </mat-form-field>
+          </div>
 
-          <mat-form-field appearance="outline" class="rs-field rs-span-3">
-            <mat-label>Correo (opcional)</mat-label>
-            <input matInput formControlName="clienteEmail" autocomplete="off" />
-          </mat-form-field>
+          <!-- TELÉFONO -->
+          <div class="rs-field rs-span-3">
+            <div class="rs-field-label">Teléfono</div>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="clienteTelefono" autocomplete="off" />
+            </mat-form-field>
+          </div>
+
+          <!-- CORREO -->
+          <div class="rs-field rs-span-3">
+            <div class="rs-field-label">Correo (opcional)</div>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="clienteEmail" autocomplete="off" />
+            </mat-form-field>
+          </div>
+
         </div>
       </mat-card-content>
     </mat-card>
@@ -54,22 +65,33 @@
         </div>
 
         <div class="rs-form-grid rs-mt-12" *ngIf="form.value.tipo === 'DOMICILIO'">
-          <mat-form-field appearance="outline" class="rs-field rs-span-8">
-            <mat-label>Dirección</mat-label>
-            <input matInput formControlName="direccion" autocomplete="off" />
-          </mat-form-field>
 
-          <mat-form-field appearance="outline" class="rs-field rs-span-4">
-            <mat-label>Fecha prevista (opcional)</mat-label>
-            <input matInput [matDatepicker]="pickerPrevista" formControlName="fechaPrevistaDomicilio" />
-            <mat-datepicker-toggle matSuffix [for]="pickerPrevista"></mat-datepicker-toggle>
-            <mat-datepicker #pickerPrevista></mat-datepicker>
-          </mat-form-field>
+          <!-- DIRECCIÓN -->
+          <div class="rs-field rs-span-8">
+            <div class="rs-field-label">Dirección</div>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="direccion" autocomplete="off" />
+            </mat-form-field>
+          </div>
 
-          <mat-form-field appearance="outline" class="rs-field rs-span-12">
-            <mat-label>Notas de acceso</mat-label>
-            <input matInput formControlName="notasAcceso" autocomplete="off" />
-          </mat-form-field>
+          <!-- FECHA PREVISTA -->
+          <div class="rs-field rs-span-4">
+            <div class="rs-field-label">Fecha prevista (opcional)</div>
+            <mat-form-field appearance="outline">
+              <input matInput [matDatepicker]="pickerPrevista" formControlName="fechaPrevistaDomicilio" />
+              <mat-datepicker-toggle matSuffix [for]="pickerPrevista"></mat-datepicker-toggle>
+              <mat-datepicker #pickerPrevista></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <!-- NOTAS ACCESO -->
+          <div class="rs-field rs-span-12">
+            <div class="rs-field-label">Notas de acceso</div>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="notasAcceso" autocomplete="off" />
+            </mat-form-field>
+          </div>
+
         </div>
       </mat-card-content>
     </mat-card>
@@ -80,10 +102,14 @@
       </mat-card-header>
 
       <mat-card-content>
-        <mat-form-field appearance="outline" class="rs-field rs-w-full rs-textarea">
-          <mat-label>Descripción del problema</mat-label>
-          <textarea matInput rows="3" formControlName="descripcion"></textarea>
-        </mat-form-field>
+
+        <!-- DESCRIPCIÓN -->
+        <div class="rs-field rs-w-full rs-textarea">
+          <div class="rs-field-label">Descripción del problema</div>
+          <mat-form-field appearance="outline" class="rs-w-full">
+            <textarea matInput rows="3" formControlName="descripcion"></textarea>
+          </mat-form-field>
+        </div>
 
         <div class="rs-grid-work rs-mt-12">
           <div class="rs-field rs-span-3">
@@ -98,30 +124,29 @@
             </mat-chip-listbox>
           </div>
 
-          <mat-form-field appearance="outline" class="rs-field rs-span-6">
-            <mat-label>Asignar técnico (opcional)</mat-label>
-            <input
-              type="text"
-              matInput
-              [matAutocomplete]="autoTec"
-              [formControl]="tecnicoQuery"
-              placeholder="Escribe para buscar..."
-              autocomplete="off"
-            />
-            <mat-autocomplete #autoTec="matAutocomplete" (optionSelected)="onTecnicoSelected($event.option.value)">
-              <mat-option [value]="null">Sin asignar</mat-option>
-              <mat-option *ngFor="let t of tecnicosFiltrados" [value]="t">
-                {{ t.nombre }}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
+          <!-- TÉCNICO -->
+          <div class="rs-field rs-span-6">
+            <div class="rs-field-label">Asignar técnico (opcional)</div>
+            <mat-form-field appearance="outline">
+              <mat-select formControlName="tecnicoId">
+                <mat-option [value]="null">Sin asignar</mat-option>
+                <mat-option *ngFor="let t of tecnicos" [value]="t.id">
+                  {{ t.nombre }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>engineering</mat-icon>
+            </mat-form-field>
+          </div>
 
-          <mat-form-field appearance="outline" class="rs-field rs-span-3">
-            <mat-label>Fecha programada (opcional)</mat-label>
-            <input matInput [matDatepicker]="pickerProg" formControlName="fechaProgramada" />
-            <mat-datepicker-toggle matSuffix [for]="pickerProg"></mat-datepicker-toggle>
-            <mat-datepicker #pickerProg></mat-datepicker>
-          </mat-form-field>
+          <!-- FECHA PROGRAMADA -->
+          <div class="rs-field rs-span-3">
+            <div class="rs-field-label">Fecha programada (opcional)</div>
+            <mat-form-field appearance="outline">
+              <input matInput [matDatepicker]="pickerProg" formControlName="fechaProgramada" />
+              <mat-datepicker-toggle matSuffix [for]="pickerProg"></mat-datepicker-toggle>
+              <mat-datepicker #pickerProg></mat-datepicker>
+            </mat-form-field>
+          </div>
         </div>
       </mat-card-content>
     </mat-card>
