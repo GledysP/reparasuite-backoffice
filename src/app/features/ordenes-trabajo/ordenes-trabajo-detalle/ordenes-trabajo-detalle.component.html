@@ -1,100 +1,111 @@
 @if (ot(); as data) {
   <div class="rs-page">
+    <header class="rs-top">
+      <div class="rs-top-inner">
+        <div class="rs-breadcrumb">
+          Órdenes <span class="sep">›</span> <span class="current">{{ data.codigo }}</span>
+        </div>
 
-    <header class="rs-header">
-      <div class="rs-breadcrumb">Órdenes <span class="sep">›</span> <span class="current">{{ data.codigo }}</span></div>
+        <div class="rs-top-row">
+          <div class="rs-title">
+            <div class="rs-title-main">
+              <h1 class="rs-h1">{{ data.codigo }}</h1>
+              <span class="rs-muted">Actualizada: {{ data.updatedAt | date:'d MMM, y HH:mm' }}</span>
+            </div>
 
-      <div class="rs-head">
-        <div class="rs-left">
-          <div class="rs-code">{{ data.codigo }}</div>
+            <!-- chips / quick meta -->
+            <div class="rs-chips">
+              <mat-form-field appearance="outline" class="mf mf-chip" color="primary">
+                <mat-select [formControl]="formEstado.controls.estado" panelClass="rs-select-panel">
+                  @for (e of estados; track e) { <mat-option [value]="e">{{ e }}</mat-option> }
+                </mat-select>
+              </mat-form-field>
 
-          <div class="rs-chips">
-            <mat-form-field appearance="outline" class="chip-select">
-              <mat-select [formControl]="formEstado.controls.estado">
-                @for (e of estados; track e) {
-                  <mat-option [value]="e">{{ e }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+              <span class="chip chip-soft">{{ data.prioridad }}</span>
+              <span class="chip chip-soft">{{ data.tipo }}</span>
+              <span class="chip chip-person">
+                <mat-icon>person</mat-icon>
+                {{ tecnicoNombre() }}
+              </span>
 
-            <span class="chip">{{ data.prioridad }}</span>
-            <span class="chip">{{ data.tipo }}</span>
-            <span class="chip chip-strong">{{ tecnicoNombre() }}</span>
-
-            <button mat-stroked-button class="btn-mini" (click)="cambiarEstado()"
-                    [disabled]="busy() || formEstado.invalid">
-              Actualizar
-            </button>
+              <button mat-stroked-button class="chip-btn" (click)="cambiarEstado()" [disabled]="busy() || formEstado.invalid">
+                <mat-icon>sync</mat-icon>
+                Actualizar
+              </button>
+            </div>
           </div>
 
-          <div class="rs-meta">Actualizada: {{ data.updatedAt | date:'d MMM, y HH:mm' }}</div>
+          <div class="rs-actions">
+            <button mat-stroked-button routerLink="/ordenes-trabajo" class="btn-ghost">
+              <mat-icon>arrow_back</mat-icon>
+              Volver
+            </button>
+
+            <button mat-flat-button color="warn" class="btn-danger"
+                    (click)="cambiarEstado('CERRADA')" [disabled]="busy()">
+              Cerrar OT
+            </button>
+          </div>
         </div>
 
-        <div class="rs-actions">
-          <button mat-stroked-button routerLink="/ordenes-trabajo" class="btn-pill">
-            <mat-icon>arrow_back</mat-icon> Volver
-          </button>
-
-          <button mat-icon-button class="icon-pill" (click)="cargar()" [disabled]="busy()" aria-label="Refrescar">
-            <mat-icon>refresh</mat-icon>
-          </button>
-
-          <button mat-flat-button color="warn" class="btn-pill btn-danger"
-                  (click)="cambiarEstado('CERRADA')" [disabled]="busy()">
-            Cerrar OT
-          </button>
-        </div>
+        @if (loading()) { <mat-progress-bar mode="indeterminate"></mat-progress-bar> }
       </div>
-
-      @if (loading()) { <mat-progress-bar mode="indeterminate"></mat-progress-bar> }
     </header>
 
     <div class="layout">
-
       <main class="main">
-
-        <mat-card class="card">
+        <!-- Detalle OT (solo descripción como pediste) -->
+        <mat-card class="card card-wide pop">
           <div class="card-head">
-            <div class="card-title"><mat-icon>assignment</mat-icon><span>Detalle de OT</span></div>
+            <div class="card-title">
+              <mat-icon>assignment</mat-icon>
+              <span>Detalle de OT</span>
+            </div>
           </div>
-          <div class="desc-box">{{ data.descripcion || 'Sin descripción' }}</div>
+
+          <div class="desc-box">
+            {{ data.descripcion || 'Sin descripción' }}
+          </div>
         </mat-card>
 
-        <div class="grid3">
+        <!-- grid principal (cards mas compactas) -->
+        <div class="grid-3">
           <!-- Presupuesto -->
-          <mat-card class="card">
+          <mat-card class="card pop">
             <div class="card-head">
-              <div class="card-title"><mat-icon>request_quote</mat-icon><span>Presupuesto</span></div>
+              <div class="card-title">
+                <mat-icon>request_quote</mat-icon>
+                <span>Presupuesto</span>
+              </div>
+
               <span class="pill" [attr.data-state]="data.presupuesto?.estado || 'SIN_PRESUPUESTO'">
                 {{ data.presupuesto?.estado || 'SIN_PRESUPUESTO' }}
               </span>
             </div>
 
             <div class="card-body">
-              <mat-form-field appearance="outline" class="mf">
+              <mat-form-field appearance="outline" class="mf" color="primary">
                 <mat-label>Importe (€)</mat-label>
                 <input matInput type="number" [formControl]="formPresupuesto.controls.importe" />
               </mat-form-field>
 
-              <mat-form-field appearance="outline" class="mf">
+              <mat-form-field appearance="outline" class="mf" color="primary">
                 <mat-label>Detalle</mat-label>
-                <textarea matInput rows="3" [formControl]="formPresupuesto.controls.detalle"></textarea>
+                <textarea matInput rows="4" [formControl]="formPresupuesto.controls.detalle"></textarea>
               </mat-form-field>
 
               <mat-checkbox [formControl]="formPresupuesto.controls.aceptacionCheck">
                 Requiere check de aceptación
               </mat-checkbox>
 
-              <div class="btn-row end">
-                <button mat-stroked-button class="btn-pill"
-                        (click)="guardarPresupuesto()"
-                        [disabled]="busy() || formPresupuesto.invalid || data.presupuesto?.estado === 'ACEPTADO'">
+              <div class="btn-row">
+                <button mat-stroked-button (click)="guardarPresupuesto()"
+                        [disabled]="busy() || formPresupuesto.invalid || (data.presupuesto?.estado === 'ACEPTADO')">
                   Guardar
                 </button>
 
-                <button mat-flat-button class="btn-primary btn-pill"
-                        (click)="enviarPresupuesto()"
-                        [disabled]="busy() || !data.presupuesto || data.presupuesto.estado === 'ENVIADO' || data.presupuesto.estado === 'ACEPTADO'">
+                <button mat-flat-button class="btn-primary" (click)="enviarPresupuesto()"
+                        [disabled]="busy() || !data.presupuesto || (data.presupuesto?.estado === 'ENVIADO') || (data.presupuesto?.estado === 'ACEPTADO')">
                   <mat-icon>send</mat-icon>
                   Enviar al cliente
                 </button>
@@ -103,70 +114,71 @@
           </mat-card>
 
           <!-- Cita -->
-          <mat-card class="card">
+          <mat-card class="card pop">
             <div class="card-head">
               <div class="card-title"><mat-icon>event</mat-icon><span>Cita</span></div>
               <div class="rs-muted">
-                @if (data.citas.length) { Próxima: {{ data.citas[0].inicio | date:'d MMM y HH:mm' }} }
+                @if (data.citas.length) { Próxima: {{ data.citas[0].inicio | date:'d MMM, HH:mm' }} }
                 @else { Aún no programada }
               </div>
             </div>
 
             <div class="card-body">
-              <div class="two">
-                <mat-form-field appearance="outline" class="mf">
+              <div class="cita-grid">
+                <mat-form-field appearance="outline" class="mf" color="primary">
                   <mat-label>Fecha inicio</mat-label>
                   <input matInput [matDatepicker]="dp1" [formControl]="formCita.controls.fechaInicio">
                   <mat-datepicker-toggle matIconSuffix [for]="dp1"></mat-datepicker-toggle>
                   <mat-datepicker #dp1></mat-datepicker>
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" class="mf">
+                <mat-form-field appearance="outline" class="mf" color="primary">
                   <mat-label>Hora inicio</mat-label>
                   <input matInput type="time" [formControl]="formCita.controls.horaInicio">
                 </mat-form-field>
               </div>
 
-              <div class="btn-row end">
-                <button mat-stroked-button class="btn-pill" (click)="crearCita()" [disabled]="busy() || formCita.invalid">
+              <div class="btn-row">
+                <button mat-stroked-button (click)="crearCita()" [disabled]="busy() || formCita.invalid">
                   Reservar
                 </button>
-                <button mat-flat-button class="btn-primary btn-pill"
-                        (click)="reprogramarPrimera()" [disabled]="busy() || formCita.invalid || !data.citas.length">
+                <button mat-flat-button class="btn-primary" (click)="reprogramarPrimera()"
+                        [disabled]="busy() || formCita.invalid || !data.citas.length">
                   Reprogramar
                 </button>
               </div>
 
-              <div class="rs-hint">
-                @if (!data.citas.length) { Completa los datos para reservar la primera cita. }
-                @else { Estado: {{ data.citas[0].estado }} }
+              <div class="hint">
+                Completa los datos para reservar la primera cita.
               </div>
             </div>
           </mat-card>
 
           <!-- Mensajes -->
-          <mat-card class="card chat-card">
+          <mat-card class="card pop chat-card">
             <div class="card-head">
               <div class="card-title"><mat-icon>chat</mat-icon><span>Mensajes</span></div>
-              <button mat-icon-button class="icon-pill" (click)="cargar()" [disabled]="busy()" aria-label="Actualizar mensajes">
+              <button mat-icon-button class="icon-ghost" (click)="cargar()" [disabled]="busy()">
                 <mat-icon>refresh</mat-icon>
               </button>
             </div>
 
-            <div class="chat-scroll" #chatScroll>
-              @for (m of data.mensajes; track trackById($index, m)) {
-                <div class="msg-row" [class.me]="m.remitenteTipo !== 'CLIENTE'">
-                  <div class="bubble">
-                    <div class="meta">
-                      <span class="name">{{ m.remitenteNombre }}</span>
-                      <span class="time">{{ m.createdAt | date:'HH:mm' }}</span>
+            <div class="chat-scroll">
+              @if (data.mensajes?.length) {
+                @for (m of data.mensajes; track trackById($index, m)) {
+                  <div class="bubble-row" [class.me]="m.remitenteTipo === 'CLIENTE'">
+                    <div class="bubble">
+                      <div class="bubble-meta">
+                        <span class="name">{{ m.remitenteNombre }}</span>
+                        <span class="time">{{ m.createdAt | date:'HH:mm' }}</span>
+                      </div>
+                      <div class="bubble-text">{{ m.contenido }}</div>
                     </div>
-                    <div class="text">{{ m.contenido }}</div>
                   </div>
-                </div>
-              } @empty {
-                <div class="chat-empty">
-                  <mat-icon>forum</mat-icon>
+                }
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>chat_bubble_outline</mat-icon>
                   <div>Aún no hay mensajes.</div>
                 </div>
               }
@@ -178,69 +190,67 @@
                         [formControl]="formMsg.controls.contenido"
                         (keydown)="onMsgKeydown($event)"></textarea>
 
-              <button mat-icon-button class="send-fab"
+              <button mat-icon-button class="send-btn"
                       (click)="enviarMensaje()"
-                      [disabled]="busy() || formMsg.invalid"
-                      aria-label="Enviar">
+                      [disabled]="busy() || formMsg.invalid">
                 <mat-icon>send</mat-icon>
               </button>
             </div>
           </mat-card>
         </div>
 
-        <div class="grid3">
+        <div class="grid-3">
           <!-- Fotos -->
-          <mat-card class="card">
+          <mat-card class="card pop">
             <div class="card-head">
               <div class="card-title"><mat-icon>photo</mat-icon><span>Fotos</span></div>
-              <label class="icon-pill upload-icon" title="Subir foto">
+              <label class="upload-btn" matRipple>
                 <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
-                <mat-icon>photo_camera</mat-icon>
+                <mat-icon>add_a_photo</mat-icon>
               </label>
             </div>
 
             <div class="photo-grid">
               @for (f of data.fotos; track trackById($index, f)) {
-                <button class="thumb" (click)="verFoto(f)"><img [src]="f.url" /></button>
+                <button class="thumb" (click)="verFoto(f)">
+                  <img [src]="f.url" alt="foto" />
+                </button>
               } @empty {
-                <div class="rs-muted pad">Sin fotos.</div>
+                <div class="rs-muted">Sin fotos.</div>
               }
             </div>
           </mat-card>
 
           <!-- Notas -->
-          <mat-card class="card">
+          <mat-card class="card pop">
             <div class="card-head">
               <div class="card-title"><mat-icon>note</mat-icon><span>Notas</span></div>
             </div>
 
-            <div class="notes">
-              <div class="note-add">
-                <input class="note-input" placeholder="Añadir nota..."
-                       [formControl]="formNota.controls.contenido"
-                       (keyup.enter)="anadirNota()" />
-                <button mat-icon-button class="icon-pill"
-                        (click)="anadirNota()"
-                        [disabled]="busy() || formNota.invalid">
-                  <mat-icon>add</mat-icon>
-                </button>
-              </div>
+            <div class="note-list">
+              @for (n of data.notas; track trackById($index, n)) {
+                <div class="note-item">
+                  <div class="note-text">{{ n.contenido }}</div>
+                  <div class="note-date">{{ n.createdAt | date:'d MMM, HH:mm' }}</div>
+                </div>
+              } @empty {
+                <div class="rs-muted">Sin notas.</div>
+              }
+            </div>
 
-              <div class="note-list">
-                @for (n of data.notas; track trackById($index, n)) {
-                  <div class="note-item">
-                    <div class="note-text">{{ n.contenido }}</div>
-                    <div class="note-meta">{{ n.createdAt | date:'d MMM, HH:mm' }}</div>
-                  </div>
-                } @empty {
-                  <div class="rs-muted pad">Sin notas.</div>
-                }
-              </div>
+            <div class="note-add">
+              <input class="rs-input-clean"
+                     placeholder="Añadir nota..."
+                     [formControl]="formNota.controls.contenido"
+                     (keyup.enter)="anadirNota()" />
+              <button mat-icon-button class="icon-plus" (click)="anadirNota()" [disabled]="busy() || formNota.invalid">
+                <mat-icon>add</mat-icon>
+              </button>
             </div>
           </mat-card>
 
           <!-- Pago -->
-          <mat-card class="card">
+          <mat-card class="card pop">
             <div class="card-head">
               <div class="card-title"><mat-icon>payments</mat-icon><span>Pago</span></div>
               <span class="pill" [attr.data-state]="data.pago?.estado || 'SIN_PAGO'">
@@ -250,79 +260,69 @@
 
             <div class="pay-body">
               <div class="pay-row">
-                <div class="pay-label">Total a pagar</div>
-                <div class="pay-value">
-                  {{ data.presupuesto?.importe ? (data.presupuesto?.importe | number:'1.0-2') + ' €' : '—' }}
+                <div class="rs-muted">Total a pagar</div>
+                <div class="pay-amount">
+                  @if (data.presupuesto?.importe != null) {
+                    {{ data.presupuesto?.importe | number:'1.0-2' }} €
+                  } @else { — }
                 </div>
               </div>
 
-              <button mat-flat-button class="btn-primary btn-full btn-pill"
-                      (click)="marcarTransferencia()" [disabled]="busy()">
+              <button mat-flat-button class="btn-primary w100" (click)="marcarTransferencia()" [disabled]="busy()">
                 Confirmar pago recibido
               </button>
             </div>
           </mat-card>
         </div>
-
-        <ng-template #imageModal>
-          <div class="modal">
-            <div class="modal-head">
-              <span>Foto</span>
-              <button mat-icon-button (click)="dialog.closeAll()" aria-label="Cerrar">
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-            <div class="modal-body">
-              <img class="img-contained" [src]="selectedImageUrl()" />
-            </div>
-          </div>
-        </ng-template>
-
       </main>
 
       <aside class="side">
-        <mat-card class="card side-card">
-          <div class="side-user">
-            <div class="avatar"><mat-icon>person</mat-icon></div>
-            <div class="u-meta">
-              <div class="u-name">{{ data.cliente.nombre }}</div>
-              <div class="u-sub">Cliente</div>
-            </div>
-          </div>
-
-          <div class="side-rows">
-            <div class="srow"><mat-icon>phone</mat-icon><span>{{ data.cliente.telefono || '—' }}</span></div>
-            <div class="srow"><mat-icon>email</mat-icon><span>{{ data.cliente.email || '—' }}</span></div>
+        <mat-card class="card side-card pop">
+          <div class="side-title">Cliente</div>
+          <div class="side-body">
+            <div class="name">{{ data.cliente.nombre }}</div>
+            <div class="rowi"><mat-icon>phone</mat-icon><span>{{ data.cliente.telefono || '—' }}</span></div>
+            <div class="rowi"><mat-icon>email</mat-icon><span>{{ data.cliente.email || '—' }}</span></div>
           </div>
         </mat-card>
 
-        <mat-card class="card side-card hist-card">
+        <mat-card class="card side-card pop">
           <div class="side-title">Historial</div>
 
-          <div class="hist-list">
+          <div class="timeline">
             @for (h of data.historial; track $index) {
-              <div class="hist-item">
-                <div class="hist-rail">
-                  <div class="hist-dot"></div>
-                  <div class="hist-line"></div>
+              <div class="t-row">
+                <div class="t-gutter">
+                  <div class="t-dot"></div>
+                  <div class="t-line"></div>
                 </div>
-                <div class="hist-body">
-                  <div class="hist-text">{{ h.descripcion }}</div>
-                  <div class="hist-meta">
-                    <span>{{ h.fecha | date:'d MMM' }}</span>
-                    <span class="dotsep">•</span>
-                    <span>{{ h.fecha | date:'HH:mm' }}</span>
-                  </div>
+
+                <div class="t-body">
+                  <div class="t-text">{{ h.descripcion }}</div>
+                  <div class="t-date">{{ h.fecha | date:'d MMM, HH:mm' }}</div>
                 </div>
               </div>
-            } @empty {
-              <div class="rs-muted pad">Sin historial.</div>
             }
           </div>
         </mat-card>
       </aside>
     </div>
+
+    <!-- Modal foto -->
+    <ng-template #imageModal>
+      <div class="modal-small-container">
+        <div class="modal-header-mini">
+          <div>Foto</div>
+          <button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button>
+        </div>
+        <div class="modal-body-mini">
+          <img class="img-contained" [src]="selectedImageUrl()" alt="foto" />
+        </div>
+      </div>
+    </ng-template>
   </div>
 } @else {
-  <div class="loading-overlay"><mat-progress-bar mode="indeterminate"></mat-progress-bar></div>
+  <div class="loading-overlay">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
 }
