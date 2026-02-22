@@ -17,7 +17,7 @@ import { ClienteResumen, ClienteOrdenItem } from '../../../core/models/tipos';
   selector: 'app-clientes-detalle',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, MatCardModule, MatTabsModule, 
+    CommonModule, RouterLink, MatCardModule, MatTabsModule,
     MatTableModule, MatIconModule, MatButtonModule, MatPaginatorModule
   ],
   templateUrl: './clientes-detalle.component.html',
@@ -31,7 +31,7 @@ export class ClientesDetalleComponent implements OnInit {
   cliente: ClienteResumen | null = null;
   ordenes: ClienteOrdenItem[] = [];
   displayedColumns = ['codigo', 'estado', 'tipo', 'updatedAt', 'accion'];
-  
+
   total = 0;
   totalOpen = 0;
   page = 0;
@@ -46,9 +46,7 @@ export class ClientesDetalleComponent implements OnInit {
   }
 
   cargarTodo(): void {
-    // Info del cliente
     this.clientesService.obtener(this.id).subscribe(res => this.cliente = res);
-    // Historial
     this.cargarHistorial();
   }
 
@@ -58,11 +56,12 @@ export class ClientesDetalleComponent implements OnInit {
       .subscribe(res => {
         this.ordenes = res.items;
         this.total = res.total;
-        // Contador de órdenes que no están completadas
-        this.totalOpen = this.ordenes.filter(o => 
-          String(o.estado).toUpperCase() !== 'COMPLETADA' && 
-          String(o.estado).toUpperCase() !== 'CLOSED'
-        ).length;
+
+        // Conteo de "abiertas" (ajusta si usas más estados cerrados)
+        this.totalOpen = this.ordenes.filter(o => {
+          const s = String(o.estado).toUpperCase();
+          return s !== 'CERRADA' && s !== 'FINALIZADA' && s !== 'COMPLETADA' && s !== 'CLOSED';
+        }).length;
       });
   }
 
@@ -70,5 +69,22 @@ export class ClientesDetalleComponent implements OnInit {
     this.page = e.pageIndex;
     this.size = e.pageSize;
     this.cargarHistorial();
+  }
+
+  get ultimaVisita(): string | null {
+    if (!this.ordenes?.length) return null;
+    return this.ordenes[0]?.updatedAt ?? null;
+  }
+
+  get initials(): string {
+    const n = (this.cliente?.nombre ?? '').trim();
+    if (!n) return 'CL';
+    const parts = n.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  trackByOt(_index: number, item: ClienteOrdenItem): string {
+    return item.id;
   }
 }

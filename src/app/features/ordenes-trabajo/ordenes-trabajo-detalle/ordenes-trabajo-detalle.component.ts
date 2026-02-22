@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -19,7 +19,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { UsuariosService } from '../../usuarios/usuarios.service';
 
-// Ajusta estos imports a tus tipos reales si difieren.
 import { EstadoOt } from '../../../core/models/enums';
 import { OtDetalle, UsuarioResumen } from '../../../core/models/tipos';
 
@@ -32,7 +31,6 @@ import { OtDetalle, UsuarioResumen } from '../../../core/models/tipos';
     DecimalPipe,
     RouterLink,
     ReactiveFormsModule,
-
     MatCardModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -58,6 +56,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   @ViewChild('imageModal') imageModal!: TemplateRef<any>;
+  @ViewChild('comprobanteModal') comprobanteModal!: TemplateRef<any>;
 
   id = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -68,6 +67,9 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
 
   tecnicos = signal<UsuarioResumen[]>([]);
   tecnicoNombre = signal<string>('Sin asignar');
+
+  selectedImageUrl = signal<string>('');
+  selectedComprobanteUrl = signal<string>('');
 
   readonly estados: EstadoOt[] = ['RECIBIDA', 'PRESUPUESTO', 'APROBADA', 'EN_CURSO', 'FINALIZADA', 'CERRADA'];
 
@@ -94,7 +96,14 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     contenido: ['', [Validators.required, Validators.minLength(2)]],
   });
 
-  selectedImageUrl = signal<string>('');
+  // ✅ ya hay cita -> ocultar "Programar"
+  tieneCita = computed(() => !!this.ot()?.citas?.length);
+
+  // ✅ deshabilitar confirmar pago si ya está confirmado
+  pagoConfirmado = computed(() => {
+    const estado = (this.ot()?.pago?.estado ?? '').toUpperCase();
+    return ['PAGADO', 'CONFIRMADO', 'RECIBIDO'].includes(estado);
+  });
 
   ngOnInit(): void {
     this.usuarios.listar(true).subscribe({
@@ -131,6 +140,15 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
         }
 
         this.resolveTecnicoNombre(res);
+
+        const first = res.citas?.[0];
+        if (first?.inicio) {
+          const d = new Date(first.inicio);
+          const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+          const hh = String(d.getHours()).padStart(2, '0');
+          const mm = String(d.getMinutes()).padStart(2, '0');
+          this.formCita.patchValue({ fechaInicio: dateOnly, horaInicio: `${hh}:${mm}` }, { emitEvent: false });
+        }
       },
       error: () => this.snack.open('Error al cargar la orden', 'OK', { duration: 2500 }),
       complete: () => this.loading.set(false),
@@ -138,7 +156,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   }
 
   private resolveTecnicoNombre(res: OtDetalle): void {
-    // Adaptable a tus estructuras:
     const tecnicoObj: any = (res as any).tecnico;
     if (tecnicoObj && typeof tecnicoObj === 'object' && tecnicoObj.nombre) {
       this.tecnicoNombre.set(tecnicoObj.nombre);
@@ -207,18 +224,16 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
 
   crearCita(): void {
     if (this.formCita.invalid || !this.id) return;
-
     const inicioIso = this.getInicioIso();
     if (!inicioIso) return;
 
     this.busy.set(true);
     this.ordenes.crearCita(this.id, { inicio: inicioIso, fin: this.addMinutesIso(inicioIso, 60) }).subscribe({
       next: () => {
-        this.snack.open('Cita creada', 'OK', { duration: 2000 });
-        this.formCita.reset();
+        this.snack.open('Cita programada', 'OK', { duration: 2000 });
         this.cargar();
       },
-      error: () => this.snack.open('Error al crear cita', 'OK', { duration: 2500 }),
+      error: () => this.snack.open('Error al programar cita', 'OK', { duration: 2500 }),
       complete: () => this.busy.set(false),
     });
   }
@@ -234,7 +249,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     this.ordenes.reprogramarCita(first.id, { inicio: inicioIso, fin: this.addMinutesIso(inicioIso, 60) }).subscribe({
       next: () => {
         this.snack.open('Cita reprogramada', 'OK', { duration: 2000 });
-        this.formCita.reset();
         this.cargar();
       },
       error: () => this.snack.open('Error al reprogramar cita', 'OK', { duration: 2500 }),
@@ -303,15 +317,15 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
   }
 
   marcarTransferencia(): void {
-    if (!this.id) return;
+    if (!this.id || this.pagoConfirmado()) return;
 
     this.busy.set(true);
-    this.ordenes.marcarTransferencia(this.id).subscribe({
+    this.ordenes.confirmarPagoRecibido(this.id).subscribe({
       next: () => {
-        this.snack.open('Pago registrado', 'OK', { duration: 2000 });
+        this.snack.open('Pago confirmado por backoffice', 'OK', { duration: 2000 });
         this.cargar();
       },
-      error: () => this.snack.open('Error al registrar pago', 'OK', { duration: 2500 }),
+      error: () => this.snack.open('Error al confirmar pago', 'OK', { duration: 2500 }),
       complete: () => this.busy.set(false),
     });
   }
@@ -339,6 +353,12 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     const url = foto?.url || foto;
     this.selectedImageUrl.set(url ?? '');
     this.dialog.open(this.imageModal, { width: 'auto', maxWidth: '92vw' });
+  }
+
+  verComprobante(url?: string | null): void {
+    if (!url) return;
+    this.selectedComprobanteUrl.set(url);
+    this.dialog.open(this.comprobanteModal, { width: 'auto', maxWidth: '92vw' });
   }
 
   closeModal(): void {

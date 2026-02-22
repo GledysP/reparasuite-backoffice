@@ -20,9 +20,6 @@ export class OrdenesTrabajoService {
 
   constructor(private http: HttpClient) {}
 
-  // -----------------------------
-  // LISTADO (paginado + filtros)
-  // -----------------------------
   listar(f: {
     estados?: EstadoOt[];
     tipo?: TipoOt | '';
@@ -37,7 +34,6 @@ export class OrdenesTrabajoService {
       .set('size', String(f.size ?? 20));
 
     if (f.sort) params = params.set('sort', f.sort);
-
     if (f.query && f.query.trim()) params = params.set('query', f.query.trim());
     if (f.tipo) params = params.set('tipo', f.tipo);
     if (f.tecnicoId) params = params.set('tecnicoId', f.tecnicoId);
@@ -49,46 +45,28 @@ export class OrdenesTrabajoService {
     return this.http.get<RespuestaPaginada<OtListaItem>>(this.url, { params });
   }
 
-  // -----------------------------
-  // CREAR OT
-  // -----------------------------
   crear(body: any): Observable<{ id: string; codigo?: string }> {
     return this.http.post<{ id: string; codigo?: string }>(this.url, body);
   }
 
-  // -----------------------------
-  // DETALLE OT
-  // -----------------------------
   obtener(idOrCodigo: string): Observable<OtDetalle> {
     return this.http.get<OtDetalle>(`${this.url}/${encodeURIComponent(idOrCodigo)}`);
   }
 
-  // -----------------------------
-  // ESTADO OT
-  // -----------------------------
   cambiarEstado(idOrCodigo: string, estado: EstadoOt): Observable<void> {
     return this.http.patch<void>(`${this.url}/${encodeURIComponent(idOrCodigo)}/estado`, { estado });
   }
 
-  // -----------------------------
-  // NOTAS
-  // -----------------------------
   anadirNota(idOrCodigo: string, contenido: string): Observable<void> {
     return this.http.post<void>(`${this.url}/${encodeURIComponent(idOrCodigo)}/notas`, { contenido });
   }
 
-  // -----------------------------
-  // FOTOS
-  // -----------------------------
   subirFoto(idOrCodigo: string, file: File): Observable<any> {
     const fd = new FormData();
     fd.append('file', file);
     return this.http.post(`${this.url}/${encodeURIComponent(idOrCodigo)}/fotos`, fd);
   }
 
-  // -----------------------------
-  // PRESUPUESTO
-  // -----------------------------
   crearPresupuesto(
     idOrCodigo: string,
     body: { importe: number; detalle: string; aceptacionCheck: boolean }
@@ -106,8 +84,6 @@ export class OrdenesTrabajoService {
     );
   }
 
-  // ✅ En backoffice no deberías llamarlos, pero quedan por si haces testing.
-  // Backend exige body { acepto: boolean } y devuelve 204.
   aceptarPresupuesto(idOrCodigo: string, acepto: boolean): Observable<void> {
     return this.http.post<void>(
       `${this.url}/${encodeURIComponent(idOrCodigo)}/presupuesto/aceptar`,
@@ -115,7 +91,6 @@ export class OrdenesTrabajoService {
     );
   }
 
-  // Backend devuelve 204.
   rechazarPresupuesto(idOrCodigo: string): Observable<void> {
     return this.http.post<void>(
       `${this.url}/${encodeURIComponent(idOrCodigo)}/presupuesto/rechazar`,
@@ -123,11 +98,17 @@ export class OrdenesTrabajoService {
     );
   }
 
-  // -----------------------------
-  // PAGO
-  // -----------------------------
+  // (cliente portal)
   marcarTransferencia(idOrCodigo: string): Observable<any> {
     return this.http.post(`${this.url}/${encodeURIComponent(idOrCodigo)}/pago/transferencia`, {});
+  }
+
+  // ✅ backoffice
+  confirmarPagoRecibido(idOrCodigo: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/pago/confirmar`,
+      {}
+    );
   }
 
   subirComprobante(idOrCodigo: string, file: File): Observable<any> {
@@ -136,9 +117,6 @@ export class OrdenesTrabajoService {
     return this.http.post(`${this.url}/${encodeURIComponent(idOrCodigo)}/pago/comprobante`, fd);
   }
 
-  // -----------------------------
-  // CITAS
-  // -----------------------------
   crearCita(idOrCodigo: string, body: { inicio: string; fin: string }): Observable<CitaDto> {
     return this.http.post<CitaDto>(
       `${this.url}/${encodeURIComponent(idOrCodigo)}/citas`,
@@ -153,9 +131,6 @@ export class OrdenesTrabajoService {
     );
   }
 
-  // -----------------------------
-  // MENSAJES
-  // -----------------------------
   enviarMensaje(idOrCodigo: string, contenido: string): Observable<MensajeOtDto> {
     return this.http.post<MensajeOtDto>(
       `${this.url}/${encodeURIComponent(idOrCodigo)}/mensajes`,

@@ -13,9 +13,8 @@
               <span class="rs-muted">Actualizada: {{ data.updatedAt | date:'d MMM, y HH:mm' }}</span>
             </div>
 
-            <!-- chips / quick meta -->
             <div class="rs-chips">
-              <mat-form-field appearance="outline" class="mf mf-chip" color="primary">
+              <mat-form-field appearance="outline" class="mf mf-chip rs-field" color="primary">
                 <mat-select [formControl]="formEstado.controls.estado" panelClass="rs-select-panel">
                   @for (e of estados; track e) { <mat-option [value]="e">{{ e }}</mat-option> }
                 </mat-select>
@@ -54,7 +53,7 @@
 
     <div class="layout">
       <main class="main">
-        <!-- Detalle OT (solo descripción como pediste) -->
+        <!-- Detalle OT -->
         <mat-card class="card card-wide pop">
           <div class="card-head">
             <div class="card-title">
@@ -68,7 +67,6 @@
           </div>
         </mat-card>
 
-        <!-- grid principal (cards mas compactas) -->
         <div class="grid-3">
           <!-- Presupuesto -->
           <mat-card class="card pop">
@@ -84,12 +82,12 @@
             </div>
 
             <div class="card-body">
-              <mat-form-field appearance="outline" class="mf" color="primary">
+              <mat-form-field appearance="outline" class="mf rs-field" color="primary">
                 <mat-label>Importe (€)</mat-label>
                 <input matInput type="number" [formControl]="formPresupuesto.controls.importe" />
               </mat-form-field>
 
-              <mat-form-field appearance="outline" class="mf" color="primary">
+              <mat-form-field appearance="outline" class="mf rs-field" color="primary">
                 <mat-label>Detalle</mat-label>
                 <textarea matInput rows="4" [formControl]="formPresupuesto.controls.detalle"></textarea>
               </mat-form-field>
@@ -105,7 +103,7 @@
                 </button>
 
                 <button mat-flat-button class="btn-primary" (click)="enviarPresupuesto()"
-                        [disabled]="busy() || !data.presupuesto || (data.presupuesto?.estado === 'ENVIADO') || (data.presupuesto?.estado === 'ACEPTADO')">
+                        [disabled]="busy() || !data.presupuesto || (data.presupuesto.estado === 'ENVIADO') || (data.presupuesto.estado === 'ACEPTADO')">
                   <mat-icon>send</mat-icon>
                   Enviar al cliente
                 </button>
@@ -118,30 +116,47 @@
             <div class="card-head">
               <div class="card-title"><mat-icon>event</mat-icon><span>Cita</span></div>
               <div class="rs-muted">
-                @if (data.citas.length) { Próxima: {{ data.citas[0].inicio | date:'d MMM, HH:mm' }} }
+                @if (data.citas.length) { Próxima: {{ data.citas[0].inicio | date:'d MMM, HH:mm':undefined:'es-ES' }} }
                 @else { Aún no programada }
               </div>
             </div>
 
             <div class="card-body">
+              @if (data.citas.length) {
+                <div class="cita-summary">
+                  <div class="cita-label">Próxima cita</div>
+                  <div class="cita-row">
+                    <div class="cita-main">
+                      {{ data.citas[0].inicio | date:"EEEE, d 'de' MMMM 'de' y":undefined:'es-ES' }} ·
+                      {{ data.citas[0].inicio | date:'HH:mm':undefined:'es-ES' }}
+                      – {{ data.citas[0].fin | date:'HH:mm':undefined:'es-ES' }}
+                    </div>
+                    <span class="pill small" [attr.data-state]="data.citas[0].estado">{{ data.citas[0].estado }}</span>
+                  </div>
+                </div>
+              }
+
               <div class="cita-grid">
-                <mat-form-field appearance="outline" class="mf" color="primary">
+                <mat-form-field appearance="outline" class="mf rs-field" color="primary" subscriptSizing="dynamic">
                   <mat-label>Fecha inicio</mat-label>
                   <input matInput [matDatepicker]="dp1" [formControl]="formCita.controls.fechaInicio">
                   <mat-datepicker-toggle matIconSuffix [for]="dp1"></mat-datepicker-toggle>
                   <mat-datepicker #dp1></mat-datepicker>
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" class="mf" color="primary">
+                <mat-form-field appearance="outline" class="mf rs-field" color="primary" subscriptSizing="dynamic">
                   <mat-label>Hora inicio</mat-label>
                   <input matInput type="time" [formControl]="formCita.controls.horaInicio">
                 </mat-form-field>
               </div>
 
               <div class="btn-row">
-                <button mat-stroked-button (click)="crearCita()" [disabled]="busy() || formCita.invalid">
-                  Reservar
-                </button>
+                @if (!tieneCita()) {
+                  <button mat-stroked-button (click)="crearCita()" [disabled]="busy() || formCita.invalid">
+                    Programar
+                  </button>
+                }
+
                 <button mat-flat-button class="btn-primary" (click)="reprogramarPrimera()"
                         [disabled]="busy() || formCita.invalid || !data.citas.length">
                   Reprogramar
@@ -149,7 +164,7 @@
               </div>
 
               <div class="hint">
-                Completa los datos para reservar la primera cita.
+                Completa los datos para programar o reprogramar.
               </div>
             </div>
           </mat-card>
@@ -261,15 +276,26 @@
             <div class="pay-body">
               <div class="pay-row">
                 <div class="rs-muted">Total a pagar</div>
-                <div class="pay-amount">
-                  @if (data.presupuesto?.importe != null) {
-                    {{ data.presupuesto?.importe | number:'1.0-2' }} €
-                  } @else { — }
-                </div>
+
+                @if (data.presupuesto; as p) {
+                  <div class="pay-amount">{{ p.importe | number:'1.0-2' }} €</div>
+                } @else {
+                  <div class="pay-amount">—</div>
+                }
               </div>
 
-              <button mat-flat-button class="btn-primary w100" (click)="marcarTransferencia()" [disabled]="busy()">
-                Confirmar pago recibido
+              @if (data.pago; as pago) {
+                @if (pago.comprobanteUrl) {
+                  <button type="button" class="link link-btn" (click)="verComprobante(pago.comprobanteUrl)">
+                    Ver comprobante
+                  </button>
+                }
+              }
+
+              <button mat-flat-button class="btn-primary w100"
+                      (click)="marcarTransferencia()"
+                      [disabled]="busy() || pagoConfirmado()">
+                {{ pagoConfirmado() ? 'Pago confirmado' : 'Confirmar pago recibido' }}
               </button>
             </div>
           </mat-card>
@@ -317,6 +343,22 @@
         </div>
         <div class="modal-body-mini">
           <img class="img-contained" [src]="selectedImageUrl()" alt="foto" />
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- ✅ Modal comprobante -->
+    <ng-template #comprobanteModal>
+      <div class="modal-small-container">
+        <div class="modal-header-mini">
+          <div>Comprobante</div>
+          <button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button>
+        </div>
+        <div class="modal-body-mini">
+          <img class="img-contained"
+               [src]="selectedComprobanteUrl()"
+               alt="comprobante"
+               (error)="closeModal()" />
         </div>
       </div>
     </ng-template>
