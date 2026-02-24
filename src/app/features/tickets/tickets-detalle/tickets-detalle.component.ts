@@ -15,12 +15,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TicketsService } from '../tickets.service';
 import { TicketDetalleDto } from '../../../core/models/tipos';
 
-type ParsedFromTicket = {
-  telefono?: string;
-  tipo?: 'TIENDA' | 'DOMICILIO';
-  direccion?: string;
-};
-
 @Component({
   selector: 'rs-tickets-detalle',
   standalone: true,
@@ -73,7 +67,7 @@ export class TicketsDetalleComponent implements OnInit {
 
   enviar(): void {
     if (this.formMsg.invalid || !this.ticket) return;
-    const contenido = this.formMsg.controls.contenido.value!.trim();
+    const contenido = this.formMsg.controls.contenido.value?.trim();
     if (!contenido) return;
 
     this.busy = true;
@@ -88,59 +82,65 @@ export class TicketsDetalleComponent implements OnInit {
     });
   }
 
-  // ✅ FASE 1: NO tocar backend.
-  // En vez de POST /crear-ot => ir a /ordenes-trabajo/nueva con prefill desde ticket.
+  // ✅ Flujo B (principal): abrir formulario de nueva OT con prefill desde ticket
   crearOt(): void {
     if (!this.ticket) return;
 
-    const existente = (this.ticket as any).ordenTrabajoId;
+    const existente = this.ticket.ordenTrabajoId;
     if (existente) {
       this.router.navigate(['/ordenes-trabajo', existente]);
       return;
     }
 
-    const asunto = (this.ticket.asunto || '').trim();
-    const descripcion = (this.ticket.descripcion || '').trim();
-    const parsed = this.parseTicketText(descripcion);
+    const equipo = (this.ticket.equipo || this.ticket.asunto || '').trim();
+    const falla = (this.ticket.descripcionFalla || '').trim();
+    const tipo = this.ticket.tipoServicioSugerido || '';
+    const direccion = this.ticket.direccion || '';
+    const primeraFoto = this.ticket.fotos?.[0]?.url || '';
 
     this.router.navigate(['/ordenes-trabajo/nueva'], {
       queryParams: {
         fromTicket: '1',
-        ticketId: this.id,
-        asunto,
-        descripcion,
-        tipo: parsed.tipo ?? '',
-        telefono: parsed.telefono ?? '',
-        direccion: parsed.direccion ?? ''
+        ticketId: this.ticket.id,
+
+        // cliente
+        clienteId: this.ticket.clienteId ?? '',
+        clienteNombre: this.ticket.clienteNombre ?? '',
+        clienteTelefono: this.ticket.clienteTelefono ?? '',
+        clienteEmail: this.ticket.clienteEmail ?? '',
+
+        // ✅ OT prefill
+        equipo,
+        descripcionFalla: falla,
+        tipo: tipo ?? '',
+        direccion: direccion ?? '',
+
+        // ✅ vista previa de foto del ticket (MVP visual)
+        ticketFotoUrl: primeraFoto
       }
     });
   }
 
   verOt(): void {
-    const otId = (this.ticket as any)?.ordenTrabajoId;
+    const otId = this.ticket?.ordenTrabajoId;
     if (!otId) return;
     this.router.navigate(['/ordenes-trabajo', otId]);
   }
 
-  private parseTicketText(text: string): ParsedFromTicket {
-    const raw = text || '';
-    const lower = raw.toLowerCase();
+  fotosTicket(t: TicketDetalleDto): { id: string; url: string; nombreOriginal?: string | null; createdAt: string }[] {
+    if (Array.isArray(t.fotos) && t.fotos.length) return t.fotos;
+    if (t.fotoUrl) {
+      return [{
+        id: 'legacy-foto',
+        url: t.fotoUrl,
+        nombreOriginal: 'Foto ticket',
+        createdAt: t.createdAt
+      }];
+    }
+    return [];
+  }
 
-    const telMatch =
-      raw.match(/(tel[eé]fono|tel|tlf)\s*[:\-]?\s*([0-9+\s]{7,})/i) ||
-      raw.match(/(\+?\d[\d\s]{7,}\d)/);
-
-    const telefono = telMatch
-      ? (telMatch[2] || telMatch[1]).replace(/\s+/g, '').trim()
-      : undefined;
-
-    let tipo: 'TIENDA' | 'DOMICILIO' | undefined;
-    if (lower.includes('domicilio') || lower.includes('en sitio') || lower.includes('en casa')) tipo = 'DOMICILIO';
-    if (lower.includes('tienda') || lower.includes('en tienda')) tipo = 'TIENDA';
-
-    const dirMatch = raw.match(/(direcci[oó]n|ubicaci[oó]n)\s*[:\-]\s*(.+)/i);
-    const direccion = dirMatch ? dirMatch[2].trim() : undefined;
-
-    return { telefono, tipo, direccion };
+  equipoTicket(t: TicketDetalleDto): string {
+    return (t.equipo || t.asunto || '').trim();
   }
 }

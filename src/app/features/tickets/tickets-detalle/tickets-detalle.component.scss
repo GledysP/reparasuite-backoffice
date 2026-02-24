@@ -1,5 +1,5 @@
 .rs-page {
-  max-width: 1050px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 18px 18px 40px;
 }
@@ -10,6 +10,7 @@
   justify-content: space-between;
   gap: 14px;
   margin-bottom: 14px;
+  flex-wrap: wrap;
 
   .left {
     .kicker {
@@ -20,7 +21,7 @@
     .title {
       margin: 0;
       font-size: 22px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: -0.2px;
     }
   }
@@ -34,7 +35,7 @@
 
 .card {
   border-radius: 16px;
-  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+  box-shadow: 0 10px 22px rgba(0,0,0,.05);
   border: 1px solid rgba(0,0,0,.06);
 }
 
@@ -44,6 +45,7 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .pill {
@@ -52,24 +54,30 @@
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 12px;
-  background: rgba(0,0,0,.06);
+  font-weight: 700;
+  background: rgba(18, 78, 89, 0.08);
+  color: #124E59;
+  border: 1px solid rgba(18, 78, 89, 0.12);
 }
 
 .muted {
-  opacity: .7;
+  opacity: .72;
   font-size: 12px;
 }
 
 .subject {
-  margin: 6px 0 6px;
-  font-size: 18px;
-  font-weight: 700;
+  margin: 6px 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 .desc {
   margin: 0;
-  opacity: .9;
-  line-height: 1.45;
+  opacity: .92;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  color: #0f172a;
 }
 
 .sep {
@@ -85,7 +93,89 @@
   h3 {
     margin: 0;
     font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+@media (max-width: 700px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-item {
+  border: 1px solid rgba(0,0,0,.07);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+
+  &.full {
+    grid-column: 1 / -1;
+  }
+
+  .label {
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 4px;
     font-weight: 700;
+  }
+
+  .value {
+    font-size: 13px;
+    color: #0f172a;
+    font-weight: 600;
+    white-space: pre-wrap;
+  }
+}
+
+/* ✅ Fotos */
+.photos-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.photo-card {
+  display: block;
+  border: 1px solid rgba(0,0,0,.07);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.06);
+    border-color: rgba(18, 78, 89, .18);
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    background: #f8fafc;
+  }
+
+  .photo-name {
+    padding: 8px 10px;
+    font-size: 12px;
+    color: #0f172a;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -97,33 +187,35 @@
 }
 
 .msg {
-  padding: 12px 12px;
+  padding: 12px;
   border-radius: 14px;
   border: 1px solid rgba(0,0,0,.07);
-  background: rgba(255,255,255,.7);
+  background: rgba(255,255,255,.9);
 
   .msg-top {
     display: flex;
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 6px;
+    flex-wrap: wrap;
   }
 
   .who {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 
-    strong {
-      font-size: 13px;
-    }
+    strong { font-size: 13px; }
 
     .tag {
       font-size: 11px;
       padding: 2px 8px;
       border-radius: 999px;
-      background: rgba(0,0,0,.06);
-      opacity: .85;
+      background: rgba(18, 78, 89, 0.08);
+      color: #124E59;
+      border: 1px solid rgba(18, 78, 89, 0.12);
+      font-weight: 700;
     }
   }
 
@@ -131,6 +223,7 @@
     font-size: 13px;
     line-height: 1.45;
     white-space: pre-wrap;
+    color: #0f172a;
   }
 }
 
@@ -144,6 +237,16 @@
   }
 }
 
+@media (max-width: 700px) {
+  .reply {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 .btn-primary {
   border-radius: 12px;
+  background: #124E59 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
 }

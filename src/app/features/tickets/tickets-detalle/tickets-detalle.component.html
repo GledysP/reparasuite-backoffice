@@ -36,8 +36,84 @@
           <div class="muted">Actualizado: {{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}</div>
         </div>
 
-        <h2 class="subject">{{ t.asunto }}</h2>
-        <p class="desc">{{ t.descripcion }}</p>
+        <h2 class="subject">{{ equipoTicket(t) || 'Sin equipo' }}</h2>
+
+        @if (t.descripcionFalla) {
+          <div class="section-head">
+            <h3>Falla reportada</h3>
+          </div>
+          <p class="desc">{{ t.descripcionFalla }}</p>
+        } @else {
+          <div class="section-head">
+            <h3>Descripción</h3>
+          </div>
+          <p class="desc">{{ t.descripcion }}</p>
+        }
+
+        <!-- ✅ Datos útiles -->
+        @if (t.clienteNombre || t.clienteTelefono || t.clienteEmail || t.tipoServicioSugerido || t.direccion) {
+          <mat-divider class="sep"></mat-divider>
+
+          <div class="section-head">
+            <h3>Datos de la solicitud</h3>
+          </div>
+
+          <div class="info-grid">
+            @if (t.clienteNombre) {
+              <div class="info-item">
+                <div class="label">Cliente</div>
+                <div class="value">{{ t.clienteNombre }}</div>
+              </div>
+            }
+
+            @if (t.clienteTelefono) {
+              <div class="info-item">
+                <div class="label">Teléfono</div>
+                <div class="value">{{ t.clienteTelefono }}</div>
+              </div>
+            }
+
+            @if (t.clienteEmail) {
+              <div class="info-item">
+                <div class="label">Correo</div>
+                <div class="value">{{ t.clienteEmail }}</div>
+              </div>
+            }
+
+            @if (t.tipoServicioSugerido) {
+              <div class="info-item">
+                <div class="label">Tipo sugerido</div>
+                <div class="value">{{ t.tipoServicioSugerido }}</div>
+              </div>
+            }
+
+            @if (t.direccion) {
+              <div class="info-item full">
+                <div class="label">Dirección / ubicación</div>
+                <div class="value">{{ t.direccion }}</div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ✅ Fotos del ticket -->
+        @if (fotosTicket(t).length) {
+          <mat-divider class="sep"></mat-divider>
+
+          <div class="section-head">
+            <h3>Fotos adjuntas</h3>
+            <span class="muted">{{ fotosTicket(t).length }} total</span>
+          </div>
+
+          <div class="photos-grid">
+            @for (f of fotosTicket(t); track f.id) {
+              <a class="photo-card" [href]="f.url" target="_blank" rel="noopener">
+                <img [src]="f.url" [alt]="f.nombreOriginal || 'Foto ticket'" />
+                <div class="photo-name">{{ f.nombreOriginal || 'Foto' }}</div>
+              </a>
+            }
+          </div>
+        }
 
         <mat-divider class="sep"></mat-divider>
 
@@ -55,7 +131,7 @@
                     <strong>{{ m.remitenteNombre }}</strong>
                     <span class="tag">{{ m.remitenteTipo }}</span>
                   </div>
-                  <span class="muted">{{ m.createdAt | date:'MMM d, HH:mm' }}</span>
+                  <span class="muted">{{ m.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
                 </div>
                 <div class="body">{{ m.contenido }}</div>
               </div>

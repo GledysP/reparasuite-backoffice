@@ -5,11 +5,11 @@ import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-import { TicketsService, TicketBackofficeListaItem } from '../tickets.service';
+import { TicketsService } from '../tickets.service';
+import { TicketBackofficeListaItem } from '../../../core/models/tipos';
 
 @Component({
   selector: 'rs-tickets-list',
@@ -21,7 +21,6 @@ import { TicketsService, TicketBackofficeListaItem } from '../tickets.service';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatTableModule,
     MatPaginatorModule,
     MatProgressBarModule
   ],
@@ -37,8 +36,6 @@ export class TicketsListComponent implements OnInit {
   total = 0;
   page = 0;
   size = 20;
-
-  displayedColumns = ['cliente', 'asunto', 'estado', 'updatedAt', 'accion'];
 
   ngOnInit(): void {
     this.cargar();
@@ -60,5 +57,21 @@ export class TicketsListComponent implements OnInit {
     this.page = e.pageIndex;
     this.size = e.pageSize;
     this.cargar();
+  }
+
+  trackById(_: number, item: TicketBackofficeListaItem): string {
+    return item.id;
+  }
+
+  estadoClass(estado?: string | null): string {
+    const e = (estado || '').toUpperCase();
+    if (e.includes('ABIERTO')) return 'is-open';
+    if (e.includes('REVISION')) return 'is-review';
+    if (e.includes('CERRADO')) return 'is-closed';
+    return 'is-default';
+  }
+
+  asuntoUi(t: TicketBackofficeListaItem): string {
+    return (t.asunto || '').trim() || 'Sin asunto';
   }
 }

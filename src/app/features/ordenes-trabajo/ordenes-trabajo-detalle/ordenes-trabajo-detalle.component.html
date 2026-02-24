@@ -179,7 +179,7 @@
             </div>
 
             <div class="chat-scroll">
-              @if (data.mensajes?.length) {
+              @if (data.mensajes.length) {
                 @for (m of data.mensajes; track trackById($index, m)) {
                   <div class="bubble-row" [class.me]="m.remitenteTipo === 'CLIENTE'">
                     <div class="bubble">

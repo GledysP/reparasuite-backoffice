@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 import { RespuestaPaginada } from '../../core/models/api';
-import { EstadoOt, TipoOt } from '../../core/models/enums';
+import { EstadoOt, TipoOt, PrioridadOt } from '../../core/models/enums';
 import {
   OtDetalle,
   OtListaItem,
@@ -13,6 +13,28 @@ import {
   CitaDto,
   MensajeOtDto
 } from '../../core/models/tipos';
+
+export interface OtCrearRequest {
+  cliente: {
+    id?: string | null;
+    nombre: string;
+    telefono?: string | null;
+    email?: string | null;
+  };
+  tipo: TipoOt | string;
+  prioridad: PrioridadOt | string;
+
+  // ✅ NUEVO: equipo como campo propio
+  equipo?: string | null;
+
+  // ✅ Descripción = falla / trabajo a realizar
+  descripcion: string;
+
+  tecnicoId?: string | null;
+  fechaPrevista?: string | null;
+  direccion?: string | null;
+  notasAcceso?: string | null;
+}
 
 @Injectable({ providedIn: 'root' })
 export class OrdenesTrabajoService {
@@ -45,7 +67,7 @@ export class OrdenesTrabajoService {
     return this.http.get<RespuestaPaginada<OtListaItem>>(this.url, { params });
   }
 
-  crear(body: any): Observable<{ id: string; codigo?: string }> {
+  crear(body: OtCrearRequest): Observable<{ id: string; codigo?: string }> {
     return this.http.post<{ id: string; codigo?: string }>(this.url, body);
   }
 

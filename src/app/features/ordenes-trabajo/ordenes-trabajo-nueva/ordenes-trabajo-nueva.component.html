@@ -1,6 +1,11 @@
 <div class="rs-main-container">
   <div class="rs-header-row">
-    <h1 class="rs-page-title">Nueva orden</h1>
+    <div>
+      <h1 class="rs-page-title">Nueva orden</h1>
+      <div class="rs-subtitle" *ngIf="fromTicket">
+        Creando OT desde ticket
+      </div>
+    </div>
 
     <button mat-stroked-button type="button" class="btn-cancelar-top" (click)="cancelar()">
       Volver
@@ -8,6 +13,51 @@
   </div>
 
   <form [formGroup]="form" class="rs-form-container">
+    <!-- RESUMEN TICKET (si viene de ticket) -->
+    <mat-card class="rs-section-card" *ngIf="fromTicket">
+      <mat-card-header>
+        <mat-card-title class="rs-card-title">Ticket de origen</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="rs-inline-note">
+          Esta orden se está creando desde un ticket. Puedes ajustar los datos antes de guardar.
+        </div>
+
+        <div class="rs-ticket-kv-grid">
+          <div class="kv" *ngIf="ticketId">
+            <div class="k">Ticket ID</div>
+            <div class="v mono">{{ ticketId }}</div>
+          </div>
+
+          <div class="kv" *ngIf="ticketRef?.estado">
+            <div class="k">Estado ticket</div>
+            <div class="v">{{ ticketRef?.estado }}</div>
+          </div>
+
+          <div class="kv" *ngIf="ticketRef?.equipo">
+            <div class="k">Equipo</div>
+            <div class="v">{{ ticketRef?.equipo }}</div>
+          </div>
+
+          <div class="kv" *ngIf="ticketRef?.tipoServicioSugerido">
+            <div class="k">Tipo sugerido</div>
+            <div class="v">{{ ticketRef?.tipoServicioSugerido }}</div>
+          </div>
+
+          <div class="kv full" *ngIf="ticketRef?.descripcionFalla">
+            <div class="k">Falla reportada</div>
+            <div class="v pre">{{ ticketRef?.descripcionFalla }}</div>
+          </div>
+
+          <div class="kv full" *ngIf="ticketRef?.direccion">
+            <div class="k">Dirección / ubicación</div>
+            <div class="v pre">{{ ticketRef?.direccion }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <mat-card class="rs-section-card">
       <mat-card-header class="rs-card-header-actions">
         <mat-card-title class="rs-card-title">Cliente</mat-card-title>
@@ -19,9 +69,11 @@
       </mat-card-header>
 
       <mat-card-content>
-        <div class="rs-grid-client">
+        <div class="rs-inline-note" *ngIf="fromTicket && clienteId">
+          Cliente cargado automáticamente desde el ticket.
+        </div>
 
-          <!-- NOMBRE -->
+        <div class="rs-grid-client">
           <div class="rs-field rs-span-6">
             <div class="rs-field-label">Nombre</div>
             <mat-form-field appearance="outline">
@@ -29,7 +81,6 @@
             </mat-form-field>
           </div>
 
-          <!-- TELÉFONO -->
           <div class="rs-field rs-span-3">
             <div class="rs-field-label">Teléfono</div>
             <mat-form-field appearance="outline">
@@ -37,14 +88,12 @@
             </mat-form-field>
           </div>
 
-          <!-- CORREO -->
           <div class="rs-field rs-span-3">
             <div class="rs-field-label">Correo (opcional)</div>
             <mat-form-field appearance="outline">
               <input matInput formControlName="clienteEmail" autocomplete="off" />
             </mat-form-field>
           </div>
-
         </div>
       </mat-card-content>
     </mat-card>
@@ -65,8 +114,6 @@
         </div>
 
         <div class="rs-form-grid rs-mt-12" *ngIf="form.value.tipo === 'DOMICILIO'">
-
-          <!-- DIRECCIÓN -->
           <div class="rs-field rs-span-8">
             <div class="rs-field-label">Dirección</div>
             <mat-form-field appearance="outline">
@@ -74,9 +121,8 @@
             </mat-form-field>
           </div>
 
-          <!-- FECHA PREVISTA -->
           <div class="rs-field rs-span-4">
-            <div class="rs-field-label">Fecha prevista (opcional)</div>
+            <div class="rs-field-label">Fecha estimada (opcional)</div>
             <mat-form-field appearance="outline">
               <input matInput [matDatepicker]="pickerPrevista" formControlName="fechaPrevistaDomicilio" />
               <mat-datepicker-toggle matSuffix [for]="pickerPrevista"></mat-datepicker-toggle>
@@ -84,14 +130,12 @@
             </mat-form-field>
           </div>
 
-          <!-- NOTAS ACCESO -->
           <div class="rs-field rs-span-12">
             <div class="rs-field-label">Notas de acceso</div>
             <mat-form-field appearance="outline">
               <input matInput formControlName="notasAcceso" autocomplete="off" />
             </mat-form-field>
           </div>
-
         </div>
       </mat-card-content>
     </mat-card>
@@ -102,13 +146,20 @@
       </mat-card-header>
 
       <mat-card-content>
+        <div class="rs-grid-work">
+          <div class="rs-field rs-span-4">
+            <div class="rs-field-label">Equipo *</div>
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="equipo" autocomplete="off" placeholder="Ej: Laptop Lenovo / TV Samsung / PS5" />
+            </mat-form-field>
+          </div>
 
-        <!-- DESCRIPCIÓN -->
-        <div class="rs-field rs-w-full rs-textarea">
-          <div class="rs-field-label">Descripción del problema</div>
-          <mat-form-field appearance="outline" class="rs-w-full">
-            <textarea matInput rows="3" formControlName="descripcion"></textarea>
-          </mat-form-field>
+          <div class="rs-field rs-span-8">
+            <div class="rs-field-label">Descripción del problema / trabajo *</div>
+            <mat-form-field appearance="outline" class="rs-w-full">
+              <textarea matInput rows="4" formControlName="descripcion" placeholder="Falla reportada o trabajo a realizar"></textarea>
+            </mat-form-field>
+          </div>
         </div>
 
         <div class="rs-grid-work rs-mt-12">
@@ -124,7 +175,6 @@
             </mat-chip-listbox>
           </div>
 
-          <!-- TÉCNICO -->
           <div class="rs-field rs-span-6">
             <div class="rs-field-label">Asignar técnico (opcional)</div>
             <mat-form-field appearance="outline">
@@ -138,9 +188,8 @@
             </mat-form-field>
           </div>
 
-          <!-- FECHA PROGRAMADA -->
           <div class="rs-field rs-span-3">
-            <div class="rs-field-label">Fecha programada (opcional)</div>
+            <div class="rs-field-label">Fecha estimada (opcional)</div>
             <mat-form-field appearance="outline">
               <input matInput [matDatepicker]="pickerProg" formControlName="fechaProgramada" />
               <mat-datepicker-toggle matSuffix [for]="pickerProg"></mat-datepicker-toggle>
@@ -157,6 +206,35 @@
       </mat-card-header>
 
       <mat-card-content>
+        <!-- ✅ Referencias del ticket (solo visual, no se suben automáticamente a OT) -->
+        <div class="rs-ticket-photo-box" *ngIf="hasTicketPhotoRefs">
+          <div class="rs-ticket-photo-head">
+            <div>
+              <div class="rs-ticket-photo-title">Fotos del ticket (referencia)</div>
+              <div class="rs-ticket-photo-sub">
+                Estas fotos vienen del ticket original. Se muestran para apoyar la creación de la OT.
+              </div>
+            </div>
+          </div>
+
+          <div class="rs-thumbs rs-thumbs-ticket">
+            <a
+              class="rs-thumb rs-thumb-ticket"
+              *ngFor="let p of ticketPhotoRefs"
+              [href]="p.url"
+              target="_blank"
+              rel="noopener"
+            >
+              <img [src]="p.url" [alt]="p.name" />
+              <div class="rs-thumb-badge">Ticket</div>
+              <div class="rs-thumb-name">{{ p.name }}</div>
+            </a>
+          </div>
+        </div>
+
+        <mat-divider *ngIf="hasTicketPhotoRefs" class="rs-mb-12 rs-mt-4"></mat-divider>
+
+        <!-- ✅ Fotos nuevas para la OT -->
         <div
           class="rs-dropzone"
           (click)="fileInput.click()"
@@ -177,7 +255,7 @@
           <mat-icon class="rs-dropzone-icon">cloud_upload</mat-icon>
 
           <div class="rs-dropzone-main">
-            <div class="rs-dropzone-title">Subir fotos</div>
+            <div class="rs-dropzone-title">Subir fotos a la OT</div>
             <div class="rs-dropzone-sub">
               Arrastra y suelta aquí o <span class="rs-link">haz clic para seleccionar</span>
             </div>
@@ -188,18 +266,19 @@
           </div>
         </div>
 
-        <div class="rs-thumbs" *ngIf="fotoPreviews.length > 0">
-          <div class="rs-thumb" *ngFor="let p of fotoPreviews; let i = index">
-            <img [src]="p.url" alt="Foto" />
-            <button mat-icon-button type="button" class="rs-thumb-remove" (click)="removeFile(i)">
+        <div class="rs-thumbs" *ngIf="localPhotoPreviews.length > 0">
+          <div class="rs-thumb" *ngFor="let p of localPhotoPreviews; let i = index">
+            <img [src]="p.url" alt="Foto OT" />
+            <button mat-icon-button type="button" class="rs-thumb-remove" (click)="removeLocalFile(i)">
               <mat-icon>close</mat-icon>
             </button>
+            <div class="rs-thumb-badge rs-thumb-badge-local">OT</div>
             <div class="rs-thumb-name">{{ p.name }}</div>
           </div>
         </div>
 
-        <button mat-button type="button" class="rs-clear-files" *ngIf="fotos.length > 0" (click)="clearFiles()">
-          Quitar todo
+        <button mat-button type="button" class="rs-clear-files" *ngIf="fotos.length > 0" (click)="clearLocalFiles()">
+          Quitar fotos nuevas
         </button>
       </mat-card-content>
     </mat-card>

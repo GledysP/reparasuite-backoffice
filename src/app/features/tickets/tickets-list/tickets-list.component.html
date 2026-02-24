@@ -1,74 +1,79 @@
 <div class="rs-page-container">
   <header class="rs-header-row">
-    <h1 class="rs-page-title">Tickets</h1>
+    <div>
+      <h1 class="rs-page-title">Tickets</h1>
+      <p class="rs-page-subtitle">Solicitudes de clientes y seguimiento hacia OT</p>
+    </div>
   </header>
 
   @if (loading) {
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
 
-  <mat-card class="white-card">
-    <mat-card-content>
-      <table mat-table [dataSource]="items" class="rs-table">
+  <div class="cards-wrap">
+    @if (!loading && items.length === 0) {
+      <mat-card class="ticket-card empty-card">
+        <mat-card-content>
+          <div class="empty-title">No hay tickets</div>
+          <div class="empty-sub">Cuando lleguen solicitudes del portal cliente aparecerán aquí.</div>
+        </mat-card-content>
+      </mat-card>
+    }
 
-        <!-- Cliente -->
-        <ng-container matColumnDef="cliente">
-          <th mat-header-cell *matHeaderCellDef>Cliente</th>
-          <td mat-cell *matCellDef="let t">
-            <div class="cliente-col">
-              <div class="cliente-nombre">{{ t.clienteNombre }}</div>
-              <div class="cliente-email muted">{{ t.clienteEmail || '—' }}</div>
+    @for (t of items; track t.id) {
+      <mat-card class="ticket-card">
+        <mat-card-content>
+          <div class="card-top">
+            <div class="left">
+              <div class="ticket-title">{{ asuntoUi(t) }}</div>
+
+              <div class="ticket-client">
+                <span class="client-name">{{ t.clienteNombre || 'Cliente sin nombre' }}</span>
+                <span class="dot">•</span>
+                <span class="client-email">{{ t.clienteEmail || 'sin correo' }}</span>
+              </div>
             </div>
-          </td>
-        </ng-container>
 
-        <!-- Asunto -->
-        <ng-container matColumnDef="asunto">
-          <th mat-header-cell *matHeaderCellDef>Asunto</th>
-          <td mat-cell *matCellDef="let t">{{ t.asunto }}</td>
-        </ng-container>
+            <div class="right">
+              <span class="status-pill" [ngClass]="estadoClass(t.estado)">
+                {{ t.estado }}
+              </span>
+              <div class="updated-at">
+                {{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}
+              </div>
+            </div>
+          </div>
 
-        <!-- Estado -->
-        <ng-container matColumnDef="estado">
-          <th mat-header-cell *matHeaderCellDef>Estado</th>
-          <td mat-cell *matCellDef="let t">
-            <span class="status-pill">{{ t.estado }}</span>
-          </td>
-        </ng-container>
+          <div class="card-bottom">
+            <div class="meta-line">
+              @if (t.ordenTrabajoId) {
+                <span class="linked-ot">
+                  <mat-icon>link</mat-icon>
+                  OT vinculada
+                </span>
+              } @else {
+                <span class="pending-ot">
+                  <mat-icon>schedule</mat-icon>
+                  Pendiente de crear OT
+                </span>
+              }
+            </div>
 
-        <!-- Actualizado -->
-        <ng-container matColumnDef="updatedAt">
-          <th mat-header-cell *matHeaderCellDef>Actualizado</th>
-          <td mat-cell *matCellDef="let t">{{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}</td>
-        </ng-container>
-
-        <!-- Acción -->
-        <ng-container matColumnDef="accion">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let t">
-            <a mat-stroked-button [routerLink]="['/tickets', t.id]">
-              Ver
+            <a mat-stroked-button class="btn-view" [routerLink]="['/tickets', t.id]">
+              <mat-icon>visibility</mat-icon>
+              Ver detalle
             </a>
-          </td>
-        </ng-container>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-
-        <tr class="empty-row" *ngIf="!loading && items.length === 0">
-          <td [attr.colspan]="displayedColumns.length" class="muted" style="padding:16px;">
-            No hay tickets.
-          </td>
-        </tr>
-      </table>
-
-      <mat-paginator
-        [length]="total"
-        [pageIndex]="page"
-        [pageSize]="size"
-        [pageSizeOptions]="[10, 20, 50]"
-        (page)="paginar($event)">
-      </mat-paginator>
-    </mat-card-content>
-  </mat-card>
+  <mat-paginator
+    [length]="total"
+    [pageIndex]="page"
+    [pageSize]="size"
+    [pageSizeOptions]="[10, 20, 50]"
+    (page)="paginar($event)">
+  </mat-paginator>
 </div>

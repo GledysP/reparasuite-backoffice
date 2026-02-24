@@ -1,52 +1,48 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { RespuestaPaginada } from '../../core/models/api';
-import { TicketDetalleDto } from '../../core/models/tipos';
-
-// DTO mínimo para lista backoffice (si ya tienes otro, puedes mantenerlo)
-export interface TicketBackofficeListaItem {
-  id: string;
-  estado: string;
-  asunto: string;
-  updatedAt: string;
-  clienteId: string;
-  clienteNombre: string;
-  clienteEmail: string;
-}
+import { TicketDetalleDto, TicketBackofficeListaItem } from '../../core/models/tipos';
 
 export interface TicketCrearOtResponse {
   ticketId: string;
   ordenTrabajoId: string;
-  ordenTrabajoCodigo?: string | null;
+  codigoOt?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
 export class TicketsService {
-  private readonly url = `${environment.apiBaseUrl}/backoffice/tickets`;
+  private http = inject(HttpClient);
+  private base = (environment.apiBaseUrl || '').replace(/\/$/, '');
 
-  constructor(private http: HttpClient) {}
+  // Ajusta esta línea según tu environment:
+  // Si apiBaseUrl YA incluye /api/v1 -> usa `${this.base}/backoffice/tickets`
+  // Si apiBaseUrl NO incluye /api/v1 -> usa `${this.base}/api/v1/backoffice/tickets`
+  private endpoint = `${this.base}/backoffice/tickets`;
 
   listar(page = 0, size = 20): Observable<RespuestaPaginada<TicketBackofficeListaItem>> {
-    const params = new HttpParams()
-      .set('page', String(page))
-      .set('size', String(size));
-
-    return this.http.get<RespuestaPaginada<TicketBackofficeListaItem>>(this.url, { params });
+    return this.http.get<RespuestaPaginada<TicketBackofficeListaItem>>(
+      `${this.endpoint}?page=${page}&size=${size}`
+    );
   }
 
   obtener(id: string): Observable<TicketDetalleDto> {
-    return this.http.get<TicketDetalleDto>(`${this.url}/${encodeURIComponent(id)}`);
+    return this.http.get<TicketDetalleDto>(`${this.endpoint}/${id}`);
   }
 
   enviarMensaje(id: string, contenido: string): Observable<void> {
-    return this.http.post<void>(`${this.url}/${encodeURIComponent(id)}/mensajes`, { contenido });
+    return this.http.post<void>(`${this.endpoint}/${id}/mensajes`, { contenido });
   }
 
-  // ✅ NUEVO: crear OT desde ticket
+  subirFoto(id: string, file: File): Observable<any> {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post(`${this.endpoint}/${id}/fotos`, fd);
+  }
+
   crearOtDesdeTicket(id: string): Observable<TicketCrearOtResponse> {
-    return this.http.post<TicketCrearOtResponse>(`${this.url}/${encodeURIComponent(id)}/crear-ot`, {});
+    return this.http.post<TicketCrearOtResponse>(`${this.endpoint}/${id}/crear-ot`, {});
   }
 }
