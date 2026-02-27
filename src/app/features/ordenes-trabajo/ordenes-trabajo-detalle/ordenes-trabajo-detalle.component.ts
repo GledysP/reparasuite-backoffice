@@ -14,7 +14,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+
+import { finalize } from 'rxjs/operators';
 
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { UsuariosService } from '../../usuarios/usuarios.service';
@@ -43,6 +45,7 @@ import { OtDetalle, UsuarioResumen } from '../../../core/models/tipos';
     MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatRippleModule,
   ],
   templateUrl: './ordenes-trabajo-detalle.component.html',
   styleUrl: './ordenes-trabajo-detalle.component.scss',
@@ -122,41 +125,50 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     if (!this.id) return;
 
     this.loading.set(true);
-    this.ordenes.obtener(this.id).subscribe({
-      next: (res) => {
-        this.ot.set(res);
 
-        if (res.estado) this.formEstado.controls.estado.setValue(res.estado as EstadoOt, { emitEvent: false });
+    this.ordenes
+      .obtener(this.id)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (res) => {
+          this.ot.set(res);
 
-        if (res.presupuesto) {
-          this.formPresupuesto.patchValue(
-            {
-              importe: res.presupuesto.importe ?? null,
-              detalle: res.presupuesto.detalle ?? '',
-              aceptacionCheck: !!res.presupuesto.aceptacionCheck,
-            },
-            { emitEvent: false }
-          );
-        }
+          if (res.estado) {
+            this.formEstado.controls.estado.setValue(res.estado as EstadoOt, { emitEvent: false });
+          }
 
-        this.resolveTecnicoNombre(res);
+          if (res.presupuesto) {
+            this.formPresupuesto.patchValue(
+              {
+                importe: res.presupuesto.importe ?? null,
+                detalle: res.presupuesto.detalle ?? '',
+                aceptacionCheck: !!res.presupuesto.aceptacionCheck,
+              },
+              { emitEvent: false }
+            );
+          }
 
-        const first = res.citas?.[0];
-        if (first?.inicio) {
-          const d = new Date(first.inicio);
-          const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-          const hh = String(d.getHours()).padStart(2, '0');
-          const mm = String(d.getMinutes()).padStart(2, '0');
-          this.formCita.patchValue({ fechaInicio: dateOnly, horaInicio: `${hh}:${mm}` }, { emitEvent: false });
-        }
-      },
-      error: () => this.snack.open('Error al cargar la orden', 'OK', { duration: 2500 }),
-      complete: () => this.loading.set(false),
-    });
+          this.resolveTecnicoNombre(res);
+
+          const first = res.citas?.[0];
+          if (first?.inicio) {
+            const d = new Date(first.inicio);
+            const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mm = String(d.getMinutes()).padStart(2, '0');
+            this.formCita.patchValue(
+              { fechaInicio: dateOnly, horaInicio: `${hh}:${mm}` },
+              { emitEvent: false }
+            );
+          }
+        },
+        error: () => this.snack.open('Error al cargar la orden', 'OK', { duration: 2500 }),
+      });
   }
 
   private resolveTecnicoNombre(res: OtDetalle): void {
     const tecnicoObj: any = (res as any).tecnico;
+
     if (tecnicoObj && typeof tecnicoObj === 'object' && tecnicoObj.nombre) {
       this.tecnicoNombre.set(tecnicoObj.nombre);
       return;
@@ -177,14 +189,17 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     if (!estado || !this.id) return;
 
     this.busy.set(true);
-    this.ordenes.cambiarEstado(this.id, estado).subscribe({
-      next: () => {
-        this.snack.open('Estado actualizado', 'OK', { duration: 2000 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al actualizar estado', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false),
-    });
+
+    this.ordenes
+      .cambiarEstado(this.id, estado)
+      .pipe(finalize(() => this.busy.set(false)))
+      .subscribe({
+        next: () => {
+          this.snack.open('Estado actualizado', 'OK', { duration: 2000 });
+          this.cargar();
+        },
+        error: () => this.snack.open('Error al actualizar estado', 'OK', { duration: 2500 }),
+      });
   }
 
   guardarPresupuesto(): void {
@@ -192,19 +207,20 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
 
     const v = this.formPresupuesto.getRawValue();
     this.busy.set(true);
+
     this.ordenes
       .crearPresupuesto(this.id, {
         importe: Number(v.importe ?? 0),
         detalle: (v.detalle ?? '').trim(),
         aceptacionCheck: !!v.aceptacionCheck,
       })
+      .pipe(finalize(() => this.busy.set(false)))
       .subscribe({
         next: () => {
           this.snack.open('Presupuesto guardado', 'OK', { duration: 2000 });
           this.cargar();
         },
         error: () => this.snack.open('Error al guardar presupuesto', 'OK', { duration: 2500 }),
-        complete: () => this.busy.set(false),
       });
   }
 
@@ -212,30 +228,37 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     if (!this.id) return;
 
     this.busy.set(true);
-    this.ordenes.enviarPresupuesto(this.id).subscribe({
-      next: () => {
-        this.snack.open('Presupuesto enviado', 'OK', { duration: 2000 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al enviar presupuesto', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false),
-    });
+
+    this.ordenes
+      .enviarPresupuesto(this.id)
+      .pipe(finalize(() => this.busy.set(false)))
+      .subscribe({
+        next: () => {
+          this.snack.open('Presupuesto enviado', 'OK', { duration: 2000 });
+          this.cargar();
+        },
+        error: () => this.snack.open('Error al enviar presupuesto', 'OK', { duration: 2500 }),
+      });
   }
 
   crearCita(): void {
     if (this.formCita.invalid || !this.id) return;
+
     const inicioIso = this.getInicioIso();
     if (!inicioIso) return;
 
     this.busy.set(true);
-    this.ordenes.crearCita(this.id, { inicio: inicioIso, fin: this.addMinutesIso(inicioIso, 60) }).subscribe({
-      next: () => {
-        this.snack.open('Cita programada', 'OK', { duration: 2000 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al programar cita', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false),
-    });
+
+    this.ordenes
+      .crearCita(this.id, { inicio: inicioIso, fin: this.addMinutesIso(inicioIso, 60) })
+      .pipe(finalize(() => this.busy.set(false)))
+      .subscribe({
+        next: () => {
+          this.snack.open('Cita programada', 'OK', { duration: 2000 });
+          this.cargar();
+        },
+        error: () => this.snack.open('Error al programar cita', 'OK', { duration: 2500 }),
+      });
   }
 
   reprogramarPrimera(): void {
@@ -246,14 +269,17 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     if (!inicioIso) return;
 
     this.busy.set(true);
-    this.ordenes.reprogramarCita(first.id, { inicio: inicioIso, fin: this.addMinutesIso(inicioIso, 60) }).subscribe({
-      next: () => {
-        this.snack.open('Cita reprogramada', 'OK', { duration: 2000 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al reprogramar cita', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false),
-    });
+
+    this.ordenes
+      .reprogramarCita(first.id, { inicio: inicioIso, fin: this.addMinutesIso(inicioIso, 60) })
+      .pipe(finalize(() => this.busy.set(false)))
+      .subscribe({
+        next: () => {
+          this.snack.open('Cita reprogramada', 'OK', { duration: 2000 });
+          this.cargar();
+        },
+        error: () => this.snack.open('Error al reprogramar cita', 'OK', { duration: 2500 }),
+      });
   }
 
   private getInicioIso(): string | null {
@@ -281,15 +307,18 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     if (!contenido) return;
 
     this.busy.set(true);
-    this.ordenes.enviarMensaje(this.id, contenido).subscribe({
-      next: () => {
-        this.formMsg.reset();
-        this.snack.open('Mensaje enviado', 'OK', { duration: 1500 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al enviar mensaje', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false),
-    });
+
+    this.ordenes
+      .enviarMensaje(this.id, contenido)
+      .pipe(finalize(() => this.busy.set(false)))
+      .subscribe({
+        next: () => {
+          this.formMsg.reset();
+          this.snack.open('Mensaje enviado', 'OK', { duration: 1500 });
+          this.cargar();
+        },
+        error: () => this.snack.open('Error al enviar mensaje', 'OK', { duration: 2500 }),
+      });
   }
 
   onMsgKeydown(ev: KeyboardEvent): void {
@@ -301,33 +330,40 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
 
   anadirNota(): void {
     if (this.formNota.invalid || !this.id) return;
+
     const contenido = (this.formNota.controls.contenido.value ?? '').trim();
     if (!contenido) return;
 
     this.busy.set(true);
-    this.ordenes.anadirNota(this.id, contenido).subscribe({
-      next: () => {
-        this.formNota.reset();
-        this.snack.open('Nota añadida', 'OK', { duration: 2000 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al añadir nota', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false),
-    });
+
+    this.ordenes
+      .anadirNota(this.id, contenido)
+      .pipe(finalize(() => this.busy.set(false)))
+      .subscribe({
+        next: () => {
+          this.formNota.reset();
+          this.snack.open('Nota añadida', 'OK', { duration: 2000 });
+          this.cargar();
+        },
+        error: () => this.snack.open('Error al añadir nota', 'OK', { duration: 2500 }),
+      });
   }
 
   marcarTransferencia(): void {
     if (!this.id || this.pagoConfirmado()) return;
 
     this.busy.set(true);
-    this.ordenes.confirmarPagoRecibido(this.id).subscribe({
-      next: () => {
-        this.snack.open('Pago confirmado por backoffice', 'OK', { duration: 2000 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al confirmar pago', 'OK', { duration: 2500 }),
-      complete: () => this.busy.set(false),
-    });
+
+    this.ordenes
+      .confirmarPagoRecibido(this.id)
+      .pipe(finalize(() => this.busy.set(false)))
+      .subscribe({
+        next: () => {
+          this.snack.open('Pago confirmado por backoffice', 'OK', { duration: 2000 });
+          this.cargar();
+        },
+        error: () => this.snack.open('Error al confirmar pago', 'OK', { duration: 2500 }),
+      });
   }
 
   onFotoSelected(ev: Event): void {
@@ -336,17 +372,20 @@ export class OrdenesTrabajoDetalleComponent implements OnInit {
     if (!file || !this.id) return;
 
     this.busy.set(true);
-    this.ordenes.subirFoto(this.id, file).subscribe({
-      next: () => {
-        this.snack.open('Foto subida', 'OK', { duration: 2000 });
-        this.cargar();
-      },
-      error: () => this.snack.open('Error al subir foto', 'OK', { duration: 2500 }),
-      complete: () => {
+
+    this.ordenes
+      .subirFoto(this.id, file)
+      .pipe(finalize(() => {
         this.busy.set(false);
         input.value = '';
-      },
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.snack.open('Foto subida', 'OK', { duration: 2000 });
+          this.cargar();
+        },
+        error: () => this.snack.open('Error al subir foto', 'OK', { duration: 2500 }),
+      });
   }
 
   verFoto(foto: any): void {

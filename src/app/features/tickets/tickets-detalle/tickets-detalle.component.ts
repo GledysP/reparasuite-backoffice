@@ -14,6 +14,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { TicketsService } from '../tickets.service';
 import { TicketDetalleDto } from '../../../core/models/tipos';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'rs-tickets-detalle',
@@ -42,11 +43,22 @@ export class TicketsDetalleComponent implements OnInit {
   private snack = inject(MatSnackBar);
   private fb = inject(FormBuilder);
 
+  /** Fallback temporal si backend aún no devuelve ordenTrabajoId */
+  private readonly ticketOtCacheKey = 'rs_ticket_ot_map';
+
   id = this.route.snapshot.paramMap.get('id')!;
   loading = false;
   busy = false;
 
   ticket: TicketDetalleDto | null = null;
+
+  /** Estado derivado para el template (mejor que duplicar lógica en HTML) */
+  otVinculadaId: string | null = null;
+
+  /** ✅ Tu HTML puede usar esto sin errores */
+  get yaTieneOt(): boolean {
+    return !!this.otVinculadaId;
+  }
 
   formMsg = this.fb.group({
     contenido: ['', [Validators.required, Validators.minLength(1)]]
@@ -58,15 +70,38 @@ export class TicketsDetalleComponent implements OnInit {
 
   cargar(): void {
     this.loading = true;
+
     this.ticketsService.obtener(this.id).subscribe({
-      next: (t) => (this.ticket = t),
-      error: () => this.snack.open('No se pudo cargar el ticket', 'OK', { duration: 2500 }),
-      complete: () => (this.loading = false)
+      next: (t) => {
+        const otBackend = this.extraerOtIdDesdeTicket(t);
+        const otCache = this.obtenerVinculoTicketOtDesdeCache(t.id);
+        const otFinal = otBackend || otCache || null;
+
+        this.otVinculadaId = otFinal;
+
+        // Refuerzo: si backend ya lo trae, lo persistimos para futuras cargas
+        if (t.id && otFinal) {
+          this.guardarVinculoTicketOtEnCache(t.id, otFinal);
+        }
+
+        // Parcheamos el objeto local para que también funcione si tu HTML usa ticket?.ordenTrabajoId
+        this.ticket = {
+          ...t,
+          ordenTrabajoId: otFinal ?? ((t as any).ordenTrabajoId ?? null)
+        } as TicketDetalleDto;
+      },
+      error: () => {
+        this.snack.open('No se pudo cargar el ticket', 'OK', { duration: 2500 });
+      },
+      complete: () => {
+        this.loading = false;
+      }
     });
   }
 
   enviar(): void {
     if (this.formMsg.invalid || !this.ticket) return;
+
     const contenido = this.formMsg.controls.contenido.value?.trim();
     if (!contenido) return;
 
@@ -77,18 +112,24 @@ export class TicketsDetalleComponent implements OnInit {
         this.snack.open('Mensaje enviado', 'OK', { duration: 1500 });
         this.cargar();
       },
-      error: () => this.snack.open('No se pudo enviar el mensaje', 'OK', { duration: 2500 }),
-      complete: () => (this.busy = false)
+      error: () => {
+        this.snack.open('No se pudo enviar el mensaje', 'OK', { duration: 2500 });
+      },
+      complete: () => {
+        this.busy = false;
+      }
     });
   }
 
-  // ✅ Flujo B (principal): abrir formulario de nueva OT con prefill desde ticket
+  /**
+   * Crear OT si no existe, o abrirla si ya está vinculada.
+   */
   crearOt(): void {
     if (!this.ticket) return;
 
-    const existente = this.ticket.ordenTrabajoId;
-    if (existente) {
-      this.router.navigate(['/ordenes-trabajo', existente]);
+    // ✅ Si ya existe (backend o cache), abrir directamente
+    if (this.otVinculadaId) {
+      this.router.navigate(['/ordenes-trabajo', this.otVinculadaId]);
       return;
     }
 
@@ -96,7 +137,7 @@ export class TicketsDetalleComponent implements OnInit {
     const falla = (this.ticket.descripcionFalla || '').trim();
     const tipo = this.ticket.tipoServicioSugerido || '';
     const direccion = this.ticket.direccion || '';
-    const primeraFoto = this.ticket.fotos?.[0]?.url || '';
+    const primeraFoto = this.fotosTicket(this.ticket)[0]?.url || '';
 
     this.router.navigate(['/ordenes-trabajo/nueva'], {
       queryParams: {
@@ -109,38 +150,114 @@ export class TicketsDetalleComponent implements OnInit {
         clienteTelefono: this.ticket.clienteTelefono ?? '',
         clienteEmail: this.ticket.clienteEmail ?? '',
 
-        // ✅ OT prefill
+        // prefill OT
         equipo,
         descripcionFalla: falla,
         tipo: tipo ?? '',
         direccion: direccion ?? '',
 
-        // ✅ vista previa de foto del ticket (MVP visual)
+        // visual (opcional)
         ticketFotoUrl: primeraFoto
       }
     });
   }
 
   verOt(): void {
-    const otId = this.ticket?.ordenTrabajoId;
-    if (!otId) return;
-    this.router.navigate(['/ordenes-trabajo', otId]);
+    if (!this.otVinculadaId) {
+      this.snack.open('No se encontró una OT vinculada para este ticket', 'OK', { duration: 2500 });
+      return;
+    }
+
+    this.router.navigate(['/ordenes-trabajo', this.otVinculadaId]);
   }
 
   fotosTicket(t: TicketDetalleDto): { id: string; url: string; nombreOriginal?: string | null; createdAt: string }[] {
-    if (Array.isArray(t.fotos) && t.fotos.length) return t.fotos;
-    if (t.fotoUrl) {
+    if (Array.isArray((t as any).fotos) && (t as any).fotos.length) {
+      return (t as any).fotos
+        .filter((f: any) => !!f?.url)
+        .map((f: any) => ({
+          id: f.id ?? `foto-${Math.random().toString(36).slice(2)}`,
+          url: this.resolveFileUrl(f.url),
+          nombreOriginal: f.nombreOriginal ?? 'Foto ticket',
+          createdAt: f.createdAt ?? t.createdAt
+        }));
+    }
+
+    if ((t as any).fotoUrl) {
       return [{
         id: 'legacy-foto',
-        url: t.fotoUrl,
+        url: this.resolveFileUrl((t as any).fotoUrl),
         nombreOriginal: 'Foto ticket',
         createdAt: t.createdAt
       }];
     }
+
     return [];
   }
 
   equipoTicket(t: TicketDetalleDto): string {
-    return (t.equipo || t.asunto || '').trim();
+    return ((t as any).equipo || (t as any).asunto || '').trim();
+  }
+
+  // =========================
+  // Helpers vínculo Ticket -> OT
+  // =========================
+
+  private extraerOtIdDesdeTicket(t: TicketDetalleDto): string | null {
+    const x = t as any;
+
+    const candidatos = [
+      x.ordenTrabajoId,
+      x.otId,
+      x.ordenTrabajo?.id,
+      x.ordenTrabajo?.otId
+    ];
+
+    for (const c of candidatos) {
+      if (typeof c === 'string' && c.trim()) return c.trim();
+    }
+    return null;
+  }
+
+  private obtenerVinculoTicketOtDesdeCache(ticketId?: string | null): string | null {
+    if (!ticketId) return null;
+
+    try {
+      const raw = localStorage.getItem(this.ticketOtCacheKey);
+      if (!raw) return null;
+
+      const map = JSON.parse(raw) as Record<string, string>;
+      const otId = map?.[ticketId];
+
+      return typeof otId === 'string' && otId.trim() ? otId.trim() : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private guardarVinculoTicketOtEnCache(ticketId: string, otId: string): void {
+    if (!ticketId || !otId) return;
+
+    try {
+      const raw = localStorage.getItem(this.ticketOtCacheKey);
+      const map = raw ? (JSON.parse(raw) as Record<string, string>) : {};
+      map[ticketId] = otId;
+      localStorage.setItem(this.ticketOtCacheKey, JSON.stringify(map));
+    } catch {
+      // silencioso
+    }
+  }
+
+  // =========================
+  // Helpers URL fotos
+  // =========================
+
+  private resolveFileUrl(url?: string | null): string {
+    if (!url) return '';
+    if (/^https?:\/\//i.test(url)) return url;
+
+    const base = (environment.apiBaseUrl || '').replace(/\/$/, '');
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${base}${path}`;
   }
 }

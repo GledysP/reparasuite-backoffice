@@ -30,6 +30,9 @@ export interface OtCrearRequest {
   // ✅ Descripción = falla / trabajo a realizar
   descripcion: string;
 
+  // ✅ NUEVO: vínculo opcional con ticket origen
+  ticketId?: string | null;
+
   tecnicoId?: string | null;
   fechaPrevista?: string | null;
   direccion?: string | null;

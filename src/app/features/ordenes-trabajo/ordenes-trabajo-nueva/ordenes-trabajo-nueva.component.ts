@@ -19,7 +19,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 
 import { forkJoin, of, Subscription } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, switchMap, finalize } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
 import { UsuariosService } from '../../usuarios/usuarios.service';
@@ -73,6 +73,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   private qpSub?: Subscription;
 
+  // ✅ fallback local para vínculo ticket -> OT (si backend todavía no refleja ordenTrabajoId al recargar ticket)
+  private readonly ticketOtCacheKey = 'rs_ticket_ot_map';
+
   tecnicos: UsuarioResumen[] = [];
   prioridades: PrioridadOt[] = ['BAJA', 'MEDIA', 'ALTA'];
 
@@ -82,6 +85,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   fotos: File[] = []; // solo fotos locales para subir a OT
   fotoPreviews: FotoPreview[] = []; // locales + referencias del ticket
   isDragOver = false;
+
+  // ✅ usado por el HTML para bloquear acciones mientras crea/sube
+  guardando = false;
 
   ticketId: string | null = null;
   ticketRef: TicketSummaryRef | null = null;
@@ -97,7 +103,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     fechaPrevistaDomicilio: [null as Date | null],
     fechaProgramada: [null as Date | null],
 
-    // ✅ NUEVO: equipo propio en OT
+    // ✅ equipo propio en OT
     equipo: ['', [Validators.required, Validators.minLength(2)]],
 
     // ✅ Descripción = falla / trabajo
@@ -445,6 +451,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   // =========================
 
   buscarCliente() {
+    if (this.guardando) return;
+
     if (this.fromTicket && this.clienteId) {
       this.snack.open('Esta OT viene de un ticket. El cliente ya está vinculado.', 'OK', { duration: 2500 });
       return;
@@ -473,6 +481,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   // =========================
 
   crear() {
+    if (this.guardando) return;
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.snack.open('Por favor revisa los campos requeridos', 'OK', { duration: 2500 });
@@ -496,7 +506,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       tipo: (v.tipo ?? 'TIENDA') as TipoOt,
       prioridad: (v.prioridad ?? 'MEDIA') as PrioridadOt,
 
-      // ✅ nuevo
+      // ✅ equipo
       equipo: (v.equipo ?? '').trim(),
 
       // ✅ falla / trabajo a realizar
@@ -508,9 +518,21 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       notasAcceso: v.tipo === 'DOMICILIO' ? ((v.notasAcceso ?? '').trim() || null) : null,
     };
 
+    // ✅ backend puede soportar ticketId aunque el tipo del front aún no lo declare
+    if (this.fromTicket && this.ticketId) {
+      (body as any).ticketId = this.ticketId;
+    }
+
+    this.guardando = true;
+
     this.ordenes.crear(body).pipe(
       switchMap((res: any) => {
         const id = res.id as string;
+
+        // ✅ fallback front: cachear vínculo ticket->ot para que ticket pueda mostrar "Ver OT"
+        if (this.ticketId && id) {
+          this.guardarVinculoTicketOtEnCache(this.ticketId, id);
+        }
 
         if (!this.fotos.length) return of({ id });
 
@@ -526,6 +548,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         );
 
         return forkJoin(uploads).pipe(switchMap(() => of({ id })));
+      }),
+      finalize(() => {
+        this.guardando = false;
       })
     ).subscribe({
       next: ({ id }) => {
@@ -540,11 +565,28 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   }
 
   cancelar() {
+    if (this.guardando) return;
+
     this.clearLocalFiles();
     if (this.ticketId) {
       this.router.navigate(['/tickets', this.ticketId]);
       return;
     }
     this.router.navigateByUrl('/ordenes-trabajo');
+  }
+
+  // =========================
+  // Fallback local ticket -> OT
+  // =========================
+
+  private guardarVinculoTicketOtEnCache(ticketId: string, otId: string): void {
+    try {
+      const raw = localStorage.getItem(this.ticketOtCacheKey);
+      const map = raw ? JSON.parse(raw) as Record<string, string> : {};
+      map[ticketId] = otId;
+      localStorage.setItem(this.ticketOtCacheKey, JSON.stringify(map));
+    } catch {
+      // silencioso (no bloquea el flujo)
+    }
   }
 }

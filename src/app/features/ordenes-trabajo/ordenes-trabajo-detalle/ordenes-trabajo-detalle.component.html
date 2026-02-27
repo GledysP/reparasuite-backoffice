@@ -16,7 +16,9 @@
             <div class="rs-chips">
               <mat-form-field appearance="outline" class="mf mf-chip rs-field" color="primary">
                 <mat-select [formControl]="formEstado.controls.estado" panelClass="rs-select-panel">
-                  @for (e of estados; track e) { <mat-option [value]="e">{{ e }}</mat-option> }
+                  @for (e of estados; track e) {
+                    <mat-option [value]="e">{{ e }}</mat-option>
+                  }
                 </mat-select>
               </mat-form-field>
 
@@ -47,7 +49,9 @@
           </div>
         </div>
 
-        @if (loading()) { <mat-progress-bar mode="indeterminate"></mat-progress-bar> }
+        @if (loading()) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
       </div>
     </header>
 
@@ -114,15 +118,22 @@
           <!-- Cita -->
           <mat-card class="card pop">
             <div class="card-head">
-              <div class="card-title"><mat-icon>event</mat-icon><span>Cita</span></div>
+              <div class="card-title">
+                <mat-icon>event</mat-icon>
+                <span>Cita</span>
+              </div>
+
               <div class="rs-muted">
-                @if (data.citas.length) { Próxima: {{ data.citas[0].inicio | date:'d MMM, HH:mm':undefined:'es-ES' }} }
-                @else { Aún no programada }
+                @if (data.citas.length > 0) {
+                  Próxima: {{ data.citas[0].inicio | date:'d MMM, HH:mm':undefined:'es-ES' }}
+                } @else {
+                  Aún no programada
+                }
               </div>
             </div>
 
             <div class="card-body">
-              @if (data.citas.length) {
+              @if (data.citas.length > 0) {
                 <div class="cita-summary">
                   <div class="cita-label">Próxima cita</div>
                   <div class="cita-row">
@@ -158,7 +169,7 @@
                 }
 
                 <button mat-flat-button class="btn-primary" (click)="reprogramarPrimera()"
-                        [disabled]="busy() || formCita.invalid || !data.citas.length">
+                        [disabled]="busy() || formCita.invalid || data.citas.length === 0">
                   Reprogramar
                 </button>
               </div>
@@ -179,7 +190,7 @@
             </div>
 
             <div class="chat-scroll">
-              @if (data.mensajes.length) {
+              @if (data.mensajes.length > 0) {
                 @for (m of data.mensajes; track trackById($index, m)) {
                   <div class="bubble-row" [class.me]="m.remitenteTipo === 'CLIENTE'">
                     <div class="bubble">
@@ -306,7 +317,7 @@
         <mat-card class="card side-card pop">
           <div class="side-title">Cliente</div>
           <div class="side-body">
-            <div class="name">{{ data.cliente.nombre }}</div>
+            <div class="name">{{ data.cliente.nombre || '—' }}</div>
             <div class="rowi"><mat-icon>phone</mat-icon><span>{{ data.cliente.telefono || '—' }}</span></div>
             <div class="rowi"><mat-icon>email</mat-icon><span>{{ data.cliente.email || '—' }}</span></div>
           </div>
@@ -347,7 +358,7 @@
       </div>
     </ng-template>
 
-    <!-- ✅ Modal comprobante -->
+    <!-- Modal comprobante -->
     <ng-template #comprobanteModal>
       <div class="modal-small-container">
         <div class="modal-header-mini">

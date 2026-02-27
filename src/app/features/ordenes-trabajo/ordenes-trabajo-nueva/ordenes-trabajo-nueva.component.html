@@ -7,7 +7,7 @@
       </div>
     </div>
 
-    <button mat-stroked-button type="button" class="btn-cancelar-top" (click)="cancelar()">
+    <button mat-stroked-button type="button" class="btn-cancelar-top" (click)="cancelar()" [disabled]="guardando">
       Volver
     </button>
   </div>
@@ -62,7 +62,7 @@
       <mat-card-header class="rs-card-header-actions">
         <mat-card-title class="rs-card-title">Cliente</mat-card-title>
 
-        <button mat-stroked-button type="button" (click)="buscarCliente()" class="btn-find-client">
+        <button mat-stroked-button type="button" (click)="buscarCliente()" class="btn-find-client" [disabled]="guardando">
           <mat-icon>search</mat-icon>
           Buscar cliente
         </button>
@@ -237,7 +237,7 @@
         <!-- ✅ Fotos nuevas para la OT -->
         <div
           class="rs-dropzone"
-          (click)="fileInput.click()"
+          (click)="!guardando && fileInput.click()"
           (dragover)="onDragOver($event)"
           (dragleave)="onDragLeave($event)"
           (drop)="onDrop($event)"
@@ -269,7 +269,7 @@
         <div class="rs-thumbs" *ngIf="localPhotoPreviews.length > 0">
           <div class="rs-thumb" *ngFor="let p of localPhotoPreviews; let i = index">
             <img [src]="p.url" alt="Foto OT" />
-            <button mat-icon-button type="button" class="rs-thumb-remove" (click)="removeLocalFile(i)">
+            <button mat-icon-button type="button" class="rs-thumb-remove" (click)="removeLocalFile(i)" [disabled]="guardando">
               <mat-icon>close</mat-icon>
             </button>
             <div class="rs-thumb-badge rs-thumb-badge-local">OT</div>
@@ -277,19 +277,19 @@
           </div>
         </div>
 
-        <button mat-button type="button" class="rs-clear-files" *ngIf="fotos.length > 0" (click)="clearLocalFiles()">
+        <button mat-button type="button" class="rs-clear-files" *ngIf="fotos.length > 0" (click)="clearLocalFiles()" [disabled]="guardando">
           Quitar fotos nuevas
         </button>
       </mat-card-content>
     </mat-card>
 
     <div class="rs-footer rs-footer-sticky">
-      <button mat-button type="button" (click)="cancelar()" class="btn-cancelar">
+      <button mat-button type="button" (click)="cancelar()" class="btn-cancelar" [disabled]="guardando">
         Cancelar
       </button>
 
-      <button mat-raised-button class="btn-guardar" type="button" (click)="crear()">
-        Crear orden de trabajo
+      <button mat-raised-button class="btn-guardar" type="button" (click)="crear()" [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : 'Crear orden de trabajo' }}
       </button>
     </div>
   </form>

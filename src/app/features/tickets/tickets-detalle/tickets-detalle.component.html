@@ -10,7 +10,7 @@
         Volver
       </button>
 
-      @if (ticket?.ordenTrabajoId) {
+      @if (yaTieneOt) {
         <button mat-stroked-button (click)="verOt()" [disabled]="busy">
           <mat-icon>open_in_new</mat-icon>
           Ver OT
