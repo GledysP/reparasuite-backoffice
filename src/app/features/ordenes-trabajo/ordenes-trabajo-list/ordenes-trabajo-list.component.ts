@@ -1,7 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { DatePipe, TitleCasePipe, CommonModule } from '@angular/common';
+import { debounceTime } from 'rxjs';
+
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,89 +25,174 @@ import { OtListaItem, UsuarioResumen } from '../../../core/models/tipos';
   standalone: true,
   imports: [
     CommonModule,
-    DatePipe,
-    TitleCasePipe,
     RouterLink,
     ReactiveFormsModule,
-    MatCardModule, 
-    MatFormFieldModule, 
-    MatSelectModule, 
+    MatCardModule,
+    MatFormFieldModule,
+    MatSelectModule,
     MatInputModule,
-    MatButtonModule, 
-    MatTableModule, 
-    MatPaginatorModule, 
+    MatButtonModule,
+    MatTableModule,
+    MatPaginatorModule,
     MatIconModule,
   ],
   templateUrl: './ordenes-trabajo-list.component.html',
   styleUrl: './ordenes-trabajo-list.component.scss',
 })
 export class OrdenesTrabajoListComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private usuarios = inject(UsuariosService);
-  private ordenes = inject(OrdenesTrabajoService);
+  private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly usuarios = inject(UsuariosService);
+  private readonly ordenes = inject(OrdenesTrabajoService);
 
-  estadosDisponibles: EstadoOt[] = ['RECIBIDA','PRESUPUESTO','APROBADA','EN_CURSO','FINALIZADA','CERRADA'];
+  estadosDisponibles: EstadoOt[] = [
+    'RECIBIDA',
+    'PRESUPUESTO',
+    'APROBADA',
+    'EN_CURSO',
+    'FINALIZADA',
+    'CERRADA',
+  ];
+
   tecnicos: UsuarioResumen[] = [];
-
   items: OtListaItem[] = [];
   total = 0;
   page = 0;
   size = 20;
 
-  displayedColumns = ['codigo','cliente','estado','tipo','tecnico','actualizado','accion'];
+  displayedColumns = [
+    'codigo',
+    'cliente',
+    'estado',
+    'tipo',
+    'tecnico',
+    'actualizado',
+    'accion',
+  ];
 
-  filtros = this.fb.group({
-    estados: [[] as EstadoOt[]],
+  filtros = this.fb.nonNullable.group({
+    estado: ['' as EstadoOt | ''],
     tipo: ['' as TipoOt | ''],
     tecnicoId: [''],
     query: [''],
   });
 
   ngOnInit(): void {
-    this.usuarios.listar(true).subscribe(u => {
-      this.tecnicos = u.filter(x => x.rol === 'TECNICO');
-    });
+    this.usuarios
+      .listar(true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (usuarios) => {
+          this.tecnicos = usuarios.filter(
+            (u) => String(u.rol).toUpperCase() === 'TECNICO'
+          );
+        },
+        error: (err) => {
+          console.error('Error cargando técnicos:', err);
+        },
+      });
 
     this.cargar();
 
-    this.filtros.valueChanges.subscribe(() => {
-      this.page = 0;
-      this.cargar();
-    });
+    this.filtros.valueChanges
+      .pipe(debounceTime(250), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.page = 0;
+        this.cargar();
+      });
   }
 
-  cargar() {
-    const v = this.filtros.value;
-    this.ordenes.listar({
-      estados: v.estados || [],
-      tipo: v.tipo || '',
-      tecnicoId: v.tecnicoId || '',
-      query: v.query || '',
-      page: this.page,
-      size: this.size,
-    }).subscribe({
-      next: (res) => {
-        this.items = res.items;
-        this.total = res.total;
-      },
-      error: (err) => {
-        console.error('Error cargando OTs:', err);
-      }
-    });
+  cargar(): void {
+    const v = this.filtros.getRawValue();
+
+    this.ordenes
+      .listar({
+        estados: v.estado ? [v.estado] : [],
+        tipo: v.tipo || '',
+        tecnicoId: v.tecnicoId || '',
+        query: v.query?.trim() || '',
+        page: this.page,
+        size: this.size,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.items = res.items ?? [];
+          this.total = res.total ?? 0;
+        },
+        error: (err) => {
+          console.error('Error cargando OTs:', err);
+          this.items = [];
+          this.total = 0;
+        },
+      });
   }
 
-  paginar(e: PageEvent) {
+  paginar(e: PageEvent): void {
     this.page = e.pageIndex;
     this.size = e.pageSize;
     this.cargar();
   }
 
-  limpiar() {
+  limpiar(): void {
     this.filtros.reset({
-      estados: [],
+      estado: '',
       tipo: '',
       tecnicoId: '',
-      query: ''
+      query: '',
     });
+  }
+
+  trackById(_: number, row: OtListaItem): string {
+    return row.id;
+  }
+
+  formatoFecha(fecha?: string | null): string {
+    if (!fecha) return '—';
+
+    const d = new Date(fecha);
+    if (Number.isNaN(d.getTime())) return '—';
+
+    return new Intl.DateTimeFormat('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(d);
+  }
+
+  tipoTexto(tipo?: string | null): string {
+    const value = String(tipo ?? '').toUpperCase();
+
+    if (value === 'DOMICILIO') return 'A domicilio';
+    if (value === 'TIENDA') return 'Tienda';
+
+    return '—';
+  }
+
+  estadoTexto(estado?: string | null): string {
+    const value = String(estado ?? '').toUpperCase();
+
+    switch (value) {
+      case 'RECIBIDA':
+        return 'RECIBIDA';
+      case 'PRESUPUESTO':
+        return 'PRESUPUESTO';
+      case 'APROBADA':
+        return 'APROBADA';
+      case 'EN_CURSO':
+        return 'EN CURSO';
+      case 'FINALIZADA':
+        return 'FINALIZADA';
+      case 'CERRADA':
+        return 'CERRADA';
+      default:
+        return value ? value.replaceAll('_', ' ') : '—';
+    }
+  }
+
+  eliminarOrden(row: OtListaItem): void {
+    // Endpoint backend pendiente.
+    // No mostramos alertas ni mensajes en UI por ahora.
+    console.warn('Eliminar OT pendiente de endpoint backend:', row.id, row.codigo);
   }
 }

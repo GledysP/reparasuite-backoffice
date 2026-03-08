@@ -1,22 +1,22 @@
-<div class="rs-page">
-  <header class="rs-topbar">
-    <div class="left">
-      <div class="kicker">Tickets / Detalle</div>
-      <h1 class="title">Ticket</h1>
+<div class="rs-ticket-page">
+  <header class="rs-ticket-head">
+    <div class="rs-head-left">
+      <h1 class="rs-head-title">Solicitud de soporte</h1>
+      <div class="rs-head-sub">Tickets / Detalle</div>
     </div>
 
-    <div class="actions">
-      <button mat-stroked-button routerLink="/tickets">
+    <div class="rs-head-actions">
+      <button mat-stroked-button class="btn-back" routerLink="/tickets">
         Volver
       </button>
 
       @if (yaTieneOt) {
-        <button mat-stroked-button (click)="verOt()" [disabled]="busy">
+        <button mat-flat-button class="btn-petroleo" (click)="verOt()" [disabled]="busy">
           <mat-icon>open_in_new</mat-icon>
           Ver OT
         </button>
       } @else {
-        <button mat-flat-button class="btn-primary" (click)="crearOt()" [disabled]="busy || loading">
+        <button mat-flat-button class="btn-petroleo" (click)="crearOt()" [disabled]="busy || loading">
           <mat-icon>add</mat-icon>
           Crear OT
         </button>
@@ -29,132 +29,220 @@
   }
 
   @if (ticket; as t) {
-    <mat-card class="card">
-      <mat-card-content>
-        <div class="meta">
-          <div class="pill" [attr.data-estado]="t.estado">{{ t.estado }}</div>
-          <div class="muted">Actualizado: {{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}</div>
-        </div>
-
-        <h2 class="subject">{{ equipoTicket(t) || 'Sin equipo' }}</h2>
-
-        @if (t.descripcionFalla) {
-          <div class="section-head">
-            <h3>Falla reportada</h3>
-          </div>
-          <p class="desc">{{ t.descripcionFalla }}</p>
-        } @else {
-          <div class="section-head">
-            <h3>Descripción</h3>
-          </div>
-          <p class="desc">{{ t.descripcion }}</p>
-        }
-
-        <!-- ✅ Datos útiles -->
-        @if (t.clienteNombre || t.clienteTelefono || t.clienteEmail || t.tipoServicioSugerido || t.direccion) {
-          <mat-divider class="sep"></mat-divider>
-
-          <div class="section-head">
-            <h3>Datos de la solicitud</h3>
-          </div>
-
-          <div class="info-grid">
-            @if (t.clienteNombre) {
-              <div class="info-item">
-                <div class="label">Cliente</div>
-                <div class="value">{{ t.clienteNombre }}</div>
+    <section class="rs-ticket-wrap" [class.rs-sticky-enabled]="stickyEnabled">
+      <div class="rs-ticket-grid">
+        <!-- MAIN -->
+        <div class="rs-col-main">
+          <!-- RESUMEN -->
+          <mat-card class="rs-card" #summaryCard>
+            <mat-card-content class="rs-card-pad">
+              <div class="rs-summary-top">
+                <div class="pill">{{ t.estado }}</div>
+                <div class="muted">Actualizado: {{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}</div>
               </div>
-            }
 
-            @if (t.clienteTelefono) {
-              <div class="info-item">
-                <div class="label">Teléfono</div>
-                <div class="value">{{ t.clienteTelefono }}</div>
-              </div>
-            }
-
-            @if (t.clienteEmail) {
-              <div class="info-item">
-                <div class="label">Correo</div>
-                <div class="value">{{ t.clienteEmail }}</div>
-              </div>
-            }
-
-            @if (t.tipoServicioSugerido) {
-              <div class="info-item">
-                <div class="label">Tipo sugerido</div>
-                <div class="value">{{ t.tipoServicioSugerido }}</div>
-              </div>
-            }
-
-            @if (t.direccion) {
-              <div class="info-item full">
-                <div class="label">Dirección / ubicación</div>
-                <div class="value">{{ t.direccion }}</div>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- ✅ Fotos del ticket -->
-        @if (fotosTicket(t).length) {
-          <mat-divider class="sep"></mat-divider>
-
-          <div class="section-head">
-            <h3>Fotos adjuntas</h3>
-            <span class="muted">{{ fotosTicket(t).length }} total</span>
-          </div>
-
-          <div class="photos-grid">
-            @for (f of fotosTicket(t); track f.id) {
-              <a class="photo-card" [href]="f.url" target="_blank" rel="noopener">
-                <img [src]="f.url" [alt]="f.nombreOriginal || 'Foto ticket'" />
-                <div class="photo-name">{{ f.nombreOriginal || 'Foto' }}</div>
-              </a>
-            }
-          </div>
-        }
-
-        <mat-divider class="sep"></mat-divider>
-
-        <div class="section-head">
-          <h3>Mensajes</h3>
-          <span class="muted">{{ t.mensajes.length }} total</span>
-        </div>
-
-        @if (t.mensajes.length) {
-          <div class="msg-list">
-            @for (m of t.mensajes; track m.id) {
-              <div class="msg">
-                <div class="msg-top">
-                  <div class="who">
-                    <strong>{{ m.remitenteNombre }}</strong>
-                    <span class="tag">{{ m.remitenteTipo }}</span>
-                  </div>
-                  <span class="muted">{{ m.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              <div class="rs-meta-rows">
+                <div class="rs-meta-row">
+                  <span class="rs-meta-k">Equipo:</span>
+                  <span class="rs-meta-v">{{ capitalizeFirst(equipoTicket(t) || '—') }}</span>
                 </div>
-                <div class="body">{{ m.contenido }}</div>
+
+                <div class="rs-meta-row rs-meta-row--falla">
+                  <span class="rs-meta-k">Falla reportada:</span>
+
+                  <span class="rs-meta-v rs-falla" [class.is-collapsed]="!fallaExpanded">
+                    {{ fallaTexto(t) }}
+                  </span>
+
+                  @if (showFallaToggle(t)) {
+                    <button type="button" mat-button class="rs-link-btn" (click)="toggleFalla()">
+                      {{ fallaExpanded ? 'Ver menos' : 'Ver más' }}
+                    </button>
+                  }
+                </div>
               </div>
-            }
-          </div>
-        } @else {
-          <p class="muted">Sin mensajes todavía.</p>
-        }
+            </mat-card-content>
+          </mat-card>
 
-        <mat-divider class="sep"></mat-divider>
+          <!-- DATOS -->
+          @if (t.clienteNombre || t.clienteTelefono || t.clienteEmail || t.tipoServicioSugerido || t.direccion || observacionesExtraTexto(t)) {
+            <mat-card class="rs-card rs-card-data">
+              <mat-card-content class="rs-card-pad">
+                <div class="section-head">
+                  <h3>Datos de la solicitud</h3>
+                </div>
 
-        <div class="reply">
-          <mat-form-field appearance="outline" class="field">
-            <mat-label>Responder</mat-label>
-            <input matInput [formControl]="formMsg.controls.contenido" (keyup.enter)="enviar()" />
-          </mat-form-field>
+                <div class="info-grid">
+                  @if (t.clienteNombre) {
+                    <div class="info-item">
+                      <div class="label">Cliente</div>
+                      <div class="value">{{ t.clienteNombre }}</div>
+                    </div>
+                  }
 
-          <button mat-flat-button class="btn-primary" (click)="enviar()"
-                  [disabled]="busy || formMsg.invalid">
-            Enviar
-          </button>
+                  @if (t.clienteTelefono) {
+                    <div class="info-item">
+                      <div class="label">Teléfono</div>
+                      <div class="value">{{ t.clienteTelefono }}</div>
+                    </div>
+                  }
+
+                  @if (t.clienteEmail) {
+                    <div class="info-item">
+                      <div class="label">Correo</div>
+                      <div class="value">{{ t.clienteEmail }}</div>
+                    </div>
+                  }
+
+                  @if (t.tipoServicioSugerido) {
+                    <div class="info-item">
+                      <div class="label">Tipo sugerido</div>
+                      <div class="value">{{ t.tipoServicioSugerido }}</div>
+                    </div>
+                  }
+
+                  @if (t.direccion) {
+                    <div class="info-item full">
+                      <div class="label">Dirección / ubicación</div>
+                      <div class="value">{{ t.direccion }}</div>
+                    </div>
+                  }
+                </div>
+
+                <!-- ✅ Observaciones: SOLO información adicional (sin redundancia) -->
+                @if (observacionesExtraTexto(t)) {
+                  <div class="obs-box obs-compact" aria-label="Observaciones">
+                    <div class="obs-ic">
+                      <mat-icon>sticky_note_2</mat-icon>
+                    </div>
+
+                    <div class="obs-body">
+                      <div class="obs-title">Observaciones</div>
+                      <div class="obs-text">{{ observacionesExtraTexto(t) }}</div>
+                    </div>
+                  </div>
+                }
+              </mat-card-content>
+            </mat-card>
+          }
+
+          <!-- MENSAJES -->
+          <mat-card class="rs-card">
+            <mat-card-content class="rs-card-pad">
+              <div class="section-head">
+                <h3>Mensajes</h3>
+                <span class="muted">{{ t.mensajes.length }} total</span>
+              </div>
+
+              @if (t.mensajes.length) {
+                <div class="msg-list">
+                  @for (m of t.mensajes; track m.id) {
+                    <div class="msg" [class.is-client]="isCliente(m.remitenteTipo)">
+                      <div class="msg-top">
+                        <div class="who">
+                          <span class="who-name">{{ m.remitenteNombre }}</span>
+                          <span class="tag" [class.is-client]="isCliente(m.remitenteTipo)">{{ m.remitenteTipo }}</span>
+                        </div>
+                        <span class="muted">{{ m.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                      </div>
+                      <div class="body">{{ m.contenido }}</div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="muted">Sin mensajes todavía.</p>
+              }
+            </mat-card-content>
+          </mat-card>
         </div>
-      </mat-card-content>
-    </mat-card>
+
+        <!-- SIDE -->
+        <aside class="rs-col-side">
+          <!-- Fotos -->
+          <mat-card class="rs-card">
+            <mat-card-content class="rs-card-pad">
+              <div class="section-head">
+                <h3>Fotos adjuntas</h3>
+                <span class="muted">{{ fotosTicket(t).length }} total</span>
+              </div>
+
+              @if (fotosTicket(t).length) {
+                <div class="photos-grid">
+                  @for (f of fotosTicket(t); track f.id) {
+                    <a class="photo-card" [href]="f.url" target="_blank" rel="noopener">
+                      <img [src]="photoSrc(f)" [alt]="f.nombreOriginal || 'Foto ticket'" />
+                      <div class="photo-name">{{ f.nombreOriginal || 'Foto' }}</div>
+                    </a>
+                  }
+                </div>
+              } @else {
+                <div class="photos-empty">
+                  <mat-icon>image</mat-icon>
+                  <div class="photos-empty-title">Sin fotos</div>
+                  <div class="photos-empty-sub">El cliente no adjuntó imágenes en la solicitud.</div>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Acciones rápidas -->
+          @if (t.clienteEmail || t.clienteTelefono || t.clienteId) {
+            <mat-card class="rs-actions-card">
+              <mat-card-content class="rs-actions-pad">
+                <div class="rs-actions-title">Acciones rápidas</div>
+
+                <div class="rs-actions-row">
+                  @if (t.clienteEmail) {
+                    <button
+                      type="button"
+                      mat-icon-button
+                      class="rs-act-btn"
+                      matTooltip="Copiar correo"
+                      (click)="copyText(t.clienteEmail!, 'Correo')"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+
+                    <a
+                      mat-icon-button
+                      class="rs-act-btn"
+                      matTooltip="Enviar correo"
+                      [href]="'mailto:' + t.clienteEmail"
+                      rel="noopener"
+                    >
+                      <mat-icon>mail</mat-icon>
+                    </a>
+                  }
+
+                  @if (t.clienteTelefono) {
+                    <button
+                      type="button"
+                      mat-icon-button
+                      class="rs-act-btn"
+                      matTooltip="Copiar teléfono"
+                      (click)="copyText(t.clienteTelefono!, 'Teléfono')"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+                  }
+
+                  @if (t.clienteId) {
+                    <button
+                      type="button"
+                      mat-icon-button
+                      class="rs-act-btn"
+                      matTooltip="Ver cliente"
+                      (click)="goCliente(t.clienteId!)"
+                    >
+                      <mat-icon>person</mat-icon>
+                    </button>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </aside>
+      </div>
+    </section>
   }
 </div>

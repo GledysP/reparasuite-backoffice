@@ -1,162 +1,328 @@
-<div class="rs-main-container">
-  <div class="rs-header-row">
-    <h1 class="rs-page-title">Dashboard</h1>
+<div class="rs-main-container rs-dashboard-page">
+  <!-- Header -->
+  <div class="rs-dashboard-top">
+    <div class="rs-title-block">
+      <h1 class="rs-page-title">Dashboard</h1>
+      <p class="rs-page-subtitle">
+        Visualiza el estado general del taller y accede rápido a tus órdenes.
+      </p>
+    </div>
+
+    <button
+      mat-flat-button
+      class="rs-btn-primary rs-btn-create"
+      routerLink="/ordenes-trabajo/nueva"
+    >
+      <mat-icon>add</mat-icon>
+      Nueva OT
+    </button>
   </div>
 
-  <div class="rs-kpi-grid">
-    <mat-card class="rs-kpi-card">
-      <div class="kpi-content">
-        <div class="kpi-data">
-          <span class="kpi-value">{{ stats.received }}</span>
-          <span class="kpi-label">Recibido</span>
+  <!-- KPI -->
+  <section class="rs-kpi-grid" aria-label="Indicadores del dashboard">
+    <mat-card class="rs-kpi-card kpi-primary">
+      <div class="rs-kpi-accent"></div>
+
+      <div class="rs-kpi-top">
+        <div class="rs-kpi-icon">
+          <mat-icon>inventory_2</mat-icon>
         </div>
-        <div class="kpi-icon-wrapper">
-          <mat-icon class="icon-circle">inventory_2</mat-icon>
+
+        <div class="rs-kpi-copy">
+          <div class="rs-kpi-label">Recibidas</div>
+          <div class="rs-kpi-hint">Pendientes de avanzar</div>
         </div>
       </div>
-      <div class="kpi-footer-line kpi-primary"></div>
+
+      <div class="rs-kpi-value">{{ stats.received }}</div>
     </mat-card>
 
-    <mat-card class="rs-kpi-card">
-      <div class="kpi-content">
-        <div class="kpi-data">
-          <span class="kpi-value">{{ stats.quotation }}</span>
-          <span class="kpi-label">Cotización</span>
+    <mat-card class="rs-kpi-card kpi-gold">
+      <div class="rs-kpi-accent"></div>
+
+      <div class="rs-kpi-top">
+        <div class="rs-kpi-icon">
+          <mat-icon>request_quote</mat-icon>
         </div>
-        <div class="kpi-icon-wrapper">
-          <mat-icon class="icon-circle">request_quote</mat-icon>
+
+        <div class="rs-kpi-copy">
+          <div class="rs-kpi-label">Cotización</div>
+          <div class="rs-kpi-hint">Esperando respuesta</div>
         </div>
       </div>
-      <div class="kpi-footer-line kpi-gold"></div>
+
+      <div class="rs-kpi-value">{{ stats.quotation }}</div>
     </mat-card>
 
-    <mat-card class="rs-kpi-card">
-      <div class="kpi-content">
-        <div class="kpi-data">
-          <span class="kpi-value">{{ stats.inProgress }}</span>
-          <span class="kpi-label">En Proceso</span>
+    <mat-card class="rs-kpi-card kpi-teal">
+      <div class="rs-kpi-accent"></div>
+
+      <div class="rs-kpi-top">
+        <div class="rs-kpi-icon">
+          <mat-icon>sync</mat-icon>
         </div>
-        <div class="kpi-icon-wrapper">
-          <mat-icon class="icon-circle">sync</mat-icon>
+
+        <div class="rs-kpi-copy">
+          <div class="rs-kpi-label">En proceso</div>
+          <div class="rs-kpi-hint">Trabajo en curso</div>
         </div>
       </div>
-      <div class="kpi-footer-line kpi-teal"></div>
+
+      <div class="rs-kpi-value">{{ stats.inProgress }}</div>
     </mat-card>
 
-    <mat-card class="rs-kpi-card">
-      <div class="kpi-content">
-        <div class="kpi-data">
-          <span class="kpi-value">{{ stats.completed }}</span>
-          <span class="kpi-label">Completado</span>
+    <mat-card class="rs-kpi-card kpi-blue">
+      <div class="rs-kpi-accent"></div>
+
+      <div class="rs-kpi-top">
+        <div class="rs-kpi-icon">
+          <mat-icon>task_alt</mat-icon>
         </div>
-        <div class="kpi-icon-wrapper">
-          <mat-icon class="icon-circle">task_alt</mat-icon>
+
+        <div class="rs-kpi-copy">
+          <div class="rs-kpi-label">Completadas</div>
+          <div class="rs-kpi-hint">Cerradas con éxito</div>
         </div>
       </div>
-      <div class="kpi-footer-line kpi-green"></div>
+
+      <div class="rs-kpi-value">{{ stats.completed }}</div>
     </mat-card>
 
-    <mat-card class="rs-kpi-card">
-      <div class="kpi-content">
-        <div class="kpi-data">
-          <span class="kpi-value">{{ stats.today }}</span>
-          <span class="kpi-label">Hoy</span>
+    <mat-card class="rs-kpi-card kpi-slate">
+      <div class="rs-kpi-accent"></div>
+
+      <div class="rs-kpi-top">
+        <div class="rs-kpi-icon">
+          <mat-icon>today</mat-icon>
         </div>
-        <div class="kpi-icon-wrapper">
-          <mat-icon class="icon-circle">today</mat-icon>
+
+        <div class="rs-kpi-copy">
+          <div class="rs-kpi-label">Movimientos hoy</div>
+          <div class="rs-kpi-hint">Actividad del día</div>
         </div>
       </div>
-      <div class="kpi-footer-line kpi-primary-light"></div>
+
+      <div class="rs-kpi-value">{{ stats.today }}</div>
     </mat-card>
 
-    <mat-card class="rs-kpi-card">
-      <div class="kpi-content">
-        <div class="kpi-data">
-          <span class="kpi-value">{{ stats.overdue }}</span>
-          <span class="kpi-label">Vencido</span>
+    <mat-card class="rs-kpi-card kpi-red">
+      <div class="rs-kpi-accent"></div>
+
+      <div class="rs-kpi-top">
+        <div class="rs-kpi-icon">
+          <mat-icon>warning_amber</mat-icon>
         </div>
-        <div class="kpi-icon-wrapper">
-          <mat-icon class="icon-circle">warning_amber</mat-icon>
+
+        <div class="rs-kpi-copy">
+          <div class="rs-kpi-label">Vencidas</div>
+          <div class="rs-kpi-hint">Requieren atención</div>
         </div>
       </div>
-      <div class="kpi-footer-line kpi-red"></div>
+
+      <div class="rs-kpi-value">{{ stats.overdue }}</div>
+    </mat-card>
+  </section>
+
+  <!-- Mobile actions -->
+  <div class="rs-mobile-actions">
+    <mat-card class="rs-content-card rs-actions-card">
+      <div class="rs-card-header">
+        <div>
+          <h3 class="card-section-title">Acciones rápidas</h3>
+          <p class="card-section-subtitle">Atajos para trabajar más rápido.</p>
+        </div>
+      </div>
+
+      <div class="actions-list">
+        <button mat-flat-button class="rs-btn-primary rs-btn-full" routerLink="/ordenes-trabajo/nueva">
+          <mat-icon>add</mat-icon>
+          Nueva orden de trabajo
+        </button>
+
+        <button mat-button class="rs-btn-outline rs-btn-full" routerLink="/ordenes-trabajo">
+          <mat-icon>assignment</mat-icon>
+          Ver órdenes de trabajo
+        </button>
+
+        <button mat-button class="rs-btn-outline rs-btn-full" routerLink="/clientes">
+          <mat-icon>people</mat-icon>
+          Ver clientes
+        </button>
+      </div>
     </mat-card>
   </div>
 
+  <!-- Main -->
   <div class="rs-dashboard-main-content">
-    <mat-card class="rs-content-card table-section">
-      <mat-card-content>
-        <h3 class="card-section-title">Órdenes de trabajo recientes</h3>
-        <div class="rs-table-full-width">
-          <div class="rs-table-responsive">
-            <table mat-table [dataSource]="recentOrders" class="rs-dashboard-table">
-              
-              <ng-container matColumnDef="codigo">
-                <th mat-header-cell *matHeaderCellDef>OT #</th>
-                <td mat-cell *matCellDef="let row" class="bold-text">{{ row.codigo }}</td>
-              </ng-container>
+    <div class="rs-main-column">
+      <mat-card class="rs-content-card rs-orders-card">
+        <div class="rs-card-header">
+          <div>
+            <h3 class="card-section-title">Órdenes recientes</h3>
+            <p class="card-section-subtitle">Últimas 5 órdenes actualizadas.</p>
+          </div>
 
-              <ng-container matColumnDef="cliente">
-                <th mat-header-cell *matHeaderCellDef>Cliente</th>
-                <td mat-cell *matCellDef="let row">{{ row.clienteNombre }}</td>
-              </ng-container>
+          <button mat-button class="rs-btn-ghost" routerLink="/ordenes-trabajo">
+            Ver todas
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
 
-              <ng-container matColumnDef="estado">
-                <th mat-header-cell *matHeaderCellDef>Estado</th>
-                <td mat-cell *matCellDef="let row">
-                  <span class="status-badge-table" [attr.data-status]="row.estado">{{ row.estado }}</span>
-                </td>
-              </ng-container>
+        <mat-card-content class="rs-card-body">
+          <!-- Desktop table -->
+          <div class="rs-desktop-table">
+            <div class="rs-table-responsive">
+              <table mat-table [dataSource]="recentOrders" class="rs-dashboard-table rs-table">
+                <ng-container matColumnDef="codigo">
+                  <th mat-header-cell *matHeaderCellDef>OT</th>
+                  <td mat-cell *matCellDef="let row" class="bold-text">
+                    {{ row.codigo }}
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="tipo">
-                <th mat-header-cell *matHeaderCellDef>Tipo</th>
-                <td mat-cell *matCellDef="let row">{{ row.tipo }}</td>
-              </ng-container>
+                <ng-container matColumnDef="cliente">
+                  <th mat-header-cell *matHeaderCellDef>Cliente</th>
+                  <td mat-cell *matCellDef="let row">
+                    {{ row.clienteNombre }}
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="tecnico">
-                <th mat-header-cell *matHeaderCellDef>Técnico</th>
-                <td mat-cell *matCellDef="let row">{{ row.tecnicoNombre || '—' }}</td>
-              </ng-container>
+                <ng-container matColumnDef="estado">
+                  <th mat-header-cell *matHeaderCellDef>Estado</th>
+                  <td mat-cell *matCellDef="let row">
+                    <span class="status-badge-table" [attr.data-status]="row.estado">
+                      {{ statusLabel(row.estado) }}
+                    </span>
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="fecha">
-                <th mat-header-cell *matHeaderCellDef>Fecha</th>
-                <td mat-cell *matCellDef="let row">{{ row.createdAt | date:'yyyy-MM-dd' }}</td>
-              </ng-container>
+                <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                  <td mat-cell *matCellDef="let row">
+                    {{ textLabel(row.tipo) }}
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="accion">
-                <th mat-header-cell *matHeaderCellDef>Acción</th>
-                <td mat-cell *matCellDef="let row">
-                  <button mat-icon-button [routerLink]="['/ordenes-trabajo', row.id]" class="rs-btn-action">
-                    <mat-icon>visibility</mat-icon>
-                  </button>
-                </td>
-              </ng-container>
+                <ng-container matColumnDef="tecnico">
+                  <th mat-header-cell *matHeaderCellDef>Técnico</th>
+                  <td mat-cell *matCellDef="let row">
+                    {{ row.tecnicoNombre || '—' }}
+                  </td>
+                </ng-container>
 
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="rs-table-row"></tr>
-            </table>
+                <ng-container matColumnDef="fecha">
+                  <th mat-header-cell *matHeaderCellDef>Actualizado</th>
+                  <td mat-cell *matCellDef="let row">
+                    {{ toDateSafe(row.updatedAt) }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="accion">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let row" class="rs-cell-action">
+                    <button
+                      mat-icon-button
+                      [routerLink]="['/ordenes-trabajo', row.id]"
+                      class="rs-btn-action"
+                      aria-label="Ver orden"
+                    >
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: displayedColumns;"
+                  class="rs-table-row"
+                ></tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- Mobile cards -->
+          <div class="rs-mobile-cards" *ngIf="recentOrders.length > 0; else emptyState">
+            <div
+              class="rs-order-card"
+              *ngFor="let row of recentOrders; trackBy: trackByOrderId"
+              [routerLink]="['/ordenes-trabajo', row.id]"
+            >
+              <div class="oc-top">
+                <div class="oc-main">
+                  <div class="oc-ot">{{ row.codigo }}</div>
+                  <div class="oc-client">{{ row.clienteNombre }}</div>
+                </div>
+
+                <span class="status-badge-table" [attr.data-status]="row.estado">
+                  {{ statusLabel(row.estado) }}
+                </span>
+              </div>
+
+              <div class="oc-meta">
+                <div class="oc-meta-item">
+                  <mat-icon>home_repair_service</mat-icon>
+                  <span>{{ textLabel(row.tipo) }}</span>
+                </div>
+
+                <div class="oc-meta-item">
+                  <mat-icon>engineering</mat-icon>
+                  <span>{{ row.tecnicoNombre || 'Sin técnico asignado' }}</span>
+                </div>
+
+                <div class="oc-meta-item">
+                  <mat-icon>update</mat-icon>
+                  <span>Actualizado {{ toDateSafe(row.updatedAt) }}</span>
+                </div>
+              </div>
+
+              <div class="oc-cta">
+                <span>Ver detalles</span>
+                <mat-icon>chevron_right</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #emptyState>
+            <div class="rs-empty">
+              <mat-icon>inbox</mat-icon>
+              <div>
+                <div class="rs-empty-title">Sin órdenes recientes</div>
+                <div class="rs-empty-subtitle">Aún no hay órdenes para mostrar.</div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Desktop sidebar -->
+    <aside class="rs-sidebar">
+      <mat-card class="rs-content-card rs-actions-card">
+        <div class="rs-card-header">
+          <div>
+            <h3 class="card-section-title">Acciones rápidas</h3>
+            <p class="card-section-subtitle">Atajos para trabajar más rápido.</p>
           </div>
         </div>
-      </mat-card-content>
-    </mat-card>
 
-    <div class="rs-sidebar">
-      <mat-card class="rs-content-card">
-        <h3 class="card-section-title">Acciones Rápidas</h3>
         <div class="actions-list">
-          <button mat-raised-button class="btn-primary-action" routerLink="/ordenes-trabajo/nueva">
-            <mat-icon>add</mat-icon> Nueva orden de trabajo
+          <button mat-flat-button class="rs-btn-primary rs-btn-full" routerLink="/ordenes-trabajo/nueva">
+            <mat-icon>add</mat-icon>
+            Nueva orden de trabajo
           </button>
-          
-          <button mat-button class="btn-outline-innovador" routerLink="/ordenes-trabajo">
-            <mat-icon>assignment</mat-icon> Ver órdenes de trabajo
+
+          <button mat-button class="rs-btn-outline rs-btn-full" routerLink="/ordenes-trabajo">
+            <mat-icon>assignment</mat-icon>
+            Ver órdenes de trabajo
           </button>
-          
-          <button mat-button class="btn-outline-innovador" routerLink="/clientes">
-            <mat-icon>people</mat-icon> Ver clientes
+
+          <button mat-button class="rs-btn-outline rs-btn-full" routerLink="/clientes">
+            <mat-icon>people</mat-icon>
+            Ver clientes
           </button>
         </div>
       </mat-card>
-    </div>
+    </aside>
   </div>
 </div>

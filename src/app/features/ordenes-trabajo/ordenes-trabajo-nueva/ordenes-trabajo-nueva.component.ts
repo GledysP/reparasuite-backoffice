@@ -1,34 +1,33 @@
-import { Component, OnInit, inject, OnDestroy } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgFor, NgIf } from '@angular/common';
 
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
 
-import { forkJoin, of, Subscription } from 'rxjs';
-import { catchError, switchMap, finalize } from 'rxjs/operators';
+import { Subscription, forkJoin, of } from 'rxjs';
+import { catchError, finalize, switchMap } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
-import { UsuariosService } from '../../usuarios/usuarios.service';
-import { OrdenesTrabajoService, OtCrearRequest } from '../ordenes-trabajo.service';
 import { PrioridadOt, TipoOt } from '../../../core/models/enums';
-import { UsuarioResumen, ClienteResumen, TicketDetalleDto } from '../../../core/models/tipos';
+import { ClienteResumen, TicketDetalleDto, UsuarioResumen } from '../../../core/models/tipos';
 
-import { ClienteBuscarDialogComponent } from './cliente-buscar-dialog.component';
 import { TicketsService } from '../../tickets/tickets.service';
+import { UsuariosService } from '../../usuarios/usuarios.service';
+import { ClienteBuscarDialogComponent } from './cliente-buscar-dialog.component';
+import { OrdenesTrabajoService, OtCrearRequest } from '../ordenes-trabajo.service';
 
 type FotoPreview = {
   source: 'local' | 'ticket';
@@ -42,24 +41,39 @@ type TicketSummaryRef = {
   id: string;
   estado?: string | null;
   equipo?: string | null;
+  asunto?: string | null;
   descripcionFalla?: string | null;
+  observacionesOriginales?: string | null;
   tipoServicioSugerido?: 'TIENDA' | 'DOMICILIO' | string | null;
   direccion?: string | null;
 };
+
+type PeriodoHora = 'AM' | 'PM';
 
 @Component({
   selector: 'rs-ordenes-trabajo-nueva',
   standalone: true,
   imports: [
-    NgIf, NgFor, ReactiveFormsModule,
-    MatCardModule, MatFormFieldModule, MatInputModule,
-    MatRadioModule, MatSelectModule, MatButtonModule,
-    MatSnackBarModule, MatIconModule, MatDialogModule,
-    MatDatepickerModule, MatNativeDateModule,
-    MatChipsModule, MatAutocompleteModule, MatDividerModule
+    NgIf,
+    NgFor,
+    ReactiveFormsModule,
+
+    MatButtonModule,
+    MatCardModule,
+    MatChipsModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatNativeDateModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatSnackBarModule
   ],
   templateUrl: './ordenes-trabajo-nueva.component.html',
-  styleUrl: './ordenes-trabajo-nueva.component.scss',
+  styleUrl: './ordenes-trabajo-nueva.component.scss'
 })
 export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
@@ -71,9 +85,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   private snack = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
-  private qpSub?: Subscription;
-
-  // ✅ fallback local para vínculo ticket -> OT (si backend todavía no refleja ordenTrabajoId al recargar ticket)
+  private subs = new Subscription();
   private readonly ticketOtCacheKey = 'rs_ticket_ot_map';
 
   tecnicos: UsuarioResumen[] = [];
@@ -82,102 +94,68 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   clienteId: string | null = null;
   fromTicket = false;
 
-  fotos: File[] = []; // solo fotos locales para subir a OT
-  fotoPreviews: FotoPreview[] = []; // locales + referencias del ticket
+  fotos: File[] = [];
+  fotoPreviews: FotoPreview[] = [];
   isDragOver = false;
-
-  // ✅ usado por el HTML para bloquear acciones mientras crea/sube
   guardando = false;
 
   ticketId: string | null = null;
   ticketRef: TicketSummaryRef | null = null;
 
   form = this.fb.group({
-    clienteNombre: ['', [Validators.required]],
-    clienteTelefono: [''],
-    clienteEmail: [''],
+    clienteNombre: this.fb.nonNullable.control('', [Validators.required]),
+    clienteTelefono: this.fb.nonNullable.control(''),
+    clienteEmail: this.fb.nonNullable.control(''),
 
-    tipo: ['TIENDA' as TipoOt, [Validators.required]],
-    direccion: [''],
-    notasAcceso: [''],
-    fechaPrevistaDomicilio: [null as Date | null],
-    fechaProgramada: [null as Date | null],
+    tipo: this.fb.nonNullable.control<TipoOt>('TIENDA', [Validators.required]),
+    direccion: this.fb.nonNullable.control(''),
+    notasAcceso: this.fb.nonNullable.control(''),
 
-    // ✅ equipo propio en OT
-    equipo: ['', [Validators.required, Validators.minLength(2)]],
+    fechaRecepcion: this.fb.control<Date | null>(null),
 
-    // ✅ Descripción = falla / trabajo
-    descripcion: ['', [Validators.required, Validators.minLength(3)]],
+    fechaCita: this.fb.control<Date | null>(null),
+    horaCita: this.fb.nonNullable.control('09:00', [
+      Validators.required,
+      Validators.pattern(/^((0[1-9])|(1[0-2])):[0-5][0-9]$/)
+    ]),
+    periodoCita: this.fb.nonNullable.control<PeriodoHora>('AM'),
 
-    prioridad: new FormControl<PrioridadOt>('MEDIA', { nonNullable: true }),
-    tecnicoId: [null as string | null],
+    fechaPrevista: this.fb.control<string | null>(null),
+
+    equipo: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
+    descripcion: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
+
+    observaciones: this.fb.nonNullable.control(''),
+
+    prioridad: this.fb.nonNullable.control<PrioridadOt>('MEDIA'),
+    tecnicoId: this.fb.control<string | null>(null)
   });
 
   ngOnInit(): void {
     this.ticketId = this.route.snapshot.queryParamMap.get('ticketId');
     this.fromTicket = this.route.snapshot.queryParamMap.get('fromTicket') === '1';
 
-    this.usuarios.listar(true).subscribe(u => {
-      this.tecnicos = u.filter(x => x.rol === 'TECNICO');
-    });
+    this.loadTecnicos();
+    this.setupPrefillFromQueryParams();
+    this.setupTipoRules();
 
-    // Prefill desde query params (viene del detalle de ticket)
-    this.qpSub = this.route.queryParamMap.subscribe((qp) => {
-      const clienteId = qp.get('clienteId');
-      const clienteNombre = qp.get('clienteNombre');
-      const clienteTelefono = qp.get('clienteTelefono');
-      const clienteEmail = qp.get('clienteEmail');
-
-      const tipo = qp.get('tipo') as TipoOt | null;
-      const direccion = qp.get('direccion');
-
-      // ✅ nuevo/compat: equipo puede venir como "equipo", fallback "asunto"
-      const equipo = qp.get('equipo') || qp.get('asunto');
-
-      // ✅ nuevo/compat: falla puede venir como "descripcionFalla", fallback parse de descripcion
-      const descripcionFalla = qp.get('descripcionFalla');
-      const descripcionLegacy = qp.get('descripcion');
-      const descripcionLimpia = this.buildDescripcionTrabajoPrefill(descripcionFalla, descripcionLegacy);
-
-      if (clienteId) this.clienteId = clienteId;
-
-      this.form.patchValue({
-        clienteNombre: clienteNombre || this.form.value.clienteNombre || '',
-        clienteTelefono: clienteTelefono || this.form.value.clienteTelefono || '',
-        clienteEmail: clienteEmail || this.form.value.clienteEmail || '',
-        tipo: (tipo === 'DOMICILIO' || tipo === 'TIENDA') ? tipo : (this.form.value.tipo ?? 'TIENDA'),
-        direccion: direccion || this.form.value.direccion || '',
-        equipo: (equipo || this.form.value.equipo || ''),
-        descripcion: (descripcionLimpia || this.form.value.descripcion || '')
-      }, { emitEvent: false });
-    });
-
-    // Fallback si entran directo con ticketId y sin query params completos
-    if (this.ticketId && !this.route.snapshot.queryParamMap.get('clienteNombre')) {
-      this.cargarTicketParaPrefill(this.ticketId);
-    }
-
-    // Si viene de ticket, intentamos cargarlo también para mostrar fotos referencia (aunque ya haya query params)
     if (this.ticketId) {
+      this.cargarTicketParaPrefill(this.ticketId);
       this.cargarTicketFotosReferencia(this.ticketId);
     }
   }
 
   ngOnDestroy(): void {
-    this.qpSub?.unsubscribe();
+    this.subs.unsubscribe();
     this.clearPreviews();
   }
 
-  // =========================
-  // Getters para template (sin arrow functions en HTML)
-  // =========================
+  get isDomicilio(): boolean {
+    return this.form.controls.tipo.value === 'DOMICILIO';
+  }
 
   get hasTicketPhotoRefs(): boolean {
     return this.fotoPreviews.some(p => p.source === 'ticket');
-  }
-
-  get hasLocalPhotoPreviews(): boolean {
-    return this.fotoPreviews.some(p => p.source === 'local');
   }
 
   get ticketPhotoRefs(): FotoPreview[] {
@@ -190,40 +168,205 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   get selectedFileName(): string | null {
     if (this.fotos.length === 0) return null;
-    return this.fotos.length === 1 ? this.fotos[0].name : `${this.fotos.length} archivos seleccionados`;
+    return this.fotos.length === 1
+      ? this.fotos[0].name
+      : `${this.fotos.length} archivos seleccionados`;
   }
 
-  // =========================
-  // Prefill / ticket helpers
-  // =========================
+  get observacionesOriginales(): string {
+    return (this.ticketRef?.observacionesOriginales || '').trim();
+  }
+
+  private loadTecnicos(): void {
+    this.subs.add(
+      this.usuarios.listar(true).subscribe(u => {
+        this.tecnicos = u.filter(x => x.rol === 'TECNICO');
+      })
+    );
+  }
+
+  private setupPrefillFromQueryParams(): void {
+    this.subs.add(
+      this.route.queryParamMap.subscribe(qp => {
+        const clienteId = qp.get('clienteId');
+        const clienteNombre = qp.get('clienteNombre');
+        const clienteTelefono = qp.get('clienteTelefono');
+        const clienteEmail = qp.get('clienteEmail');
+
+        const tipo = qp.get('tipo') as TipoOt | null;
+        const direccion = qp.get('direccion');
+
+        const equipo = qp.get('equipo') || qp.get('asunto');
+        const descripcionFalla = qp.get('descripcionFalla');
+        const descripcionLegacy = qp.get('descripcion');
+
+        const descripcionLimpia = this.buildDescripcionTrabajoPrefill(
+          descripcionFalla,
+          descripcionLegacy
+        );
+
+        const obsQP = (
+          qp.get('observaciones') ||
+          qp.get('detalleAdicional') ||
+          qp.get('comentarios') ||
+          ''
+        ).trim();
+
+        if (clienteId) this.clienteId = clienteId;
+
+        this.form.patchValue({
+          clienteNombre: clienteNombre || this.form.controls.clienteNombre.value || '',
+          clienteTelefono: clienteTelefono || this.form.controls.clienteTelefono.value || '',
+          clienteEmail: clienteEmail || this.form.controls.clienteEmail.value || '',
+          tipo:
+            tipo === 'DOMICILIO' || tipo === 'TIENDA'
+              ? tipo
+              : this.form.controls.tipo.value,
+          direccion: direccion || this.form.controls.direccion.value || '',
+          equipo: equipo || this.form.controls.equipo.value || '',
+          descripcion: descripcionLimpia || this.form.controls.descripcion.value || '',
+          observaciones: obsQP || this.form.controls.observaciones.value || ''
+        }, { emitEvent: false });
+
+        if (this.fromTicket || this.ticketId) {
+          this.ticketRef = {
+            id: this.ticketId || '',
+            equipo: equipo || null,
+            asunto: qp.get('asunto'),
+            descripcionFalla: descripcionLimpia || null,
+            observacionesOriginales: obsQP || null,
+            tipoServicioSugerido:
+              tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : null,
+            direccion: direccion || null
+          };
+        }
+
+        this.applyTipoValidators();
+        this.syncFechaPrevista();
+      })
+    );
+  }
+
+  private setupTipoRules(): void {
+    this.subs.add(
+      this.form.controls.tipo.valueChanges.subscribe(() => {
+        this.applyTipoValidators();
+
+        if (this.isDomicilio) {
+          this.form.controls.fechaRecepcion.setValue(null, { emitEvent: false });
+        } else {
+          this.form.controls.fechaCita.setValue(null, { emitEvent: false });
+          this.form.controls.horaCita.setValue('09:00', { emitEvent: false });
+          this.form.controls.periodoCita.setValue('AM', { emitEvent: false });
+        }
+
+        this.syncFechaPrevista();
+      })
+    );
+
+    this.subs.add(this.form.controls.fechaRecepcion.valueChanges.subscribe(() => this.syncFechaPrevista()));
+    this.subs.add(this.form.controls.fechaCita.valueChanges.subscribe(() => this.syncFechaPrevista()));
+    this.subs.add(this.form.controls.horaCita.valueChanges.subscribe(() => this.syncFechaPrevista()));
+    this.subs.add(this.form.controls.periodoCita.valueChanges.subscribe(() => this.syncFechaPrevista()));
+
+    this.applyTipoValidators();
+    this.syncFechaPrevista();
+  }
+
+  private applyTipoValidators(): void {
+    if (this.isDomicilio) {
+      this.form.controls.direccion.setValidators([Validators.required, Validators.minLength(4)]);
+      this.form.controls.fechaCita.setValidators([Validators.required]);
+      this.form.controls.horaCita.setValidators([
+        Validators.required,
+        Validators.pattern(/^((0[1-9])|(1[0-2])):[0-5][0-9]$/)
+      ]);
+      this.form.controls.periodoCita.setValidators([Validators.required]);
+
+      this.form.controls.fechaRecepcion.clearValidators();
+    } else {
+      this.form.controls.fechaRecepcion.setValidators([Validators.required]);
+
+      this.form.controls.direccion.clearValidators();
+      this.form.controls.fechaCita.clearValidators();
+      this.form.controls.horaCita.clearValidators();
+      this.form.controls.periodoCita.clearValidators();
+    }
+
+    this.form.controls.direccion.updateValueAndValidity({ emitEvent: false });
+    this.form.controls.fechaCita.updateValueAndValidity({ emitEvent: false });
+    this.form.controls.horaCita.updateValueAndValidity({ emitEvent: false });
+    this.form.controls.periodoCita.updateValueAndValidity({ emitEvent: false });
+    this.form.controls.fechaRecepcion.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private syncFechaPrevista(): void {
+    let iso: string | null = null;
+
+    if (this.isDomicilio) {
+      const fecha = this.form.controls.fechaCita.value;
+      const hora = this.form.controls.horaCita.value;
+      const periodo = this.form.controls.periodoCita.value;
+
+      if (fecha && hora) {
+        const [hourStr, minuteStr] = hora.split(':');
+        let hours = Number(hourStr);
+        const minutes = Number(minuteStr || '0');
+
+        if (periodo === 'PM' && hours < 12) hours += 12;
+        if (periodo === 'AM' && hours === 12) hours = 0;
+
+        const d = new Date(fecha);
+        d.setHours(hours, minutes, 0, 0);
+
+        if (!isNaN(d.getTime())) {
+          iso = d.toISOString();
+        }
+      }
+    } else {
+      const fecha = this.form.controls.fechaRecepcion.value;
+
+      if (fecha) {
+        const d = new Date(fecha);
+        d.setHours(9, 0, 0, 0);
+
+        if (!isNaN(d.getTime())) {
+          iso = d.toISOString();
+        }
+      }
+    }
+
+    this.form.controls.fechaPrevista.setValue(iso, { emitEvent: false });
+  }
 
   private cargarTicketParaPrefill(ticketId: string): void {
     this.tickets.obtener(ticketId).subscribe({
       next: (t: TicketDetalleDto) => {
         const x = t as any;
 
-        const equipo = this.firstNonBlank(
-          x.equipo,
-          x.asunto
-        );
-
+        const equipo = this.firstNonBlank(x.equipo, x.asunto);
         const descripcion = this.firstNonBlank(
           x.descripcionFalla,
           this.extractDescripcionFallaFromLegacy(x.descripcion),
           x.descripcion
         );
 
-        const tipo = (x.tipoServicioSugerido === 'DOMICILIO' || x.tipoServicioSugerido === 'TIENDA')
-          ? x.tipoServicioSugerido
-          : null;
+        const tipo =
+          x.tipoServicioSugerido === 'DOMICILIO' || x.tipoServicioSugerido === 'TIENDA'
+            ? x.tipoServicioSugerido
+            : null;
 
         const direccion = this.firstNonBlank(x.direccion, x.direccionSolicitud);
+
+        const obs = this.pickObservacionesOnly(x);
 
         this.ticketRef = {
           id: x.id,
           estado: x.estado,
           equipo,
+          asunto: x.asunto,
           descripcionFalla: descripcion,
+          observacionesOriginales: obs || null,
           tipoServicioSugerido: tipo,
           direccion
         };
@@ -231,14 +374,21 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         this.clienteId = this.firstNonBlank(x.clienteId, this.clienteId) as string | null;
 
         this.form.patchValue({
-          clienteNombre: this.firstNonBlank(x.clienteNombre, this.form.value.clienteNombre) || '',
-          clienteTelefono: this.firstNonBlank(x.clienteTelefono, this.form.value.clienteTelefono) || '',
-          clienteEmail: this.firstNonBlank(x.clienteEmail, this.form.value.clienteEmail) || '',
-          tipo: (tipo === 'DOMICILIO' || tipo === 'TIENDA') ? tipo : (this.form.value.tipo ?? 'TIENDA'),
-          direccion: this.firstNonBlank(direccion, this.form.value.direccion) || '',
-          equipo: this.firstNonBlank(equipo, this.form.value.equipo) || '',
-          descripcion: this.firstNonBlank(descripcion, this.form.value.descripcion) || ''
+          clienteNombre: this.firstNonBlank(x.clienteNombre, this.form.controls.clienteNombre.value) || '',
+          clienteTelefono: this.firstNonBlank(x.clienteTelefono, this.form.controls.clienteTelefono.value) || '',
+          clienteEmail: this.firstNonBlank(x.clienteEmail, this.form.controls.clienteEmail.value) || '',
+          tipo:
+            tipo === 'DOMICILIO' || tipo === 'TIENDA'
+              ? tipo
+              : this.form.controls.tipo.value,
+          direccion: this.firstNonBlank(direccion, this.form.controls.direccion.value) || '',
+          equipo: this.firstNonBlank(equipo, this.form.controls.equipo.value) || '',
+          descripcion: this.firstNonBlank(descripcion, this.form.controls.descripcion.value) || '',
+          observaciones: obs || ''
         }, { emitEvent: false });
+
+        this.applyTipoValidators();
+        this.syncFechaPrevista();
       },
       error: () => {
         this.snack.open('No se pudo leer el ticket para prellenar', 'OK', { duration: 2500 });
@@ -250,14 +400,13 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     this.tickets.obtener(ticketId).subscribe({
       next: (t: TicketDetalleDto) => {
         const x = t as any;
-
-        // soporta ambos formatos: fotos[] o fotoUrl legacy
         const refs: FotoPreview[] = [];
 
         if (Array.isArray(x.fotos)) {
           for (const f of x.fotos) {
             const url = this.resolveFileUrl(f?.url);
             if (!url) continue;
+
             refs.push({
               source: 'ticket',
               url,
@@ -277,12 +426,11 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
         if (!refs.length) return;
 
-        // conserva fotos locales existentes y reemplaza refs de ticket
         const locals = this.fotoPreviews.filter(p => p.source === 'local');
         this.fotoPreviews = [...refs, ...locals];
       },
       error: () => {
-        // Silencioso: no bloquea creación de OT
+        // silencioso
       }
     });
   }
@@ -304,23 +452,38 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     const raw = (text || '').trim();
     if (!raw) return '';
 
-    // intenta extraer línea estructurada
     const m1 = raw.match(/Falla reportada:\s*(.+)/i);
     if (m1?.[1]) return m1[1].trim();
 
     const m2 = raw.match(/Descripci[oó]n de la falla:\s*(.+)/i);
     if (m2?.[1]) return m2[1].trim();
 
-    // intenta extraer bloque "Falla reportada: ... \n"
     const m3 = raw.match(/Falla reportada:\s*([\s\S]*?)(?:\n[A-ZÁÉÍÓÚa-z].*?:|$)/i);
     if (m3?.[1]) return m3[1].trim();
 
     return '';
   }
 
+  private pickObservacionesOnly(x: any): string {
+    const obs = this.firstNonBlank(
+      x?.observaciones,
+      x?.detalleAdicional,
+      x?.detalle_adicional,
+      x?.comentarios,
+      x?.notas,
+      x?.nota,
+      x?.observacion,
+      x?.observacionCliente,
+      x?.detalleCliente
+    );
+
+    return (typeof obs === 'string' ? obs : '').trim();
+  }
+
   private firstNonBlank<T = string>(...values: any[]): T | null {
     for (const v of values) {
       if (v === null || v === undefined) continue;
+
       if (typeof v === 'string') {
         const t = v.trim();
         if (t) return t as unknown as T;
@@ -340,48 +503,80 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     return `${base}${path}`;
   }
 
-  // =========================
-  // Fotos locales (upload OT)
-  // =========================
+  buscarCliente(): void {
+    if (this.guardando) return;
 
-  onDragOver(ev: DragEvent) {
+    if (this.fromTicket && this.clienteId) {
+      this.snack.open('Esta OT viene de un ticket. El cliente ya está vinculado.', 'OK', {
+        duration: 2500
+      });
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ClienteBuscarDialogComponent, {
+      width: '520px',
+      maxWidth: '92vw',
+      panelClass: 'rs-dialog-custom'
+    });
+
+    this.subs.add(
+      dialogRef.afterClosed().subscribe((cliente: ClienteResumen | undefined) => {
+        if (cliente) {
+          this.clienteId = cliente.id;
+          this.form.patchValue({
+            clienteNombre: cliente.nombre ?? '',
+            clienteTelefono: cliente.telefono ?? '',
+            clienteEmail: cliente.email ?? ''
+          });
+        }
+      })
+    );
+  }
+
+  irAClientes(): void {
+    this.router.navigateByUrl('/clientes');
+  }
+
+  onDragOver(ev: DragEvent): void {
     ev.preventDefault();
     this.isDragOver = true;
   }
 
-  onDragLeave(ev: DragEvent) {
+  onDragLeave(ev: DragEvent): void {
     ev.preventDefault();
     this.isDragOver = false;
   }
 
-  onDrop(ev: DragEvent) {
+  onDrop(ev: DragEvent): void {
     ev.preventDefault();
     this.isDragOver = false;
+
     const files = ev.dataTransfer?.files;
     if (files && files.length) {
       this.setFiles(Array.from(files));
     }
   }
 
-  onFileSelected(event: Event) {
+  onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = input.files;
+
     if (files && files.length > 0) {
       this.setFiles(Array.from(files));
     }
+
     input.value = '';
   }
 
-  private setFiles(files: File[]) {
+  private setFiles(files: File[]): void {
     const onlyImages = files.filter(f => f.type.startsWith('image/'));
+
     if (!onlyImages.length) {
       this.snack.open('Selecciona imágenes válidas', 'OK', { duration: 2000 });
       return;
     }
 
-    // reemplaza solo previews locales, conserva referencias del ticket
     this.clearLocalPreviews();
-
     this.fotos = onlyImages;
 
     const localPreviews: FotoPreview[] = onlyImages.map(file => ({
@@ -398,45 +593,45 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     this.snack.open(`${this.fotos.length} foto(s) lista(s)`, 'OK', { duration: 2000 });
   }
 
-  removeLocalFile(indexInLocalList: number) {
+  removeLocalFile(indexInLocalList: number): void {
     const locals = this.localPhotoPreviews;
     const target = locals[indexInLocalList];
     if (!target) return;
 
     if (target.url) URL.revokeObjectURL(target.url);
 
-    // quitar de fotos[]
     this.fotos = this.fotos.filter((_, i) => i !== indexInLocalList);
 
-    // quitar del array combinado usando referencia URL + source local
     let removed = false;
     this.fotoPreviews = this.fotoPreviews.filter(p => {
       if (removed) return true;
+
       if (p.source === 'local' && p.url === target.url) {
         removed = true;
         return false;
       }
+
       return true;
     });
   }
 
-  clearLocalFiles() {
+  clearLocalFiles(): void {
     this.clearLocalPreviews();
     this.fotos = [];
   }
 
-  clearPreviews() {
-    // limpia solo objectURLs locales
+  clearPreviews(): void {
     this.fotoPreviews
       .filter(p => p.source === 'local')
       .forEach(p => {
         if (p.url) URL.revokeObjectURL(p.url);
       });
+
     this.fotoPreviews = [];
     this.fotos = [];
   }
 
-  private clearLocalPreviews() {
+  private clearLocalPreviews(): void {
     this.fotoPreviews
       .filter(p => p.source === 'local')
       .forEach(p => {
@@ -446,79 +641,53 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     this.fotoPreviews = this.fotoPreviews.filter(p => p.source !== 'local');
   }
 
-  // =========================
-  // Cliente
-  // =========================
-
-  buscarCliente() {
+  crear(): void {
     if (this.guardando) return;
 
-    if (this.fromTicket && this.clienteId) {
-      this.snack.open('Esta OT viene de un ticket. El cliente ya está vinculado.', 'OK', { duration: 2500 });
-      return;
-    }
-
-    const dialogRef = this.dialog.open(ClienteBuscarDialogComponent, {
-      width: '520px',
-      maxWidth: '92vw',
-      panelClass: 'rs-dialog-custom'
-    });
-
-    dialogRef.afterClosed().subscribe((cliente: ClienteResumen) => {
-      if (cliente) {
-        this.clienteId = cliente.id;
-        this.form.patchValue({
-          clienteNombre: cliente.nombre,
-          clienteTelefono: cliente.telefono,
-          clienteEmail: cliente.email
-        });
-      }
-    });
-  }
-
-  // =========================
-  // Crear OT
-  // =========================
-
-  crear() {
-    if (this.guardando) return;
+    this.syncFechaPrevista();
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snack.open('Por favor revisa los campos requeridos', 'OK', { duration: 2500 });
+      this.snack.open('Por favor revisa los campos requeridos', 'OK', {
+        duration: 2500
+      });
       return;
     }
 
     const v = this.form.getRawValue();
 
-    const fechaFinal =
-      v.tipo === 'DOMICILIO'
-        ? v.fechaPrevistaDomicilio
-        : v.fechaProgramada;
+    const descMain = (v.descripcion ?? '').trim();
+    const obs = (v.observaciones ?? '').trim();
+
+    let descripcionFinal = descMain;
+    if (obs) {
+      const normalizedMain = descMain.toLowerCase();
+      const normalizedObs = obs.toLowerCase();
+
+      if (!normalizedMain.includes(normalizedObs)) {
+        descripcionFinal = descMain
+          ? `${descMain}\n\nObservaciones: ${obs}`
+          : obs;
+      }
+    }
 
     const body: OtCrearRequest = {
       cliente: {
         id: this.clienteId,
         nombre: (v.clienteNombre ?? '').trim(),
         telefono: (v.clienteTelefono ?? '').trim() || null,
-        email: (v.clienteEmail ?? '').trim() || null,
+        email: (v.clienteEmail ?? '').trim() || null
       },
       tipo: (v.tipo ?? 'TIENDA') as TipoOt,
       prioridad: (v.prioridad ?? 'MEDIA') as PrioridadOt,
-
-      // ✅ equipo
       equipo: (v.equipo ?? '').trim(),
-
-      // ✅ falla / trabajo a realizar
-      descripcion: (v.descripcion ?? '').trim(),
-
+      descripcion: descripcionFinal,
       tecnicoId: v.tecnicoId || null,
-      fechaPrevista: fechaFinal ? new Date(fechaFinal).toISOString() : null,
+      fechaPrevista: v.fechaPrevista || null,
       direccion: v.tipo === 'DOMICILIO' ? ((v.direccion ?? '').trim() || null) : null,
-      notasAcceso: v.tipo === 'DOMICILIO' ? ((v.notasAcceso ?? '').trim() || null) : null,
+      notasAcceso: v.tipo === 'DOMICILIO' ? ((v.notasAcceso ?? '').trim() || null) : null
     };
 
-    // ✅ backend puede soportar ticketId aunque el tipo del front aún no lo declare
     if (this.fromTicket && this.ticketId) {
       (body as any).ticketId = this.ticketId;
     }
@@ -529,14 +698,11 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       switchMap((res: any) => {
         const id = res.id as string;
 
-        // ✅ fallback front: cachear vínculo ticket->ot para que ticket pueda mostrar "Ver OT"
         if (this.ticketId && id) {
           this.guardarVinculoTicketOtEnCache(this.ticketId, id);
         }
 
         if (!this.fotos.length) return of({ id });
-
-        this.snack.open('Subiendo fotos...', 'OK', { duration: 2000 });
 
         const uploads = this.fotos.map(file =>
           this.ordenes.subirFoto(id, file).pipe(
@@ -559,25 +725,25 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         this.router.navigate(['/ordenes-trabajo', id]);
       },
       error: (err) => {
-        this.snack.open(err?.error?.message || 'Error al crear la orden', 'OK', { duration: 3000 });
+        this.snack.open(err?.error?.message || 'Error al crear la orden', 'OK', {
+          duration: 3000
+        });
       }
     });
   }
 
-  cancelar() {
+  cancelar(): void {
     if (this.guardando) return;
 
     this.clearLocalFiles();
+
     if (this.ticketId) {
       this.router.navigate(['/tickets', this.ticketId]);
       return;
     }
+
     this.router.navigateByUrl('/ordenes-trabajo');
   }
-
-  // =========================
-  // Fallback local ticket -> OT
-  // =========================
 
   private guardarVinculoTicketOtEnCache(ticketId: string, otId: string): void {
     try {
@@ -586,7 +752,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       map[ticketId] = otId;
       localStorage.setItem(this.ticketOtCacheKey, JSON.stringify(map));
     } catch {
-      // silencioso (no bloquea el flujo)
+      // silencioso
     }
   }
 }

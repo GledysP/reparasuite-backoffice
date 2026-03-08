@@ -1,0 +1,73 @@
+<div class="rs-profile-page">
+  <mat-card class="rs-profile-card">
+    <div class="rs-profile-head">
+      <div class="rs-avatar">{{ initials() }}</div>
+
+      <div class="rs-head-text">
+        <div class="rs-name">{{ user()?.nombre || 'Mi perfil' }}</div>
+        <div class="rs-sub">
+          <span class="rs-pill">Rol: {{ user()?.rol || '—' }}</span>
+          <span class="rs-pill" [class.is-off]="!(user()?.activo ?? true)">
+            {{ (user()?.activo ?? true) ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </div>
+
+      <span class="rs-spacer"></span>
+
+      <button mat-stroked-button type="button" class="rs-btn" (click)="cargar()" [disabled]="loading() || saving()">
+        <mat-icon fontSet="material-symbols-outlined">refresh</mat-icon>
+        Recargar
+      </button>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content class="rs-profile-body">
+      <div class="rs-loading" *ngIf="loading()">
+        <mat-progress-spinner diameter="26" mode="indeterminate"></mat-progress-spinner>
+        <span>Cargando perfil…</span>
+      </div>
+
+      <form *ngIf="!loading()" [formGroup]="form" class="rs-form">
+        <mat-form-field appearance="outline" class="rs-field" subscriptSizing="dynamic">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rs-field" subscriptSizing="dynamic">
+          <mat-label>Usuario</mat-label>
+          <input matInput formControlName="usuario" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="rs-field" subscriptSizing="dynamic">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" />
+        </mat-form-field>
+
+        <div class="rs-row">
+          <mat-form-field appearance="outline" class="rs-field" subscriptSizing="dynamic">
+            <mat-label>Rol</mat-label>
+            <input matInput formControlName="rol" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="rs-field" subscriptSizing="dynamic">
+            <mat-label>Estado</mat-label>
+            <input matInput [value]="(user()?.activo ?? true) ? 'Activo' : 'Inactivo'" readonly />
+          </mat-form-field>
+        </div>
+
+        <div class="rs-actions">
+          <button mat-button type="button" class="rs-btn-ghost" (click)="reset()" [disabled]="saving()">
+            Restablecer
+          </button>
+
+          <button mat-flat-button type="button" class="rs-btn-primary" (click)="guardar()" [disabled]="form.invalid || saving()">
+            <span>{{ saving() ? 'Guardando…' : 'Guardar cambios' }}</span>
+            <mat-progress-spinner *ngIf="saving()" diameter="18" mode="indeterminate"></mat-progress-spinner>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,171 +1,631 @@
-$focus-color: #124E59;
 $rs-primary: #124E59;
-$rs-green: #1db954;
-$rs-gradient: linear-gradient(135deg, #124E59 0%, #1db954 100%);
-$rs-border: #cbd5e1;
-$rs-border-soft: #e2e8f0;
-$rs-text: #334155;
-$rs-label: #64748b;
-$rs-hover-color: #f8fafc;
+$rs-primary-dark: #0f434c;
+$rs-border: #d7e0ea;
+$rs-border-soft: #e7edf4;
+$rs-text: #0f172a;
+$rs-muted: #64748b;
+$rs-label: #6d829d;
+$rs-bg-soft: #f8fafc;
+$rs-hover: #f7fafc;
 
-/* Botón Nueva OT */
+:host {
+  display: block;
+}
+
+.rs-page-container {
+  background: transparent !important;
+}
+
+/* =========================
+   HEADER
+========================= */
+.rs-header-row {
+  margin-bottom: 12px !important;
+  align-items: flex-start !important;
+
+  @media (max-width: 640px) {
+    margin-bottom: 10px !important;
+    gap: 12px !important;
+  }
+}
+
+.rs-header-copy {
+  min-width: 0;
+}
+
+.rs-page-title {
+  margin: 0 0 6px 0 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.15 !important;
+
+  @media (max-width: 640px) {
+    margin-bottom: 4px !important;
+  }
+}
+
+.rs-page-subtitle {
+  margin: 0;
+  color: $rs-muted;
+  font-size: 14px;
+  line-height: 1.45;
+  max-width: 720px;
+
+  @media (max-width: 640px) {
+    font-size: 13px;
+    max-width: 100%;
+  }
+}
+
+/* =========================
+   BOTÓN NUEVA OT
+========================= */
 .btn-new-ot {
-  background: $rs-gradient !important;
+  height: 40px !important;
+  padding: 0 15px !important;
+  border-radius: 14px !important;
+  background: $rs-primary !important;
   color: #fff !important;
-  border-radius: 8px !important;
-  font-weight: 700 !important;
-  height: 40px !important;
-  padding: 0 16px !important;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 10px rgba(18, 78, 89, 0.2) !important;
-  transition: all 0.3s ease !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em;
+  box-shadow:
+    0 10px 22px rgba(18, 78, 89, 0.14),
+    0 4px 8px rgba(18, 78, 89, 0.08) !important;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    filter 160ms ease !important;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 12px rgba(18, 78, 89, 0.3) !important;
-    filter: brightness(1.05);
+    box-shadow:
+      0 12px 26px rgba(18, 78, 89, 0.16),
+      0 5px 10px rgba(18, 78, 89, 0.09) !important;
+    filter: brightness(1.01);
   }
 
-  mat-icon { font-size: 20px; width: 20px; height: 20px; }
-}
-
-/* Botón Clear con borde degradado e icono */
-.btn-clear {
-  height: 40px !important;
-  border-radius: 8px !important;
-  font-weight: 700 !important;
-  color: $rs-primary !important;
-  border: 2px solid transparent !important;
-  padding: 0 16px !important;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  
-  background-image: linear-gradient(#fff, #fff), $rs-gradient !important;
-  background-origin: border-box !important;
-  background-clip: padding-box, border-box !important;
-  transition: all 0.2s ease !important;
-
-  ::ng-deep .mat-mdc-button-state-layer { background-color: transparent !important; }
-  ::ng-deep .mat-mdc-button-persistent-ripple::before { display: none !important; }
-
-  &:hover {
-    background-image: linear-gradient($rs-hover-color, $rs-hover-color), $rs-gradient !important;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  mat-icon {
+    margin-right: 6px;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
   }
 
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-}
-
-/* Filtros */
-.rs-filter-card {
-  box-shadow: none !important;
-  border: 1px solid $rs-border-soft !important;
-  border-radius: 12px !important;
-  margin-bottom: 12px;
-  background-color: #fff !important;
-
-  .rs-filtros-grid {
-    display: grid;
-    gap: 12px;
-    align-items: end;
-    grid-template-columns: 160px 120px 140px 1fr auto;
-    padding: 16px;
-
-    @media (max-width: 1024px) { grid-template-columns: 1fr 1fr; }
-    @media (max-width: 640px) { grid-template-columns: 1fr; }
-  }
-}
-
-.rs-field { display: flex; flex-direction: column; gap: 6px; }
-.rs-field-label { font-size: 11px; font-weight: 700; color: $rs-label; text-transform: uppercase; }
-
-/* Estilos de Formulario y eliminación de azul en Checkboxes */
-:host ::ng-deep {
-  .mat-mdc-form-field .mdc-notched-outline { display: none !important; }
-  .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  @media (max-width: 640px) {
+    width: 100%;
     height: 40px !important;
-    border-radius: 8px !important;
-    border: 1px solid $rs-border !important;
-    background-color: white !important;
+    border-radius: 13px !important;
+    justify-content: center;
+    padding: 0 14px !important;
   }
-  .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
-    border-color: $focus-color !important;
-    border-width: 2px !important;
-  }
-  .mat-mdc-form-field-subscript-wrapper { display: none !important; }
-
-  /* Checkbox Verde */
-  .mat-mdc-checkbox-checked .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
-  .mat-primary .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-full {
-    background-color: $rs-green !important;
-    border-color: $rs-green !important;
-  }
-  .mat-mdc-checkbox .mat-ripple-element { background-color: rgba(29, 185, 84, 0.1) !important; }
 }
 
-/* Tabla */
-.rs-table-card {
-  background-color: #ffffff !important;
+/* =========================
+   CARD FILTROS
+========================= */
+.rs-filter-card {
+  background: #fff !important;
   border: 1px solid $rs-border-soft !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 10px 22px rgba(15, 23, 42, 0.03),
+    0 3px 8px rgba(15, 23, 42, 0.018) !important;
+  margin-bottom: 10px;
+
+  mat-card-content {
+    padding: 12px !important;
+
+    @media (max-width: 640px) {
+      padding: 10px !important;
+    }
+  }
+}
+
+.rs-filtros-grid {
+  display: grid;
+  grid-template-columns: 150px 130px 150px minmax(240px, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+
+  @media (max-width: 1120px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.rs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.rs-field-search {
+  min-width: 0;
+}
+
+.rs-field-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: $rs-label;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+/* =========================
+   FORM FIELDS COMPACTOS
+========================= */
+:host ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mdc-notched-outline {
+  display: none !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  min-height: 38px !important;
   border-radius: 12px !important;
+  border: 1px solid $rs-border !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+  border-color: #c7d3df !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: rgba(18, 78, 89, 0.38) !important;
+  box-shadow: 0 0 0 3px rgba(18, 78, 89, 0.08) !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field-infix {
+  min-height: 38px !important;
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+:host ::ng-deep .mat-mdc-input-element,
+:host ::ng-deep .mat-mdc-select-value-text {
+  font-size: 13px !important;
+  color: $rs-text !important;
+}
+
+:host ::ng-deep .mat-mdc-input-element::placeholder {
+  color: #8a9aaf !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field-icon-prefix,
+:host ::ng-deep .mat-mdc-form-field-icon-suffix {
+  color: #718096 !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field-icon-prefix > .mat-icon,
+:host ::ng-deep .mat-mdc-form-field-icon-suffix > .mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+@media (max-width: 640px) {
+  :host ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+    min-height: 36px !important;
+    border-radius: 12px !important;
+  }
+
+  :host ::ng-deep .mat-mdc-form-field-infix {
+    min-height: 36px !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+}
+
+/* =========================
+   BOTÓN LIMPIAR MÁS FINO
+========================= */
+.btn-clear {
+  height: 38px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(18, 78, 89, 0.16) !important;
+  color: $rs-primary !important;
+  font-weight: 700 !important;
+  background: #fff !important;
+  padding: 0 12px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition:
+    background 160ms ease,
+    transform 160ms ease,
+    border-color 160ms ease !important;
+
+  &:hover {
+    background: rgba(18, 78, 89, 0.04) !important;
+    border-color: rgba(18, 78, 89, 0.22) !important;
+    transform: translateY(-1px);
+  }
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+    height: 36px !important;
+    border-radius: 12px !important;
+  }
+}
+
+/* =========================
+   TABLA DESKTOP
+========================= */
+.rs-table-card {
+  background: #fff !important;
+  border: 1px solid $rs-border-soft !important;
+  border-radius: 20px !important;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
-  mat-card-content { padding: 0 !important; }
+  box-shadow:
+    0 12px 28px rgba(15, 23, 42, 0.038),
+    0 4px 10px rgba(15, 23, 42, 0.018) !important;
+
+  mat-card-content {
+    padding: 0 !important;
+  }
+}
+
+.rs-table-responsive {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .rs-table {
   width: 100%;
-  background-color: transparent;
+  background: #fff;
 
   th.mat-mdc-header-cell {
-    color: $rs-label;
-    border-bottom: 1px solid $rs-border-soft;
-    background: #ffffff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 12px 24px !important;
+    color: #8a9ab2;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 12px 18px !important;
+    border-bottom: 1px solid $rs-border-soft !important;
+    background: #fff;
   }
 
   td.mat-mdc-cell {
-    color: #0f172a;
-    border-bottom: 1px solid rgba(0,0,0,0.03) !important;
-    padding: 16px 24px !important;
+    color: $rs-text;
+    padding: 11px 18px !important;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.045) !important;
+    font-size: 13px;
+    vertical-align: middle;
+    line-height: 1.35;
   }
 
-  .rs-table-row:hover { background-color: $rs-hover-color !important; }
+  .rs-table-row:hover {
+    background: $rs-hover !important;
+  }
 }
 
-.col-code { font-weight: 800; color: #0f172a; }
+.col-code {
+  font-weight: 800 !important;
+  color: #0b1324 !important;
+}
 
-/* Badges con Degradados */
+.customer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .name {
+    font-weight: 700;
+    color: $rs-text;
+  }
+}
+
+/* =========================
+   BADGES ESTADO
+========================= */
 .status-badge {
-  padding: 6px 10px;
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 11px;
+  border-radius: 999px;
   font-size: 10px;
   font-weight: 800;
-  display: inline-block;
-  color: white !important;
+  letter-spacing: 0.02em;
+  color: #fff;
   text-transform: uppercase;
+  white-space: nowrap;
 
-  &[data-status="EN_CURSO"], &[data-status="En_curso"] { background: $rs-gradient !important; }
-  &[data-status="RECIBIDA"], &[data-status="Recibida"] { background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%) !important; }
-  &[data-status="PRESUPUESTO"] { background: linear-gradient(135deg, #eab308 0%, #facc15 100%) !important; }
-  &[data-status="APROBADA"] { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%) !important; }
-  &[data-status="FINALIZADA"] { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%) !important; }
-  &[data-status="CERRADA"] { background: linear-gradient(135deg, #dc2626 0%, #f87171 100%) !important; }
+  &[data-status='RECIBIDA'] {
+    background: #7f94b3;
+  }
+
+  &[data-status='PRESUPUESTO'] {
+    background: #ecb90e;
+  }
+
+  &[data-status='APROBADA'] {
+    background: #22a45d;
+  }
+
+  &[data-status='EN_CURSO'] {
+    background: $rs-primary;
+  }
+
+  &[data-status='FINALIZADA'] {
+    background: #4b83ff;
+  }
+
+  &[data-status='CERRADA'] {
+    background: #ef5350;
+  }
 }
 
-/* Botones de Acción Sin Azul */
-.rs-actions-container { display: flex; gap: 8px; }
-.rs-btn-action { 
-  color: $rs-label !important; 
-  ::ng-deep .mat-mdc-button-state-layer { background-color: transparent !important; }
-  ::ng-deep .mat-mdc-button-persistent-ripple::before { display: none !important; }
-  &:hover { color: $rs-primary !important; background-color: $rs-hover-color !important; }
+/* =========================
+   ACCIONES
+========================= */
+.rs-actions-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.rs-paginator { background: white !important; }
+.rs-btn-action {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 12px !important;
+  background: #f6f8fb !important;
+  color: #60738f !important;
+  transition: all 160ms ease !important;
+
+  &:hover {
+    background: rgba(18, 78, 89, 0.08) !important;
+    color: $rs-primary !important;
+    transform: translateY(-1px);
+  }
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+}
+
+.rs-btn-action-danger {
+  &:hover {
+    background: rgba(239, 68, 68, 0.08) !important;
+    color: #dc2626 !important;
+  }
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.rs-empty-state {
+  padding: 30px 18px;
+  text-align: center;
+  color: $rs-muted;
+
+  mat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
+    color: #9fb0c4;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    margin: 0 0 6px;
+    color: $rs-text;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+  }
+
+  &--mobile {
+    padding: 24px 14px;
+  }
+}
+
+/* =========================
+   PAGINADOR MÁS COMPACTO
+========================= */
+.rs-paginator {
+  background: #fff !important;
+  border-top: 1px solid $rs-border-soft !important;
+}
+
+:host ::ng-deep .rs-paginator .mat-mdc-paginator-container {
+  min-height: 48px !important;
+  padding: 6px 14px !important;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  background: #fff !important;
+}
+
+:host ::ng-deep .rs-paginator .mat-mdc-paginator-page-size-label,
+:host ::ng-deep .rs-paginator .mat-mdc-paginator-range-label {
+  font-size: 12px !important;
+  color: $rs-text !important;
+}
+
+:host ::ng-deep .rs-paginator .mat-mdc-form-field {
+  width: 84px !important;
+}
+
+:host ::ng-deep .rs-paginator .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  min-height: 34px !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  border: 1px solid $rs-border !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .rs-paginator .mat-mdc-form-field-infix {
+  min-height: 34px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+
+:host ::ng-deep .rs-paginator .mat-mdc-icon-button {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 4px !important;
+}
+
+/* =========================
+   MOBILE CARDS
+========================= */
+.rs-mobile-list,
+.rs-empty-mobile-card {
+  display: none;
+}
+
+.rs-mobile-ot-card,
+.rs-mobile-paginator-card {
+  background: #fff !important;
+  border: 1px solid $rs-border-soft !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 10px 22px rgba(15, 23, 42, 0.032),
+    0 4px 10px rgba(15, 23, 42, 0.018) !important;
+}
+
+.rs-mobile-ot-card {
+  padding: 12px !important;
+}
+
+.rs-mobile-ot-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.rs-mobile-ot-copy {
+  min-width: 0;
+}
+
+.rs-mobile-ot-code {
+  font-size: 15px;
+  font-weight: 900;
+  color: #0b1324;
+  line-height: 1.2;
+}
+
+.rs-mobile-ot-client {
+  margin-top: 3px;
+  color: $rs-muted;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rs-mobile-ot-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: $rs-text;
+  font-size: 13px;
+  line-height: 1.25;
+
+  mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+    color: #6b8198;
+  }
+}
+
+.rs-mobile-ot-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rs-mobile-link {
+  padding: 0 !important;
+  min-width: auto !important;
+  color: $rs-primary !important;
+  font-weight: 800 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.rs-mobile-paginator-card {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .rs-desktop-table-card {
+    display: none;
+  }
+
+  .rs-mobile-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .rs-empty-mobile-card {
+    display: block;
+    background: #fff !important;
+    border: 1px solid $rs-border-soft !important;
+    border-radius: 18px !important;
+  }
+
+  .rs-filter-card {
+    margin-bottom: 10px;
+  }
+
+  .status-badge {
+    min-height: 23px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
+}

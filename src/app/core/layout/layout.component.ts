@@ -1,13 +1,9 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, HostListener, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { CommonModule } from '@angular/common';
 
-import {
-  MatSidenav,
-  MatSidenavContainer,
-  MatSidenavModule,
-} from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,8 +11,21 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { AuthService } from '../services/auth.service';
+import { CommandPaletteDialogComponent } from './command-palette.dialog';
+import { LayoutNotificacionesService, RsNotification } from './layout-notificaciones.service';
+
+interface NavItem {
+  label: string;
+  route: string;
+  icon: string;
+  exact?: boolean;
+}
 
 @Component({
   selector: 'rs-layout',
@@ -34,77 +43,119 @@ import { AuthService } from '../services/auth.service';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatTooltipModule,
+    MatBadgeModule,
+    MatDialogModule,
+    MatDividerModule,
   ],
   templateUrl: './layout.component.html',
-  styleUrl: './layout.component.scss',
+  styleUrls: ['./layout.component.scss'],
 })
 export class LayoutComponent {
   @ViewChild('sidenav') sidenav!: MatSidenav;
-  @ViewChild(MatSidenavContainer) sidenavContainer!: MatSidenavContainer;
 
   private breakpointObserver = inject(BreakpointObserver);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
+  private notifs = inject(LayoutNotificacionesService);
 
   isMobile = false;
-
-  // Desktop: mini/full (NO cerramos el sidenav)
   isCollapsed = false;
-
-  // Mobile: over abierto/cerrado real
   mobileOpened = false;
+  mobileSearchOpen = false;
 
-  // Anchos reales
-  readonly FULL_W = 272;
-  readonly MINI_W = 72;
+  notifications$ = this.notifs.notifications$;
+  unreadCount$ = this.notifs.unreadCount$;
 
-  get sidebarWidth(): number {
-    if (this.isMobile) return this.FULL_W;
-    return this.isCollapsed ? this.MINI_W : this.FULL_W;
-  }
+  readonly navItems: NavItem[] = [
+    { label: 'Panel', route: '/dashboard', icon: 'dashboard', exact: true },
+    { label: 'Órdenes de trabajo', route: '/ordenes-trabajo', icon: 'assignment' },
+    { label: 'Tickets', route: '/tickets', icon: 'confirmation_number' },
+    { label: 'Clientes', route: '/clientes', icon: 'group' },
+    { label: 'Usuarios', route: '/usuarios', icon: 'engineering' },
+    { label: 'Ajustes', route: '/ajustes/taller', icon: 'settings' },
+  ];
 
   constructor() {
-    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
+    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result) => {
       this.isMobile = result.matches;
 
       if (this.isMobile) {
         this.mobileOpened = false;
-        // opcional: en móvil siempre full (mini no tiene sentido)
         this.isCollapsed = false;
+        this.mobileSearchOpen = false;
+      } else {
+        this.mobileSearchOpen = false;
       }
-
-      // ✅ fuerza recálculo de márgenes cuando cambia breakpoint
-      queueMicrotask(() => this.sidenavContainer?.updateContentMargins());
     });
   }
 
- toggleMenu() {
-  if (this.isMobile) {
-    this.mobileOpened = !this.mobileOpened;
-    this.sidenav.toggle();
-    return;
-  }
-
-  // Desktop: mini/full
-  this.isCollapsed = !this.isCollapsed;
-
-  // ✅ Recalcular márgenes inmediatamente para que la transición de CSS tome el control
-  this.sidenavContainer.updateContentMargins();
-}
-
-  onSidenavClosed() {
-    if (this.isMobile) this.mobileOpened = false;
-  }
-
-  closeMobileSidenav() {
+  toggleMenu(): void {
     if (this.isMobile) {
-      this.mobileOpened = false;
-      this.sidenav.close();
+      this.mobileOpened = !this.mobileOpened;
+      this.sidenav.toggle();
+      return;
     }
+    this.isCollapsed = !this.isCollapsed;
   }
 
-  logout() {
+  closeMobileSidenav(): void {
+    if (!this.isMobile) return;
+    this.mobileOpened = false;
+    this.sidenav.close();
+  }
+
+  openMobileSearch(): void {
+    if (!this.isMobile) return;
+    this.mobileSearchOpen = true;
+  }
+
+  closeMobileSearch(): void {
+    this.mobileSearchOpen = false;
+  }
+
+  openCommandPalette(): void {
+    if (this.dialog.openDialogs.length) return;
+
+    this.dialog.open(CommandPaletteDialogComponent, {
+      panelClass: 'rs-cmdk-dialog',
+      autoFocus: false,
+      width: '560px',
+      maxWidth: '92vw',
+      data: { navItems: this.navItems },
+    });
+  }
+
+  refreshNotifications(): void {
+    this.notifs.refreshNow();
+  }
+
+  markAllRead(): void {
+    this.notifs.markAllRead();
+  }
+
+  openNotification(n: RsNotification): void {
+    this.notifs.markRead(n.id);
+    this.router.navigateByUrl(n.route);
+  }
+
+  goToMyProfile(): void {
+    this.router.navigateByUrl('/mi-perfil');
+  }
+
+  logout(): void {
     this.auth.logout();
     this.router.navigateByUrl('/login');
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onGlobalKeydown(e: KeyboardEvent): void {
+    const key = e.key.toLowerCase();
+    const isCmdK = (e.ctrlKey || e.metaKey) && key === 'k';
+    if (isCmdK) {
+      e.preventDefault();
+      this.openCommandPalette();
+    }
   }
 }
