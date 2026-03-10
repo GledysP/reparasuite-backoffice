@@ -16,10 +16,6 @@ export interface TicketCrearOtResponse {
 export class TicketsService {
   private http = inject(HttpClient);
   private base = (environment.apiBaseUrl || '').replace(/\/$/, '');
-
-  // Ajusta esta línea según tu environment:
-  // Si apiBaseUrl YA incluye /api/v1 -> usa `${this.base}/backoffice/tickets`
-  // Si apiBaseUrl NO incluye /api/v1 -> usa `${this.base}/api/v1/backoffice/tickets`
   private endpoint = `${this.base}/backoffice/tickets`;
 
   listar(page = 0, size = 20): Observable<RespuestaPaginada<TicketBackofficeListaItem>> {

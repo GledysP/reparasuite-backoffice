@@ -29,6 +29,8 @@ export interface ClienteResumen {
   nombre: string;
   telefono: string | null;
   email: string | null;
+  totalWos?: number | null;
+  lastWoDate?: string | null;
 }
 
 export interface OtListaItem {
@@ -37,10 +39,7 @@ export interface OtListaItem {
   estado: EstadoOt | string;
   tipo: TipoOt | string;
   prioridad: PrioridadOt | string;
-
-  // ✅ nuevo (si backend ya lo devuelve)
   equipo?: string | null;
-
   clienteNombre: string;
   tecnicoNombre: string | null;
   updatedAt: string;
@@ -103,28 +102,20 @@ export interface OtDetalle {
   estado: EstadoOt | string;
   tipo: TipoOt | string;
   prioridad: PrioridadOt | string;
-
-  // ✅ nuevo
   equipo?: string | null;
-
   descripcion: string;
-
   cliente: ClienteResumen;
   tecnico: UsuarioResumen | null;
-
   fechaPrevista: string | null;
   direccion: string | null;
   notasAcceso: string | null;
-
   notas: NotaOt[];
   fotos: FotoOt[];
   historial: HistorialItem[];
-
   presupuesto: PresupuestoDto | null;
   pago: PagoDto | null;
   citas: CitaDto[];
   mensajes: MensajeOtDto[];
-
   createdAt: string;
   updatedAt: string;
 }
@@ -141,7 +132,7 @@ export interface ClienteOrdenItem {
 export interface TicketListaItem {
   id: string;
   estado: string;
-  asunto: string; // ✅ en UI ticket = "Equipo"
+  asunto: string;
   updatedAt: string;
 }
 
@@ -163,32 +154,26 @@ export interface TicketFotoDto {
 export interface TicketDetalleDto {
   id: string;
   estado: string;
-
-  // ✅ Lo mantenemos por compatibilidad backend, pero en UI lo tratamos como "equipo"
   asunto: string;
-
   descripcion: string;
   mensajes: TicketMensajeDto[];
   createdAt: string;
   updatedAt: string;
   ordenTrabajoId?: string | null;
 
-  // ✅ snapshots / datos cliente
   clienteId?: string | null;
   clienteNombre?: string | null;
   clienteTelefono?: string | null;
   clienteEmail?: string | null;
 
-  // ✅ estructurados (nombres reales backend)
   equipo?: string | null;
   descripcionFalla?: string | null;
   tipoServicioSugerido?: 'TIENDA' | 'DOMICILIO' | string | null;
   direccion?: string | null;
+  observaciones?: string | null;
 
-  // ✅ fotos (nuevo backend)
   fotos?: TicketFotoDto[];
 
-  // compat legacy (por si en algún punto lo sigues usando)
   fotoUrl?: string | null;
   direccionSolicitud?: string | null;
   tipoServicioSolicitado?: 'TIENDA' | 'DOMICILIO' | string | null;
@@ -197,7 +182,7 @@ export interface TicketDetalleDto {
 export interface TicketBackofficeListaItem {
   id: string;
   estado: string;
-  asunto: string; // ✅ asunto = equipo en ticket
+  asunto: string;
   updatedAt: string;
   clienteId: string;
   clienteNombre: string;

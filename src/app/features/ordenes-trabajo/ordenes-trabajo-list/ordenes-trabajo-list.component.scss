@@ -106,6 +106,7 @@ $rs-hover: #f7fafc;
 .rs-filter-card {
   background: #fff !important;
   border: 1px solid $rs-border-soft !important;
+  margin-top: 10px;
   border-radius: 18px !important;
   box-shadow:
     0 10px 22px rgba(15, 23, 42, 0.03),
@@ -410,6 +411,12 @@ $rs-hover: #f7fafc;
     width: 19px;
     height: 19px;
   }
+}
+
+.rs-btn-action[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .rs-btn-action-danger {

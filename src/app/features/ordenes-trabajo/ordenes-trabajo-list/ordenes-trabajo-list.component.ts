@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { UsuariosService } from '../../usuarios/usuarios.service';
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
@@ -35,6 +36,7 @@ import { OtListaItem, UsuarioResumen } from '../../../core/models/tipos';
     MatTableModule,
     MatPaginatorModule,
     MatIconModule,
+    MatSnackBarModule,
   ],
   templateUrl: './ordenes-trabajo-list.component.html',
   styleUrl: './ordenes-trabajo-list.component.scss',
@@ -44,6 +46,7 @@ export class OrdenesTrabajoListComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly usuarios = inject(UsuariosService);
   private readonly ordenes = inject(OrdenesTrabajoService);
+  private readonly snack = inject(MatSnackBar);
 
   estadosDisponibles: EstadoOt[] = [
     'RECIBIDA',
@@ -59,6 +62,8 @@ export class OrdenesTrabajoListComponent implements OnInit {
   total = 0;
   page = 0;
   size = 20;
+
+  deletingId: string | null = null;
 
   displayedColumns = [
     'codigo',
@@ -119,11 +124,18 @@ export class OrdenesTrabajoListComponent implements OnInit {
         next: (res) => {
           this.items = res.items ?? [];
           this.total = res.total ?? 0;
+
+          // si borraste el último elemento de una página, vuelve atrás
+          if (this.page > 0 && this.items.length === 0 && this.total > 0) {
+            this.page = Math.max(0, this.page - 1);
+            this.cargar();
+          }
         },
         error: (err) => {
           console.error('Error cargando OTs:', err);
           this.items = [];
           this.total = 0;
+          this.snack.open('Error al cargar órdenes de trabajo', 'OK', { duration: 2500 });
         },
       });
   }
@@ -190,9 +202,47 @@ export class OrdenesTrabajoListComponent implements OnInit {
     }
   }
 
+  eliminando(row: OtListaItem): boolean {
+    return this.deletingId === row.id;
+  }
+
   eliminarOrden(row: OtListaItem): void {
-    // Endpoint backend pendiente.
-    // No mostramos alertas ni mensajes en UI por ahora.
-    console.warn('Eliminar OT pendiente de endpoint backend:', row.id, row.codigo);
+    if (!row?.id || this.deletingId) return;
+
+    const ok = window.confirm(
+      `¿Seguro que deseas eliminar la orden ${row.codigo || ''}? Esta acción no se puede deshacer.`
+    );
+
+    if (!ok) return;
+
+    this.deletingId = row.id;
+
+    this.ordenes
+      .eliminar(row.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.snack.open('Orden eliminada correctamente', 'OK', { duration: 2200 });
+          this.deletingId = null;
+
+          // ajuste visual inmediato
+          this.items = this.items.filter((x) => x.id !== row.id);
+          this.total = Math.max(0, this.total - 1);
+
+          // refresca desde backend
+          this.cargar();
+        },
+        error: (err) => {
+          console.error('Error eliminando OT:', err);
+          this.deletingId = null;
+
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            'No se pudo eliminar la orden de trabajo';
+
+          this.snack.open(msg, 'OK', { duration: 3200 });
+        },
+      });
   }
 }

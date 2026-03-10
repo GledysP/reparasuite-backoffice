@@ -1,79 +1,126 @@
 <div class="rs-page-container">
   <header class="rs-header-row">
-    <div>
-      <h1 class="rs-page-title">Tickets</h1>
-      <p class="rs-page-subtitle">Solicitudes de clientes y seguimiento hacia OT</p>
+    <div class="rs-header-copy">
+      <div class="rs-heading">
+        <div>
+          <h1 class="rs-page-title">Tickets</h1>
+          <p class="rs-page-subtitle">
+            Solicitudes de clientes y seguimiento hacia OT
+          </p>
+        </div>
+      </div>
     </div>
   </header>
 
   @if (loading) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <div class="loading-wrap">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
   }
 
   <div class="cards-wrap">
     @if (!loading && items.length === 0) {
-      <mat-card class="ticket-card empty-card">
-        <mat-card-content>
-          <div class="empty-title">No hay tickets</div>
-          <div class="empty-sub">Cuando lleguen solicitudes del portal cliente aparecerán aquí.</div>
+      <mat-card class="ticket-card empty-card" appearance="outlined">
+        <mat-card-content class="ticket-card-content">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <mat-icon>inbox</mat-icon>
+            </div>
+
+            <div class="empty-title">No hay tickets</div>
+            <div class="empty-sub">
+              Cuando lleguen solicitudes del portal cliente aparecerán aquí.
+            </div>
+          </div>
         </mat-card-content>
       </mat-card>
     }
 
     @for (t of items; track t.id) {
-      <mat-card class="ticket-card">
-        <mat-card-content>
-          <div class="card-top">
-            <div class="left">
-              <div class="ticket-title">{{ asuntoUi(t) }}</div>
+      <mat-card class="ticket-card" appearance="outlined">
+        <mat-card-content class="ticket-card-content">
+          <div class="ticket-card-inner">
+            <div class="ticket-card-top">
+              <div class="ticket-main">
+                <div class="ticket-icon">
+                  <mat-icon>confirmation_number</mat-icon>
+                </div>
 
-              <div class="ticket-client">
-                <span class="client-name">{{ t.clienteNombre || 'Cliente sin nombre' }}</span>
-                <span class="dot">•</span>
-                <span class="client-email">{{ t.clienteEmail || 'sin correo' }}</span>
+                <div class="ticket-copy">
+                  <div class="ticket-title">
+                    {{ asuntoUi(t) }}
+                  </div>
+
+                  <div class="ticket-client">
+                    <span class="client-item">
+                      <mat-icon>person</mat-icon>
+                      <span class="client-name">
+                        {{ t.clienteNombre || 'Cliente sin nombre' }}
+                      </span>
+                    </span>
+
+                    <span class="dot">•</span>
+
+                    <span class="client-item email-item">
+                      <mat-icon>mail</mat-icon>
+                      <span class="client-email">
+                        {{ t.clienteEmail || 'sin correo' }}
+                      </span>
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div class="right">
-              <span class="status-pill" [ngClass]="estadoClass(t.estado)">
-                {{ t.estado }}
-              </span>
-              <div class="updated-at">
-                {{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}
-              </div>
-            </div>
-          </div>
-
-          <div class="card-bottom">
-            <div class="meta-line">
-              @if (t.ordenTrabajoId) {
-                <span class="linked-ot">
-                  <mat-icon>link</mat-icon>
-                  OT vinculada
+              <div class="ticket-side">
+                <span class="status-pill" [ngClass]="estadoClass(t.estado)">
+                  {{ t.estado }}
                 </span>
-              } @else {
-                <span class="pending-ot">
+
+                <div class="updated-at">
                   <mat-icon>schedule</mat-icon>
-                  Pendiente de crear OT
-                </span>
-              }
+                  <span>{{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}</span>
+                </div>
+              </div>
             </div>
 
-            <a mat-stroked-button class="btn-view" [routerLink]="['/tickets', t.id]">
-              <mat-icon>visibility</mat-icon>
-              Ver detalle
-            </a>
+            <div class="ticket-card-bottom">
+              <div class="meta-line">
+                @if (t.ordenTrabajoId) {
+                  <span class="linked-ot">
+                    <mat-icon>link</mat-icon>
+                    OT vinculada
+                  </span>
+                } @else {
+                  <span class="pending-ot">
+                    <mat-icon>schedule</mat-icon>
+                    Pendiente de crear OT
+                  </span>
+                }
+              </div>
+
+              <a
+                mat-stroked-button
+                class="btn-view"
+                [routerLink]="['/tickets', t.id]">
+                <mat-icon>visibility</mat-icon>
+                Ver detalle
+              </a>
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
     }
   </div>
 
-  <mat-paginator
-    [length]="total"
-    [pageIndex]="page"
-    [pageSize]="size"
-    [pageSizeOptions]="[10, 20, 50]"
-    (page)="paginar($event)">
-  </mat-paginator>
+  @if (total > size) {
+    <div class="paginator-shell">
+      <mat-paginator
+        [length]="total"
+        [pageIndex]="page"
+        [pageSize]="size"
+        [pageSizeOptions]="[5, 10, 20]"
+        (page)="paginar($event)">
+      </mat-paginator>
+    </div>
+  }
 </div>

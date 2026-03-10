@@ -65,7 +65,7 @@
           </mat-card>
 
           <!-- DATOS -->
-          @if (t.clienteNombre || t.clienteTelefono || t.clienteEmail || t.tipoServicioSugerido || t.direccion || observacionesExtraTexto(t)) {
+          @if (t.clienteNombre || t.clienteTelefono || t.clienteEmail || t.tipoServicioSugerido || t.direccion || observacionesTexto(t)) {
             <mat-card class="rs-card rs-card-data">
               <mat-card-content class="rs-card-pad">
                 <div class="section-head">
@@ -109,8 +109,7 @@
                   }
                 </div>
 
-                <!-- ✅ Observaciones: SOLO información adicional (sin redundancia) -->
-                @if (observacionesExtraTexto(t)) {
+                @if (observacionesTexto(t)) {
                   <div class="obs-box obs-compact" aria-label="Observaciones">
                     <div class="obs-ic">
                       <mat-icon>sticky_note_2</mat-icon>
@@ -118,7 +117,7 @@
 
                     <div class="obs-body">
                       <div class="obs-title">Observaciones</div>
-                      <div class="obs-text">{{ observacionesExtraTexto(t) }}</div>
+                      <div class="obs-text">{{ observacionesTexto(t) }}</div>
                     </div>
                   </div>
                 }
@@ -169,10 +168,14 @@
               @if (fotosTicket(t).length) {
                 <div class="photos-grid">
                   @for (f of fotosTicket(t); track f.id) {
-                    <a class="photo-card" [href]="f.url" target="_blank" rel="noopener">
+                    <button
+                      type="button"
+                      class="photo-card photo-card-btn"
+                      (click)="abrirFoto(f)"
+                      aria-label="Ver foto del ticket">
                       <img [src]="photoSrc(f)" [alt]="f.nombreOriginal || 'Foto ticket'" />
                       <div class="photo-name">{{ f.nombreOriginal || 'Foto' }}</div>
-                    </a>
+                    </button>
                   }
                 </div>
               } @else {
@@ -244,5 +247,24 @@
         </aside>
       </div>
     </section>
+  }
+
+  @if (fotoModalAbierto) {
+    <div class="rs-photo-modal-backdrop" (click)="cerrarFoto()">
+      <div class="rs-photo-modal" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="rs-photo-close"
+          (click)="cerrarFoto()"
+          aria-label="Cerrar visor">
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <img
+          class="rs-photo-modal-img"
+          [src]="fotoModalUrl"
+          alt="Vista previa de foto" />
+      </div>
+    </div>
   }
 </div>

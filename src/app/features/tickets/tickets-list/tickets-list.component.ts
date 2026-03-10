@@ -72,6 +72,10 @@ export class TicketsListComponent implements OnInit {
   }
 
   asuntoUi(t: TicketBackofficeListaItem): string {
-    return (t.asunto || '').trim() || 'Sin asunto';
+    const asunto = (t.asunto || '').trim();
+
+    if (!asunto) return 'Sin asunto';
+
+    return asunto.replace(/^soporte\s*:/i, 'Equipo:');
   }
 }

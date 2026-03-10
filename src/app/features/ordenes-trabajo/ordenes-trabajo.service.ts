@@ -24,13 +24,8 @@ export interface OtCrearRequest {
   tipo: TipoOt | string;
   prioridad: PrioridadOt | string;
 
-  // ✅ NUEVO: equipo como campo propio
   equipo?: string | null;
-
-  // ✅ Descripción = falla / trabajo a realizar
   descripcion: string;
-
-  // ✅ NUEVO: vínculo opcional con ticket origen
   ticketId?: string | null;
 
   tecnicoId?: string | null;
@@ -78,12 +73,22 @@ export class OrdenesTrabajoService {
     return this.http.get<OtDetalle>(`${this.url}/${encodeURIComponent(idOrCodigo)}`);
   }
 
+  eliminar(idOrCodigo: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${encodeURIComponent(idOrCodigo)}`);
+  }
+
   cambiarEstado(idOrCodigo: string, estado: EstadoOt): Observable<void> {
-    return this.http.patch<void>(`${this.url}/${encodeURIComponent(idOrCodigo)}/estado`, { estado });
+    return this.http.patch<void>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/estado`,
+      { estado }
+    );
   }
 
   anadirNota(idOrCodigo: string, contenido: string): Observable<void> {
-    return this.http.post<void>(`${this.url}/${encodeURIComponent(idOrCodigo)}/notas`, { contenido });
+    return this.http.post<void>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/notas`,
+      { contenido }
+    );
   }
 
   subirFoto(idOrCodigo: string, file: File): Observable<any> {
@@ -123,12 +128,13 @@ export class OrdenesTrabajoService {
     );
   }
 
-  // (cliente portal)
   marcarTransferencia(idOrCodigo: string): Observable<any> {
-    return this.http.post(`${this.url}/${encodeURIComponent(idOrCodigo)}/pago/transferencia`, {});
+    return this.http.post(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/pago/transferencia`,
+      {}
+    );
   }
 
-  // ✅ backoffice
   confirmarPagoRecibido(idOrCodigo: string): Observable<void> {
     return this.http.post<void>(
       `${this.url}/${encodeURIComponent(idOrCodigo)}/pago/confirmar`,
@@ -139,7 +145,10 @@ export class OrdenesTrabajoService {
   subirComprobante(idOrCodigo: string, file: File): Observable<any> {
     const fd = new FormData();
     fd.append('file', file);
-    return this.http.post(`${this.url}/${encodeURIComponent(idOrCodigo)}/pago/comprobante`, fd);
+    return this.http.post(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/pago/comprobante`,
+      fd
+    );
   }
 
   crearCita(idOrCodigo: string, body: { inicio: string; fin: string }): Observable<CitaDto> {

@@ -1,4 +1,12 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, inject, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -12,7 +20,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { TicketsService } from '../tickets.service';
 import { TicketDetalleDto } from '../../../core/models/tipos';
-import { environment } from '../../../../environments/environment';
+
+type TicketFotoUi = {
+  id: string;
+  url: string;
+  nombreOriginal?: string | null;
+  createdAt: string;
+};
 
 @Component({
   selector: 'rs-tickets-detalle',
@@ -32,19 +46,20 @@ import { environment } from '../../../../environments/environment';
   styleUrl: './tickets-detalle.component.scss',
 })
 export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private ticketsService = inject(TicketsService);
-  private snack = inject(MatSnackBar);
-  private http = inject(HttpClient);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly ticketsService = inject(TicketsService);
+  private readonly snack = inject(MatSnackBar);
+  private readonly http = inject(HttpClient);
 
-  @ViewChild('summaryCard', { read: ElementRef }) summaryCard?: ElementRef<HTMLElement>;
+  @ViewChild('summaryCard', { read: ElementRef })
+  summaryCard?: ElementRef<HTMLElement>;
+
   private io?: IntersectionObserver;
 
-  /** Fallback temporal si backend aún no devuelve ordenTrabajoId */
   private readonly ticketOtCacheKey = 'rs_ticket_ot_map';
 
-  id = this.route.snapshot.paramMap.get('id')!;
+  id = this.route.snapshot.paramMap.get('id') ?? '';
   loading = false;
   busy = false;
 
@@ -54,7 +69,9 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
   stickyEnabled = false;
   fallaExpanded = false;
 
-  /** Para resolver fotos protegidas por JWT (evita 401/404 en <img>) */
+  fotoModalAbierto = false;
+  fotoModalUrl = '';
+
   private blobUrls: Record<string, string> = {};
 
   get yaTieneOt(): boolean {
@@ -62,87 +79,103 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngOnInit(): void {
+    if (!this.id) {
+      this.snack.open('Ticket inválido', 'OK', { duration: 2500 });
+      return;
+    }
+
     this.cargar();
   }
 
   ngAfterViewInit(): void {
-    const el = this.summaryCard?.nativeElement;
-    if (!el) return;
+    const element = this.summaryCard?.nativeElement;
+    if (!element) return;
 
     const stickyTop = 92;
 
     this.io = new IntersectionObserver(
       (entries) => {
-        const e = entries[0];
-        this.stickyEnabled = !e.isIntersecting;
+        const entry = entries[0];
+        this.stickyEnabled = !entry.isIntersecting;
       },
-      { root: null, threshold: 0, rootMargin: `-${stickyTop}px 0px 0px 0px` }
+      {
+        root: null,
+        threshold: 0,
+        rootMargin: `-${stickyTop}px 0px 0px 0px`,
+      }
     );
 
-    this.io.observe(el);
+    this.io.observe(element);
   }
 
   ngOnDestroy(): void {
     this.io?.disconnect();
-
-    Object.values(this.blobUrls).forEach((u) => {
-      try {
-        URL.revokeObjectURL(u);
-      } catch {}
-    });
-    this.blobUrls = {};
+    this.releaseBlobUrls();
   }
 
   cargar(): void {
     this.loading = true;
 
     this.ticketsService.obtener(this.id).subscribe({
-      next: (t) => {
-        const otBackend = this.extraerOtIdDesdeTicket(t);
-        const otCache = this.obtenerVinculoTicketOtDesdeCache(t.id);
-        const otFinal = otBackend || otCache || null;
+      next: (ticket) => {
+        const ordenTrabajoId = this.resolveOrdenTrabajoId(ticket);
 
-        this.otVinculadaId = otFinal;
+        this.otVinculadaId = ordenTrabajoId;
 
-        if (t.id && otFinal) {
-          this.guardarVinculoTicketOtEnCache(t.id, otFinal);
+        if (ticket.id && ordenTrabajoId) {
+          this.saveTicketOtLink(ticket.id, ordenTrabajoId);
         }
 
         this.ticket = {
-          ...t,
-          ordenTrabajoId: otFinal ?? ((t as any).ordenTrabajoId ?? null),
-        } as TicketDetalleDto;
+          ...ticket,
+          ordenTrabajoId,
+        };
 
         this.fallaExpanded = false;
-
-        // Para que las fotos se vean aunque requieran Authorization
         this.hidratarFotosBlob(this.ticket);
       },
-      error: () => this.snack.open('No se pudo cargar el ticket', 'OK', { duration: 2500 }),
-      complete: () => (this.loading = false),
+      error: () => {
+        this.snack.open('No se pudo cargar el ticket', 'OK', { duration: 2500 });
+      },
+      complete: () => {
+        this.loading = false;
+      },
     });
   }
 
-  // =========================
-  // UI helpers
-  // =========================
-
   capitalizeFirst(value: string): string {
-    const s = (value ?? '').trim();
-    if (!s) return '';
-    return s.charAt(0).toUpperCase() + s.slice(1);
+    const text = value.trim();
+    if (!text) return '';
+    return text.charAt(0).toUpperCase() + text.slice(1);
   }
 
-  equipoTicket(t: TicketDetalleDto): string {
-    return ((t as any).equipo || (t as any).asunto || '').toString().trim();
+  equipoTicket(ticket: TicketDetalleDto): string {
+    return String(ticket.equipo || ticket.asunto || '').trim();
   }
 
-  fallaTexto(t: TicketDetalleDto): string {
-    return (t.descripcionFalla || t.descripcion || '—').toString().trim() || '—';
+  fallaTexto(ticket: TicketDetalleDto): string {
+    const descripcionFalla = String(ticket.descripcionFalla ?? '').trim();
+    if (descripcionFalla) return descripcionFalla;
+
+    const desdeDescripcion = this.extraerFallaDesdeDescripcion(
+      String(ticket.descripcion ?? '').trim()
+    );
+    if (desdeDescripcion) return desdeDescripcion;
+
+    return String(ticket.descripcion ?? '—').trim() || '—';
   }
 
-  showFallaToggle(t: TicketDetalleDto): boolean {
-    return this.fallaTexto(t).length > 90;
+  observacionesTexto(ticket: TicketDetalleDto): string {
+    const directas = this.limpiarTextoObservaciones(ticket.observaciones);
+    if (directas) return directas;
+
+    return this.extraerObservacionesDesdeDescripcion(
+      String(ticket.descripcion ?? '').trim()
+    );
+  }
+
+  showFallaToggle(ticket: TicketDetalleDto): boolean {
+    return this.fallaTexto(ticket).length > 90;
   }
 
   toggleFalla(): void {
@@ -150,68 +183,26 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   isCliente(tipo: string | null | undefined): boolean {
-    const tt = String(tipo ?? '').toUpperCase();
-    return tt.includes('CLIENTE') || tt.includes('PORTAL');
+    const normalized = String(tipo ?? '').toUpperCase();
+    return normalized.includes('CLIENTE') || normalized.includes('PORTAL');
   }
-
-  /**
-   * ✅ Observaciones sin redundancia:
-   * - Si backend manda `detalleAdicional`, usamos eso.
-   * - Si manda `observaciones` como texto, removemos líneas redundantes (Falla/Tipo/Dirección)
-   *   y devolvemos SOLO lo adicional.
-   */
-  observacionesExtraTexto(t: TicketDetalleDto): string {
-    const anyT = t as unknown as Record<string, unknown>;
-
-    const direct = String(anyT['detalleAdicional'] ?? '').trim();
-    if (direct) return direct;
-
-    const obsRaw = String(anyT['observaciones'] ?? '');
-    if (!obsRaw.trim()) return '';
-
-    const lines: string[] = obsRaw
-      .split(/\r?\n/)
-      .map((x: string) => x.trim())
-      .filter((x: string) => Boolean(x))
-      .filter((ln: string) => {
-        const s = ln.toLowerCase();
-        if (s.startsWith('falla reportada:')) return false;
-        if (s.startsWith('tipo sugerido:')) return false;
-        if (s.startsWith('dirección / ubicación:')) return false;
-        if (s.startsWith('direccion / ubicacion:')) return false;
-        if (s === 'observaciones') return false;
-        return true;
-      });
-
-    const cleaned = lines
-      .map((ln: string) => ln.replace(/^detalle\s*adicional\s*:\s*/i, '').trim())
-      .filter((ln: string) => Boolean(ln))
-      .join('\n')
-      .trim();
-
-    return cleaned;
-  }
-
-  // =========================
-  // Acciones rápidas
-  // =========================
 
   async copyText(text: string, label = 'Dato'): Promise<void> {
-    const value = (text ?? '').trim();
+    const value = text.trim();
     if (!value) return;
 
     try {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(value);
       } else {
-        const ta = document.createElement('textarea');
-        ta.value = value;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
+        const textarea = document.createElement('textarea');
+        textarea.value = value;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
         document.execCommand('copy');
-        document.body.removeChild(ta);
+        document.body.removeChild(textarea);
       }
 
       this.snack.open(`${label} copiado`, 'OK', { duration: 1400 });
@@ -225,43 +216,34 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
     this.router.navigate(['/clientes', clienteId]);
   }
 
-  // =========================
-  // OT
-  // =========================
-
   crearOt(): void {
     if (!this.ticket) return;
 
-    // ✅ si ya existe, abrir directamente
     if (this.otVinculadaId) {
       this.router.navigate(['/ordenes-trabajo', this.otVinculadaId]);
       return;
     }
 
-    const equipo = (this.ticket.equipo || this.ticket.asunto || '').trim();
-    const falla = (this.ticket.descripcionFalla || '').trim();
+    const equipo = this.equipoTicket(this.ticket);
+    const descripcionFalla = this.fallaTexto(this.ticket);
     const tipo = this.ticket.tipoServicioSugerido || '';
     const direccion = this.ticket.direccion || '';
+    const observaciones = this.observacionesTexto(this.ticket);
     const primeraFoto = this.fotosTicket(this.ticket)[0]?.url || '';
 
     this.router.navigate(['/ordenes-trabajo/nueva'], {
       queryParams: {
         fromTicket: '1',
         ticketId: this.ticket.id,
-
-        // cliente
-        clienteId: (this.ticket as any).clienteId ?? '',
-        clienteNombre: (this.ticket as any).clienteNombre ?? '',
-        clienteTelefono: (this.ticket as any).clienteTelefono ?? '',
-        clienteEmail: (this.ticket as any).clienteEmail ?? '',
-
-        // prefill
+        clienteId: this.ticket.clienteId ?? '',
+        clienteNombre: this.ticket.clienteNombre ?? '',
+        clienteTelefono: this.ticket.clienteTelefono ?? '',
+        clienteEmail: this.ticket.clienteEmail ?? '',
         equipo,
-        descripcionFalla: falla,
-        tipo: tipo ?? '',
-        direccion: direccion ?? '',
-
-        // visual
+        descripcionFalla,
+        tipo,
+        direccion,
+        observaciones,
         ticketFotoUrl: primeraFoto,
       },
     });
@@ -269,35 +251,38 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
 
   verOt(): void {
     if (!this.otVinculadaId) {
-      this.snack.open('No se encontró una OT vinculada para este ticket', 'OK', { duration: 2500 });
+      this.snack.open('No se encontró una OT vinculada para este ticket', 'OK', {
+        duration: 2500,
+      });
       return;
     }
-    this.router.navigate(['/ordenes-trabajo', this.otVinculadaId]);
+
+    this.router.navigate(['/ordenes-trabajo', this.otVinculadaId]).catch(() => {
+      this.snack.open('No se pudo abrir la orden vinculada', 'OK', {
+        duration: 2500,
+      });
+    });
   }
 
-  // =========================
-  // Fotos
-  // =========================
-
-  fotosTicket(t: TicketDetalleDto): { id: string; url: string; nombreOriginal?: string | null; createdAt: string }[] {
-    if (Array.isArray((t as any).fotos) && (t as any).fotos.length) {
-      return (t as any).fotos
-        .filter((f: any) => !!f?.url)
-        .map((f: any) => ({
-          id: f.id ?? `foto-${Math.random().toString(36).slice(2)}`,
-          url: this.resolveFileUrl(f.url),
-          nombreOriginal: f.nombreOriginal ?? 'Foto ticket',
-          createdAt: f.createdAt ?? t.createdAt,
+  fotosTicket(ticket: TicketDetalleDto): TicketFotoUi[] {
+    if (Array.isArray(ticket.fotos) && ticket.fotos.length) {
+      return ticket.fotos
+        .filter((foto) => !!foto?.url)
+        .map((foto) => ({
+          id: foto.id,
+          url: this.resolveFileUrl(foto.url),
+          nombreOriginal: foto.nombreOriginal ?? 'Foto ticket',
+          createdAt: foto.createdAt,
         }));
     }
 
-    if ((t as any).fotoUrl) {
+    if (ticket.fotoUrl) {
       return [
         {
           id: 'legacy-foto',
-          url: this.resolveFileUrl((t as any).fotoUrl),
+          url: this.resolveFileUrl(ticket.fotoUrl),
           nombreOriginal: 'Foto ticket',
-          createdAt: t.createdAt,
+          createdAt: ticket.createdAt,
         },
       ];
     }
@@ -305,50 +290,62 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
     return [];
   }
 
-  photoSrc(f: { id: string; url: string }): string {
-    // si logramos bajarla como blob con JWT, usamos el objectURL
-    return this.blobUrls[f.id] || f.url;
+  photoSrc(foto: TicketFotoUi): string {
+    return this.blobUrls[foto.id] || foto.url;
   }
 
-  private hidratarFotosBlob(t: TicketDetalleDto): void {
-    // limpiar blobs anteriores
-    Object.values(this.blobUrls).forEach((u) => {
-      try {
-        URL.revokeObjectURL(u);
-      } catch {}
-    });
-    this.blobUrls = {};
+  abrirFoto(foto: TicketFotoUi): void {
+    this.fotoModalUrl = this.photoSrc(foto);
+    this.fotoModalAbierto = true;
+  }
 
-    const fotos = this.fotosTicket(t);
+  cerrarFoto(): void {
+    this.fotoModalAbierto = false;
+    this.fotoModalUrl = '';
+  }
+
+  private hidratarFotosBlob(ticket: TicketDetalleDto): void {
+    this.releaseBlobUrls();
+
+    const fotos = this.fotosTicket(ticket);
     if (!fotos.length) return;
 
-    for (const f of fotos) {
-      this.http.get(f.url, { responseType: 'blob' }).subscribe({
+    for (const foto of fotos) {
+      this.http.get(foto.url, { responseType: 'blob' }).subscribe({
         next: (blob) => {
-          const obj = URL.createObjectURL(blob);
-          this.blobUrls[f.id] = obj;
+          this.blobUrls[foto.id] = URL.createObjectURL(blob);
         },
         error: () => {
-          // si falla (404/401), el <img> intentará con URL original
+          // fallback silencioso
         },
       });
     }
   }
 
-  // =========================
-  // Helpers Ticket -> OT cache
-  // =========================
+  private releaseBlobUrls(): void {
+    Object.values(this.blobUrls).forEach((url) => {
+      try {
+        URL.revokeObjectURL(url);
+      } catch {
+        // ignorar
+      }
+    });
 
-  private extraerOtIdDesdeTicket(t: TicketDetalleDto): string | null {
-    const x = t as any;
-    const candidatos = [x.ordenTrabajoId, x.otId, x.ordenTrabajo?.id, x.ordenTrabajo?.otId];
-    for (const c of candidatos) {
-      if (typeof c === 'string' && c.trim()) return c.trim();
-    }
-    return null;
+    this.blobUrls = {};
   }
 
-  private obtenerVinculoTicketOtDesdeCache(ticketId?: string | null): string | null {
+  private resolveOrdenTrabajoId(ticket: TicketDetalleDto): string | null {
+    const fromBackend =
+      typeof ticket.ordenTrabajoId === 'string' && ticket.ordenTrabajoId.trim()
+        ? ticket.ordenTrabajoId.trim()
+        : null;
+
+    if (fromBackend) return fromBackend;
+
+    return this.getTicketOtLink(ticket.id);
+  }
+
+  private getTicketOtLink(ticketId?: string | null): string | null {
     if (!ticketId) return null;
 
     try {
@@ -356,7 +353,7 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
       if (!raw) return null;
 
       const map = JSON.parse(raw) as Record<string, string>;
-      const otId = map?.[ticketId];
+      const otId = map[ticketId];
 
       return typeof otId === 'string' && otId.trim() ? otId.trim() : null;
     } catch {
@@ -364,7 +361,7 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  private guardarVinculoTicketOtEnCache(ticketId: string, otId: string): void {
+  private saveTicketOtLink(ticketId: string, otId: string): void {
     if (!ticketId || !otId) return;
 
     try {
@@ -372,19 +369,87 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
       const map = raw ? (JSON.parse(raw) as Record<string, string>) : {};
       map[ticketId] = otId;
       localStorage.setItem(this.ticketOtCacheKey, JSON.stringify(map));
-    } catch {}
+    } catch {
+      // ignorar
+    }
   }
-
-  // =========================
-  // Helpers URL
-  // =========================
 
   private resolveFileUrl(url?: string | null): string {
     if (!url) return '';
     if (/^https?:\/\//i.test(url)) return url;
 
-    const base = (environment.apiBaseUrl || '').replace(/\/$/, '');
     const path = url.startsWith('/') ? url : `/${url}`;
-    return `${base}${path}`;
+    return `${window.location.origin}${path}`;
+  }
+
+  private extraerFallaDesdeDescripcion(text: string): string {
+    const raw = text.trim();
+    if (!raw) return '';
+
+    const matchInline =
+      raw.match(/Falla reportada:\s*(.+)/i) ||
+      raw.match(/Descripci[oó]n de la falla:\s*(.+)/i);
+
+    if (matchInline?.[1]) {
+      return matchInline[1].trim();
+    }
+
+    const matchBlock = raw.match(
+      /Falla reportada:\s*([\s\S]*?)(?:\n[A-ZÁÉÍÓÚa-z].*?:|$)/i
+    );
+
+    return matchBlock?.[1]?.trim() || '';
+  }
+
+  private extraerObservacionesDesdeDescripcion(text: string): string {
+    const raw = text.trim();
+    if (!raw) return '';
+
+    const matchDirect = raw.match(
+      /(?:detalle\s+adicional|observaciones)\s*:\s*([\s\S]*)$/i
+    );
+
+    if (matchDirect?.[1]?.trim()) {
+      return this.limpiarTextoObservaciones(matchDirect[1]);
+    }
+
+    const lines = raw
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    if (!lines.length) return '';
+
+    const filtered = lines.filter((line) => {
+      const s = line.toLowerCase();
+
+      if (s.startsWith('falla reportada:')) return false;
+      if (s.startsWith('descripción de la falla:')) return false;
+      if (s.startsWith('descripcion de la falla:')) return false;
+      if (s.startsWith('tipo sugerido:')) return false;
+      if (s.startsWith('dirección / ubicación:')) return false;
+      if (s.startsWith('direccion / ubicacion:')) return false;
+      if (s.startsWith('equipo:')) return false;
+      if (s.startsWith('equipo / asunto:')) return false;
+      if (s.startsWith('observaciones:')) return false;
+      if (s.startsWith('detalle adicional:')) return false;
+
+      return true;
+    });
+
+    const joined = filtered.join('\n').trim();
+    const falla = this.extraerFallaDesdeDescripcion(raw);
+
+    if (!joined || joined === falla) return '';
+
+    return this.limpiarTextoObservaciones(joined);
+  }
+
+  private limpiarTextoObservaciones(value: string | null | undefined): string {
+    return String(value ?? '')
+      .trim()
+      .replace(/^detalle\s+adicional\s*:\s*/i, '')
+      .replace(/^observaciones\s*:\s*/i, '')
+      .trim();
   }
 }

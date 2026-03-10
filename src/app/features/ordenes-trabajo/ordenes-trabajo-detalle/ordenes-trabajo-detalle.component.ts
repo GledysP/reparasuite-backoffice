@@ -222,7 +222,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
     el.scrollTop = el.scrollHeight;
   }
 
-  // ✅ AUTO-REFRESH inteligente: presupuesto (ENVIADO) o pago (PENDIENTE/transferencia)
   private startAutoRefreshIfNeeded(res: OtDetalle): void {
     const otEstado = String(res.estado ?? '').toUpperCase();
     const presEstado = String(res.presupuesto?.estado ?? '').toUpperCase();
@@ -230,10 +229,8 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
     const pagoOk = ['PAGADO', 'CONFIRMADO', 'RECIBIDO'].includes(pagoEstado);
 
-    // presupuesto: esperando respuesta del cliente
     const presupuestoPendienteCliente = presEstado === 'ENVIADO' || otEstado === 'PRESUPUESTO';
 
-    // pago: esperando confirmación / comprobante / pendiente
     const pagoPendiente =
       (!!res.pago && !pagoOk) ||
       (!!res.pago?.comprobanteUrl && !pagoOk) ||
@@ -300,7 +297,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.ot.set(res);
 
-          // ✅ arrancar/parar auto-refresh según estado
           this.startAutoRefreshIfNeeded(res);
 
           if (res.estado) {
@@ -726,15 +722,23 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
       });
   }
 
+  // ✅ FIX URLs /files/**
+  fileUrl(url?: string | null): string {
+    if (!url) return '';
+    if (/^https?:\/\//i.test(url)) return url;
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${window.location.origin}${path}`;
+  }
+
   verFoto(foto: any): void {
-    const url = foto?.url || foto;
+    const url = this.fileUrl(foto?.url || foto);
     this.selectedImageUrl.set(url ?? '');
     this.dialog.open(this.imageModal, { width: 'auto', maxWidth: '92vw' });
   }
 
   verComprobante(url?: string | null): void {
     if (!url) return;
-    this.selectedComprobanteUrl.set(url);
+    this.selectedComprobanteUrl.set(this.fileUrl(url));
     this.dialog.open(this.comprobanteModal, { width: 'auto', maxWidth: '94vw' });
   }
 

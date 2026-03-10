@@ -17,9 +17,16 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
   selector: 'rs-usuarios-list',
   standalone: true,
   imports: [
-    CommonModule, NgIf, NgClass, MatCardModule, MatTableModule, MatIconModule, 
-    MatButtonModule, MatSlideToggleModule, MatDialogModule, MatSnackBarModule
-    // ConfirmDialogComponent eliminado de aquí para limpiar el warning
+    CommonModule,
+    NgIf,
+    NgClass,
+    MatCardModule,
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSlideToggleModule,
+    MatDialogModule,
+    MatSnackBarModule
   ],
   templateUrl: './usuarios-list.component.html',
   styleUrl: './usuarios-list.component.scss',
@@ -29,7 +36,7 @@ export class UsuariosListComponent implements OnInit {
   items: any[] = [];
 
   constructor(
-    private usuariosService: UsuariosService, 
+    private usuariosService: UsuariosService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
@@ -62,9 +69,9 @@ export class UsuariosListComponent implements OnInit {
   }
 
   crearUsuario(): void {
-    const dialogRef = this.dialog.open(UsuarioFormDialogComponent, { 
-      width: '450px', 
-      autoFocus: false 
+    const dialogRef = this.dialog.open(UsuarioFormDialogComponent, {
+      width: '450px',
+      autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -84,10 +91,10 @@ export class UsuariosListComponent implements OnInit {
   }
 
   editarUsuario(usuario: any): void {
-    const dialogRef = this.dialog.open(UsuarioFormDialogComponent, { 
-      width: '450px', 
-      data: usuario, 
-      autoFocus: false 
+    const dialogRef = this.dialog.open(UsuarioFormDialogComponent, {
+      width: '450px',
+      data: usuario,
+      autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -111,12 +118,12 @@ export class UsuariosListComponent implements OnInit {
 
     this.usuariosService.cambiarEstado(usuario.id, nuevoEstado).subscribe({
       next: () => {
-        usuario.activo = nuevoEstado; 
+        usuario.activo = nuevoEstado;
         this.notificar(`Estado de ${usuario.nombre} actualizado`);
       },
       error: (err) => {
         console.error('Error en Toggle:', err);
-        this.cargarUsuarios(); 
+        this.cargarUsuarios();
         this.notificar('❌ El servidor rechazó el cambio de estado');
       }
     });
@@ -145,9 +152,9 @@ export class UsuariosListComponent implements OnInit {
   }
 
   verUsuario(usuario: any): void {
-    this.dialog.open(UsuarioDetalleDialogComponent, { 
-      width: '400px', 
-      data: usuario 
+    this.dialog.open(UsuarioDetalleDialogComponent, {
+      width: '400px',
+      data: usuario
     });
   }
 }

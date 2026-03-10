@@ -20,7 +20,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subscription, forkJoin, of } from 'rxjs';
 import { catchError, finalize, switchMap } from 'rxjs/operators';
 
-import { environment } from '../../../../environments/environment';
 import { PrioridadOt, TipoOt } from '../../../core/models/enums';
 import { ClienteResumen, TicketDetalleDto, UsuarioResumen } from '../../../core/models/tipos';
 
@@ -102,6 +101,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   ticketId: string | null = null;
   ticketRef: TicketSummaryRef | null = null;
 
+  previewTicketAbierto = false;
+  previewTicketUrl = '';
+
   form = this.fb.group({
     clienteNombre: this.fb.nonNullable.control('', [Validators.required]),
     clienteTelefono: this.fb.nonNullable.control(''),
@@ -175,6 +177,16 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   get observacionesOriginales(): string {
     return (this.ticketRef?.observacionesOriginales || '').trim();
+  }
+
+  abrirPreviewTicket(p: FotoPreview): void {
+    this.previewTicketUrl = p.url;
+    this.previewTicketAbierto = true;
+  }
+
+  cerrarPreviewTicket(): void {
+    this.previewTicketAbierto = false;
+    this.previewTicketUrl = '';
   }
 
   private loadTecnicos(): void {
@@ -357,7 +369,6 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
             : null;
 
         const direccion = this.firstNonBlank(x.direccion, x.direccionSolicitud);
-
         const obs = this.pickObservacionesOnly(x);
 
         this.ticketRef = {
@@ -465,7 +476,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   }
 
   private pickObservacionesOnly(x: any): string {
-    const obs = this.firstNonBlank(
+    const direct = this.firstNonBlank(
       x?.observaciones,
       x?.detalleAdicional,
       x?.detalle_adicional,
@@ -474,10 +485,58 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       x?.nota,
       x?.observacion,
       x?.observacionCliente,
-      x?.detalleCliente
+      x?.detalleCliente,
+      x?.informacionAdicional,
+      x?.infoAdicional,
+      x?.detalle,
+      x?.comentario
     );
 
-    return (typeof obs === 'string' ? obs : '').trim();
+    const directText = (typeof direct === 'string' ? direct : '').trim();
+    if (directText) return directText;
+
+    return this.extractObservacionesFromDescription(String(x?.descripcion ?? ''));
+  }
+
+  private extractObservacionesFromDescription(text: string): string {
+    const raw = (text || '').trim();
+    if (!raw) return '';
+
+    const directMatch = raw.match(/Observaciones:\s*([\s\S]*)$/i);
+    if (directMatch?.[1]?.trim()) {
+      return directMatch[1].trim();
+    }
+
+    const lines = raw
+      .split(/\r?\n/)
+      .map((x: string) => x.trim())
+      .filter((x: string) => Boolean(x));
+
+    if (!lines.length) return '';
+
+    const filtered = lines.filter((ln: string) => {
+      const s = ln.toLowerCase();
+
+      if (s.startsWith('falla reportada:')) return false;
+      if (s.startsWith('descripción de la falla:')) return false;
+      if (s.startsWith('descripcion de la falla:')) return false;
+      if (s.startsWith('tipo sugerido:')) return false;
+      if (s.startsWith('dirección / ubicación:')) return false;
+      if (s.startsWith('direccion / ubicacion:')) return false;
+      if (s.startsWith('equipo:')) return false;
+      if (s.startsWith('equipo / asunto:')) return false;
+      if (s.startsWith('observaciones:')) return false;
+
+      return true;
+    });
+
+    const joined = filtered.join('\n').trim();
+    if (!joined) return '';
+
+    const falla = this.extractDescripcionFallaFromLegacy(raw);
+    if (joined === falla) return '';
+
+    return joined;
   }
 
   private firstNonBlank<T = string>(...values: any[]): T | null {
@@ -498,9 +557,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     if (!url) return '';
     if (/^https?:\/\//i.test(url)) return url;
 
-    const base = (environment.apiBaseUrl || '').replace(/\/$/, '');
     const path = url.startsWith('/') ? url : `/${url}`;
-    return `${base}${path}`;
+    return `${window.location.origin}${path}`;
   }
 
   buscarCliente(): void {
@@ -682,15 +740,12 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       prioridad: (v.prioridad ?? 'MEDIA') as PrioridadOt,
       equipo: (v.equipo ?? '').trim(),
       descripcion: descripcionFinal,
+      ticketId: this.fromTicket && this.ticketId ? this.ticketId : null,
       tecnicoId: v.tecnicoId || null,
       fechaPrevista: v.fechaPrevista || null,
       direccion: v.tipo === 'DOMICILIO' ? ((v.direccion ?? '').trim() || null) : null,
       notasAcceso: v.tipo === 'DOMICILIO' ? ((v.notasAcceso ?? '').trim() || null) : null
     };
-
-    if (this.fromTicket && this.ticketId) {
-      (body as any).ticketId = this.ticketId;
-    }
 
     this.guardando = true;
 

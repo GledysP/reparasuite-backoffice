@@ -17,8 +17,14 @@ import { ClienteResumen, ClienteOrdenItem } from '../../../core/models/tipos';
   selector: 'app-clientes-detalle',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, MatCardModule, MatTabsModule,
-    MatTableModule, MatIconModule, MatButtonModule, MatPaginatorModule
+    CommonModule,
+    RouterLink,
+    MatCardModule,
+    MatTabsModule,
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule,
+    MatPaginatorModule
   ],
   templateUrl: './clientes-detalle.component.html',
   styleUrls: ['./clientes-detalle.component.scss']
@@ -57,7 +63,6 @@ export class ClientesDetalleComponent implements OnInit {
         this.ordenes = res.items;
         this.total = res.total;
 
-        // Conteo de "abiertas" (ajusta si usas más estados cerrados)
         this.totalOpen = this.ordenes.filter(o => {
           const s = String(o.estado).toUpperCase();
           return s !== 'CERRADA' && s !== 'FINALIZADA' && s !== 'COMPLETADA' && s !== 'CLOSED';

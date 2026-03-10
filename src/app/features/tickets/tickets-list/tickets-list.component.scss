@@ -1,95 +1,249 @@
+// ======================================================
+// TOKENS
+// ======================================================
+$brand-primary: #124E59;
+$brand-primary-dark: #0d3f48;
+$brand-primary-soft: rgba(18, 78, 89, 0.08);
+$brand-primary-soft-2: rgba(18, 78, 89, 0.04);
+
+$surface: #ffffff;
+$surface-muted: #f3f6f7;
+
+$text-primary: #0f172a;
+$text-secondary: rgba(15, 23, 42, 0.72);
+$text-muted: rgba(15, 23, 42, 0.54);
+
+$border-subtle: rgba(15, 23, 42, 0.06);
+$border-soft: rgba(15, 23, 42, 0.08);
+
+$shadow-card: 0 8px 22px rgba(15, 23, 42, 0.045);
+$shadow-card-hover: 0 14px 28px rgba(15, 23, 42, 0.075);
+$shadow-soft: 0 10px 24px rgba(15, 23, 42, 0.05);
+
+$radius-xl: 16px;
+$radius-lg: 14px;
+$radius-md: 12px;
+$radius-pill: 999px;
+
+$status-open-bg: rgba(18, 78, 89, 0.10);
+$status-open-color: #124E59;
+$status-open-border: rgba(18, 78, 89, 0.18);
+
+$status-review-bg: rgba(59, 130, 246, 0.10);
+$status-review-color: #1d4ed8;
+$status-review-border: rgba(59, 130, 246, 0.18);
+
+$status-closed-bg: rgba(34, 197, 94, 0.10);
+$status-closed-color: #15803d;
+$status-closed-border: rgba(34, 197, 94, 0.18);
+
+$status-default-bg: #eef2f7;
+$status-default-color: #475569;
+$status-default-border: rgba(71, 85, 105, 0.16);
+
+// ======================================================
+// PAGE
+// ======================================================
 .rs-page-container {
   width: 100%;
-  padding: 18px;
+  padding: 24px;
 }
 
 .rs-header-row {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 24px;
+  margin-bottom: 0;
+}
+
+.rs-header-copy {
+  min-width: 0;
+}
+
+.rs-heading {
+  display: block;
 }
 
 .rs-page-title {
   margin: 0;
-  font-size: 24px;
+  color: $text-primary;
+  font-size: 28px;
+  line-height: 1.08;
   font-weight: 800;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.03em;
 }
 
 .rs-page-subtitle {
-  margin: 4px 0 0;
-  color: #64748b;
-  font-size: 13px;
+  margin: 8px 0 0;
+  color: $text-secondary;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
+.loading-wrap {
+  margin-bottom: 24px;
+
+  ::ng-deep .mdc-linear-progress__bar-inner {
+    border-color: $brand-primary;
+  }
+}
+
+// ======================================================
+// GRID
+// ======================================================
 .cards-wrap {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 14px;
-  margin-top: 14px;
-  margin-bottom: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+  margin-bottom: 28px;
 }
 
+// ======================================================
+// CARD
+// ======================================================
 .ticket-card {
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.06);
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  position: relative;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: $radius-xl !important;
+  background: $surface !important;
+  box-shadow: $shadow-card !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: linear-gradient(180deg, $brand-primary, $brand-primary-dark);
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
-    border-color: rgba(18, 78, 89, 0.16);
+    transform: translateY(-3px);
+    box-shadow: $shadow-card-hover !important;
+
+    &::before {
+      opacity: 1;
+    }
   }
+}
+
+.ticket-card-content {
+  padding: 22px !important;
+}
+
+.ticket-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 170px;
 }
 
 .empty-card {
   grid-column: 1 / -1;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.empty-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(18, 78, 89, 0.10), rgba(18, 78, 89, 0.04));
+  color: $brand-primary;
+
+  mat-icon {
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
+  }
 }
 
 .empty-title {
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 4px;
+  color: $text-primary;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .empty-sub {
-  color: #64748b;
-  font-size: 13px;
+  max-width: 520px;
+  color: $text-secondary;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
-.card-top {
+// ======================================================
+// TOP
+// ======================================================
+.ticket-card-top {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
 }
 
-.left {
+.ticket-main {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ticket-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $brand-primary-soft, $brand-primary-soft-2);
+  color: $brand-primary;
+  box-shadow: inset 0 0 0 1px rgba(18, 78, 89, 0.08);
+  opacity: 0.9;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.ticket-copy {
   min-width: 0;
   flex: 1 1 auto;
 }
 
-.right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  white-space: nowrap;
-}
-
 .ticket-title {
+  margin: 0 0 12px;
+  color: $text-primary;
   font-size: 15px;
-  font-weight: 800;
-  color: #0f172a;
-  line-height: 1.25;
-  margin-bottom: 6px;
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 
   display: -webkit-box;
-  display: box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -97,123 +251,376 @@
 }
 
 .ticket-client {
-  color: #64748b;
-  font-size: 12px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  font-size: 12px;
+  color: $text-muted;
+}
+
+.client-item {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: $text-secondary;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: rgba(18, 78, 89, 0.8);
+  }
 }
 
 .client-name {
-  color: #0f172a;
-  font-weight: 700;
+  font-weight: 500;
+  opacity: 0.9;
 }
 
 .client-email {
+  opacity: 0.75;
   overflow-wrap: anywhere;
 }
 
-.dot {
-  opacity: .45;
+.email-item {
+  min-width: 0;
 }
 
+.dot {
+  color: $text-muted;
+}
+
+.ticket-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+// ======================================================
+// STATUS
+// ======================================================
 .status-pill {
   display: inline-flex;
   align-items: center;
-  padding: 5px 10px;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 11px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
   border: 1px solid transparent;
-  background: #f1f5f9;
-  color: #334155;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: $status-default-bg;
+  color: $status-default-color;
 
   &.is-open {
-    background: rgba(18, 78, 89, 0.08);
-    color: #124E59;
-    border-color: rgba(18, 78, 89, 0.15);
+    background: $status-open-bg;
+    color: $status-open-color;
+    border-color: $status-open-border;
   }
 
   &.is-review {
-    background: rgba(59, 130, 246, 0.08);
-    color: #1d4ed8;
-    border-color: rgba(59, 130, 246, 0.15);
+    background: $status-review-bg;
+    color: $status-review-color;
+    border-color: $status-review-border;
   }
 
   &.is-closed {
-    background: rgba(34, 197, 94, 0.08);
-    color: #15803d;
-    border-color: rgba(34, 197, 94, 0.15);
+    background: $status-closed-bg;
+    color: $status-closed-color;
+    border-color: $status-closed-border;
+  }
+
+  &.is-default {
+    background: $status-default-bg;
+    color: $status-default-color;
+    border-color: $status-default-border;
   }
 }
 
 .updated-at {
-  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: $text-muted;
   font-size: 11px;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    color: rgba(18, 78, 89, 0.8);
+  }
 }
 
-.card-bottom {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(15, 23, 42, 0.05);
+// ======================================================
+// BOTTOM
+// ======================================================
+.ticket-card-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid $border-subtle;
 }
 
 .meta-line {
+  min-width: 0;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-width: 0;
+  gap: 10px;
+}
 
-  .linked-ot,
-  .pending-ot {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #475569;
+.linked-ot,
+.pending-ot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid $border-soft;
+  background: $surface-muted;
 
-    mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-    }
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
   }
+}
 
-  .linked-ot { color: #124E59; font-weight: 700; }
+.linked-ot {
+  color: $brand-primary;
+  background: rgba(18, 78, 89, 0.07);
+  border-color: rgba(18, 78, 89, 0.14);
+}
+
+.pending-ot {
+  color: #64748b;
 }
 
 .btn-view {
-  border-radius: 10px !important;
-  border-color: rgba(18, 78, 89, 0.22) !important;
+  min-height: 34px;
+  padding: 0 12px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(18, 78, 89, 0.22) !important;
   color: #124E59 !important;
+  background: transparent !important;
+  font-size: 12px !important;
   font-weight: 700 !important;
   white-space: nowrap;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+
+  mat-icon {
+    margin-right: 4px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: #124E59 !important;
+    border-color: #124E59 !important;
+    color: #ecf1f1 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(18, 78, 89, 0.15);
+  }
+}
+
+// ======================================================
+// PAGINATOR
+// ======================================================
+.paginator-shell {
+  margin-top: 4px;
+  margin-left: auto;
+  width: fit-content;
+  max-width: 100%;
+  background: $surface;
+  border: 1px solid rgba(18, 78, 89, 0.08);
+  border-radius: 18px;
+  box-shadow: $shadow-soft;
+  padding: 6px 12px;
+}
+
+::ng-deep .paginator-shell .mat-mdc-paginator {
+  background: transparent;
+  color: $text-secondary;
+}
+
+::ng-deep .paginator-shell .mat-mdc-paginator-container {
+  min-height: 52px;
+  padding: 0;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+::ng-deep .paginator-shell .mat-mdc-paginator-page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+::ng-deep .paginator-shell .mat-mdc-paginator-page-size-label,
+::ng-deep .paginator-shell .mat-mdc-paginator-range-label {
+  color: $text-secondary;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+::ng-deep .paginator-shell .mat-mdc-form-field {
+  min-width: 86px;
+}
+
+::ng-deep .paginator-shell .mat-mdc-text-field-wrapper {
+  height: 40px !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  overflow: hidden;
+  box-shadow: none !important;
+}
+
+::ng-deep .paginator-shell .mdc-notched-outline__leading,
+::ng-deep .paginator-shell .mdc-notched-outline__notch,
+::ng-deep .paginator-shell .mdc-notched-outline__trailing {
+  border-color: rgba(18, 78, 89, 0.16) !important;
+  border-width: 1px !important;
+  border-radius: 14px !important;
+}
+
+::ng-deep .paginator-shell .mat-mdc-select-value {
+  color: $text-primary;
+  font-weight: 600;
+}
+
+::ng-deep .paginator-shell .mat-mdc-select-arrow {
+  color: $text-secondary;
+}
+
+::ng-deep .paginator-shell .mat-mdc-paginator-range-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+::ng-deep .paginator-shell .mat-mdc-icon-button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: $text-secondary;
+  transition: background-color 0.18s ease, color 0.18s ease;
+
+  &:hover {
+    background: rgba(18, 78, 89, 0.06);
+    color: $brand-primary;
+  }
+}
+
+::ng-deep .paginator-shell .mat-mdc-icon-button[disabled] {
+  opacity: 0.42;
+}
+
+// ======================================================
+// RESPONSIVE
+// ======================================================
+@media (max-width: 1400px) {
+  .cards-wrap {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .cards-wrap {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
   .rs-page-container {
-    padding: 14px;
+    padding: 16px;
   }
 
-  .card-top {
+  .rs-header-row {
+    margin-bottom: 0;
+  }
+
+  .rs-page-title {
+    font-size: 24px;
+  }
+
+  .rs-page-subtitle {
+    font-size: 13px;
+  }
+
+  .cards-wrap {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .ticket-card-content {
+    padding: 18px !important;
+  }
+
+  .ticket-card-top {
     flex-direction: column;
+    gap: 12px;
   }
 
-  .right {
+  .ticket-side {
+    width: 100%;
     align-items: flex-start;
+    white-space: normal;
   }
 
-  .card-bottom {
+  .ticket-card-bottom {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
+  }
+
+  .meta-line {
+    width: 100%;
   }
 
   .btn-view {
     width: 100%;
+    justify-content: center;
+  }
+
+  .paginator-shell {
+    width: 100%;
+    padding: 10px 12px;
+  }
+
+  ::ng-deep .paginator-shell .mat-mdc-paginator-container {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  ::ng-deep .paginator-shell .mat-mdc-paginator-page-size,
+  ::ng-deep .paginator-shell .mat-mdc-paginator-range-actions {
+    width: 100%;
+  }
+
+  ::ng-deep .paginator-shell .mat-mdc-paginator-range-actions {
+    justify-content: space-between;
   }
 }

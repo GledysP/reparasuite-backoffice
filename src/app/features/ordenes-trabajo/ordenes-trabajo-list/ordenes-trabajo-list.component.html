@@ -82,7 +82,6 @@
     </mat-card-content>
   </mat-card>
 
-  <!-- DESKTOP / TABLE -->
   <mat-card class="rs-table-card rs-desktop-table-card">
     <mat-card-content>
       <ng-container *ngIf="items.length; else emptyDesktop">
@@ -144,6 +143,7 @@
                     class="rs-btn-action"
                     type="button"
                     aria-label="Ver detalle"
+                    [disabled]="!!deletingId"
                   >
                     <mat-icon>visibility</mat-icon>
                   </button>
@@ -154,8 +154,11 @@
                     type="button"
                     (click)="eliminarOrden(row)"
                     aria-label="Eliminar orden"
+                    [disabled]="eliminando(row)"
                   >
-                    <mat-icon>delete_outline</mat-icon>
+                    <mat-icon>
+                      {{ eliminando(row) ? 'hourglass_top' : 'delete_outline' }}
+                    </mat-icon>
                   </button>
                 </div>
               </td>
@@ -192,7 +195,6 @@
     </mat-paginator>
   </mat-card>
 
-  <!-- MOBILE / CARDS -->
   <div class="rs-mobile-list" *ngIf="items.length; else emptyMobile">
     <mat-card
       class="rs-mobile-ot-card"
@@ -232,6 +234,7 @@
           [routerLink]="['/ordenes-trabajo', row.id]"
           class="rs-mobile-link"
           type="button"
+          [disabled]="!!deletingId"
         >
           <mat-icon>visibility</mat-icon>
           <span>Ver detalle</span>
@@ -243,8 +246,11 @@
           type="button"
           (click)="eliminarOrden(row)"
           aria-label="Eliminar orden"
+          [disabled]="eliminando(row)"
         >
-          <mat-icon>delete_outline</mat-icon>
+          <mat-icon>
+            {{ eliminando(row) ? 'hourglass_top' : 'delete_outline' }}
+          </mat-icon>
         </button>
       </div>
     </mat-card>

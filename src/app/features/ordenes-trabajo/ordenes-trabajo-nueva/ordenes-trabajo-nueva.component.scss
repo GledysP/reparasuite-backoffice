@@ -520,6 +520,12 @@ $rs-shadow-soft: 0 4px 14px rgba(15, 23, 42, 0.04);
   border-color: rgba(18, 78, 89, 0.14);
 }
 
+.rs-thumb-btn {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
 .rs-thumb-remove {
   position: absolute;
   top: 6px;
@@ -561,6 +567,55 @@ $rs-shadow-soft: 0 4px 14px rgba(15, 23, 42, 0.04);
   font-weight: 800 !important;
   padding: 0 !important;
   margin-top: 4px;
+}
+
+/* modal preview ticket */
+.rs-preview-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.58);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  z-index: 1200;
+}
+
+.rs-preview-modal {
+  position: relative;
+  width: min(920px, 100%);
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rs-preview-img {
+  max-width: 100%;
+  max-height: calc(90vh - 32px);
+  border-radius: 12px;
+  object-fit: contain;
+  display: block;
+}
+
+.rs-preview-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: $rs-text;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
 }
 
 .rs-mt-10 { margin-top: 10px; }
@@ -641,7 +696,6 @@ $rs-shadow-soft: 0 4px 14px rgba(15, 23, 42, 0.04);
     color: #64748b !important;
   }
 
-  /* radio blanco dentro de opción activa */
   .rs-service-option.active .mdc-radio__outer-circle,
   .rs-service-option.active .mdc-radio__inner-circle {
     border-color: #ffffff !important;

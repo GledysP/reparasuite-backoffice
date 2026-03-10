@@ -123,7 +123,6 @@
             <div class="pane">
               <div class="grid-3">
 
-                <!-- Presupuesto -->
                 <mat-card class="card compact">
                   <div class="card-head">
                     <div class="card-title"><mat-icon>request_quote</mat-icon><span>Presupuesto</span></div>
@@ -144,7 +143,6 @@
                           @if (presupuestoImporte(); as imp) { {{ imp | number:'1.0-2' }} € } @else { — }
                         </div>
 
-                        <!-- ✅ FIX strict-null: alias p -->
                         <div class="pro-meta">
                           <span class="tag" [attr.data-tone]="presupuestoEstado()">{{ presupuestoSummary() }}</span>
 
@@ -203,7 +201,6 @@
                   </div>
                 </mat-card>
 
-                <!-- Cita -->
                 <mat-card class="card compact">
                   <div class="card-head">
                     <div class="card-title"><mat-icon>event</mat-icon><span>Cita</span></div>
@@ -257,7 +254,6 @@
                                    (blur)="onHoraBlur()">
                           </mat-form-field>
 
-                          <!-- ✅ Toggle mini AM/PM (solo esto añadido) -->
                           <div class="period-toggle">
                             <div class="pt-label">Período</div>
                             <mat-button-toggle-group class="pt-group"
@@ -287,7 +283,6 @@
                   </div>
                 </mat-card>
 
-                <!-- Pago -->
                 <mat-card class="card compact">
                   <div class="card-head">
                     <div class="card-title"><mat-icon>payments</mat-icon><span>Pago</span></div>
@@ -350,7 +345,7 @@
                 <div class="photo-grid">
                   @for (f of data.fotos; track trackById($index, f)) {
                     <button class="thumb" type="button" (click)="verFoto(f)">
-                      <img [src]="f.url" alt="foto" />
+                      <img [src]="fileUrl(f.url)" alt="foto" />
                     </button>
                   } @empty {
                     <div class="empty pad">Sin fotos</div>
