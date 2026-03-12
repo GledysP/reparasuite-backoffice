@@ -1,0 +1,59 @@
+@if (item(); as i) {
+  <div class="rs-page-wrap">
+    <div class="rs-topbar">
+      <div>
+        <h1 class="rs-title">{{ i.nombre }}</h1>
+        <p class="rs-subtitle">{{ i.sku }} · {{ i.categoria?.nombre || 'Sin categoría' }}</p>
+      </div>
+
+      <div class="rs-actions">
+        <a mat-stroked-button [routerLink]="['/inventario', i.id, 'editar']">Editar</a>
+        <button mat-flat-button class="rs-primary-btn" (click)="abrirMovimiento()">Registrar movimiento</button>
+      </div>
+    </div>
+
+    <mat-card class="rs-card">
+      <div class="rs-grid">
+        <div><strong>Stock actual:</strong> {{ i.stockActual }}</div>
+        <div><strong>Stock mínimo:</strong> {{ i.stockMinimo }}</div>
+        <div><strong>Precio venta:</strong> {{ i.precioVenta }}</div>
+        <div><strong>Costo promedio:</strong> {{ i.costoPromedio }}</div>
+        <div><strong>Marca:</strong> {{ i.marca || '—' }}</div>
+        <div><strong>Unidad:</strong> {{ i.unidadMedida }}</div>
+        <div class="span-2"><strong>Compatibilidad:</strong> {{ i.modeloCompatibilidad || '—' }}</div>
+        <div class="span-2"><strong>Descripción:</strong> {{ i.descripcion || '—' }}</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="rs-card rs-mt">
+      <h3 class="rs-block-title">Movimientos</h3>
+
+      <div class="rs-table-wrap">
+        <table class="rs-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Tipo</th>
+              <th>Cantidad</th>
+              <th>Antes</th>
+              <th>Después</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (m of movimientos(); track m.id) {
+              <tr>
+                <td>{{ m.fechaMovimiento | date:'d/MM/y HH:mm' }}</td>
+                <td>{{ m.tipoMovimiento }}</td>
+                <td>{{ m.cantidad }}</td>
+                <td>{{ m.stockAnterior }}</td>
+                <td>{{ m.stockResultante }}</td>
+                <td>{{ m.motivo || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+  </div>
+}

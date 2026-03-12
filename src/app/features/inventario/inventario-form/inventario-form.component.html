@@ -1,0 +1,110 @@
+<div class="rs-page-wrap">
+  <mat-card class="rs-form-card">
+    <div class="rs-form-head">
+      <div>
+        <h1 class="rs-title">{{ id ? 'Editar item' : 'Nuevo item' }}</h1>
+        <p class="rs-subtitle">Alta profesional de inventario para taller y servicio técnico.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" class="rs-form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>SKU *</mat-label>
+        <input matInput formControlName="sku" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Código de barras</mat-label>
+        <input matInput formControlName="codigoBarras" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre *</mat-label>
+        <input matInput formControlName="nombre" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Categoría</mat-label>
+        <mat-select formControlName="categoriaId">
+          <mat-option value="">Sin categoría</mat-option>
+          @for (c of categorias(); track c.id) {
+            <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Marca</mat-label>
+        <input matInput formControlName="marca" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Compatibilidad</mat-label>
+        <input matInput formControlName="modeloCompatibilidad" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Unidad medida</mat-label>
+        <mat-select formControlName="unidadMedida">
+          <mat-option value="UNIDAD">UNIDAD</mat-option>
+          <mat-option value="METRO">METRO</mat-option>
+          <mat-option value="LITRO">LITRO</mat-option>
+          <mat-option value="KILOGRAMO">KILOGRAMO</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Stock mínimo</mat-label>
+        <input matInput formControlName="stockMinimo" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Stock máximo</mat-label>
+        <input matInput formControlName="stockMaximo" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Costo promedio</mat-label>
+        <input matInput formControlName="costoPromedio" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Último costo</mat-label>
+        <input matInput formControlName="ultimoCosto" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Precio venta</mat-label>
+        <input matInput formControlName="precioVenta" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="span-2">
+        <mat-label>Ubicación almacén</mat-label>
+        <input matInput formControlName="ubicacionAlmacen" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="span-2">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput rows="3" formControlName="descripcion"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="span-2">
+        <mat-label>Notas</mat-label>
+        <textarea matInput rows="4" formControlName="notas"></textarea>
+      </mat-form-field>
+
+      <div class="span-2 check-grid">
+        <mat-checkbox formControlName="controlaStock">Controla stock</mat-checkbox>
+        <mat-checkbox formControlName="permiteStockNegativo">Permite stock negativo</mat-checkbox>
+        <mat-checkbox formControlName="activo">Activo</mat-checkbox>
+      </div>
+    </form>
+
+    <div class="rs-actions">
+      <button mat-stroked-button type="button" (click)="cancelar()">Cancelar</button>
+      <button mat-flat-button class="rs-primary-btn" type="button" (click)="guardar()" [disabled]="loading()">
+        {{ loading() ? 'Guardando...' : 'Guardar item' }}
+      </button>
+    </div>
+  </mat-card>
+</div>

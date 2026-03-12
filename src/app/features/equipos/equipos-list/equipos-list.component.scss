@@ -1,0 +1,24 @@
+$rs-primary: #124E59;
+$bg-smoke: #F2F4F7;
+
+.rs-page-wrap { padding: 24px; background: $bg-smoke; min-height: calc(100vh - 64px); }
+.rs-topbar { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:20px; flex-wrap:wrap; }
+.rs-title { margin:0; font-size:28px; font-weight:900; color:#0f172a; }
+.rs-subtitle { margin:6px 0 0; color:#64748b; }
+.rs-primary-btn { background:$rs-primary !important; color:#fff !important; border-radius:14px; }
+.rs-grid-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-top:18px; }
+.rs-card-link { text-decoration:none; color:inherit; }
+.rs-card { border-radius:20px; border:1px solid #e2e8f0; box-shadow:none; transition:.18s ease; }
+.rs-card:hover { transform:translateY(-2px); box-shadow:0 12px 26px rgba(15,23,42,.08); }
+.rs-card-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+.rs-badge { background:rgba(18,78,89,.08); color:$rs-primary; border-radius:999px; padding:6px 10px; font-size:12px; font-weight:800; }
+.rs-state { color:#166534; font-weight:800; font-size:12px; }
+.rs-state.inactive { color:#991b1b; }
+.rs-card-title { font-size:18px; font-weight:900; color:#0f172a; }
+.rs-card-sub { color:#334155; margin-top:4px; }
+.rs-meta { margin-top:14px; display:grid; gap:6px; color:#64748b; font-size:13px; }
+
+@media (max-width: 768px) {
+  .rs-page-wrap { padding: 16px; }
+  .rs-title { font-size: 24px; }
+}

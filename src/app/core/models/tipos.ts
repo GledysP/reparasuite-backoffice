@@ -189,3 +189,112 @@ export interface TicketBackofficeListaItem {
   clienteEmail: string | null;
   ordenTrabajoId?: string | null;
 }
+
+export interface CategoriaEquipoDto {
+  id: string;
+  codigo: string;
+  nombre: string;
+  descripcion?: string | null;
+  icono?: string | null;
+}
+
+export interface CategoriaEquipoFallaDto {
+  id: string;
+  codigo: string;
+  nombre: string;
+  descripcion?: string | null;
+}
+
+export interface EquipoResumenDto {
+  id: string;
+  codigoEquipo: string;
+  clienteId: string;
+  clienteNombre: string;
+  categoriaEquipoId?: string | null;
+  categoriaEquipoNombre?: string | null;
+  tipoEquipo?: string | null;
+  marca?: string | null;
+  modelo?: string | null;
+  numeroSerie?: string | null;
+  ubicacionHabitual?: string | null;
+  estadoActivo: boolean;
+}
+
+export interface EquipoDetalleDto {
+  id: string;
+  codigoEquipo: string;
+  clienteId: string;
+  clienteNombre: string;
+  categoria?: CategoriaEquipoDto | null;
+  codigoInterno?: string | null;
+  tipoEquipo?: string | null;
+  marca?: string | null;
+  modelo?: string | null;
+  numeroSerie?: string | null;
+  descripcionGeneral?: string | null;
+  fechaCompra?: string | null;
+  garantiaHasta?: string | null;
+  ubicacionHabitual?: string | null;
+  notasTecnicas?: string | null;
+  estadoActivo: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InventarioCategoriaDto {
+  id: string;
+  codigo: string;
+  nombre: string;
+  descripcion?: string | null;
+}
+
+export interface InventarioItemResumenDto {
+  id: string;
+  sku: string;
+  nombre: string;
+  categoriaNombre?: string | null;
+  marca?: string | null;
+  unidadMedida: string;
+  stockActual: string;
+  stockMinimo: string;
+  costoPromedio: string;
+  precioVenta: string;
+  activo: boolean;
+}
+
+export interface InventarioItemDetalleDto {
+  id: string;
+  sku: string;
+  codigoBarras?: string | null;
+  nombre: string;
+  descripcion?: string | null;
+  categoria?: InventarioCategoriaDto | null;
+  marca?: string | null;
+  modeloCompatibilidad?: string | null;
+  unidadMedida: string;
+  stockActual: string;
+  stockMinimo: string;
+  stockMaximo?: string | null;
+  controlaStock: boolean;
+  permiteStockNegativo: boolean;
+  costoPromedio: string;
+  ultimoCosto: string;
+  precioVenta: string;
+  ubicacionAlmacen?: string | null;
+  notas?: string | null;
+  activo: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InventarioMovimientoDto {
+  id: string;
+  tipoMovimiento: string;
+  cantidad: string;
+  stockAnterior: string;
+  stockResultante: string;
+  costoUnitario?: string | null;
+  motivo?: string | null;
+  observacion?: string | null;
+  fechaMovimiento: string;
+}

@@ -32,7 +32,7 @@
         routerLinkActive="is-active"
         [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
         [matTooltip]="item.label"
-        [matTooltipDisabled]="!( !isMobile && isCollapsed )"
+        [matTooltipDisabled]="!(!isMobile && isCollapsed)"
         matTooltipPosition="right"
         matTooltipClass="rs-nav-tooltip"
         (click)="closeMobileSidenav()"
@@ -103,7 +103,6 @@
 
       <span class="rs-spacer"></span>
 
-      <!-- NOTIFICACIONES -->
       <button
         mat-icon-button
         class="rs-icon-btn rs-notif-btn"
@@ -163,7 +162,6 @@
         </div>
       </mat-menu>
 
-      <!-- PERFIL -->
       <button
         mat-button
         class="rs-profile-trigger"

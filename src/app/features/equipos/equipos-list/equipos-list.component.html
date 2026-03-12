@@ -1,0 +1,41 @@
+<div class="rs-page-wrap">
+  <div class="rs-topbar">
+    <div>
+      <h1 class="rs-title">Equipos</h1>
+      <p class="rs-subtitle">Gestiona los equipos registrados de tus clientes.</p>
+    </div>
+
+    <button mat-flat-button class="rs-primary-btn" (click)="irNuevo()">
+      <mat-icon>add</mat-icon>
+      Nuevo equipo
+    </button>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <div class="rs-grid-cards">
+    @for (e of items(); track e.id) {
+      <a class="rs-card-link" [routerLink]="['/equipos', e.id]">
+        <mat-card class="rs-card">
+          <div class="rs-card-head">
+            <div class="rs-badge">{{ e.codigoEquipo }}</div>
+            <div class="rs-state" [class.inactive]="!e.estadoActivo">
+              {{ e.estadoActivo ? 'Activo' : 'Inactivo' }}
+            </div>
+          </div>
+
+          <div class="rs-card-title">{{ e.categoriaEquipoNombre || 'Sin categoría' }}</div>
+          <div class="rs-card-sub">{{ e.marca || '—' }} {{ e.modelo || '' }}</div>
+
+          <div class="rs-meta">
+            <div><strong>Cliente:</strong> {{ e.clienteNombre }}</div>
+            <div><strong>Serie:</strong> {{ e.numeroSerie || '—' }}</div>
+            <div><strong>Ubicación:</strong> {{ e.ubicacionHabitual || '—' }}</div>
+          </div>
+        </mat-card>
+      </a>
+    }
+  </div>
+</div>

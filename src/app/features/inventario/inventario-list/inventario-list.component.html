@@ -1,0 +1,42 @@
+<div class="rs-page-wrap">
+  <div class="rs-topbar">
+    <div>
+      <h1 class="rs-title">Inventario</h1>
+      <p class="rs-subtitle">Control de piezas, repuestos, accesorios y consumibles.</p>
+    </div>
+
+    <button mat-flat-button class="rs-primary-btn" (click)="irNuevo()">
+      <mat-icon>add</mat-icon>
+      Nuevo item
+    </button>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <div class="rs-grid-cards">
+    @for (i of items(); track i.id) {
+      <a class="rs-card-link" [routerLink]="['/inventario', i.id]">
+        <mat-card class="rs-card">
+          <div class="rs-card-head">
+            <div class="rs-badge">{{ i.sku }}</div>
+            <div class="rs-state" [class.low]="bajoStock(i)">
+              {{ bajoStock(i) ? 'Bajo stock' : 'Stock OK' }}
+            </div>
+          </div>
+
+          <div class="rs-card-title">{{ i.nombre }}</div>
+          <div class="rs-card-sub">{{ i.categoriaNombre || 'Sin categoría' }}</div>
+
+          <div class="rs-meta">
+            <div><strong>Marca:</strong> {{ i.marca || '—' }}</div>
+            <div><strong>Stock:</strong> {{ i.stockActual }} {{ i.unidadMedida }}</div>
+            <div><strong>Mínimo:</strong> {{ i.stockMinimo }}</div>
+            <div><strong>Precio:</strong> {{ i.precioVenta }}</div>
+          </div>
+        </mat-card>
+      </a>
+    }
+  </div>
+</div>

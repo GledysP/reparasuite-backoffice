@@ -1,0 +1,28 @@
+@if (item(); as e) {
+  <div class="rs-page-wrap">
+    <div class="rs-topbar">
+      <div>
+        <h1 class="rs-title">{{ e.codigoEquipo }}</h1>
+        <p class="rs-subtitle">{{ e.categoria?.nombre || 'Sin categoría' }} · {{ e.clienteNombre }}</p>
+      </div>
+
+      <div class="rs-actions">
+        <a mat-stroked-button [routerLink]="['/equipos', e.id, 'editar']">Editar</a>
+        <button mat-flat-button class="rs-primary-btn" (click)="desactivar()">Desactivar</button>
+      </div>
+    </div>
+
+    <mat-card class="rs-card">
+      <div class="rs-grid">
+        <div><strong>Marca:</strong> {{ e.marca || '—' }}</div>
+        <div><strong>Modelo:</strong> {{ e.modelo || '—' }}</div>
+        <div><strong>Serie:</strong> {{ e.numeroSerie || '—' }}</div>
+        <div><strong>Ubicación:</strong> {{ e.ubicacionHabitual || '—' }}</div>
+        <div><strong>Fecha compra:</strong> {{ e.fechaCompra || '—' }}</div>
+        <div><strong>Garantía:</strong> {{ e.garantiaHasta || '—' }}</div>
+        <div class="span-2"><strong>Descripción:</strong> {{ e.descripcionGeneral || '—' }}</div>
+        <div class="span-2"><strong>Notas técnicas:</strong> {{ e.notasTecnicas || '—' }}</div>
+      </div>
+    </mat-card>
+  </div>
+}

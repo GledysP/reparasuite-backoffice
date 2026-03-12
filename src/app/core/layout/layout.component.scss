@@ -37,7 +37,6 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   .rs-shell.rs-mobile .mat-drawer-backdrop.mat-drawer-shown { background: rgba(15,23,42,.34); }
 }
 
-/* Sidebar header */
 .rs-side-header {
   height:$rs-topbar-h;
   display:flex;
@@ -46,6 +45,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   padding:0 16px;
   border-bottom:1px solid $rs-border;
 }
+
 .rs-side-logo {
   width:44px; height:44px; flex:0 0 44px;
   border-radius:12px;
@@ -53,11 +53,12 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   display:grid; place-items:center;
   img { width:28px; height:28px; object-fit:contain; display:block; }
 }
+
 .rs-side-title { font-size:14px; font-weight:900; letter-spacing:-.02em; color:$rs-primary; }
 .rs-side-subtitle { margin-top:2px; font-size:10px; font-weight:800; letter-spacing:.09em; color:#7b8794; }
 
-/* Nav */
 .rs-nav { padding:8px 10px 14px; }
+
 :host ::ng-deep {
   .rs-nav-item.mat-mdc-list-item {
     margin:4px 0 !important;
@@ -69,7 +70,9 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
     --mdc-list-list-item-focus-state-layer-color: transparent;
 
     .rs-nav-icon { color: rgba(15,23,42,.72) !important; transition: color 160ms ease; }
-    .mdc-list-item__primary-text, .rs-nav-text {
+
+    .mdc-list-item__primary-text,
+    .rs-nav-text {
       color: $rs-text !important;
       font-size:13px;
       font-weight:750 !important;
@@ -79,31 +82,40 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
     &:hover:not(.is-active) {
       background: rgba(18,78,89,.06) !important;
       box-shadow: inset 0 0 0 1px rgba(18,78,89,.10);
-      .rs-nav-icon, .mdc-list-item__primary-text { color:$rs-primary !important; }
+
+      .rs-nav-icon,
+      .mdc-list-item__primary-text {
+        color:$rs-primary !important;
+      }
     }
 
     &.is-active {
       background: $rs-primary !important;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
-      .rs-nav-icon, .mdc-list-item__primary-text { color:#fff !important; }
+
+      .rs-nav-icon,
+      .mdc-list-item__primary-text {
+        color:#fff !important;
+      }
     }
   }
 }
 
-/* Mini sidebar */
 :host ::ng-deep .rs-sidebar.is-mini {
   .rs-side-header { justify-content:center; padding:0; }
   .rs-side-brand { display:none !important; }
   .rs-nav { padding:8px 8px 14px; }
+
   .rs-nav-item.mat-mdc-list-item {
     padding-inline:0 !important;
+
     .mdc-list-item__content { justify-content:center !important; }
     .mdc-list-item__start { margin-inline-end:0 !important; }
-    .mdc-list-item__primary-text, .rs-nav-text { display:none !important; }
+    .mdc-list-item__primary-text,
+    .rs-nav-text { display:none !important; }
   }
 }
 
-/* Header */
 .rs-header {
   position: sticky; top:0; z-index:25;
   height:$rs-topbar-h; min-height:$rs-topbar-h;
@@ -115,7 +127,6 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   overflow: visible;
 }
 
-/* Icon buttons */
 .rs-icon-btn {
   width:40px; height:40px;
   border-radius:12px !important;
@@ -130,12 +141,19 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
   --mdc-icon-button-state-layer-color: transparent;
 }
-:host ::ng-deep .rs-icon-btn .mdc-icon-button__ripple::before,
-:host ::ng-deep .rs-icon-btn .mdc-icon-button__ripple::after { background-color: transparent !important; }
-.rs-icon-btn:hover { box-shadow:0 8px 18px rgba(15,23,42,.06); transform: translateY(-1px); }
 
-/* Menu separator */
+:host ::ng-deep .rs-icon-btn .mdc-icon-button__ripple::before,
+:host ::ng-deep .rs-icon-btn .mdc-icon-button__ripple::after {
+  background-color: transparent !important;
+}
+
+.rs-icon-btn:hover {
+  box-shadow:0 8px 18px rgba(15,23,42,.06);
+  transform: translateY(-1px);
+}
+
 .rs-menu-btn { position: relative; }
+
 .rs-menu-btn::after {
   content:'';
   width:1px; height:24px;
@@ -148,7 +166,6 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .rs-spacer { flex:1 1 auto; min-width:10px; }
 
-/* Search */
 :host ::ng-deep .rs-search {
   margin:0 !important;
   min-width:0;
@@ -159,23 +176,47 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --mdc-outlined-text-field-focus-outline-color: #124E59;
   --mat-form-field-container-height: 40px;
 
-  .mat-mdc-text-field-wrapper { background:#fff; border-radius:12px; transition: box-shadow 160ms ease; }
-  &:hover .mat-mdc-text-field-wrapper { box-shadow:0 6px 16px rgba(15,23,42,.05); }
-  &.mat-focused .mat-mdc-text-field-wrapper { box-shadow:0 10px 22px rgba(18,78,89,.10); }
+  .mat-mdc-text-field-wrapper {
+    background:#fff;
+    border-radius:12px;
+    transition: box-shadow 160ms ease;
+  }
+
+  &:hover .mat-mdc-text-field-wrapper {
+    box-shadow:0 6px 16px rgba(15,23,42,.05);
+  }
+
+  &.mat-focused .mat-mdc-text-field-wrapper {
+    box-shadow:0 10px 22px rgba(18,78,89,.10);
+  }
 
   .mat-mdc-form-field-subscript-wrapper,
-  .mat-mdc-form-field-bottom-align::before { display:none !important; }
+  .mat-mdc-form-field-bottom-align::before {
+    display:none !important;
+  }
 
-  .mat-mdc-form-field-icon-prefix > .mat-icon { color:$rs-muted; padding-right:8px; }
-  .mat-mdc-form-field-infix { padding-top:9px !important; padding-bottom:9px !important; min-height:auto !important; }
-  input.mat-mdc-input-element { font-size:13px !important; font-weight:650 !important; }
+  .mat-mdc-form-field-icon-prefix > .mat-icon {
+    color:$rs-muted;
+    padding-right:8px;
+  }
+
+  .mat-mdc-form-field-infix {
+    padding-top:9px !important;
+    padding-bottom:9px !important;
+    min-height:auto !important;
+  }
+
+  input.mat-mdc-input-element {
+    font-size:13px !important;
+    font-weight:650 !important;
+  }
 }
+
 .rs-search-desktop {
   flex: 1 1 clamp(220px, 26vw, 320px);
   max-width: clamp(220px, 26vw, 320px);
 }
 
-/* Ctrl+K hint */
 .rs-cmdk-hint.mat-mdc-button {
   height:40px;
   border-radius:12px;
@@ -185,15 +226,23 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   min-width: unset;
   --mdc-text-button-state-layer-color: transparent;
 
-  .mdc-button__label { display:inline-flex; align-items:center; gap:8px; }
+  .mdc-button__label {
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+
   mat-icon { color:$rs-primary; }
 }
+
 :host ::ng-deep .rs-cmdk-hint .mdc-button__ripple::before,
-:host ::ng-deep .rs-cmdk-hint .mdc-button__ripple::after { background-color: transparent !important; }
+:host ::ng-deep .rs-cmdk-hint .mdc-button__ripple::after {
+  background-color: transparent !important;
+}
+
 .rs-cmdk-hint:hover { background: rgba(15,23,42,0.04) !important; }
 .rs-cmdk-hint-text { font-weight:800; font-size:12px; color:$rs-muted; }
 
-/* Mobile search overlay */
 .rs-mobile-search-overlay {
   position:absolute;
   left:12px; right:12px;
@@ -203,9 +252,13 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   display:flex;
   align-items:center;
 }
-:host ::ng-deep .rs-search.rs-search-mobile { width:100%; flex:1 1 auto; max-width:100%; }
 
-/* Profile chip (fix definitivo) */
+:host ::ng-deep .rs-search.rs-search-mobile {
+  width:100%;
+  flex:1 1 auto;
+  max-width:100%;
+}
+
 .rs-profile-trigger.mat-mdc-button {
   padding: 0 !important;
   min-width: unset !important;
@@ -213,8 +266,11 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   background: transparent !important;
   --mdc-text-button-state-layer-color: transparent;
 }
+
 :host ::ng-deep .rs-profile-trigger .mdc-button__ripple::before,
-:host ::ng-deep .rs-profile-trigger .mdc-button__ripple::after { background-color: transparent !important; }
+:host ::ng-deep .rs-profile-trigger .mdc-button__ripple::after {
+  background-color: transparent !important;
+}
 
 .rs-profile-chip {
   height: 40px;
@@ -228,7 +284,10 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   max-width: 220px;
   box-sizing: border-box;
 }
-.rs-profile-trigger:hover .rs-profile-chip { background: rgba(15,23,42,0.03); }
+
+.rs-profile-trigger:hover .rs-profile-chip {
+  background: rgba(15,23,42,0.03);
+}
 
 .rs-avatar {
   width:30px; height:30px; border-radius:50%;
@@ -237,13 +296,26 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   font-weight:900; font-size:12px;
   flex:0 0 auto;
 }
-.rs-profile-text { display:flex; flex-direction:column; line-height:1.05; min-width:0; }
-.rs-profile-name, .rs-profile-role { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px; }
+
+.rs-profile-text {
+  display:flex;
+  flex-direction:column;
+  line-height:1.05;
+  min-width:0;
+}
+
+.rs-profile-name,
+.rs-profile-role {
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:120px;
+}
+
 .rs-profile-name { color:$rs-text; font-size:12px; font-weight:900; }
 .rs-profile-role { color:$rs-muted; font-size:10px; font-weight:800; }
 .rs-chevron { color:$rs-muted; }
 
-/* Menus hover petróleo */
 ::ng-deep .rs-user-menu.mat-mdc-menu-panel,
 ::ng-deep .rs-notif-menu.mat-mdc-menu-panel {
   background: #fff !important;
@@ -252,35 +324,83 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   border:1px solid rgba(226,232,240,.95);
   box-shadow:0 18px 40px rgba(15,23,42,.16) !important;
 }
+
 ::ng-deep .rs-user-menu .mat-mdc-menu-item,
 ::ng-deep .rs-notif-menu .mat-mdc-menu-item {
   border-radius: 12px !important;
   --mdc-list-list-item-hover-state-layer-color: rgba(18,78,89,.10);
   --mdc-list-list-item-focus-state-layer-color: rgba(18,78,89,.10);
 }
+
 ::ng-deep .rs-user-menu .mat-mdc-menu-item:hover:not([disabled]),
 ::ng-deep .rs-notif-menu .mat-mdc-menu-item:hover:not([disabled]) {
   background: rgba(18,78,89,.08) !important;
 }
 
-/* Notifications menu */
-::ng-deep .rs-notif-menu.mat-mdc-menu-panel { min-width: 360px !important; max-width: 420px !important; }
-.rs-notif-head { display:flex; align-items:center; justify-content:space-between; padding: 10px 12px 8px; }
+::ng-deep .rs-notif-menu.mat-mdc-menu-panel {
+  min-width: 360px !important;
+  max-width: 420px !important;
+}
+
+.rs-notif-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 10px 12px 8px;
+}
+
 .rs-notif-title { font-size: 13px; font-weight: 900; color: $rs-text; }
-.rs-notif-action.mat-mdc-button { height: 32px; border-radius: 10px; font-weight: 900; font-size: 12px; color: $rs-primary; }
+
+.rs-notif-action.mat-mdc-button {
+  height: 32px;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 12px;
+  color: $rs-primary;
+}
 
 .rs-notif-list { padding: 6px; max-height: 320px; overflow: auto; }
-.rs-notif-item { height:auto !important; padding-top:10px !important; padding-bottom:10px !important; }
+
+.rs-notif-item {
+  height:auto !important;
+  padding-top:10px !important;
+  padding-bottom:10px !important;
+}
+
 .rs-notif-item-ic { margin-right: 10px; color: $rs-primary; }
-.rs-notif-text { display:flex; flex-direction:column; gap:4px; min-width:0; }
-.rs-notif-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+
+.rs-notif-text {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:0;
+}
+
+.rs-notif-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
 .rs-notif-item-title { font-weight: 900; font-size: 13px; color: $rs-text; }
 .rs-notif-item-sub { font-weight: 700; font-size: 12px; color: $rs-muted; }
 .rs-notif-item-time { font-weight: 800; font-size: 11px; color: rgba(100,116,139,.9); }
-.rs-notif-dot { width:8px; height:8px; border-radius:50%; background:#ef4444; flex:0 0 auto; }
-.rs-notif-empty { padding: 14px 12px; color: $rs-muted; font-weight: 800; }
 
-/* Tooltip */
+.rs-notif-dot {
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ef4444;
+  flex:0 0 auto;
+}
+
+.rs-notif-empty {
+  padding: 14px 12px;
+  color: $rs-muted;
+  font-weight: 800;
+}
+
 ::ng-deep .rs-nav-tooltip {
   --mdc-plain-tooltip-container-color: rgba(15, 23, 42, 0.94);
   --mdc-plain-tooltip-supporting-text-color: #ffffff;
@@ -288,15 +408,19 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 800;
 }
 
-/* Main */
 .rs-main { padding: 24px; min-width:0; }
 
-@media (max-width: 900px) { .rs-cmdk-hint { display:none !important; } }
+@media (max-width: 900px) {
+  .rs-cmdk-hint { display:none !important; }
+}
 
 @media (max-width: 720px) {
   .rs-profile-text { display:none; }
   .rs-profile-chip { max-width: unset; padding: 0 8px; }
   .rs-menu-btn::after { display:none; }
   .rs-main { padding:16px; }
-  ::ng-deep .rs-notif-menu.mat-mdc-menu-panel { min-width: 92vw !important; max-width: 92vw !important; }
+  ::ng-deep .rs-notif-menu.mat-mdc-menu-panel {
+    min-width: 92vw !important;
+    max-width: 92vw !important;
+  }
 }

@@ -73,6 +73,8 @@ export class LayoutComponent {
     { label: 'Órdenes de trabajo', route: '/ordenes-trabajo', icon: 'assignment' },
     { label: 'Tickets', route: '/tickets', icon: 'confirmation_number' },
     { label: 'Clientes', route: '/clientes', icon: 'group' },
+    { label: 'Equipos', route: '/equipos', icon: 'memory' },
+    { label: 'Inventario', route: '/inventario', icon: 'inventory_2' },
     { label: 'Usuarios', route: '/usuarios', icon: 'engineering' },
     { label: 'Ajustes', route: '/ajustes/taller', icon: 'settings' },
   ];
