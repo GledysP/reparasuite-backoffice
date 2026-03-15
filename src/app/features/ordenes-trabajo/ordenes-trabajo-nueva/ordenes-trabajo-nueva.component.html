@@ -22,7 +22,6 @@
 
   <form [formGroup]="form" class="rs-form-container">
 
-    <!-- RESUMEN TICKET -->
     <mat-card class="rs-ticket-strip" *ngIf="fromTicket">
       <div class="rs-ticket-strip-main">
         <div class="rs-ticket-strip-icon">
@@ -57,7 +56,6 @@
       </div>
     </mat-card>
 
-    <!-- CLIENTE -->
     <mat-card class="rs-section-card">
       <div class="rs-section-head">
         <div>
@@ -112,7 +110,6 @@
       </div>
     </mat-card>
 
-    <!-- SERVICIO -->
     <mat-card class="rs-section-card">
       <div class="rs-section-head">
         <div>
@@ -137,7 +134,6 @@
         </label>
       </mat-radio-group>
 
-      <!-- EN TALLER -->
       <div class="rs-grid rs-mt-12" *ngIf="!isDomicilio">
         <div class="rs-field rs-span-4">
           <div class="rs-field-label">Fecha de recepción</div>
@@ -149,7 +145,6 @@
         </div>
       </div>
 
-      <!-- A DOMICILIO -->
       <div class="rs-grid rs-mt-12" *ngIf="isDomicilio">
         <div class="rs-field rs-span-6">
           <div class="rs-field-label">Dirección / ubicación *</div>
@@ -203,51 +198,93 @@
       </div>
     </mat-card>
 
-    <!-- TRABAJO -->
     <mat-card class="rs-section-card rs-card-work">
       <div class="rs-section-head">
         <div>
           <div class="rs-section-kicker">Trabajo</div>
           <h2 class="rs-section-title">Detalle operativo</h2>
         </div>
+
+        <div class="rs-head-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            class="btn-soft-outline"
+            (click)="irANuevoEquipo()"
+            [disabled]="guardando">
+            <mat-icon>memory</mat-icon>
+            <span>Nuevo equipo</span>
+          </button>
+        </div>
       </div>
 
       <div class="rs-grid rs-grid-work-top">
-        <div class="rs-field rs-span-4">
+        <div class="rs-field rs-span-6">
+          <div class="rs-field-label">Vincular equipo existente (opcional)</div>
+          <mat-form-field appearance="outline">
+            <mat-select formControlName="equipoId" panelClass="rs-tech-panel">
+              <mat-option [value]="null">No vincular equipo existente</mat-option>
+
+              <mat-option *ngFor="let eq of equiposCliente()" [value]="eq.id">
+                {{ eq.codigoEquipo }}
+                <span *ngIf="eq.categoriaEquipoNombre"> · {{ eq.categoriaEquipoNombre }}</span>
+                <span *ngIf="eq.marca || eq.modelo">
+                  · {{ eq.marca || '' }} {{ eq.modelo || '' }}
+                </span>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div class="rs-field-help">
+            Si el cliente ya tiene un equipo registrado, puedes vincularlo aquí.
+          </div>
+        </div>
+
+        <div class="rs-field rs-span-6">
+          <div class="rs-field-label">Categoría</div>
+          <mat-form-field appearance="outline">
+            <mat-select formControlName="categoriaEquipoId" panelClass="rs-tech-panel">
+              <mat-option [value]="null">Sin categoría</mat-option>
+              <mat-option *ngFor="let c of categorias()" [value]="c.id">
+                {{ c.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="rs-grid rs-mt-12">
+        <div class="rs-field rs-span-6">
           <div class="rs-field-label">Equipo *</div>
           <mat-form-field appearance="outline">
             <input
               matInput
               formControlName="equipo"
               autocomplete="off"
-              placeholder="Ej: Laptop Lenovo / TV Samsung / PS5" />
+              placeholder="Ej: Televisor Samsung / Laptop Lenovo / Router TP-Link" />
           </mat-form-field>
         </div>
 
-        <div class="rs-field rs-span-8">
-          <div class="rs-field-label">
-            {{ fromTicket ? 'Descripción final de la orden *' : 'Descripción del problema / trabajo *' }}
-          </div>
+        <div class="rs-field rs-span-6">
+          <div class="rs-field-label">Falla reportada *</div>
           <mat-form-field appearance="outline">
-            <textarea
+            <input
               matInput
-              rows="3"
-              formControlName="descripcion"
-              [placeholder]="fromTicket ? 'Redacta la versión final que verá el técnico' : 'Describe claramente la falla o el trabajo a realizar'">
-            </textarea>
+              formControlName="fallaReportada"
+              autocomplete="off"
+              placeholder="Ej: No enciende / Sin señal / Pantalla rota" />
           </mat-form-field>
         </div>
       </div>
 
-      <div class="rs-grid rs-mt-12" *ngIf="fromTicket">
+      <div class="rs-grid rs-mt-12">
         <div class="rs-field rs-span-12">
-          <div class="rs-field-label">Observaciones del cliente (del ticket)</div>
+          <div class="rs-field-label">Observaciones del cliente</div>
           <mat-form-field appearance="outline" class="rs-obs-field">
             <textarea
               matInput
-              rows="2"
+              rows="3"
               formControlName="observaciones"
-              placeholder="Puedes añadir más detalles si es necesario">
+              placeholder="Detalles adicionales dados por el cliente">
             </textarea>
           </mat-form-field>
         </div>
@@ -285,7 +322,6 @@
       </div>
     </mat-card>
 
-    <!-- ADJUNTOS -->
     <mat-card class="rs-section-card">
       <div class="rs-section-head">
         <div>
@@ -380,7 +416,6 @@
       </button>
     </mat-card>
 
-    <!-- ACCIONES -->
     <div class="rs-actions-bar">
       <button
         mat-stroked-button

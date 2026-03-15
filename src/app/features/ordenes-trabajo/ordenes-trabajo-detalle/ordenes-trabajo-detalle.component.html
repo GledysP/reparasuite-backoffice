@@ -105,12 +105,16 @@
           <div class="card-head">
             <div class="card-title"><mat-icon>assignment</mat-icon><span>Información</span></div>
           </div>
+
           <div class="info-grid">
             <div class="info-left">
               <div class="spec-row"><div class="k">Equipo</div><div class="v v-strong">{{ data.equipo || '—' }}</div></div>
+              <div class="spec-row"><div class="k">Categoría</div><div class="v">{{ data.categoriaEquipoNombre || '—' }}</div></div>
+              <div class="spec-row"><div class="k">Falla reportada</div><div class="v">{{ data.fallaReportada || '—' }}</div></div>
               <div class="spec-row"><div class="k">Dirección</div><div class="v">{{ data.direccion || '—' }}</div></div>
               <div class="spec-row"><div class="k">Acceso</div><div class="v">{{ data.notasAcceso || '—' }}</div></div>
             </div>
+
             <div class="info-right">
               <div class="desc-title">Descripción</div>
               <div class="desc-box">{{ data.descripcion || '—' }}</div>
@@ -118,11 +122,82 @@
           </div>
         </mat-card>
 
+        <mat-card class="card card-anim">
+          <div class="card-head">
+            <div class="card-title">
+              <mat-icon>biotech</mat-icon>
+              <span>Revisión técnica</span>
+            </div>
+
+            <div class="card-actions">
+              <button
+                mat-icon-button
+                class="icon-action"
+                (click)="toggleRevisionTecnicaEdit()"
+                [disabled]="busy()"
+                matTooltip="Editar revisión técnica">
+                <mat-icon>{{ editRevisionTecnica() ? 'close' : 'edit' }}</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body">
+            @if (!editRevisionTecnica()) {
+              <div class="review-grid">
+                <div class="review-item">
+                  <div class="review-label">Falla detectada</div>
+                  <div class="review-value">{{ data.fallaDetectada || 'Sin registrar' }}</div>
+                </div>
+
+                <div class="review-item">
+                  <div class="review-label">Diagnóstico técnico</div>
+                  <div class="review-value review-value--multiline">
+                    {{ data.diagnosticoTecnico || 'Sin registrar' }}
+                  </div>
+                </div>
+
+                <div class="review-item">
+                  <div class="review-label">Trabajo a realizar</div>
+                  <div class="review-value review-value--multiline">
+                    {{ data.trabajoARealizar || 'Sin registrar' }}
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="review-form">
+                <mat-form-field appearance="outline" class="mf" subscriptSizing="dynamic">
+                  <mat-label>Falla detectada</mat-label>
+                  <input matInput [formControl]="formRevisionTecnica.controls.fallaDetectada" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="mf" subscriptSizing="dynamic">
+                  <mat-label>Diagnóstico técnico</mat-label>
+                  <textarea matInput rows="3" [formControl]="formRevisionTecnica.controls.diagnosticoTecnico"></textarea>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="mf" subscriptSizing="dynamic">
+                  <mat-label>Trabajo a realizar</mat-label>
+                  <textarea matInput rows="3" [formControl]="formRevisionTecnica.controls.trabajoARealizar"></textarea>
+                </mat-form-field>
+
+                <div class="btn-row">
+                  <button mat-stroked-button class="btn-mini btn-ghost" (click)="toggleRevisionTecnicaEdit()" [disabled]="busy()">
+                    Cancelar
+                  </button>
+
+                  <button mat-flat-button class="btn-mini btn-primary" (click)="guardarRevisionTecnica()" [disabled]="busy()">
+                    Guardar revisión
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </mat-card>
+
         <mat-tab-group class="tabs" animationDuration="150ms" [dynamicHeight]="true">
           <mat-tab label="Gestión">
             <div class="pane">
               <div class="grid-3">
-
                 <mat-card class="card compact">
                   <div class="card-head">
                     <div class="card-title"><mat-icon>request_quote</mat-icon><span>Presupuesto</span></div>
@@ -326,7 +401,6 @@
                     }
                   </div>
                 </mat-card>
-
               </div>
             </div>
           </mat-tab>

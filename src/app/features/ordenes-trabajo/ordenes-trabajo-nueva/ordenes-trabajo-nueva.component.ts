@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgFor, NgIf } from '@angular/common';
@@ -21,10 +21,17 @@ import { Subscription, forkJoin, of } from 'rxjs';
 import { catchError, finalize, switchMap } from 'rxjs/operators';
 
 import { PrioridadOt, TipoOt } from '../../../core/models/enums';
-import { ClienteResumen, TicketDetalleDto, UsuarioResumen } from '../../../core/models/tipos';
+import {
+  CategoriaEquipoDto,
+  ClienteResumen,
+  EquipoResumenDto,
+  TicketDetalleDto,
+  UsuarioResumen
+} from '../../../core/models/tipos';
 
 import { TicketsService } from '../../tickets/tickets.service';
 import { UsuariosService } from '../../usuarios/usuarios.service';
+import { EquiposService } from '../../equipos/equipos.service';
 import { ClienteBuscarDialogComponent } from './cliente-buscar-dialog.component';
 import { OrdenesTrabajoService, OtCrearRequest } from '../ordenes-trabajo.service';
 
@@ -79,6 +86,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   private usuarios = inject(UsuariosService);
   private ordenes = inject(OrdenesTrabajoService);
   private tickets = inject(TicketsService);
+  private equiposService = inject(EquiposService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private snack = inject(MatSnackBar);
@@ -104,6 +112,15 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   previewTicketAbierto = false;
   previewTicketUrl = '';
 
+  categorias = signal<CategoriaEquipoDto[]>([]);
+  equiposCliente = signal<EquipoResumenDto[]>([]);
+
+  readonly equipoSeleccionado = computed(() => {
+    const id = this.form.controls.equipoId.value;
+    if (!id) return null;
+    return this.equiposCliente().find(x => x.id === id) ?? null;
+  });
+
   form = this.fb.group({
     clienteNombre: this.fb.nonNullable.control('', [Validators.required]),
     clienteTelefono: this.fb.nonNullable.control(''),
@@ -124,7 +141,11 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
     fechaPrevista: this.fb.control<string | null>(null),
 
+    equipoId: this.fb.control<string | null>(null),
+    categoriaEquipoId: this.fb.control<string | null>(null),
+
     equipo: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
+    fallaReportada: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
     descripcion: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(3)]),
 
     observaciones: this.fb.nonNullable.control(''),
@@ -138,8 +159,11 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     this.fromTicket = this.route.snapshot.queryParamMap.get('fromTicket') === '1';
 
     this.loadTecnicos();
+    this.loadCategorias();
     this.setupPrefillFromQueryParams();
     this.setupTipoRules();
+    this.setupClienteEquiposSync();
+    this.setupEquipoSelectionSync();
 
     if (this.ticketId) {
       this.cargarTicketParaPrefill(this.ticketId);
@@ -197,6 +221,93 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     );
   }
 
+  private loadCategorias(): void {
+    this.subs.add(
+      this.equiposService.categorias().subscribe({
+        next: (cats) => this.categorias.set(cats),
+        error: () => this.categorias.set([])
+      })
+    );
+  }
+
+  private setupClienteEquiposSync(): void {
+    this.subs.add(
+      this.form.controls.clienteNombre.valueChanges.subscribe((value) => {
+        if (this.fromTicket) return;
+
+        const nombre = String(value ?? '').trim();
+        if (!nombre) {
+          this.clienteId = null;
+          this.equiposCliente.set([]);
+          this.form.patchValue(
+            {
+              equipoId: null,
+              categoriaEquipoId: null
+            },
+            { emitEvent: false }
+          );
+        }
+      })
+    );
+  }
+
+  private setupEquipoSelectionSync(): void {
+    this.subs.add(
+      this.form.controls.equipoId.valueChanges.subscribe((equipoId) => {
+        if (!equipoId) return;
+
+        const found = this.equiposCliente().find(x => x.id === equipoId);
+        if (!found) return;
+
+        const equipoTexto = [
+          found.marca,
+          found.modelo
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .trim();
+
+        const currentEquipo = String(this.form.controls.equipo.value ?? '').trim();
+
+        this.form.patchValue(
+          {
+            equipo: currentEquipo || equipoTexto || found.codigoEquipo,
+            categoriaEquipoId: found.categoriaEquipoId ?? this.form.controls.categoriaEquipoId.value
+          },
+          { emitEvent: false }
+        );
+      })
+    );
+  }
+
+  private cargarEquiposCliente(clienteId: string | null): void {
+    if (!clienteId) {
+      this.equiposCliente.set([]);
+      this.form.controls.equipoId.setValue(null, { emitEvent: false });
+      return;
+    }
+
+    this.subs.add(
+      this.equiposService.listar({ clienteId, activo: true, page: 0, size: 100 }).subscribe({
+        next: (res) => {
+          this.equiposCliente.set(res.items ?? []);
+
+          const currentId = this.form.controls.equipoId.value;
+          if (currentId) {
+            const exists = (res.items ?? []).some(x => x.id === currentId);
+            if (!exists) {
+              this.form.controls.equipoId.setValue(null, { emitEvent: false });
+            }
+          }
+        },
+        error: () => {
+          this.equiposCliente.set([]);
+          this.form.controls.equipoId.setValue(null, { emitEvent: false });
+        }
+      })
+    );
+  }
+
   private setupPrefillFromQueryParams(): void {
     this.subs.add(
       this.route.queryParamMap.subscribe(qp => {
@@ -224,7 +335,10 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
           ''
         ).trim();
 
-        if (clienteId) this.clienteId = clienteId;
+        if (clienteId) {
+          this.clienteId = clienteId;
+          this.cargarEquiposCliente(clienteId);
+        }
 
         this.form.patchValue({
           clienteNombre: clienteNombre || this.form.controls.clienteNombre.value || '',
@@ -236,6 +350,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
               : this.form.controls.tipo.value,
           direccion: direccion || this.form.controls.direccion.value || '',
           equipo: equipo || this.form.controls.equipo.value || '',
+          fallaReportada: descripcionLimpia || this.form.controls.fallaReportada.value || '',
           descripcion: descripcionLimpia || this.form.controls.descripcion.value || '',
           observaciones: obsQP || this.form.controls.observaciones.value || ''
         }, { emitEvent: false });
@@ -383,6 +498,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         };
 
         this.clienteId = this.firstNonBlank(x.clienteId, this.clienteId) as string | null;
+        this.cargarEquiposCliente(this.clienteId);
 
         this.form.patchValue({
           clienteNombre: this.firstNonBlank(x.clienteNombre, this.form.controls.clienteNombre.value) || '',
@@ -394,6 +510,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
               : this.form.controls.tipo.value,
           direccion: this.firstNonBlank(direccion, this.form.controls.direccion.value) || '',
           equipo: this.firstNonBlank(equipo, this.form.controls.equipo.value) || '',
+          fallaReportada: this.firstNonBlank(descripcion, this.form.controls.fallaReportada.value) || '',
           descripcion: this.firstNonBlank(descripcion, this.form.controls.descripcion.value) || '',
           observaciones: obs || ''
         }, { emitEvent: false });
@@ -584,8 +701,11 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
           this.form.patchValue({
             clienteNombre: cliente.nombre ?? '',
             clienteTelefono: cliente.telefono ?? '',
-            clienteEmail: cliente.email ?? ''
+            clienteEmail: cliente.email ?? '',
+            equipoId: null,
+            categoriaEquipoId: null
           });
+          this.cargarEquiposCliente(cliente.id);
         }
       })
     );
@@ -593,6 +713,17 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   irAClientes(): void {
     this.router.navigateByUrl('/clientes');
+  }
+
+  irANuevoEquipo(): void {
+    if (!this.clienteId) {
+      this.snack.open('Primero selecciona un cliente', 'OK', { duration: 2200 });
+      return;
+    }
+
+    this.router.navigate(['/equipos/nuevo'], {
+      queryParams: { clienteId: this.clienteId }
+    });
   }
 
   onDragOver(ev: DragEvent): void {
@@ -738,7 +869,12 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       },
       tipo: (v.tipo ?? 'TIENDA') as TipoOt,
       prioridad: (v.prioridad ?? 'MEDIA') as PrioridadOt,
+
       equipo: (v.equipo ?? '').trim(),
+      equipoId: v.equipoId || null,
+      categoriaEquipoId: v.categoriaEquipoId || null,
+      fallaReportada: (v.fallaReportada ?? '').trim() || null,
+
       descripcion: descripcionFinal,
       ticketId: this.fromTicket && this.ticketId ? this.ticketId : null,
       tecnicoId: v.tecnicoId || null,

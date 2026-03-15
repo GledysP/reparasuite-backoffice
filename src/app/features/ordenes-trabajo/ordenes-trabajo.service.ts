@@ -21,10 +21,15 @@ export interface OtCrearRequest {
     telefono?: string | null;
     email?: string | null;
   };
+
   tipo: TipoOt | string;
   prioridad: PrioridadOt | string;
 
   equipo?: string | null;
+  equipoId?: string | null;
+  categoriaEquipoId?: string | null;
+  fallaReportada?: string | null;
+
   descripcion: string;
   ticketId?: string | null;
 
@@ -32,6 +37,12 @@ export interface OtCrearRequest {
   fechaPrevista?: string | null;
   direccion?: string | null;
   notasAcceso?: string | null;
+}
+
+export interface OtRevisionTecnicaRequest {
+  fallaDetectada?: string | null;
+  diagnosticoTecnico?: string | null;
+  trabajoARealizar?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -169,6 +180,16 @@ export class OrdenesTrabajoService {
     return this.http.post<MensajeOtDto>(
       `${this.url}/${encodeURIComponent(idOrCodigo)}/mensajes`,
       { contenido }
+    );
+  }
+
+  actualizarRevisionTecnica(
+    idOrCodigo: string,
+    body: OtRevisionTecnicaRequest
+  ): Observable<OtDetalle> {
+    return this.http.patch<OtDetalle>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/revision-tecnica`,
+      body
     );
   }
 }

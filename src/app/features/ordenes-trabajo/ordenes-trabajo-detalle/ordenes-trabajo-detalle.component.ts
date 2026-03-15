@@ -52,6 +52,7 @@ type UiAction =
   | 'pago'
   | 'foto'
   | 'recargar'
+  | 'revision-tecnica'
   | null;
 
 type PeriodoHora = 'AM' | 'PM';
@@ -119,6 +120,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
   editBudget = signal(false);
   editCita = signal(false);
+  editRevisionTecnica = signal(false);
   private firstLoad = true;
 
   private refreshTimer: number | null = null;
@@ -154,6 +156,12 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
   formNota = this.fb.group({
     contenido: ['', [Validators.required, Validators.minLength(2)]],
+  });
+
+  formRevisionTecnica = this.fb.group({
+    fallaDetectada: [''],
+    diagnosticoTecnico: [''],
+    trabajoARealizar: [''],
   });
 
   readonly tieneCita = computed(() => (this.ot()?.citas?.length ?? 0) > 0);
@@ -247,7 +255,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
     this.refreshTimer = window.setInterval(() => {
       if (this.loading() || this.busy()) return;
-      if (this.editBudget() || this.editCita()) return;
+      if (this.editBudget() || this.editCita() || this.editRevisionTecnica()) return;
       this.cargar('recargar');
     }, 12000);
   }
@@ -325,11 +333,23 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
             this.formCita.patchValue({ fechaInicio: dateOnly, horaInicio: hora24, periodo }, { emitEvent: false });
           }
 
+          if (!this.editRevisionTecnica()) {
+            this.formRevisionTecnica.patchValue(
+              {
+                fallaDetectada: res.fallaDetectada ?? '',
+                diagnosticoTecnico: res.diagnosticoTecnico ?? '',
+                trabajoARealizar: res.trabajoARealizar ?? '',
+              },
+              { emitEvent: false }
+            );
+          }
+
           this.resolveTecnicoNombre(res);
 
           if (this.firstLoad) {
             this.editBudget.set(false);
             this.editCita.set(false);
+            this.editRevisionTecnica.set(false);
             this.firstLoad = false;
           }
 
@@ -358,6 +378,46 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
   toggleCitaEdit(): void {
     this.editCita.set(!this.editCita());
+  }
+
+  toggleRevisionTecnicaEdit(): void {
+    const next = !this.editRevisionTecnica();
+    this.editRevisionTecnica.set(next);
+
+    if (next && this.ot()) {
+      this.formRevisionTecnica.patchValue({
+        fallaDetectada: this.ot()?.fallaDetectada ?? '',
+        diagnosticoTecnico: this.ot()?.diagnosticoTecnico ?? '',
+        trabajoARealizar: this.ot()?.trabajoARealizar ?? '',
+      }, { emitEvent: false });
+    }
+  }
+
+  guardarRevisionTecnica(): void {
+    if (!this.id) return;
+
+    const raw = this.formRevisionTecnica.getRawValue();
+
+    this.busy.set(true);
+    this.actionInFlight.set('revision-tecnica');
+
+    this.ordenes.actualizarRevisionTecnica(this.id, {
+      fallaDetectada: (raw.fallaDetectada ?? '').trim() || null,
+      diagnosticoTecnico: (raw.diagnosticoTecnico ?? '').trim() || null,
+      trabajoARealizar: (raw.trabajoARealizar ?? '').trim() || null,
+    }).pipe(
+      finalize(() => {
+        this.busy.set(false);
+        this.actionInFlight.set(null);
+      })
+    ).subscribe({
+      next: () => {
+        this.toast('Revisión técnica guardada', 'success');
+        this.editRevisionTecnica.set(false);
+        this.cargar();
+      },
+      error: () => this.toast('Error al guardar revisión técnica', 'error'),
+    });
   }
 
   selectEstadoFromMenu(estado: EstadoOt): void {
@@ -722,7 +782,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
       });
   }
 
-  // ✅ FIX URLs /files/**
   fileUrl(url?: string | null): string {
     if (!url) return '';
     if (/^https?:\/\//i.test(url)) return url;

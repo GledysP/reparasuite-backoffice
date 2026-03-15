@@ -40,6 +40,12 @@ export interface OtListaItem {
   tipo: TipoOt | string;
   prioridad: PrioridadOt | string;
   equipo?: string | null;
+
+  equipoId?: string | null;
+  categoriaEquipoId?: string | null;
+  categoriaEquipoNombre?: string | null;
+  fallaReportada?: string | null;
+
   clienteNombre: string;
   tecnicoNombre: string | null;
   updatedAt: string;
@@ -102,7 +108,18 @@ export interface OtDetalle {
   estado: EstadoOt | string;
   tipo: TipoOt | string;
   prioridad: PrioridadOt | string;
+
   equipo?: string | null;
+
+  equipoId?: string | null;
+  categoriaEquipoId?: string | null;
+  categoriaEquipoNombre?: string | null;
+  fallaReportada?: string | null;
+
+  fallaDetectada?: string | null;
+  diagnosticoTecnico?: string | null;
+  trabajoARealizar?: string | null;
+
   descripcion: string;
   cliente: ClienteResumen;
   tecnico: UsuarioResumen | null;

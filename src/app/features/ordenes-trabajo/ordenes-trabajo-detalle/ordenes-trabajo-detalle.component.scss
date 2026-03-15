@@ -277,3 +277,45 @@
   .time-row { grid-template-columns: 1fr; }
   .period-toggle { width: 100%; }
 }
+.rs-field-help {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--muted);
+  padding-left: 2px;
+}
+.review-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.review-item {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(15, 23, 42, 0.02);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.review-label {
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.review-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.review-value--multiline {
+  white-space: pre-wrap;
+}
+
+.review-form {
+  display: grid;
+  gap: 12px;
+}
