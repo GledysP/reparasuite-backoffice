@@ -10,6 +10,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { ClientesService } from '../../clientes/clientes.service';
 import { EquiposService } from '../equipos.service';
@@ -29,7 +33,11 @@ import { CategoriaEquipoDialogComponent } from '../categoria-equipo-dialog/categ
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatIconModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatTooltipModule
   ],
   templateUrl: './equipo-form.component.html',
   styleUrl: './equipo-form.component.scss'

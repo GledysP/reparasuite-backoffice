@@ -1,41 +1,92 @@
-$rs-primary: #124E59;
-$bg-smoke: #F2F4F7;
+$petroleo: #1a4b5d;
+$bg-input: #f8fafc; // Gris muy claro para el fondo del input
+$border-input: #e2e8f0; // Gris sutil para el borde
 
-.rs-page-wrap { padding:24px; background:$bg-smoke; min-height:calc(100vh - 64px); }
-.rs-form-card { border-radius:24px; border:1px solid #e2e8f0; box-shadow:none; }
-.rs-form-head { margin-bottom:18px; }
-.rs-title { margin:0; font-size:28px; font-weight:900; color:#0f172a; }
-.rs-subtitle { margin:6px 0 0; color:#64748b; }
-.rs-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
-.span-2 { grid-column: span 2; }
-.rs-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:20px; }
-.rs-primary-btn { background:$rs-primary !important; color:#fff !important; border-radius:14px; }
-
-.rs-category-block {
-  display: grid;
-  gap: 8px;
+/*
+  REGLA: El contenedor del formulario ahora ocupa el ancho completo,
+  respetando únicamente los paddings laterales de la página definidos en styles.scss.
+  Se eliminó cualquier 'max-width' o 'margin: auto'.
+*/
+.rs-form-section {
+  background: #ffffff;
+  border: 1px solid $border-input;
+  border-radius: var(--rs-density-radius, 12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.rs-category-actions {
+/*
+  REGLA: El título es negro, negrita y alineado a la izquierda.
+*/
+:host ::ng-deep .rs-page-title {
+  color: #0f172a !important; // Negro pizarra, no petróleo
+  font-weight: 700 !important;
+}
+
+/*
+  REGLA: Inputs rectangulares, con bordes redondeados de 12px, fondo gris claro suave.
+*/
+:host ::ng-deep {
+  .mat-mdc-form-field {
+    .mdc-text-field--outlined {
+      background-color: $bg-input !important;
+      // Se asegura el borde redondeado de 12px.
+      border-radius: var(--rs-density-radius, 12px) !important;
+
+      .mdc-notched-outline > * {
+        border-color: $border-input !important;
+        border-width: 1px !important;
+      }
+    }
+
+    // Contraste al enfocar
+    &.mat-focused .mdc-text-field--outlined {
+      background-color: #fff !important;
+    }
+  }
+}
+
+// Layout para alinear campo con botones
+.rs-flex-row {
   display: flex;
-  align-items: center;
+  gap: 12px;
+  align-items: center; // Centrado verticalmente
+}
+
+.field-actions {
+  display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+
+  /*
+    REGLA: El botón "+ Nueva" tiene el estilo del botón principal (petróleo)
+    pero en una versión más compacta para encajar junto al campo.
+  */
+  .btn-inline-action {
+    height: var(--rs-density-field-h) !important; // Misma altura que el input
+    padding: 0 16px !important;
+    font-size: 13px !important;
+    flex-shrink: 0; // Evita que se encoja
+  }
+
+  .btn-icon-action {
+    color: #64748b; // Slate-500
+    
+    &:hover {
+      color: $petroleo;
+      background-color: rgba(26, 75, 93, 0.05);
+    }
+  }
 }
 
-.rs-secondary-btn {
-  border-radius: 12px !important;
-  border-color: rgba(18,78,89,.18) !important;
-  color: $rs-primary !important;
+// Footer de acciones, con botones a la derecha.
+.form-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
 }
 
-.rs-link-btn {
-  color: $rs-primary !important;
-  font-weight: 800 !important;
-}
-
-@media (max-width: 768px) {
-  .rs-page-wrap { padding:16px; }
-  .rs-form-grid { grid-template-columns:1fr; }
-  .span-2 { grid-column:auto; }
+.checkbox-row {
+  margin-top: 8px;
 }
