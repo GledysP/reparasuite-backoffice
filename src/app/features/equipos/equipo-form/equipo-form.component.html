@@ -1,134 +1,302 @@
 <div class="rs-main-container">
-  
-  <!-- Encabezado Estándar -->
   <div class="rs-header-section">
-    <div>
+    <div class="rs-header-copy">
       <h1 class="rs-page-title">
         @if (id) { Editar equipo } @else { Nuevo equipo }
       </h1>
-      <p class="section-subtitle rs-muted">
+      <p class="rs-page-subtitle">
         @if (id) { Actualiza los datos técnicos } @else { Ingresa la información del nuevo dispositivo }
       </p>
     </div>
   </div>
 
-  <!-- Tarjeta Principal Estilo Dashboard -->
-  <mat-card class="rs-form-section">
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="guardar()">
-        
-        <div class="rs-grid">
-          
-          <!-- Fila 1: Cliente y Categoría -->
-          <mat-form-field appearance="outline" class="rs-span-6">
-            <mat-label>Cliente Propietario *</mat-label>
-            <mat-select formControlName="clienteId">
-              @for (cliente of clientesItems(); track cliente.id) {
-                <mat-option [value]="cliente.id">{{ cliente.nombre }}</mat-option>
-              }
-            </mat-select>
-            <mat-error>El cliente es requerido</mat-error>
-          </mat-form-field>
-
-          <div class="rs-span-6 rs-flex-row">
-            <mat-form-field appearance="outline" class="rs-full">
-              <mat-label>Categoría</mat-label>
-              <mat-select formControlName="categoriaEquipoId">
-                <mat-option value="">Sin categoría</mat-option>
-                @for (cat of categorias(); track cat.id) {
-                  <mat-option [value]="cat.id">{{ cat.nombre }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            
-            <!-- Botones de acción secundarios -->
-            <div class="field-actions">
-              <button mat-flat-button type="button" class="rs-btn-petroleo btn-inline-action" (click)="abrirNuevaCategoria()">
-                + Nueva
-              </button>
-              <button mat-icon-button type="button" class="btn-icon-action" (click)="editarCategoriaActual()" matTooltip="Editar categoría">
-                <mat-icon>edit</mat-icon>
-              </button>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="rs-layout-shell">
+    <!-- FORMULARIO PRINCIPAL -->
+    <mat-card class="rs-form-card">
+      <mat-card-content class="rs-form-content">
+        <div class="rs-form-stack">
+          <!-- DATOS PRINCIPALES -->
+          <section class="rs-form-group">
+            <div class="rs-group-head">
+              <div class="rs-group-eyebrow">Principal</div>
+              <h2 class="rs-group-title">Datos principales</h2>
             </div>
+
+            <div class="rs-grid">
+              <div class="rs-field-shell rs-span-4">
+                <div class="rs-field-label">Cliente propietario *</div>
+                <mat-form-field appearance="outline" class="rs-premium-field">
+                  <input
+                    type="text"
+                    matInput
+                    [formControl]="clienteSearchCtrl"
+                    [matAutocomplete]="clienteAuto"
+                    placeholder="Ej. Carlos Pérez" />
+                  <mat-autocomplete
+                    #clienteAuto="matAutocomplete"
+                    [displayWith]="displayCliente"
+                    (optionSelected)="seleccionarCliente($event.option.value)">
+                    @for (cliente of filteredClientes(); track cliente.id) {
+                      <mat-option [value]="cliente">
+                        <div class="rs-option-main">{{ cliente.nombre }}</div>
+                        <div class="rs-option-sub">{{ cliente.email || 'Sin correo' }}</div>
+                      </mat-option>
+                    }
+                  </mat-autocomplete>
+                  <mat-error>El cliente es requerido</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="rs-field-shell rs-span-4">
+                <div class="rs-field-label">Tipo de equipo</div>
+                <mat-form-field appearance="outline" class="rs-premium-field">
+                  <input
+                    matInput
+                    formControlName="tipoEquipo"
+                    [matAutocomplete]="tipoAuto"
+                    placeholder="Ej. Portátil, Smartphone, TV" />
+                  <mat-autocomplete #tipoAuto="matAutocomplete">
+                    @for (tipo of filteredTiposEquipo(); track tipo) {
+                      <mat-option [value]="tipo">{{ tipo }}</mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+
+              <div class="rs-field-shell rs-span-4">
+                <div class="rs-field-label">Número de serie</div>
+                <mat-form-field appearance="outline" class="rs-premium-field">
+                  <input
+                    matInput
+                    formControlName="numeroSerie"
+                    placeholder="Ej. SN-XPS13-2025" />
+                </mat-form-field>
+              </div>
+            </div>
+          </section>
+
+          <!-- DETALLES DEL EQUIPO -->
+          <section class="rs-form-group">
+            <div class="rs-group-head">
+              <div class="rs-group-eyebrow">Equipo</div>
+              <h2 class="rs-group-title">Detalles del equipo</h2>
+            </div>
+
+            <div class="rs-grid">
+              <div class="rs-field-shell rs-span-4">
+                <div class="rs-field-label">Marca</div>
+                <mat-form-field appearance="outline" class="rs-premium-field">
+                  <input
+                    matInput
+                    formControlName="marca"
+                    [matAutocomplete]="marcaAuto"
+                    placeholder="Ej. Dell, Samsung, Lenovo" />
+                  <mat-autocomplete #marcaAuto="matAutocomplete">
+                    @for (marca of filteredMarcas(); track marca) {
+                      <mat-option [value]="marca">{{ marca }}</mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+
+              <div class="rs-field-shell rs-span-4">
+                <div class="rs-field-label">Modelo</div>
+                <mat-form-field appearance="outline" class="rs-premium-field">
+                  <input
+                    matInput
+                    formControlName="modelo"
+                    placeholder="Ej. XPS 13, Galaxy S24, ThinkPad E14" />
+                </mat-form-field>
+              </div>
+
+              <div class="rs-field-shell rs-span-4">
+                <div class="rs-field-label">Código interno</div>
+                <mat-form-field appearance="outline" class="rs-premium-field">
+                  <input
+                    matInput
+                    formControlName="codigoInterno"
+                    placeholder="Ej. INV-00124" />
+                </mat-form-field>
+              </div>
+            </div>
+          </section>
+
+          <!-- CONTROL Y UBICACIÓN -->
+          <section class="rs-form-group">
+            <div class="rs-group-head">
+              <div class="rs-group-eyebrow">Control</div>
+              <h2 class="rs-group-title">Ubicación y seguimiento</h2>
+            </div>
+
+            <div class="rs-grid">
+              <div class="rs-field-shell rs-span-4">
+                <div class="rs-field-label">Ubicación habitual</div>
+                <mat-form-field appearance="outline" class="rs-premium-field">
+                  <input
+                    matInput
+                    formControlName="ubicacionHabitual"
+                    placeholder="Ej. Oficina principal, Recepción, Casa cliente" />
+                </mat-form-field>
+              </div>
+
+              <div class="rs-field-shell rs-span-4">
+                <div class="rs-field-label">Fecha de compra</div>
+                <mat-form-field appearance="outline" class="rs-premium-field">
+                  <input matInput [matDatepicker]="pickerCompra" formControlName="fechaCompra" placeholder="Selecciona una fecha" />
+                  <mat-datepicker-toggle matIconSuffix [for]="pickerCompra"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerCompra></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="rs-field-shell rs-span-4">
+                <div class="rs-field-label">Garantía hasta</div>
+                <mat-form-field appearance="outline" class="rs-premium-field">
+                  <input matInput [matDatepicker]="pickerGarantia" formControlName="garantiaHasta" placeholder="Selecciona una fecha" />
+                  <mat-datepicker-toggle matIconSuffix [for]="pickerGarantia"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerGarantia></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
+          </section>
+
+          <!-- DESCRIPCIÓN Y NOTAS -->
+          <section class="rs-form-group">
+            <div class="rs-group-head">
+              <div class="rs-group-eyebrow">Contexto</div>
+              <h2 class="rs-group-title">Descripción y notas</h2>
+            </div>
+
+            <div class="rs-grid">
+              <div class="rs-field-shell rs-span-6">
+                <div class="rs-field-label">Descripción general</div>
+                <mat-form-field appearance="outline" class="rs-premium-field rs-textarea-field">
+                  <textarea
+                    matInput
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="3"
+                    cdkAutosizeMaxRows="8"
+                    formControlName="descripcionGeneral"
+                    placeholder="Ej. Portátil con desgaste leve en tapa, cargador original incluido..."></textarea>
+                </mat-form-field>
+              </div>
+
+              <div class="rs-field-shell rs-span-6">
+                <div class="rs-field-label">Notas técnicas</div>
+                <mat-form-field appearance="outline" class="rs-premium-field rs-textarea-field">
+                  <textarea
+                    matInput
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="3"
+                    cdkAutosizeMaxRows="8"
+                    formControlName="notasTecnicas"
+                    placeholder="Ej. BIOS protegida, clave entregada por cliente, revisar batería..."></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+          </section>
+
+          <!-- ADJUNTOS -->
+          <section class="rs-form-group">
+            <div class="rs-group-head">
+              <div class="rs-group-eyebrow">Adjuntos</div>
+              <h2 class="rs-group-title">Adjuntos y evidencia visual</h2>
+            </div>
+
+            <div class="rs-upload-card">
+              <div class="rs-upload-icon">
+                <mat-icon>cloud_upload</mat-icon>
+              </div>
+
+              <div class="rs-upload-copy">
+                <div class="rs-upload-title">Subir archivos del equipo</div>
+                <div class="rs-upload-subtitle">
+                  Arrastra imágenes o documentos aquí, o selecciona archivos desde tu dispositivo.
+                </div>
+              </div>
+
+              <input id="equipoAdjuntos" type="file" multiple hidden />
+
+              <label for="equipoAdjuntos" class="rs-upload-btn">
+                Seleccionar archivos
+              </label>
+            </div>
+          </section>
+
+          <!-- ESTADO -->
+          <div class="rs-status-row">
+            <mat-slide-toggle formControlName="estadoActivo" color="primary">
+              Equipo activo en el sistema
+            </mat-slide-toggle>
           </div>
-
-          <!-- Fila 2: Marca y Modelo -->
-          <mat-form-field appearance="outline" class="rs-span-6">
-            <mat-label>Marca</mat-label>
-            <input matInput formControlName="marca" placeholder="Ej. Samsung">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="rs-span-6">
-            <mat-label>Modelo</mat-label>
-            <input matInput formControlName="modelo" placeholder="Ej. Galaxy S24">
-          </mat-form-field>
-
-          <!-- Fila 3: Tipo y Serie -->
-          <mat-form-field appearance="outline" class="rs-span-6">
-            <mat-label>Tipo de Equipo</mat-label>
-            <input matInput formControlName="tipoEquipo" placeholder="Ej. Smartphone, Laptop">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="rs-span-6">
-            <mat-label>Número de Serie</mat-label>
-            <input matInput formControlName="numeroSerie">
-          </mat-form-field>
-
-          <!-- Fila 4: Detalles Internos -->
-          <mat-form-field appearance="outline" class="rs-span-6">
-            <mat-label>Código Interno</mat-label>
-            <input matInput formControlName="codigoInterno" placeholder="ID Inventario">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="rs-span-6">
-            <mat-label>Ubicación Habitual</mat-label>
-            <input matInput formControlName="ubicacionHabitual">
-          </mat-form-field>
-
-          <!-- Fila 5: Fechas -->
-          <mat-form-field appearance="outline" class="rs-span-6">
-            <mat-label>Fecha de Compra</mat-label>
-            <input matInput [matDatepicker]="pickerCompra" formControlName="fechaCompra">
-            <mat-datepicker-toggle matIconSuffix [for]="pickerCompra"></mat-datepicker-toggle>
-            <mat-datepicker #pickerCompra></mat-datepicker>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="rs-span-6">
-            <mat-label>Garantía Hasta</mat-label>
-            <input matInput [matDatepicker]="pickerGarantia" formControlName="garantiaHasta">
-            <mat-datepicker-toggle matIconSuffix [for]="pickerGarantia"></mat-datepicker-toggle>
-            <mat-datepicker #pickerGarantia></mat-datepicker>
-          </mat-form-field>
-
-          <!-- Fila 6: Áreas de Texto -->
-          <mat-form-field appearance="outline" class="rs-span-12">
-            <mat-label>Descripción General</mat-label>
-            <textarea matInput rows="3" formControlName="descripcionGeneral" placeholder="Estado estético, color, accesorios incluidos..."></textarea>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="rs-span-12">
-            <mat-label>Notas Técnicas</mat-label>
-            <textarea matInput rows="3" formControlName="notasTecnicas" placeholder="Contraseñas, observaciones ocultas para el cliente..."></textarea>
-          </mat-form-field>
-
-          <!-- Fila 7: Estado -->
-          <div class="rs-span-12 checkbox-row">
-            <mat-checkbox formControlName="estadoActivo" color="primary">Equipo activo en el sistema</mat-checkbox>
-          </div>
-
         </div>
 
-        <!-- Botonera -->
         <div class="form-footer">
           <button mat-button type="button" (click)="cancelar()" class="btn-cancel">
             Cancelar
           </button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="loading()" class="rs-btn-petroleo">
-            @if (loading()) { Guardando... } @else { Guardar Equipo }
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="loading()"
+            class="rs-btn-primary">
+            @if (loading()) { Guardando... } @else { Guardar equipo }
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- CARD LATERAL -->
+    <mat-card class="rs-side-card">
+      <mat-card-content class="rs-side-content">
+        <div class="rs-side-eyebrow">Clasificación</div>
+        <h3 class="rs-side-title">Categoría del equipo</h3>
+        <p class="rs-side-text">
+          Organiza este dispositivo dentro de tu catálogo para mejorar búsqueda, filtros y reportes.
+        </p>
+
+        <div class="rs-side-badge">
+          <span class="rs-side-badge-dot"></span>
+          Configuración rápida
+        </div>
+
+        <div class="rs-field-shell rs-side-field-wrap">
+          <div class="rs-field-label">Categoría</div>
+          <mat-form-field appearance="outline" class="rs-premium-field rs-side-field">
+            <mat-select formControlName="categoriaEquipoId">
+              <mat-option value="">Sin categoría</mat-option>
+              @for (cat of categorias(); track cat.id) {
+                <mat-option [value]="cat.id">{{ cat.nombre }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="rs-side-actions">
+          <button
+            mat-flat-button
+            type="button"
+            class="rs-btn-inline-primary"
+            (click)="abrirNuevaCategoria()">
+            <mat-icon>add</mat-icon>
+            Nueva
+          </button>
+
+          <button
+            mat-icon-button
+            type="button"
+            class="btn-icon-action"
+            (click)="editarCategoriaActual()"
+            matTooltip="Editar categoría">
+            <mat-icon>edit</mat-icon>
           </button>
         </div>
 
-      </form>
-    </mat-card-content>
-  </mat-card>
+        <div class="rs-side-note">
+          Puedes crear o editar categorías sin salir del formulario.
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </form>
 </div>

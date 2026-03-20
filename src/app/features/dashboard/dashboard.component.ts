@@ -7,7 +7,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 
 import { OrdenesTrabajoService } from '../ordenes-trabajo/ordenes-trabajo.service';
-import { OtListaItem } from '../../core/models/tipos';
+import { EquiposService } from '../equipos/equipos.service';
+import { InventarioService } from '../inventario/inventario.service';
+import { OtListaItem, EquipoResumenDto, InventarioItemResumenDto } from '../../core/models/tipos';
+
+interface CalendarDay {
+  label: number;
+  currentMonth: boolean;
+  isToday: boolean;
+}
 
 @Component({
   selector: 'rs-dashboard',
@@ -25,6 +33,8 @@ import { OtListaItem } from '../../core/models/tipos';
 })
 export class DashboardComponent implements OnInit {
   private ordenesService = inject(OrdenesTrabajoService);
+  private equiposService = inject(EquiposService);
+  private inventarioService = inject(InventarioService);
 
   stats = {
     received: 0,
@@ -36,10 +46,22 @@ export class DashboardComponent implements OnInit {
   };
 
   recentOrders: OtListaItem[] = [];
-  displayedColumns = ['codigo', 'cliente', 'estado', 'tipo', 'tecnico', 'fecha', 'accion'];
+  recentEquipos: EquipoResumenDto[] = [];
+  recentPiezas: InventarioItemResumenDto[] = [];
+
+  displayedColumns = ['codigo', 'cliente', 'estado', 'prioridad', 'tipo', 'tecnico', 'fecha', 'accion'];
+  equipoColumns = ['codigo', 'modelo', 'cliente', 'accion'];
+  piezaColumns = ['nombre', 'stock', 'precio', 'accion'];
+
+  weekDays = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+  calendarMonthLabel = '';
+  calendarDays: CalendarDay[] = [];
 
   ngOnInit(): void {
     this.cargarDatos();
+    this.cargarEquiposRecientes();
+    this.cargarInventarioReciente();
+    this.buildCalendar();
   }
 
   cargarDatos(): void {
@@ -73,6 +95,20 @@ export class DashboardComponent implements OnInit {
           overdue: 0,
         };
       },
+    });
+  }
+
+  cargarEquiposRecientes(): void {
+    this.equiposService.listar({ activo: true, page: 0, size: 5 }).subscribe({
+      next: (res) => (this.recentEquipos = res?.items ?? []),
+      error: () => (this.recentEquipos = []),
+    });
+  }
+
+  cargarInventarioReciente(): void {
+    this.inventarioService.listar({ activo: true, page: 0, size: 5 }).subscribe({
+      next: (res) => (this.recentPiezas = res?.items ?? []),
+      error: () => (this.recentPiezas = []),
     });
   }
 
@@ -117,6 +153,45 @@ export class DashboardComponent implements OnInit {
     return `${yyyy}-${mm}-${dd}`;
   }
 
+  getPriorityLabel(order: OtListaItem): string {
+    const tone = this.getPriorityTone(order);
+
+    if (tone === 'alta') return 'Alta';
+    if (tone === 'media') return 'Media';
+    return 'Baja';
+  }
+
+  getPriorityTone(order: OtListaItem): 'alta' | 'media' | 'baja' {
+    if (this.isOverdue(order)) return 'alta';
+
+    const estado = String(order.estado ?? '');
+
+    if (estado === 'EN_CURSO' || estado === 'PRESUPUESTO' || estado === 'APROBADA') {
+      return 'media';
+    }
+
+    return 'baja';
+  }
+
+  getStockPercent(item: InventarioItemResumenDto): number {
+    const stockActual = Number(item.stockActual ?? 0);
+    const stockMinimo = Number(item.stockMinimo ?? 0);
+
+    const base = stockMinimo > 0 ? stockMinimo * 2 : Math.max(stockActual, 1);
+    const percent = Math.round((stockActual / Math.max(base, 1)) * 100);
+
+    return Math.max(6, Math.min(percent, 100));
+  }
+
+  getStockTone(item: InventarioItemResumenDto): 'high' | 'mid' | 'low' {
+    const stockActual = Number(item.stockActual ?? 0);
+    const stockMinimo = Number(item.stockMinimo ?? 0);
+
+    if (stockActual <= stockMinimo) return 'low';
+    if (stockActual <= stockMinimo * 1.5) return 'mid';
+    return 'high';
+  }
+
   private parseDate(value: string | null | undefined): Date | null {
     if (!value) return null;
 
@@ -145,5 +220,60 @@ export class DashboardComponent implements OnInit {
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
     return diffDays >= 7;
+  }
+
+  private buildCalendar(referenceDate: Date = new Date()): void {
+    const today = new Date();
+    const year = referenceDate.getFullYear();
+    const month = referenceDate.getMonth();
+
+    const monthNames = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+    ];
+
+    this.calendarMonthLabel = `${monthNames[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = lastDay.getDate();
+
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const result: CalendarDay[] = [];
+
+    for (let i = startOffset - 1; i >= 0; i--) {
+      result.push({
+        label: prevMonthLastDay - i,
+        currentMonth: false,
+        isToday: false,
+      });
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const isToday =
+        today.getFullYear() === year &&
+        today.getMonth() === month &&
+        today.getDate() === day;
+
+      result.push({
+        label: day,
+        currentMonth: true,
+        isToday,
+      });
+    }
+
+    const remaining = result.length % 7 === 0 ? 0 : 7 - (result.length % 7);
+
+    for (let day = 1; day <= remaining; day++) {
+      result.push({
+        label: day,
+        currentMonth: false,
+        isToday: false,
+      });
+    }
+
+    this.calendarDays = result;
   }
 }

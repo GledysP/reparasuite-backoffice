@@ -125,7 +125,6 @@ export class OrdenesTrabajoListComponent implements OnInit {
           this.items = res.items ?? [];
           this.total = res.total ?? 0;
 
-          // si borraste el último elemento de una página, vuelve atrás
           if (this.page > 0 && this.items.length === 0 && this.total > 0) {
             this.page = Math.max(0, this.page - 1);
             this.cargar();
@@ -225,11 +224,9 @@ export class OrdenesTrabajoListComponent implements OnInit {
           this.snack.open('Orden eliminada correctamente', 'OK', { duration: 2200 });
           this.deletingId = null;
 
-          // ajuste visual inmediato
           this.items = this.items.filter((x) => x.id !== row.id);
           this.total = Math.max(0, this.total - 1);
 
-          // refresca desde backend
           this.cargar();
         },
         error: (err) => {

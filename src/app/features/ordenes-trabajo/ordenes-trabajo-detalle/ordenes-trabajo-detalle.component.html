@@ -3,13 +3,17 @@
     <header class="hdr">
       <div class="hdr-left">
         <h1 class="hdr-title">Orden de trabajo</h1>
+        <p class="hdr-subtitle">
+          Seguimiento técnico, gestión operativa y control de servicio en una sola vista.
+        </p>
+
         <div class="hdr-sub">
           <span>Actualizada {{ data.updatedAt | date:'d MMM, y HH:mm' }}</span>
           <span class="sep">•</span><span>{{ data.tipo }}</span>
           <span class="sep">•</span><span>{{ data.prioridad }}</span>
           <span class="sep">•</span><span>{{ tecnicoNombre() }}</span>
           <span class="sep">•</span><span class="ot-badge">#{{ otNumber() }}</span>
-          <span class="sep">•</span><span class="state-pill">{{ estadoPretty() }}</span>
+          <span class="sep">•</span><span class="state-pill" [attr.data-state]="data.estado">{{ estadoPretty() }}</span>
         </div>
       </div>
 
@@ -18,9 +22,11 @@
           <mat-icon>arrow_back</mat-icon>
         </button>
 
-        <button mat-stroked-button class="btn-close"
-                (click)="cerrarOt()"
-                [disabled]="busy() || data.estado === 'CERRADA'">
+        <button
+          mat-stroked-button
+          class="btn-close"
+          (click)="cerrarOt()"
+          [disabled]="busy() || data.estado === 'CERRADA'">
           <mat-icon>
             @if (busy() && actionInFlight() === 'cierre') { hourglass_top }
             @else if (closeSuccess() || data.estado === 'CERRADA') { check_circle }
@@ -37,7 +43,7 @@
 
     <mat-card class="statsbar">
       <div class="stats-grid">
-        <div class="stat">
+        <div class="stat stat--state">
           <div class="stat-label">Estado</div>
           <button type="button" class="chip-btn" [matMenuTriggerFor]="estadoMenu" [disabled]="busy()">
             {{ estadoPretty() }}
@@ -79,7 +85,7 @@
           </div>
         </div>
 
-        <div class="stat stat--client">
+        <div class="stat stat--client-mini">
           <div class="stat-label">Cliente</div>
           <div class="client-name">{{ data.cliente.nombre || '—' }}</div>
           <div class="client-meta">
@@ -101,83 +107,111 @@
 
     <div class="layout">
       <main class="main">
-        <mat-card class="card card-anim info-card">
-          <div class="card-head">
-            <div class="card-title"><mat-icon>assignment</mat-icon><span>Información</span></div>
-          </div>
+        <section class="top-panels">
+          <section class="panel-clean panel-clean--service">
+            <div class="panel-clean__title">Información del servicio</div>
 
-          <div class="info-grid">
-            <div class="info-left">
-              <div class="spec-row"><div class="k">Equipo</div><div class="v v-strong">{{ data.equipo || '—' }}</div></div>
-              <div class="spec-row"><div class="k">Categoría</div><div class="v">{{ data.categoriaEquipoNombre || '—' }}</div></div>
-              <div class="spec-row"><div class="k">Falla reportada</div><div class="v">{{ data.fallaReportada || '—' }}</div></div>
-              <div class="spec-row"><div class="k">Dirección</div><div class="v">{{ data.direccion || '—' }}</div></div>
-              <div class="spec-row"><div class="k">Acceso</div><div class="v">{{ data.notasAcceso || '—' }}</div></div>
+            <div class="service-grid">
+              <div class="service-row">
+                <span class="service-icon"><mat-icon>build</mat-icon></span>
+                <div class="service-copy">
+                  <div class="service-label">Equipo</div>
+                  <div class="service-value">{{ data.equipo || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="service-row">
+                <span class="service-icon"><mat-icon>sell</mat-icon></span>
+                <div class="service-copy">
+                  <div class="service-label">Categoría</div>
+                  <div class="service-value">{{ data.categoriaEquipoNombre || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="service-row service-row--alert">
+                <span class="service-icon"><mat-icon>warning</mat-icon></span>
+                <div class="service-copy">
+                  <div class="service-label">Falla reportada</div>
+                  <div class="service-value">{{ data.fallaReportada || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="service-row">
+                <span class="service-icon"><mat-icon>place</mat-icon></span>
+                <div class="service-copy">
+                  <div class="service-label">Ubicación</div>
+                  <div class="service-value">{{ data.direccion || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="service-row">
+                <span class="service-icon"><mat-icon>vpn_key</mat-icon></span>
+                <div class="service-copy">
+                  <div class="service-label">Acceso</div>
+                  <div class="service-value">{{ data.notasAcceso || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="service-row service-row--full">
+                <span class="service-icon"><mat-icon>description</mat-icon></span>
+                <div class="service-copy">
+                  <div class="service-label">Descripción</div>
+                  <div class="service-value service-value--multiline">{{ data.descripcion || '—' }}</div>
+                </div>
+              </div>
             </div>
+          </section>
 
-            <div class="info-right">
-              <div class="desc-title">Descripción</div>
-              <div class="desc-box">{{ data.descripcion || '—' }}</div>
-            </div>
-          </div>
-        </mat-card>
+          <section class="panel-clean panel-clean--review">
+            <div class="panel-clean__top">
+              <div>
+                <div class="panel-clean__title">Revisión técnica</div>
+                <div class="panel-clean__sub">Diagnóstico profesional del técnico</div>
+              </div>
 
-        <mat-card class="card card-anim">
-          <div class="card-head">
-            <div class="card-title">
-              <mat-icon>biotech</mat-icon>
-              <span>Revisión técnica</span>
-            </div>
-
-            <div class="card-actions">
               <button
-                mat-icon-button
-                class="icon-action"
+                mat-stroked-button
+                class="btn-edit"
                 (click)="toggleRevisionTecnicaEdit()"
                 [disabled]="busy()"
                 matTooltip="Editar revisión técnica">
                 <mat-icon>{{ editRevisionTecnica() ? 'close' : 'edit' }}</mat-icon>
+                {{ editRevisionTecnica() ? 'Cerrar' : 'Editar' }}
               </button>
             </div>
-          </div>
 
-          <div class="card-body">
             @if (!editRevisionTecnica()) {
-              <div class="review-grid">
-                <div class="review-item">
-                  <div class="review-label">Falla detectada</div>
-                  <div class="review-value">{{ data.fallaDetectada || 'Sin registrar' }}</div>
+              <div class="review-list">
+                <div class="review-line">
+                  <div class="review-k">Falla detectada</div>
+                  <div class="review-v">{{ data.fallaDetectada || 'Sin registrar' }}</div>
                 </div>
 
-                <div class="review-item">
-                  <div class="review-label">Diagnóstico técnico</div>
-                  <div class="review-value review-value--multiline">
-                    {{ data.diagnosticoTecnico || 'Sin registrar' }}
-                  </div>
+                <div class="review-line">
+                  <div class="review-k">Diagnóstico técnico</div>
+                  <div class="review-v review-v--multiline">{{ data.diagnosticoTecnico || 'Sin registrar' }}</div>
                 </div>
 
-                <div class="review-item">
-                  <div class="review-label">Trabajo a realizar</div>
-                  <div class="review-value review-value--multiline">
-                    {{ data.trabajoARealizar || 'Sin registrar' }}
-                  </div>
+                <div class="review-line">
+                  <div class="review-k">Trabajo a realizar</div>
+                  <div class="review-v review-v--multiline">{{ data.trabajoARealizar || 'Sin registrar' }}</div>
                 </div>
               </div>
             } @else {
-              <div class="review-form">
-                <mat-form-field appearance="outline" class="mf" subscriptSizing="dynamic">
+              <div class="review-form review-form--clean">
+                <mat-form-field appearance="outline" class="mf review-mf" subscriptSizing="dynamic">
                   <mat-label>Falla detectada</mat-label>
                   <input matInput [formControl]="formRevisionTecnica.controls.fallaDetectada" />
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" class="mf" subscriptSizing="dynamic">
+                <mat-form-field appearance="outline" class="mf review-mf" subscriptSizing="dynamic">
                   <mat-label>Diagnóstico técnico</mat-label>
-                  <textarea matInput rows="3" [formControl]="formRevisionTecnica.controls.diagnosticoTecnico"></textarea>
+                  <textarea matInput rows="4" [formControl]="formRevisionTecnica.controls.diagnosticoTecnico"></textarea>
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" class="mf" subscriptSizing="dynamic">
+                <mat-form-field appearance="outline" class="mf review-mf" subscriptSizing="dynamic">
                   <mat-label>Trabajo a realizar</mat-label>
-                  <textarea matInput rows="3" [formControl]="formRevisionTecnica.controls.trabajoARealizar"></textarea>
+                  <textarea matInput rows="4" [formControl]="formRevisionTecnica.controls.trabajoARealizar"></textarea>
                 </mat-form-field>
 
                 <div class="btn-row">
@@ -191,24 +225,22 @@
                 </div>
               </div>
             }
-          </div>
-        </mat-card>
+          </section>
+        </section>
 
         <mat-tab-group class="tabs" animationDuration="150ms" [dynamicHeight]="true">
           <mat-tab label="Gestión">
             <div class="pane">
-              <div class="grid-3">
-                <mat-card class="card compact">
-                  <div class="card-head">
-                    <div class="card-title"><mat-icon>request_quote</mat-icon><span>Presupuesto</span></div>
-                    <div class="card-actions">
-                      <button mat-icon-button class="icon-action"
-                              (click)="toggleBudgetEdit()"
-                              [disabled]="presupuestoAceptado()"
-                              matTooltip="Editar">
-                        <mat-icon>edit</mat-icon>
-                      </button>
-                    </div>
+              <div class="grid-3 grid-3--compact">
+                <mat-card class="card compact compact-card">
+                  <div class="compact-top">
+                    <div class="compact-title"><mat-icon>request_quote</mat-icon><span>Presupuesto</span></div>
+                    <button mat-icon-button class="icon-action"
+                            (click)="toggleBudgetEdit()"
+                            [disabled]="presupuestoAceptado()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
                   </div>
 
                   <div class="card-body">
@@ -276,14 +308,12 @@
                   </div>
                 </mat-card>
 
-                <mat-card class="card compact">
-                  <div class="card-head">
-                    <div class="card-title"><mat-icon>event</mat-icon><span>Cita</span></div>
-                    <div class="card-actions">
-                      <button mat-icon-button class="icon-action" (click)="toggleCitaEdit()" matTooltip="Programar / Reprogramar">
-                        <mat-icon>calendar_month</mat-icon>
-                      </button>
-                    </div>
+                <mat-card class="card compact compact-card">
+                  <div class="compact-top">
+                    <div class="compact-title"><mat-icon>event</mat-icon><span>Cita</span></div>
+                    <button mat-icon-button class="icon-action" (click)="toggleCitaEdit()" matTooltip="Programar / Reprogramar">
+                      <mat-icon>calendar_month</mat-icon>
+                    </button>
                   </div>
 
                   <div class="card-body">
@@ -358,9 +388,9 @@
                   </div>
                 </mat-card>
 
-                <mat-card class="card compact">
-                  <div class="card-head">
-                    <div class="card-title"><mat-icon>payments</mat-icon><span>Pago</span></div>
+                <mat-card class="card compact compact-card">
+                  <div class="compact-top">
+                    <div class="compact-title"><mat-icon>payments</mat-icon><span>Pago</span></div>
                   </div>
 
                   <div class="card-body">
@@ -375,12 +405,18 @@
                       </div>
                     </div>
 
-                    @if (data.pago?.comprobanteUrl; as comprobanteUrl) {
-                      <button mat-button class="link-btn" type="button" (click)="verComprobante(comprobanteUrl)">
-                        <mat-icon>receipt_long</mat-icon>
-                        Ver comprobante
-                      </button>
-                    }
+                    <div class="proof-block">
+                      <div class="proof-label">Comprobante</div>
+
+                      @if (data.pago?.comprobanteUrl; as comprobanteUrl) {
+                        <button mat-button class="link-btn" type="button" (click)="verComprobante(comprobanteUrl)">
+                          <mat-icon>receipt_long</mat-icon>
+                          Ver comprobante
+                        </button>
+                      } @else {
+                        <div class="proof-empty">Sin comprobante disponible</div>
+                      }
+                    </div>
 
                     @if (pagoConfirmado()) {
                       <div class="status-inline">
@@ -408,8 +444,8 @@
           <mat-tab label="Adjuntos">
             <div class="pane">
               <mat-card class="card">
-                <div class="card-head">
-                  <div class="card-title"><mat-icon>photo</mat-icon><span>Fotos</span></div>
+                <div class="compact-top compact-top--plain">
+                  <div class="compact-title"><mat-icon>photo</mat-icon><span>Fotos</span></div>
                   <label class="upload-btn" matRipple>
                     <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
                     <mat-icon>add_a_photo</mat-icon>
@@ -432,8 +468,8 @@
           <mat-tab label="Notas">
             <div class="pane">
               <mat-card class="card">
-                <div class="card-head">
-                  <div class="card-title"><mat-icon>note</mat-icon><span>Notas</span></div>
+                <div class="compact-top compact-top--plain">
+                  <div class="compact-title"><mat-icon>note</mat-icon><span>Notas</span></div>
                 </div>
 
                 <div class="card-body">
@@ -467,9 +503,9 @@
       </main>
 
       <aside class="side">
-        <mat-card class="card chat">
-          <div class="card-head">
-            <div class="card-title"><mat-icon>chat</mat-icon><span>Mensajes</span></div>
+        <mat-card class="card side-chat">
+          <div class="compact-top compact-top--chat">
+            <div class="compact-title"><mat-icon>chat</mat-icon><span>Mensajes</span></div>
             <button mat-icon-button class="icon-btn" (click)="recargarVista()" [disabled]="busy()" matTooltip="Recargar">
               <mat-icon>refresh</mat-icon>
             </button>
@@ -489,12 +525,16 @@
                 </div>
               }
             } @else {
-              <div class="empty pad">Sin mensajes</div>
+              <div class="chat-empty">
+                <mat-icon>forum</mat-icon>
+                <div class="chat-empty-title">Aún no hay mensajes</div>
+                <div class="chat-empty-sub">Cuando el taller te escriba, la conversación aparecerá aquí.</div>
+              </div>
             }
           </div>
 
           <div class="composer">
-            <textarea class="composer-input" placeholder="Escribe un mensaje…"
+            <textarea class="composer-input" placeholder="Escribe a tu técnico…"
                       [formControl]="formMsg.controls.contenido"
                       (keydown)="onMsgKeydown($event)"></textarea>
 
@@ -505,20 +545,24 @@
           </div>
         </mat-card>
 
-        <mat-card class="card">
-          <div class="card-head">
-            <div class="card-title"><mat-icon>bolt</mat-icon><span>Último</span></div>
+        <mat-card class="card timeline-card">
+          <div class="compact-top compact-top--plain">
+            <div class="compact-title"><mat-icon>bolt</mat-icon><span>Último</span></div>
           </div>
+
           <div class="timeline timeline--mini">
             @for (h of historialPreview(); track $index) {
               <div class="t-row">
+                <div class="t-line"></div>
                 <div class="t-dot"></div>
                 <div class="t-body">
                   <div class="t-text">{{ h.descripcion }}</div>
                   <div class="t-date">{{ h.fecha | date:'d MMM, HH:mm' }}</div>
                 </div>
               </div>
-            } @empty { <div class="empty pad">—</div> }
+            } @empty {
+              <div class="empty pad">—</div>
+            }
           </div>
         </mat-card>
       </aside>

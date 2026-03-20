@@ -1,5 +1,5 @@
 <div class="rs-page-container">
-  <div class="rs-header-row">
+  <div class="rs-header-row rs-fade-up">
     <div class="rs-header-copy">
       <h1 class="rs-page-title">Órdenes de trabajo</h1>
       <p class="rs-page-subtitle">
@@ -18,7 +18,7 @@
     </button>
   </div>
 
-  <mat-card class="rs-filter-card">
+  <mat-card class="rs-filter-card rs-fade-up" [style.animationDelay]="'60ms'">
     <mat-card-content>
       <form class="rs-filtros-grid" [formGroup]="filtros">
         <div class="rs-field">
@@ -82,7 +82,7 @@
     </mat-card-content>
   </mat-card>
 
-  <mat-card class="rs-table-card rs-desktop-table-card">
+  <mat-card class="rs-table-card rs-desktop-table-card rs-fade-up" [style.animationDelay]="'120ms'">
     <mat-card-content>
       <ng-container *ngIf="items.length; else emptyDesktop">
         <div class="rs-table-responsive">

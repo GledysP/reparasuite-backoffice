@@ -1,11 +1,10 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -14,6 +13,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TextFieldModule } from '@angular/cdk/text-field';
 
 import { ClientesService } from '../../clientes/clientes.service';
 import { EquiposService } from '../equipos.service';
@@ -29,7 +31,6 @@ import { CategoriaEquipoDialogComponent } from '../categoria-equipo-dialog/categ
     MatCardModule,
     MatButtonModule,
     MatDialogModule,
-    MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -37,7 +38,10 @@ import { CategoriaEquipoDialogComponent } from '../categoria-equipo-dialog/categ
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatAutocompleteModule,
+    MatSlideToggleModule,
+    TextFieldModule
   ],
   templateUrl: './equipo-form.component.html',
   styleUrl: './equipo-form.component.scss'
@@ -55,6 +59,40 @@ export class EquipoFormComponent implements OnInit {
   loading = signal(false);
   categorias = signal<CategoriaEquipoDto[]>([]);
   clientesItems = signal<ClienteResumen[]>([]);
+  filteredClientes = signal<ClienteResumen[]>([]);
+
+  clienteSearchCtrl = new FormControl<ClienteResumen | string>('');
+
+  readonly tiposEquipoSugeridos: string[] = [
+    'Portátil',
+    'Laptop',
+    'Desktop',
+    'Smartphone',
+    'Tablet',
+    'Televisor',
+    'Monitor',
+    'Impresora',
+    'Router',
+    'Microondas',
+    'Lavadora',
+    'Aire acondicionado'
+  ];
+
+  readonly marcasSugeridas: string[] = [
+    'Dell',
+    'Lenovo',
+    'HP',
+    'Asus',
+    'Acer',
+    'Apple',
+    'Samsung',
+    'LG',
+    'Sony',
+    'TP-Link',
+    'Xiaomi',
+    'Canon',
+    'Epson'
+  ];
 
   form = this.fb.group({
     clienteId: ['', Validators.required],
@@ -75,6 +113,7 @@ export class EquipoFormComponent implements OnInit {
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('id');
     this.cargarCatalogos();
+    this.setupClienteAutocomplete();
 
     if (this.id) {
       this.equipos.obtener(this.id).subscribe({
@@ -94,14 +133,72 @@ export class EquipoFormComponent implements OnInit {
             notasTecnicas: e.notasTecnicas ?? '',
             estadoActivo: e.estadoActivo
           });
+
+          this.syncClienteDisplay();
         }
       });
     }
   }
 
+  setupClienteAutocomplete(): void {
+    this.clienteSearchCtrl.valueChanges.subscribe(value => {
+      const term =
+        typeof value === 'string'
+          ? value.toLowerCase().trim()
+          : (value?.nombre || '').toLowerCase().trim();
+
+      const filtered = this.clientesItems().filter(cliente => {
+        const nombre = (cliente.nombre || '').toLowerCase();
+        const email = (cliente.email || '').toLowerCase();
+        return nombre.includes(term) || email.includes(term);
+      });
+
+      this.filteredClientes.set(filtered);
+
+      if (typeof value === 'string') {
+        this.form.patchValue({ clienteId: '' }, { emitEvent: false });
+      }
+    });
+  }
+
   cargarCatalogos(): void {
     this.equipos.categorias().subscribe(x => this.categorias.set(x));
-    this.clientes.listar('', 0, 100).subscribe(x => this.clientesItems.set(x.items));
+    this.clientes.listar('', 0, 100).subscribe(x => {
+      this.clientesItems.set(x.items);
+      this.filteredClientes.set(x.items);
+      this.syncClienteDisplay();
+    });
+  }
+
+  syncClienteDisplay(): void {
+    const clienteId = this.form.controls.clienteId.value;
+    if (!clienteId) return;
+
+    const cliente = this.clientesItems().find(c => c.id === clienteId);
+    if (cliente) {
+      this.clienteSearchCtrl.setValue(cliente, { emitEvent: false });
+    }
+  }
+
+  displayCliente = (value: ClienteResumen | string | null): string => {
+    if (!value) return '';
+    return typeof value === 'string' ? value : value.nombre;
+  };
+
+  seleccionarCliente(cliente: ClienteResumen): void {
+    this.form.patchValue({ clienteId: cliente.id });
+  }
+
+  filteredTiposEquipo(): string[] {
+    const term = (this.form.controls.tipoEquipo.value || '').toLowerCase().trim();
+    if (!term) return this.tiposEquipoSugeridos.slice(0, 8);
+    return this.tiposEquipoSugeridos.filter(x => x.toLowerCase().includes(term)).slice(0, 8);
+  }
+
+  filteredMarcas(): string[] {
+    const term = (this.form.controls.marca.value || '').toLowerCase().trim();
+    if (!term) return this.marcasSugeridas.slice(0, 8);
+    return this.marcasSugeridas.filter(x => x.toLowerCase().includes(term)).slice(0, 8);
   }
 
   abrirNuevaCategoria(): void {

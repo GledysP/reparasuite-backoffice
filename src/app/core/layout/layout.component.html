@@ -12,38 +12,57 @@
     [opened]="isMobile ? mobileOpened : true"
     [disableClose]="!isMobile"
   >
-    <div class="rs-side-header">
-      <div class="rs-side-logo">
-        <img src="assets/logo.png" alt="ReparaSuite" />
+    <div class="rs-sidebar-inner">
+      <div class="rs-side-header">
+        <div class="rs-side-logo">
+          <img src="assets/logo.png" alt="ReparaSuite" />
+        </div>
+
+        <div class="rs-side-brand">
+          <div class="rs-side-title">ReparaSuite</div>
+          <div class="rs-side-subtitle">BACKOFFICE</div>
+        </div>
       </div>
 
-      <div class="rs-side-brand">
-        <div class="rs-side-title">ReparaSuite</div>
-        <div class="rs-side-subtitle">BACKOFFICE</div>
+      <div class="rs-side-section-label" *ngIf="!(!isMobile && isCollapsed)">
+        Navegación
+      </div>
+
+      <mat-nav-list class="rs-nav">
+        <a
+          *ngFor="let item of navItems"
+          mat-list-item
+          class="rs-nav-item"
+          [routerLink]="item.route"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+          [matTooltip]="item.label"
+          [matTooltipDisabled]="!(!isMobile && isCollapsed)"
+          matTooltipPosition="right"
+          matTooltipClass="rs-nav-tooltip"
+          (click)="closeMobileSidenav()"
+        >
+          <span class="rs-nav-item-glow"></span>
+
+          <mat-icon matListItemIcon class="rs-nav-icon" fontSet="material-symbols-outlined">
+            {{ item.icon }}
+          </mat-icon>
+
+          <span matListItemTitle class="rs-nav-text">{{ item.label }}</span>
+        </a>
+      </mat-nav-list>
+
+      <div class="rs-side-footer" *ngIf="!(!isMobile && isCollapsed)">
+        <div class="rs-side-user-card">
+          <span class="rs-side-user-avatar" [ngClass]="getSessionAvatarClass()">A</span>
+
+          <div class="rs-side-user-copy">
+            <div class="rs-side-user-name">Admin User</div>
+            <div class="rs-side-user-mail">admin&#64;reparasuite.com</div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <mat-nav-list class="rs-nav">
-      <a
-        *ngFor="let item of navItems"
-        mat-list-item
-        class="rs-nav-item"
-        [routerLink]="item.route"
-        routerLinkActive="is-active"
-        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-        [matTooltip]="item.label"
-        [matTooltipDisabled]="!(!isMobile && isCollapsed)"
-        matTooltipPosition="right"
-        matTooltipClass="rs-nav-tooltip"
-        (click)="closeMobileSidenav()"
-      >
-        <mat-icon matListItemIcon class="rs-nav-icon" fontSet="material-symbols-outlined">
-          {{ item.icon }}
-        </mat-icon>
-
-        <span matListItemTitle class="rs-nav-text">{{ item.label }}</span>
-      </a>
-    </mat-nav-list>
   </mat-sidenav>
 
   <mat-sidenav-content class="rs-content">
@@ -170,11 +189,11 @@
         aria-label="Abrir menú de usuario"
       >
         <span class="rs-profile-chip">
-          <span class="rs-avatar">A</span>
+          <span class="rs-avatar" [ngClass]="getSessionAvatarClass()">A</span>
 
           <span class="rs-profile-text">
             <span class="rs-profile-name">Admin</span>
-            <span class="rs-profile-role">Supervisor</span>
+            <span class="rs-profile-role">{{ sessionLabel }}</span>
           </span>
 
           <mat-icon class="rs-chevron" fontSet="material-symbols-outlined">expand_more</mat-icon>

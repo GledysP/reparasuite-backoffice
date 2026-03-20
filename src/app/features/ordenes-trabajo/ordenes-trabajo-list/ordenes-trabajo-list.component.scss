@@ -1,12 +1,12 @@
-$rs-primary: #124E59;
-$rs-primary-dark: #0f434c;
-$rs-border: #d7e0ea;
-$rs-border-soft: #e7edf4;
+$rs-neon: #00d1ff;
+$rs-primary-dark: #081a4b;
+$rs-primary: #0891b2;
 $rs-text: #0f172a;
 $rs-muted: #64748b;
-$rs-label: #6d829d;
-$rs-bg-soft: #f8fafc;
-$rs-hover: #f7fafc;
+$rs-label: #7f91a7;
+$rs-border: rgba(15, 23, 42, 0.08);
+$rs-border-soft: rgba(15, 23, 42, 0.06);
+$rs-table-hover: rgba(15, 23, 42, 0.03);
 
 :host {
   display: block;
@@ -16,15 +16,30 @@ $rs-hover: #f7fafc;
   background: transparent !important;
 }
 
-/* =========================
-   HEADER
-========================= */
+.rs-fade-up {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: rsFadeUp 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes rsFadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* HEADER */
 .rs-header-row {
-  margin-bottom: 12px !important;
-  align-items: flex-start !important;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px !important;
 
   @media (max-width: 640px) {
-    margin-bottom: 10px !important;
+    flex-direction: column;
+    margin-bottom: 12px !important;
     gap: 12px !important;
   }
 }
@@ -35,9 +50,10 @@ $rs-hover: #f7fafc;
 
 .rs-page-title {
   margin: 0 0 6px 0 !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
   letter-spacing: -0.02em !important;
   line-height: 1.15 !important;
+  color: $rs-text !important;
 
   @media (max-width: 640px) {
     margin-bottom: 4px !important;
@@ -57,20 +73,20 @@ $rs-hover: #f7fafc;
   }
 }
 
-/* =========================
-   BOTÓN NUEVA OT
-========================= */
+/* BOTÓN NUEVA OT */
 .btn-new-ot {
-  height: 40px !important;
-  padding: 0 15px !important;
-  border-radius: 14px !important;
-  background: $rs-primary !important;
+  height: 42px !important;
+  padding: 0 16px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #081a4b 0%, #0a2a74 42%, #00b8f5 160%) !important;
   color: #fff !important;
   font-weight: 800 !important;
   letter-spacing: -0.01em;
+  border: 1px solid rgba(0, 209, 255, 0.12) !important;
   box-shadow:
-    0 10px 22px rgba(18, 78, 89, 0.14),
-    0 4px 8px rgba(18, 78, 89, 0.08) !important;
+    0 14px 28px rgba(8, 26, 75, 0.14),
+    0 4px 10px rgba(8, 26, 75, 0.08),
+    0 0 18px rgba(0, 209, 255, 0.08) !important;
   transition:
     transform 160ms ease,
     box-shadow 160ms ease,
@@ -79,9 +95,10 @@ $rs-hover: #f7fafc;
   &:hover {
     transform: translateY(-1px);
     box-shadow:
-      0 12px 26px rgba(18, 78, 89, 0.16),
-      0 5px 10px rgba(18, 78, 89, 0.09) !important;
-    filter: brightness(1.01);
+      0 16px 32px rgba(8, 26, 75, 0.18),
+      0 5px 12px rgba(8, 26, 75, 0.10),
+      0 0 24px rgba(0, 209, 255, 0.10) !important;
+    filter: brightness(1.02);
   }
 
   mat-icon {
@@ -93,25 +110,24 @@ $rs-hover: #f7fafc;
 
   @media (max-width: 640px) {
     width: 100%;
-    height: 40px !important;
-    border-radius: 13px !important;
+    height: 42px !important;
+    border-radius: 14px !important;
     justify-content: center;
     padding: 0 14px !important;
   }
 }
 
-/* =========================
-   CARD FILTROS
-========================= */
+/* CARD FILTROS */
 .rs-filter-card {
   background: #fff !important;
   border: 1px solid $rs-border-soft !important;
   margin-top: 10px;
-  border-radius: 18px !important;
+  border-radius: 22px !important;
   box-shadow:
-    0 10px 22px rgba(15, 23, 42, 0.03),
-    0 3px 8px rgba(15, 23, 42, 0.018) !important;
-  margin-bottom: 10px;
+    0 12px 24px rgba(15, 23, 42, 0.035),
+    0 3px 10px rgba(15, 23, 42, 0.018),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+  margin-bottom: 14px;
 
   mat-card-content {
     padding: 12px !important;
@@ -124,8 +140,8 @@ $rs-hover: #f7fafc;
 
 .rs-filtros-grid {
   display: grid;
-  grid-template-columns: 150px 130px 150px minmax(240px, 1fr) auto;
-  gap: 8px;
+  grid-template-columns: 140px 120px 140px minmax(240px, 1fr) auto;
+  gap: 10px;
   align-items: end;
 
   @media (max-width: 1120px) {
@@ -154,13 +170,11 @@ $rs-hover: #f7fafc;
   font-weight: 800;
   color: $rs-label;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   line-height: 1.2;
 }
 
-/* =========================
-   FORM FIELDS COMPACTOS
-========================= */
+/* FORM FIELDS */
 :host ::ng-deep .mat-mdc-form-field {
   width: 100%;
 }
@@ -170,9 +184,9 @@ $rs-hover: #f7fafc;
 }
 
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-  min-height: 38px !important;
-  border-radius: 12px !important;
-  border: 1px solid $rs-border !important;
+  min-height: 40px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(15, 23, 42, 0.10) !important;
   background: #fff !important;
   box-shadow: none !important;
   transition:
@@ -182,18 +196,18 @@ $rs-hover: #f7fafc;
 }
 
 :host ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
-  border-color: #c7d3df !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
 }
 
 :host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
-  border-color: rgba(18, 78, 89, 0.38) !important;
-  box-shadow: 0 0 0 3px rgba(18, 78, 89, 0.08) !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.04) !important;
 }
 
 :host ::ng-deep .mat-mdc-form-field-infix {
-  min-height: 38px !important;
-  padding-top: 7px !important;
-  padding-bottom: 7px !important;
+  min-height: 40px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
 }
 
 :host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
@@ -204,6 +218,7 @@ $rs-hover: #f7fafc;
 :host ::ng-deep .mat-mdc-select-value-text {
   font-size: 13px !important;
   color: $rs-text !important;
+  font-weight: 600 !important;
 }
 
 :host ::ng-deep .mat-mdc-input-element::placeholder {
@@ -224,28 +239,26 @@ $rs-hover: #f7fafc;
 
 @media (max-width: 640px) {
   :host ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-    min-height: 36px !important;
-    border-radius: 12px !important;
+    min-height: 38px !important;
+    border-radius: 14px !important;
   }
 
   :host ::ng-deep .mat-mdc-form-field-infix {
-    min-height: 36px !important;
-    padding-top: 6px !important;
-    padding-bottom: 6px !important;
+    min-height: 38px !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
   }
 }
 
-/* =========================
-   BOTÓN LIMPIAR MÁS FINO
-========================= */
+/* BOTÓN LIMPIAR */
 .btn-clear {
-  height: 38px !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(18, 78, 89, 0.16) !important;
-  color: $rs-primary !important;
-  font-weight: 700 !important;
+  height: 40px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(15, 23, 42, 0.10) !important;
+  color: #0891b2 !important;
+  font-weight: 800 !important;
   background: #fff !important;
-  padding: 0 12px !important;
+  padding: 0 14px !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -256,8 +269,8 @@ $rs-hover: #f7fafc;
     border-color 160ms ease !important;
 
   &:hover {
-    background: rgba(18, 78, 89, 0.04) !important;
-    border-color: rgba(18, 78, 89, 0.22) !important;
+    background: rgba(15, 23, 42, 0.03) !important;
+    border-color: rgba(15, 23, 42, 0.14) !important;
     transform: translateY(-1px);
   }
 
@@ -269,22 +282,21 @@ $rs-hover: #f7fafc;
 
   @media (max-width: 640px) {
     width: 100%;
-    height: 36px !important;
-    border-radius: 12px !important;
+    height: 38px !important;
+    border-radius: 14px !important;
   }
 }
 
-/* =========================
-   TABLA DESKTOP
-========================= */
+/* TABLA DESKTOP */
 .rs-table-card {
   background: #fff !important;
   border: 1px solid $rs-border-soft !important;
-  border-radius: 20px !important;
+  border-radius: 24px !important;
   overflow: hidden;
   box-shadow:
     0 12px 28px rgba(15, 23, 42, 0.038),
-    0 4px 10px rgba(15, 23, 42, 0.018) !important;
+    0 4px 10px rgba(15, 23, 42, 0.018),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74) !important;
 
   mat-card-content {
     padding: 0 !important;
@@ -313,7 +325,7 @@ $rs-hover: #f7fafc;
 
   td.mat-mdc-cell {
     color: $rs-text;
-    padding: 11px 18px !important;
+    padding: 10px 18px !important;
     border-bottom: 1px solid rgba(15, 23, 42, 0.045) !important;
     font-size: 13px;
     vertical-align: middle;
@@ -321,7 +333,7 @@ $rs-hover: #f7fafc;
   }
 
   .rs-table-row:hover {
-    background: $rs-hover !important;
+    background: $rs-table-hover !important;
   }
 }
 
@@ -341,14 +353,12 @@ $rs-hover: #f7fafc;
   }
 }
 
-/* =========================
-   BADGES ESTADO
-========================= */
+/* BADGES ESTADO */
 .status-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 24px;
+  min-height: 22px;
   padding: 0 11px;
   border-radius: 999px;
   font-size: 10px;
@@ -357,35 +367,35 @@ $rs-hover: #f7fafc;
   color: #fff;
   text-transform: uppercase;
   white-space: nowrap;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.05);
 
   &[data-status='RECIBIDA'] {
-    background: #7f94b3;
+    background: linear-gradient(135deg, #7f94b3, #94a7c0);
   }
 
   &[data-status='PRESUPUESTO'] {
-    background: #ecb90e;
+    background: linear-gradient(135deg, #ecb90e, #f5c842);
+    color: #4a3400;
   }
 
   &[data-status='APROBADA'] {
-    background: #22a45d;
+    background: linear-gradient(135deg, #22a45d, #35c874);
   }
 
   &[data-status='EN_CURSO'] {
-    background: $rs-primary;
+    background: linear-gradient(135deg, #0891b2, #06b6d4);
   }
 
   &[data-status='FINALIZADA'] {
-    background: #4b83ff;
+    background: linear-gradient(135deg, #4b83ff, #6aa6ff);
   }
 
   &[data-status='CERRADA'] {
-    background: #ef5350;
+    background: linear-gradient(135deg, #ef5350, #fb7185);
   }
 }
 
-/* =========================
-   ACCIONES
-========================= */
+/* ACCIONES */
 .rs-actions-container {
   display: flex;
   align-items: center;
@@ -395,14 +405,15 @@ $rs-hover: #f7fafc;
 .rs-btn-action {
   width: 36px !important;
   height: 36px !important;
-  border-radius: 12px !important;
-  background: #f6f8fb !important;
+  border-radius: 14px !important;
+  background: rgba(15, 23, 42, 0.03) !important;
+  border: 1px solid rgba(15, 23, 42, 0.04);
   color: #60738f !important;
   transition: all 160ms ease !important;
 
   &:hover {
-    background: rgba(18, 78, 89, 0.08) !important;
-    color: $rs-primary !important;
+    background: rgba(15, 23, 42, 0.05) !important;
+    color: #0891b2 !important;
     transform: translateY(-1px);
   }
 
@@ -426,9 +437,7 @@ $rs-hover: #f7fafc;
   }
 }
 
-/* =========================
-   EMPTY STATE
-========================= */
+/* EMPTY STATE */
 .rs-empty-state {
   padding: 30px 18px;
   text-align: center;
@@ -446,7 +455,7 @@ $rs-hover: #f7fafc;
     margin: 0 0 6px;
     color: $rs-text;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 800;
   }
 
   p {
@@ -459,9 +468,7 @@ $rs-hover: #f7fafc;
   }
 }
 
-/* =========================
-   PAGINADOR MÁS COMPACTO
-========================= */
+/* PAGINADOR */
 .rs-paginator {
   background: #fff !important;
   border-top: 1px solid $rs-border-soft !important;
@@ -488,9 +495,9 @@ $rs-hover: #f7fafc;
 
 :host ::ng-deep .rs-paginator .mat-mdc-form-field .mat-mdc-text-field-wrapper {
   min-height: 34px !important;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   background: #fff !important;
-  border: 1px solid $rs-border !important;
+  border: 1px solid rgba(15, 23, 42, 0.10) !important;
   box-shadow: none !important;
 }
 
@@ -506,9 +513,7 @@ $rs-hover: #f7fafc;
   padding: 4px !important;
 }
 
-/* =========================
-   MOBILE CARDS
-========================= */
+/* MOBILE CARDS */
 .rs-mobile-list,
 .rs-empty-mobile-card {
   display: none;
@@ -518,7 +523,7 @@ $rs-hover: #f7fafc;
 .rs-mobile-paginator-card {
   background: #fff !important;
   border: 1px solid $rs-border-soft !important;
-  border-radius: 18px !important;
+  border-radius: 20px !important;
   box-shadow:
     0 10px 22px rgba(15, 23, 42, 0.032),
     0 4px 10px rgba(15, 23, 42, 0.018) !important;
@@ -587,7 +592,7 @@ $rs-hover: #f7fafc;
 .rs-mobile-link {
   padding: 0 !important;
   min-width: auto !important;
-  color: $rs-primary !important;
+  color: #0891b2 !important;
   font-weight: 800 !important;
   display: inline-flex;
   align-items: center;
@@ -605,9 +610,7 @@ $rs-hover: #f7fafc;
   overflow: hidden;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .rs-desktop-table-card {
     display: none;
@@ -623,7 +626,7 @@ $rs-hover: #f7fafc;
     display: block;
     background: #fff !important;
     border: 1px solid $rs-border-soft !important;
-    border-radius: 18px !important;
+    border-radius: 20px !important;
   }
 
   .rs-filter-card {
@@ -631,7 +634,7 @@ $rs-hover: #f7fafc;
   }
 
   .status-badge {
-    min-height: 23px;
+    min-height: 22px;
     padding: 0 10px;
     font-size: 10px;
   }

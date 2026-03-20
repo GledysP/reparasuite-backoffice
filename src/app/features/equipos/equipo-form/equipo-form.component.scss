@@ -1,92 +1,608 @@
-$petroleo: #1a4b5d;
-$bg-input: #f8fafc; // Gris muy claro para el fondo del input
-$border-input: #e2e8f0; // Gris sutil para el borde
+// ======================================================
+// REPARASUITE · EQUIPO FORM · PREMIUM 10/10
+// ======================================================
 
-/*
-  REGLA: El contenedor del formulario ahora ocupa el ancho completo,
-  respetando únicamente los paddings laterales de la página definidos en styles.scss.
-  Se eliminó cualquier 'max-width' o 'margin: auto'.
-*/
-.rs-form-section {
-  background: #ffffff;
-  border: 1px solid $border-input;
-  border-radius: var(--rs-density-radius, 12px);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-}
+$blue-deep: #081a4b;
+$blue-deep-2: #0a1f5c;
+$blue-neon: #00d1ff;
+$blue-action: #0891b2;
 
-/*
-  REGLA: El título es negro, negrita y alineado a la izquierda.
-*/
-:host ::ng-deep .rs-page-title {
-  color: #0f172a !important; // Negro pizarra, no petróleo
-  font-weight: 700 !important;
-}
+$text-primary: #0f172a;
+$text-secondary: #64748b;
+$text-muted: #7f91a7;
+$text-muted-2: #94a3b8;
 
-/*
-  REGLA: Inputs rectangulares, con bordes redondeados de 12px, fondo gris claro suave.
-*/
-:host ::ng-deep {
-  .mat-mdc-form-field {
-    .mdc-text-field--outlined {
-      background-color: $bg-input !important;
-      // Se asegura el borde redondeado de 12px.
-      border-radius: var(--rs-density-radius, 12px) !important;
+$page-bg: #f8fafc;
+$surface: #ffffff;
 
-      .mdc-notched-outline > * {
-        border-color: $border-input !important;
-        border-width: 1px !important;
-      }
-    }
+$border-subtle: rgba(15, 23, 42, 0.05);
+$border-soft: rgba(15, 23, 42, 0.10);
 
-    // Contraste al enfocar
-    &.mat-focused .mdc-text-field--outlined {
-      background-color: #fff !important;
-    }
+$shadow-card: 0 6px 24px rgba(15, 23, 42, 0.04);
+
+$radius-card: 22px;
+$radius-field: 18px;
+$radius-pill: 999px;
+
+@keyframes rsFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-// Layout para alinear campo con botones
-.rs-flex-row {
-  display: flex;
-  gap: 12px;
-  align-items: center; // Centrado verticalmente
+// PAGE
+.rs-main-container {
+  width: 100%;
+  min-height: 100%;
+  padding: 28px;
+  background: $page-bg;
 }
 
-.field-actions {
+.rs-header-section {
   display: flex;
-  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
 
-  /*
-    REGLA: El botón "+ Nueva" tiene el estilo del botón principal (petróleo)
-    pero en una versión más compacta para encajar junto al campo.
-  */
-  .btn-inline-action {
-    height: var(--rs-density-field-h) !important; // Misma altura que el input
-    padding: 0 16px !important;
-    font-size: 13px !important;
-    flex-shrink: 0; // Evita que se encoja
+.rs-header-copy {
+  min-width: 0;
+}
+
+.rs-page-title {
+  margin: 0;
+  color: $text-primary;
+  font-size: 28px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.rs-page-subtitle {
+  margin: 8px 0 0;
+  color: $text-secondary;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+// LAYOUT
+.rs-layout-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: start;
+}
+
+// CARDS
+.rs-form-card,
+.rs-side-card {
+  background: $surface !important;
+  border: 1px solid $border-subtle !important;
+  border-radius: $radius-card !important;
+  box-shadow: $shadow-card !important;
+  opacity: 0;
+  animation: rsFadeUp 0.42s ease forwards;
+}
+
+.rs-form-card {
+  overflow: hidden;
+}
+
+.rs-side-card {
+  position: sticky;
+  top: 18px;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(103, 232, 249, 0.06), transparent 36%);
+    pointer-events: none;
+    opacity: 0.8;
+  }
+}
+
+.rs-form-content {
+  padding: 18px !important;
+}
+
+.rs-side-content {
+  position: relative;
+  z-index: 1;
+  padding: 18px !important;
+}
+
+// FORM STACK
+.rs-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rs-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rs-group-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rs-group-eyebrow {
+  color: $text-muted-2;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.rs-group-title {
+  margin: 0;
+  color: $text-primary;
+  font-size: 20px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+// GRID
+.rs-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rs-span-12 { grid-column: span 12; }
+.rs-span-6 { grid-column: span 6; }
+.rs-span-4 { grid-column: span 4; }
+
+// FIELD WRAPPERS
+.rs-field-shell {
+  min-width: 0;
+}
+
+.rs-field-label {
+  margin: 0 0 6px 4px;
+  color: $text-muted;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.rs-option-main {
+  color: $text-primary;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rs-option-sub {
+  color: $text-secondary;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+// PREMIUM MATERIAL FIELD
+:host ::ng-deep {
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    padding-top: 3px;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background: #ffffff !important;
+    border-radius: $radius-field !important;
+  }
+
+  .mdc-text-field--outlined {
+    background: #ffffff !important;
+    border-radius: $radius-field !important;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: rgba(15, 23, 42, 0.08) !important;
+    border-width: 1px !important;
+  }
+
+  .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+  .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+  .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+    border-color: rgba(15, 23, 42, 0.12) !important;
+  }
+
+  .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+  .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+  .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+    border-color: rgba(8, 145, 178, 0.35) !important;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: 48px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .mat-mdc-select-value,
+  .mat-mdc-input-element,
+  .mat-mdc-select-min-line {
+    color: $text-primary !important;
+    font-size: 13.5px !important;
+  }
+
+  .mat-mdc-input-element::placeholder,
+  textarea.mat-mdc-input-element::placeholder {
+    color: $text-muted-2 !important;
+    opacity: 1;
+  }
+
+  textarea.mat-mdc-input-element {
+    resize: vertical;
+    min-height: 74px;
+    line-height: 1.5;
+  }
+
+  .mat-datepicker-toggle {
+    color: $text-secondary !important;
+  }
+
+  .mat-mdc-slide-toggle .mdc-label {
+    color: $text-secondary;
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+// SIDE CARD
+.rs-side-eyebrow {
+  color: $blue-action;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rs-side-title {
+  margin: 8px 0 0;
+  color: $text-primary;
+  font-size: 18px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rs-side-text {
+  margin: 10px 0 0;
+  color: $text-secondary;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.rs-side-badge {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 26px;
+  padding: 0 11px;
+  border-radius: $radius-pill;
+  background: rgba(0, 209, 255, 0.08);
+  border: 1px solid rgba(0, 209, 255, 0.14);
+  color: #0b6b84;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.rs-side-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.rs-side-field-wrap {
+  margin-top: 14px;
+}
+
+.rs-side-field {
+  width: 100%;
+}
+
+.rs-side-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.rs-side-note {
+  margin-top: 12px;
+  padding-top: 12px;
+  color: $text-muted;
+  font-size: 11.5px;
+  line-height: 1.45;
+  border-top: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+// UPLOAD
+.rs-upload-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px dashed rgba(15, 23, 42, 0.14);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.rs-upload-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 145, 178, 0.06);
+  color: $blue-action;
+  flex: 0 0 42px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.rs-upload-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.rs-upload-title {
+  color: $text-primary;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.rs-upload-subtitle {
+  margin-top: 4px;
+  color: $text-secondary;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.rs-upload-btn {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.03);
+  color: $blue-deep;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, transform 0.18s ease;
+
+  &:hover {
+    background: rgba(15, 23, 42, 0.05);
+    transform: translateY(-1px);
+  }
+}
+
+// STATUS
+.rs-status-row {
+  display: flex;
+  align-items: center;
+  padding-top: 2px;
+}
+
+// BUTTONS
+.rs-btn-inline-primary,
+.rs-btn-primary {
+  background: linear-gradient(135deg, #081a4b 0%, #0a2a74 42%, #00b8f5 160%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em;
+  box-shadow: 0 10px 22px rgba(8, 26, 75, 0.14);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 24px rgba(8, 26, 75, 0.18);
+    filter: brightness(1.02);
+  }
+}
+
+.rs-btn-inline-primary {
+  min-height: 42px;
+  padding: 0 14px !important;
+  border-radius: 14px !important;
+  font-size: 12.5px !important;
+
+  mat-icon {
+    margin-right: 4px;
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.btn-icon-action {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 14px !important;
+  color: $text-secondary !important;
+  background: #ffffff !important;
+  border: 1px solid $border-subtle !important;
+  transition:
+    color 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+
+  &:hover {
+    color: $blue-deep !important;
+    background: rgba(15, 23, 42, 0.03) !important;
+    border-color: rgba(15, 23, 42, 0.08) !important;
+    transform: translateY(-1px);
+  }
+}
+
+.form-footer {
+  margin-top: 14px;
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.btn-cancel {
+  min-height: 40px;
+  padding: 0 16px !important;
+  border-radius: 14px !important;
+  color: $blue-deep !important;
+  background: transparent !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+
+  &:hover {
+    background: rgba(15, 23, 42, 0.03) !important;
+  }
+}
+
+.rs-btn-primary {
+  min-height: 40px;
+  padding: 0 18px !important;
+  border-radius: 14px !important;
+}
+
+// RESPONSIVE
+@media (max-width: 1280px) {
+  .rs-layout-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .rs-side-card {
+    position: static;
+  }
+}
+
+@media (max-width: 980px) {
+  .rs-span-4,
+  .rs-span-6 {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 768px) {
+  .rs-main-container {
+    padding: 14px;
+  }
+
+  .rs-header-section {
+    margin-bottom: 14px;
+  }
+
+  .rs-page-title {
+    font-size: 22px;
+  }
+
+  .rs-page-subtitle {
+    font-size: 12.5px;
+    line-height: 1.4;
+    margin-top: 6px;
+  }
+
+  .rs-form-content,
+  .rs-side-content {
+    padding: 12px !important;
+  }
+
+  .rs-form-stack {
+    gap: 16px;
+  }
+
+  .rs-grid {
+    gap: 10px;
+  }
+
+  .rs-span-4,
+  .rs-span-6 {
+    grid-column: span 12;
+  }
+
+  .rs-group-title {
+    font-size: 18px;
+  }
+
+  .rs-upload-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rs-upload-btn {
+    width: 100%;
+  }
+
+  .rs-side-title {
+    font-size: 17px;
+  }
+
+  .rs-btn-inline-primary {
+    min-height: 40px;
   }
 
   .btn-icon-action {
-    color: #64748b; // Slate-500
-    
-    &:hover {
-      color: $petroleo;
-      background-color: rgba(26, 75, 93, 0.05);
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+  }
+
+  :host ::ng-deep {
+    .mat-mdc-form-field-infix {
+      min-height: 44px !important;
+      padding-top: 9px !important;
+      padding-bottom: 9px !important;
+    }
+
+    .mat-mdc-select-value,
+    .mat-mdc-input-element,
+    .mat-mdc-select-min-line {
+      font-size: 12.5px !important;
+    }
+
+    textarea.mat-mdc-input-element {
+      min-height: 62px;
     }
   }
-}
 
-// Footer de acciones, con botones a la derecha.
-.form-footer {
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid #f1f5f9;
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-}
+  .form-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
 
-.checkbox-row {
-  margin-top: 8px;
+  .btn-cancel,
+  .rs-btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
 }

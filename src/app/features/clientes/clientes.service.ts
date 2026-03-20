@@ -5,6 +5,12 @@ import { Observable } from 'rxjs';
 import { RespuestaPaginada } from '../../core/models/api';
 import { ClienteResumen, ClienteOrdenItem } from '../../core/models/tipos';
 
+export interface ClienteGuardarRequest {
+  nombre: string;
+  telefono?: string | null;
+  email?: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ClientesService {
   constructor(private http: HttpClient) {}
@@ -12,6 +18,7 @@ export class ClientesService {
   listar(query: string, page = 0, size = 20): Observable<RespuestaPaginada<ClienteResumen>> {
     const params: any = { page, size };
     if (query) params.query = query;
+
     return this.http.get<RespuestaPaginada<ClienteResumen>>(
       `${environment.apiBaseUrl}/clientes`,
       { params }
@@ -22,12 +29,27 @@ export class ClientesService {
     return this.http.get<ClienteResumen>(`${environment.apiBaseUrl}/clientes/${id}`);
   }
 
+  crear(payload: ClienteGuardarRequest): Observable<ClienteResumen> {
+    return this.http.post<ClienteResumen>(
+      `${environment.apiBaseUrl}/clientes`,
+      payload
+    );
+  }
+
+  actualizar(id: string, payload: ClienteGuardarRequest): Observable<ClienteResumen> {
+    return this.http.put<ClienteResumen>(
+      `${environment.apiBaseUrl}/clientes/${id}`,
+      payload
+    );
+  }
+
   eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${environment.apiBaseUrl}/clientes/${id}`);
   }
 
   ordenesDelCliente(id: string, page = 0, size = 10): Observable<RespuestaPaginada<ClienteOrdenItem>> {
     const params = { page: page.toString(), size: size.toString() };
+
     return this.http.get<RespuestaPaginada<ClienteOrdenItem>>(
       `${environment.apiBaseUrl}/clientes/${id}/ordenes-trabajo`,
       { params }

@@ -73,7 +73,10 @@ export class LoginComponent {
       .subscribe({
         next: () => this.router.navigateByUrl('/dashboard'),
         error: (err) => {
-          this.error = 'Credenciales incorrectas o error de conexión';
+          this.error =
+            err?.status === 429
+              ? 'Demasiados intentos. Intenta más tarde.'
+              : 'Credenciales incorrectas o error de conexión';
           console.error('Login error:', err);
         },
       });

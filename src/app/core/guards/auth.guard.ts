@@ -6,12 +6,10 @@ export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
+  auth.ensureValidOrLogout();
+
   if (auth.isAuthenticated()) return true;
 
   router.navigateByUrl('/login');
   return false;
-}; 
-
-
-/*import { CanActivateFn } from '@angular/router';
-export const authGuard: CanActivateFn = () => true; */
+};

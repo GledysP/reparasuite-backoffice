@@ -12,16 +12,27 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      const isAuthEndpoint =
+        req.url.includes('/auth/login') ||
+        req.url.includes('/auth/refresh') ||
+        req.url.includes('/auth/logout');
+
       if (error.status === 401) {
-        auth.logout();
-        router.navigateByUrl('/login');
+        if (isAuthEndpoint || !auth.isAuthenticated()) {
+          auth.logoutLocal();
+          router.navigateByUrl('/login');
+        }
       } else if (error.status === 403) {
         snack.open('No tienes permisos para realizar esta acción', 'Cerrar', {
-          duration: 3000
+          duration: 3000,
+        });
+      } else if (error.status === 429) {
+        snack.open('Demasiados intentos. Intenta más tarde.', 'Cerrar', {
+          duration: 3500,
         });
       } else if (error.status >= 500) {
         snack.open('Ha ocurrido un error interno. Intenta más tarde.', 'Cerrar', {
-          duration: 3000
+          duration: 3000,
         });
       }
 

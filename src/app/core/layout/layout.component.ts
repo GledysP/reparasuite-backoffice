@@ -65,6 +65,8 @@ export class LayoutComponent {
   mobileOpened = false;
   mobileSearchOpen = false;
 
+  sessionState: 'active' | 'idle' = 'active';
+
   notifications$ = this.notifs.notifications$;
   unreadCount$ = this.notifs.unreadCount$;
 
@@ -91,6 +93,14 @@ export class LayoutComponent {
         this.mobileSearchOpen = false;
       }
     });
+  }
+
+  get sessionLabel(): string {
+    return this.sessionState === 'active' ? 'Sesión activa' : 'Sesión inactiva';
+  }
+
+  getSessionAvatarClass(): string {
+    return this.sessionState === 'active' ? 'is-session-active' : 'is-session-idle';
   }
 
   toggleMenu(): void {
@@ -149,6 +159,16 @@ export class LayoutComponent {
   logout(): void {
     this.auth.logout();
     this.router.navigateByUrl('/login');
+  }
+
+  @HostListener('window:focus')
+  onWindowFocus(): void {
+    this.sessionState = 'active';
+  }
+
+  @HostListener('window:blur')
+  onWindowBlur(): void {
+    this.sessionState = 'idle';
   }
 
   @HostListener('window:keydown', ['$event'])
