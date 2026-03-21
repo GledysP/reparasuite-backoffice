@@ -380,6 +380,25 @@ $rs-table-hover: rgba(15, 23, 42, 0.03);
   }
 }
 
+.rs-btn-whatsapp-flat {
+  // Mismo fondo que tu botón primario pero en verde WhatsApp
+  background: linear-gradient(135deg, #128c7e 0%, #25d366 100%) !important;
+  margin-top: 10px; // Separación opcional
+
+  .wa-icon-container {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  .wa-svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+  }
+}
+
 .rs-content-card {
   background: #ffffff !important;
   border: 1px solid rgba(15, 23, 42, 0.06) !important;

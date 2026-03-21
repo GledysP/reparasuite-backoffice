@@ -1,5 +1,5 @@
 // ======================================================
-// REPARASUITE · EQUIPO FORM · PREMIUM 10/10
+// REPARASUITE · EQUIPO FORM · PREMIUM REFINED
 // ======================================================
 
 $blue-deep: #081a4b;
@@ -12,16 +12,16 @@ $text-secondary: #64748b;
 $text-muted: #7f91a7;
 $text-muted-2: #94a3b8;
 
-$page-bg: #f8fafc;
-$surface: #ffffff;
+$surface: transparent;
+$card-surface: #ffffff;
 
 $border-subtle: rgba(15, 23, 42, 0.05);
 $border-soft: rgba(15, 23, 42, 0.10);
 
-$shadow-card: 0 6px 24px rgba(15, 23, 42, 0.04);
+$shadow-card: 0 4px 18px rgba(15, 23, 42, 0.035);
 
-$radius-card: 22px;
-$radius-field: 18px;
+$radius-card: 20px;
+$radius-field: 14px;
 $radius-pill: 999px;
 
 @keyframes rsFadeUp {
@@ -40,7 +40,7 @@ $radius-pill: 999px;
   width: 100%;
   min-height: 100%;
   padding: 28px;
-  background: $page-bg;
+  background: $surface;
 }
 
 .rs-header-section {
@@ -48,7 +48,7 @@ $radius-pill: 999px;
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .rs-header-copy {
@@ -68,21 +68,21 @@ $radius-pill: 999px;
   margin: 8px 0 0;
   color: $text-secondary;
   font-size: 13.5px;
-  line-height: 1.45;
+  line-height: 1.4;
 }
 
 // LAYOUT
 .rs-layout-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 272px;
+  gap: 14px;
   align-items: start;
 }
 
 // CARDS
 .rs-form-card,
 .rs-side-card {
-  background: $surface !important;
+  background: $card-surface !important;
   border: 1px solid $border-subtle !important;
   border-radius: $radius-card !important;
   box-shadow: $shadow-card !important;
@@ -103,63 +103,63 @@ $radius-pill: 999px;
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at top right, rgba(103, 232, 249, 0.06), transparent 36%);
+    background: radial-gradient(circle at top right, rgba(103, 232, 249, 0.05), transparent 36%);
     pointer-events: none;
-    opacity: 0.8;
+    opacity: 0.75;
   }
 }
 
 .rs-form-content {
-  padding: 18px !important;
+  padding: 16px !important;
 }
 
 .rs-side-content {
   position: relative;
   z-index: 1;
-  padding: 18px !important;
+  padding: 16px !important;
 }
 
 // FORM STACK
 .rs-form-stack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
 }
 
 .rs-form-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .rs-group-head {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .rs-group-eyebrow {
   color: $text-muted-2;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .rs-group-title {
   margin: 0;
   color: $text-primary;
-  font-size: 20px;
-  line-height: 1.15;
+  font-size: 15px;
+  line-height: 1.2;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 // GRID
 .rs-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .rs-span-12 { grid-column: span 12; }
@@ -172,11 +172,11 @@ $radius-pill: 999px;
 }
 
 .rs-field-label {
-  margin: 0 0 6px 4px;
+  margin: 0 0 4px 4px;
   color: $text-muted;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 .rs-option-main {
@@ -191,14 +191,14 @@ $radius-pill: 999px;
   margin-top: 2px;
 }
 
-// PREMIUM MATERIAL FIELD
+// FIELDS
 :host ::ng-deep {
   .mat-mdc-form-field {
     width: 100%;
   }
 
   .mat-mdc-form-field-subscript-wrapper {
-    padding-top: 3px;
+    padding-top: 2px;
   }
 
   .mat-mdc-text-field-wrapper {
@@ -221,26 +221,26 @@ $radius-pill: 999px;
   .mat-mdc-form-field:hover .mdc-notched-outline__leading,
   .mat-mdc-form-field:hover .mdc-notched-outline__notch,
   .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
-    border-color: rgba(15, 23, 42, 0.12) !important;
+    border-color: rgba(15, 23, 42, 0.11) !important;
   }
 
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-    border-color: rgba(8, 145, 178, 0.35) !important;
+    border-color: rgba(8, 145, 178, 0.26) !important;
   }
 
   .mat-mdc-form-field-infix {
-    min-height: 48px !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
+    min-height: 40px !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
   }
 
   .mat-mdc-select-value,
   .mat-mdc-input-element,
   .mat-mdc-select-min-line {
     color: $text-primary !important;
-    font-size: 13.5px !important;
+    font-size: 12.5px !important;
   }
 
   .mat-mdc-input-element::placeholder,
@@ -251,8 +251,8 @@ $radius-pill: 999px;
 
   textarea.mat-mdc-input-element {
     resize: vertical;
-    min-height: 74px;
-    line-height: 1.5;
+    min-height: 44px;
+    line-height: 1.45;
   }
 
   .mat-datepicker-toggle {
@@ -261,61 +261,69 @@ $radius-pill: 999px;
 
   .mat-mdc-slide-toggle .mdc-label {
     color: $text-secondary;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
+  }
+}
+
+.rs-textarea-field {
+  ::ng-deep .mat-mdc-form-field-infix {
+    min-height: 44px !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
   }
 }
 
 // SIDE CARD
 .rs-side-eyebrow {
   color: $blue-action;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .rs-side-title {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: $text-primary;
-  font-size: 18px;
-  line-height: 1.15;
+  font-size: 15px;
+  line-height: 1.2;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .rs-side-text {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   color: $text-secondary;
-  font-size: 12.5px;
-  line-height: 1.5;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .rs-side-badge {
-  margin-top: 12px;
+  margin-top: 10px;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 26px;
-  padding: 0 11px;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 10px;
   border-radius: $radius-pill;
   background: rgba(0, 209, 255, 0.08);
-  border: 1px solid rgba(0, 209, 255, 0.14);
+  border: 1px solid rgba(0, 209, 255, 0.13);
   color: #0b6b84;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
 }
 
 .rs-side-badge-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: currentColor;
   box-shadow: 0 0 10px currentColor;
 }
 
 .rs-side-field-wrap {
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .rs-side-field {
@@ -331,10 +339,10 @@ $radius-pill: 999px;
 
 .rs-side-note {
   margin-top: 12px;
-  padding-top: 12px;
+  padding-top: 10px;
   color: $text-muted;
-  font-size: 11.5px;
-  line-height: 1.45;
+  font-size: 11px;
+  line-height: 1.4;
   border-top: 1px solid rgba(15, 23, 42, 0.05);
 }
 
@@ -342,28 +350,28 @@ $radius-pill: 999px;
 .rs-upload-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px;
-  border-radius: 18px;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
   border: 1px dashed rgba(15, 23, 42, 0.14);
   background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
 }
 
 .rs-upload-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: rgba(8, 145, 178, 0.06);
   color: $blue-action;
-  flex: 0 0 42px;
+  flex: 0 0 38px;
 
   mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -374,27 +382,27 @@ $radius-pill: 999px;
 
 .rs-upload-title {
   color: $text-primary;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .rs-upload-subtitle {
-  margin-top: 4px;
+  margin-top: 3px;
   color: $text-secondary;
-  font-size: 12.5px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .rs-upload-btn {
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: 38px;
+  padding: 0 14px;
   border-radius: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: rgba(15, 23, 42, 0.03);
   color: $blue-deep;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
@@ -411,7 +419,7 @@ $radius-pill: 999px;
 .rs-status-row {
   display: flex;
   align-items: center;
-  padding-top: 2px;
+  padding-top: 0;
 }
 
 // BUTTONS
@@ -421,33 +429,33 @@ $radius-pill: 999px;
   color: #ffffff !important;
   font-weight: 800 !important;
   letter-spacing: -0.01em;
-  box-shadow: 0 10px 22px rgba(8, 26, 75, 0.14);
+  box-shadow: 0 8px 18px rgba(8, 26, 75, 0.12);
   transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 14px 24px rgba(8, 26, 75, 0.18);
+    box-shadow: 0 12px 22px rgba(8, 26, 75, 0.16);
     filter: brightness(1.02);
   }
 }
 
 .rs-btn-inline-primary {
-  min-height: 42px;
+  min-height: 38px;
   padding: 0 14px !important;
   border-radius: 14px !important;
-  font-size: 12.5px !important;
+  font-size: 12px !important;
 
   mat-icon {
     margin-right: 4px;
-    font-size: 15px;
-    width: 15px;
-    height: 15px;
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
   }
 }
 
 .btn-icon-action {
-  width: 42px !important;
-  height: 42px !important;
+  width: 38px !important;
+  height: 38px !important;
   border-radius: 14px !important;
   color: $text-secondary !important;
   background: #ffffff !important;
@@ -467,8 +475,8 @@ $radius-pill: 999px;
 }
 
 .form-footer {
-  margin-top: 14px;
-  padding-top: 10px;
+  margin-top: 10px;
+  padding-top: 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -476,8 +484,8 @@ $radius-pill: 999px;
 }
 
 .btn-cancel {
-  min-height: 40px;
-  padding: 0 16px !important;
+  min-height: 36px;
+  padding: 0 14px !important;
   border-radius: 14px !important;
   color: $blue-deep !important;
   background: transparent !important;
@@ -490,8 +498,8 @@ $radius-pill: 999px;
 }
 
 .rs-btn-primary {
-  min-height: 40px;
-  padding: 0 18px !important;
+  min-height: 36px;
+  padding: 0 16px !important;
   border-radius: 14px !important;
 }
 
@@ -538,7 +546,7 @@ $radius-pill: 999px;
   }
 
   .rs-form-stack {
-    gap: 16px;
+    gap: 14px;
   }
 
   .rs-grid {
@@ -550,8 +558,9 @@ $radius-pill: 999px;
     grid-column: span 12;
   }
 
-  .rs-group-title {
-    font-size: 18px;
+  .rs-group-title,
+  .rs-side-title {
+    font-size: 15px;
   }
 
   .rs-upload-card {
@@ -563,25 +572,21 @@ $radius-pill: 999px;
     width: 100%;
   }
 
-  .rs-side-title {
-    font-size: 17px;
-  }
-
   .rs-btn-inline-primary {
-    min-height: 40px;
+    min-height: 38px;
   }
 
   .btn-icon-action {
-    width: 40px !important;
-    height: 40px !important;
+    width: 38px !important;
+    height: 38px !important;
     border-radius: 12px !important;
   }
 
   :host ::ng-deep {
     .mat-mdc-form-field-infix {
-      min-height: 44px !important;
-      padding-top: 9px !important;
-      padding-bottom: 9px !important;
+      min-height: 38px !important;
+      padding-top: 7px !important;
+      padding-bottom: 7px !important;
     }
 
     .mat-mdc-select-value,
@@ -591,7 +596,7 @@ $radius-pill: 999px;
     }
 
     textarea.mat-mdc-input-element {
-      min-height: 62px;
+      min-height: 42px;
     }
   }
 

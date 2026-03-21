@@ -2,10 +2,12 @@
   <div class="rs-page">
     <header class="hdr">
       <div class="hdr-left">
-        <h1 class="hdr-title">Orden de trabajo</h1>
-        <p class="hdr-subtitle">
-          Seguimiento técnico, gestión operativa y control de servicio en una sola vista.
-        </p>
+        <div class="hdr-title-wrap">
+          <h1 class="hdr-title">Orden de trabajo</h1>
+          <p class="hdr-subtitle">
+            Seguimiento técnico, gestión operativa y control de servicio en una sola vista.
+          </p>
+        </div>
 
         <div class="hdr-sub">
           <span>Actualizada {{ data.updatedAt | date:'d MMM, y HH:mm' }}</span>
@@ -41,266 +43,292 @@
       <mat-progress-bar class="topbar" mode="indeterminate"></mat-progress-bar>
     }
 
-    <mat-card class="statsbar">
-      <div class="stats-grid">
-        <div class="stat stat--state">
-          <div class="stat-label">Estado</div>
-          <button type="button" class="chip-btn" [matMenuTriggerFor]="estadoMenu" [disabled]="busy()">
-            {{ estadoPretty() }}
-            <mat-icon class="chip-ico">expand_more</mat-icon>
-          </button>
-        </div>
-
-        <div class="stat">
-          <div class="stat-label">Presupuesto</div>
-          <div class="stat-value">
-            @if (presupuestoImporte(); as imp) { {{ imp | number:'1.0-2' }} € } @else { — }
-          </div>
-          <div class="stat-meta">
-            <span class="meta-tag" [attr.data-state]="presupuestoEstado()">{{ presupuestoSummary() }}</span>
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-label">Próxima cita</div>
-          <div class="stat-value">
-            @if (proximaCita(); as c) { {{ c.inicio | date:'d MMM, HH:mm':undefined:'es-ES' }} } @else { — }
-          </div>
-          <div class="stat-meta">
-            @if (proximaCita(); as c) {
-              <span class="meta-tag" [attr.data-state]="c.estado">{{ c.estado }}</span>
-            } @else {
-              <span class="meta-tag" data-state="SIN_CITA">SIN_CITA</span>
-            }
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-label">Pago</div>
-          <div class="stat-value">
-            @if (totalPresupuesto(); as t) { {{ t | number:'1.0-2' }} € } @else { — }
-          </div>
-          <div class="stat-meta">
-            <span class="meta-tag" [attr.data-state]="pagoLabel()">{{ pagoLabel() }}</span>
-          </div>
-        </div>
-
-        <div class="stat stat--client-mini">
-          <div class="stat-label">Cliente</div>
-          <div class="client-name">{{ data.cliente.nombre || '—' }}</div>
-          <div class="client-meta">
-            <span class="rowi"><mat-icon>phone</mat-icon>{{ data.cliente.telefono || '—' }}</span>
-            <span class="rowi"><mat-icon>email</mat-icon>{{ data.cliente.email || '—' }}</span>
-          </div>
-        </div>
-      </div>
-    </mat-card>
-
     <mat-menu #estadoMenu="matMenu" panelClass="rs-menu">
       @for (e of estados; track e) {
-        <button mat-menu-item (click)="selectEstadoFromMenu(e)" [disabled]="busy()" [class.is-active]="data.estado === e">
+        <button
+          mat-menu-item
+          (click)="selectEstadoFromMenu(e)"
+          [disabled]="busy()"
+          [class.is-active]="data.estado === e">
           <span>{{ e }}</span>
           @if (data.estado === e) { <span class="menu-check"><mat-icon>check</mat-icon></span> }
         </button>
       }
     </mat-menu>
 
-    <div class="layout">
-      <main class="main">
-        <section class="top-panels">
-          <section class="panel-clean panel-clean--service">
-            <div class="panel-clean__title">Información del servicio</div>
+    <section class="statsbar">
+      <div class="stats-grid">
+        <div class="stat glass-card stat--state">
+          <div class="stat-label">Estado</div>
+          <button type="button" class="chip-btn" [matMenuTriggerFor]="estadoMenu" [disabled]="busy()">
+            <span class="pill-dot pill-dot--neutral"></span>
+            {{ estadoPretty() }}
+            <mat-icon class="chip-ico">expand_more</mat-icon>
+          </button>
+        </div>
 
-            <div class="service-grid">
-              <div class="service-row">
-                <span class="service-icon"><mat-icon>build</mat-icon></span>
-                <div class="service-copy">
-                  <div class="service-label">Equipo</div>
-                  <div class="service-value">{{ data.equipo || '—' }}</div>
-                </div>
-              </div>
+        <div class="stat glass-card">
+          <div class="stat-label">Presupuesto</div>
+          <div class="stat-value">
+            @if (presupuestoImporte(); as imp) { {{ imp | number:'1.0-2' }} € } @else { — }
+          </div>
+          <div class="stat-meta">
+            <span class="meta-tag" [attr.data-state]="presupuestoEstado()">
+              <span class="pill-dot pill-dot--orange"></span>
+              {{ presupuestoSummary() }}
+            </span>
+          </div>
+        </div>
 
-              <div class="service-row">
-                <span class="service-icon"><mat-icon>sell</mat-icon></span>
-                <div class="service-copy">
-                  <div class="service-label">Categoría</div>
-                  <div class="service-value">{{ data.categoriaEquipoNombre || '—' }}</div>
-                </div>
-              </div>
+        <div class="stat glass-card">
+          <div class="stat-label">Próxima cita</div>
+          <div class="stat-value">
+            @if (proximaCita(); as c) { {{ c.inicio | date:'d MMM, HH:mm':undefined:'es-ES' }} } @else { — }
+          </div>
+          <div class="stat-meta">
+            @if (proximaCita(); as c) {
+              <span class="meta-tag" [attr.data-state]="c.estado">
+                <span class="pill-dot pill-dot--cyan"></span>
+                {{ c.estado }}
+              </span>
+            } @else {
+              <span class="meta-tag" data-state="SIN_CITA">
+                <span class="pill-dot pill-dot--orange"></span>
+                SIN_CITA
+              </span>
+            }
+          </div>
+        </div>
 
-              <div class="service-row service-row--alert">
-                <span class="service-icon"><mat-icon>warning</mat-icon></span>
-                <div class="service-copy">
-                  <div class="service-label">Falla reportada</div>
-                  <div class="service-value">{{ data.fallaReportada || '—' }}</div>
-                </div>
-              </div>
+        <div class="stat glass-card">
+          <div class="stat-label">Pago</div>
+          <div class="stat-value">
+            @if (totalPresupuesto(); as t) { {{ t | number:'1.0-2' }} € } @else { — }
+          </div>
+          <div class="stat-meta">
+            <span class="meta-tag" [attr.data-state]="pagoLabel()">
+              <span class="pill-dot" [class.pill-dot--green]="pagoConfirmado()" [class.pill-dot--neutral]="!pagoConfirmado()"></span>
+              {{ pagoLabel() }}
+            </span>
+          </div>
+        </div>
 
-              <div class="service-row">
-                <span class="service-icon"><mat-icon>place</mat-icon></span>
-                <div class="service-copy">
-                  <div class="service-label">Ubicación</div>
-                  <div class="service-value">{{ data.direccion || '—' }}</div>
-                </div>
-              </div>
+        <div class="stat glass-card client-stat">
+          <div class="client-chip">
+            <div class="client-avatar">
+              {{ (data.cliente.nombre || '?').charAt(0) }}
+            </div>
 
-              <div class="service-row">
-                <span class="service-icon"><mat-icon>vpn_key</mat-icon></span>
-                <div class="service-copy">
-                  <div class="service-label">Acceso</div>
-                  <div class="service-value">{{ data.notasAcceso || '—' }}</div>
-                </div>
-              </div>
-
-              <div class="service-row service-row--full">
-                <span class="service-icon"><mat-icon>description</mat-icon></span>
-                <div class="service-copy">
-                  <div class="service-label">Descripción</div>
-                  <div class="service-value service-value--multiline">{{ data.descripcion || '—' }}</div>
-                </div>
+            <div class="client-copy">
+              <div class="stat-label">Cliente</div>
+              <div class="client-name">{{ data.cliente.nombre || '—' }}</div>
+              <div class="client-meta">
+                <span class="rowi"><mat-icon>call</mat-icon>{{ data.cliente.telefono || '—' }}</span>
+                <span class="rowi"><mat-icon>mail_outline</mat-icon>{{ data.cliente.email || '—' }}</span>
               </div>
             </div>
-          </section>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          <section class="panel-clean panel-clean--review">
-            <div class="panel-clean__top">
-              <div>
-                <div class="panel-clean__title">Revisión técnica</div>
-                <div class="panel-clean__sub">Diagnóstico profesional del técnico</div>
+    <div class="layout">
+      <main class="main">
+        <section class="top-row">
+          <mat-card class="card surface-card info-card card-anim top-card">
+            <div class="section-head">
+              <div class="section-title-block">
+                <h2 class="section-title">Información del servicio</h2>
+              </div>
+            </div>
+
+            <div class="info-list">
+              <div class="info-pair">
+                <div class="info-icon"><mat-icon>tv</mat-icon></div>
+                <div class="info-body">
+                  <div class="info-label">Equipo</div>
+                  <div class="info-value">{{ data.equipo || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="info-pair">
+                <div class="info-icon"><mat-icon>sell</mat-icon></div>
+                <div class="info-body">
+                  <div class="info-label">Categoría</div>
+                  <div class="info-value">{{ data.categoriaEquipoNombre || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="info-pair">
+                <div class="info-icon info-icon--danger"><mat-icon>warning_amber</mat-icon></div>
+                <div class="info-body">
+                  <div class="info-label">Falla reportada</div>
+                  <div class="info-value">{{ data.fallaReportada || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="info-pair">
+                <div class="info-icon"><mat-icon>place</mat-icon></div>
+                <div class="info-body">
+                  <div class="info-label">Ubicación</div>
+                  <div class="info-value">{{ data.direccion || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="info-pair">
+                <div class="info-icon"><mat-icon>vpn_key</mat-icon></div>
+                <div class="info-body">
+                  <div class="info-label">Acceso</div>
+                  <div class="info-value">{{ data.notasAcceso || '—' }}</div>
+                </div>
+              </div>
+
+              <div class="info-desc">
+                <div class="info-label">Descripción</div>
+                <div class="info-desc__box">{{ data.descripcion || '—' }}</div>
+              </div>
+            </div>
+          </mat-card>
+
+          <mat-card class="card surface-card review-card card-anim top-card">
+            <div class="section-head">
+              <div class="section-title-block">
+                <h2 class="section-title">Revisión técnica</h2>
+                <div class="section-subtitle">Diagnóstico profesional del técnico</div>
               </div>
 
               <button
                 mat-stroked-button
-                class="btn-edit"
+                class="btn-ghost btn-mini"
                 (click)="toggleRevisionTecnicaEdit()"
-                [disabled]="busy()"
-                matTooltip="Editar revisión técnica">
+                [disabled]="busy()">
                 <mat-icon>{{ editRevisionTecnica() ? 'close' : 'edit' }}</mat-icon>
                 {{ editRevisionTecnica() ? 'Cerrar' : 'Editar' }}
               </button>
             </div>
 
             @if (!editRevisionTecnica()) {
-              <div class="review-list">
-                <div class="review-line">
-                  <div class="review-k">Falla detectada</div>
-                  <div class="review-v">{{ data.fallaDetectada || 'Sin registrar' }}</div>
+              <div class="review-grid review-grid--spaced">
+                <div class="review-row">
+                  <div class="review-label">Falla detectada</div>
+                  <div class="review-value review-value--mono review-value--pill">
+                    {{ data.fallaDetectada || 'Sin registros aún' }}
+                  </div>
                 </div>
 
-                <div class="review-line">
-                  <div class="review-k">Diagnóstico técnico</div>
-                  <div class="review-v review-v--multiline">{{ data.diagnosticoTecnico || 'Sin registrar' }}</div>
+                <div class="review-row">
+                  <div class="review-label">Diagnóstico técnico</div>
+                  <div class="review-value review-value--multiline review-value--mono review-value--pill">
+                    {{ data.diagnosticoTecnico || 'Sin registros aún' }}
+                  </div>
                 </div>
 
-                <div class="review-line">
-                  <div class="review-k">Trabajo a realizar</div>
-                  <div class="review-v review-v--multiline">{{ data.trabajoARealizar || 'Sin registrar' }}</div>
+                <div class="review-row">
+                  <div class="review-label">Trabajo a realizar</div>
+                  <div class="review-value review-value--multiline review-value--pill">
+                    {{ data.trabajoARealizar || 'Sin registros aún' }}
+                  </div>
                 </div>
               </div>
             } @else {
-              <div class="review-form review-form--clean">
-                <mat-form-field appearance="outline" class="mf review-mf" subscriptSizing="dynamic">
-                  <mat-label>Falla detectada</mat-label>
-                  <input matInput [formControl]="formRevisionTecnica.controls.fallaDetectada" />
-                </mat-form-field>
+              <div class="minimal-grid compact-edit-grid">
+                <div class="rs-input-group">
+                  <label>Falla detectada</label>
+                  <input class="rs-input-minimal" [formControl]="formRevisionTecnica.controls.fallaDetectada" />
+                </div>
 
-                <mat-form-field appearance="outline" class="mf review-mf" subscriptSizing="dynamic">
-                  <mat-label>Diagnóstico técnico</mat-label>
-                  <textarea matInput rows="4" [formControl]="formRevisionTecnica.controls.diagnosticoTecnico"></textarea>
-                </mat-form-field>
+                <div class="rs-input-group">
+                  <label>Diagnóstico técnico</label>
+                  <textarea class="rs-input-minimal rs-input-minimal--textarea rs-input-minimal--compact" rows="3" [formControl]="formRevisionTecnica.controls.diagnosticoTecnico"></textarea>
+                </div>
 
-                <mat-form-field appearance="outline" class="mf review-mf" subscriptSizing="dynamic">
-                  <mat-label>Trabajo a realizar</mat-label>
-                  <textarea matInput rows="4" [formControl]="formRevisionTecnica.controls.trabajoARealizar"></textarea>
-                </mat-form-field>
-
-                <div class="btn-row">
-                  <button mat-stroked-button class="btn-mini btn-ghost" (click)="toggleRevisionTecnicaEdit()" [disabled]="busy()">
-                    Cancelar
-                  </button>
-
-                  <button mat-flat-button class="btn-mini btn-primary" (click)="guardarRevisionTecnica()" [disabled]="busy()">
-                    Guardar revisión
-                  </button>
+                <div class="rs-input-group">
+                  <label>Trabajo a realizar</label>
+                  <textarea class="rs-input-minimal rs-input-minimal--textarea rs-input-minimal--compact" rows="3" [formControl]="formRevisionTecnica.controls.trabajoARealizar"></textarea>
                 </div>
               </div>
+
+              <div class="section-actions section-actions--compact">
+                <button mat-stroked-button class="btn-ghost btn-mini" (click)="toggleRevisionTecnicaEdit()" [disabled]="busy()">
+                  Cancelar
+                </button>
+                <button mat-flat-button class="btn-primary btn-mini" (click)="guardarRevisionTecnica()" [disabled]="busy()">
+                  Guardar
+                </button>
+              </div>
             }
-          </section>
+          </mat-card>
         </section>
 
-        <mat-tab-group class="tabs" animationDuration="150ms" [dynamicHeight]="true">
+        <mat-tab-group class="workspace-tabs" animationDuration="150ms" [dynamicHeight]="true">
           <mat-tab label="Gestión">
-            <div class="pane">
-              <div class="grid-3 grid-3--compact">
-                <mat-card class="card compact compact-card">
-                  <div class="compact-top">
+            <div class="tab-pane">
+              <div class="grid-3">
+                <mat-card class="card surface-card compact-card card-anim">
+                  <div class="compact-head">
                     <div class="compact-title"><mat-icon>request_quote</mat-icon><span>Presupuesto</span></div>
-                    <button mat-icon-button class="icon-action"
-                            (click)="toggleBudgetEdit()"
-                            [disabled]="presupuestoAceptado()"
-                            matTooltip="Editar">
+                    <button
+                      mat-icon-button
+                      class="icon-btn icon-btn--small"
+                      (click)="toggleBudgetEdit()"
+                      [disabled]="presupuestoAceptado()"
+                      matTooltip="Editar">
                       <mat-icon>edit</mat-icon>
                     </button>
                   </div>
 
-                  <div class="card-body">
-                    <div class="pro-summary">
-                      <div class="pro-left">
-                        <div class="pro-amount">
-                          @if (presupuestoImporte(); as imp) { {{ imp | number:'1.0-2' }} € } @else { — }
-                        </div>
-
-                        <div class="pro-meta">
-                          <span class="tag" [attr.data-tone]="presupuestoEstado()">{{ presupuestoSummary() }}</span>
-
-                          @if (data.presupuesto; as p) {
-                            @if (p.respondedAt) {
-                              <span class="dot">•</span>
-                              <span>Aceptado {{ p.respondedAt | date:'d MMM, HH:mm' }}</span>
-                            } @else if (p.sentAt) {
-                              <span class="dot">•</span>
-                              <span>Enviado {{ p.sentAt | date:'d MMM, HH:mm' }}</span>
-                            }
-                          }
-                        </div>
-
-                        @if (data.presupuesto; as p) {
-                          @if (p.detalle) {
-                            <div class="pro-detail">{{ p.detalle }}</div>
-                          } @else {
-                            <div class="pro-detail muted">Sin detalle</div>
-                          }
-                        } @else {
-                          <div class="pro-detail muted">Sin presupuesto</div>
-                        }
+                  <div class="compact-body">
+                    <div class="summary-inline">
+                      <div class="summary-inline__amount summary-inline__amount--xl">
+                        @if (presupuestoImporte(); as imp) { {{ imp | number:'1.0-2' }} € } @else { — }
                       </div>
+                      <span class="meta-tag" [attr.data-state]="presupuestoEstado()">
+                        <span class="pill-dot pill-dot--orange"></span>
+                        {{ presupuestoSummary() }}
+                      </span>
                     </div>
 
+                    @if (data.presupuesto; as p) {
+                      @if (p.detalle) {
+                        <div class="compact-copy">{{ p.detalle }}</div>
+                      } @else {
+                        <div class="compact-copy compact-copy--muted compact-empty-copy">Sin registros aún</div>
+                      }
+                    } @else {
+                      <div class="compact-copy compact-copy--muted compact-empty-copy">Sin registros aún</div>
+                    }
+
                     @if (editBudget()) {
-                      <mat-form-field appearance="outline" class="mf" subscriptSizing="dynamic">
-                        <mat-label>Importe (€)</mat-label>
-                        <input matInput type="number" [formControl]="formPresupuesto.controls.importe" />
-                      </mat-form-field>
+                      <div class="minimal-grid compact-edit-grid">
+                        <div class="rs-input-group">
+                          <label>Importe (€)</label>
+                          <input class="rs-input-minimal" type="number" [formControl]="formPresupuesto.controls.importe" />
+                        </div>
 
-                      <mat-form-field appearance="outline" class="mf" subscriptSizing="dynamic">
-                        <mat-label>Detalle</mat-label>
-                        <textarea matInput rows="3" [formControl]="formPresupuesto.controls.detalle"></textarea>
-                      </mat-form-field>
+                        <div class="rs-input-group">
+                          <label>Detalle</label>
+                          <textarea class="rs-input-minimal rs-input-minimal--textarea rs-input-minimal--compact" rows="3" [formControl]="formPresupuesto.controls.detalle"></textarea>
+                        </div>
+                      </div>
 
-                      <mat-checkbox [formControl]="formPresupuesto.controls.aceptacionCheck">
+                      <mat-checkbox class="rs-check" [formControl]="formPresupuesto.controls.aceptacionCheck">
                         Requiere check de aceptación
                       </mat-checkbox>
 
-                      <div class="btn-row">
-                        <button mat-stroked-button class="btn-mini btn-ghost"
-                                (click)="guardarPresupuesto()"
-                                [disabled]="busy() || formPresupuesto.invalid || presupuestoAceptado()">
+                      <div class="section-actions section-actions--compact">
+                        <button
+                          mat-stroked-button
+                          class="btn-ghost btn-mini"
+                          (click)="guardarPresupuesto()"
+                          [disabled]="busy() || formPresupuesto.invalid || presupuestoAceptado()">
                           Guardar
                         </button>
 
-                        <button mat-flat-button class="btn-mini btn-primary"
-                                (click)="enviarPresupuesto()"
-                                [disabled]="busy() || formPresupuesto.invalid || presupuestoEnviado() || presupuestoAceptado()">
+                        <button
+                          mat-flat-button
+                          class="btn-primary btn-mini btn-primary--budget"
+                          (click)="enviarPresupuesto()"
+                          [disabled]="busy() || formPresupuesto.invalid || presupuestoEnviado() || presupuestoAceptado()">
                           Enviar
                         </button>
                       </div>
@@ -308,62 +336,68 @@
                   </div>
                 </mat-card>
 
-                <mat-card class="card compact compact-card">
-                  <div class="compact-top">
+                <mat-card class="card surface-card compact-card card-anim">
+                  <div class="compact-head">
                     <div class="compact-title"><mat-icon>event</mat-icon><span>Cita</span></div>
-                    <button mat-icon-button class="icon-action" (click)="toggleCitaEdit()" matTooltip="Programar / Reprogramar">
+                    <button
+                      mat-icon-button
+                      class="icon-btn icon-btn--small"
+                      (click)="toggleCitaEdit()"
+                      matTooltip="Programar / Reprogramar">
                       <mat-icon>calendar_month</mat-icon>
                     </button>
                   </div>
 
-                  <div class="card-body">
+                  <div class="compact-body">
                     @if (proximaCita(); as c) {
-                      <div class="pro-summary">
-                        <div class="pro-left">
-                          <div class="pro-amount pro-amount--small">
-                            {{ c.inicio | date:"EEE, d MMM":undefined:'es-ES' }}
-                          </div>
-
-                          <div class="pro-meta">
-                            <span class="tag" [attr.data-tone]="c.estado">{{ c.estado }}</span>
-                            <span class="dot">•</span>
-                            <span>{{ c.inicio | date:'HH:mm':undefined:'es-ES' }}</span>
-                          </div>
+                      <div class="summary-inline">
+                        <div class="summary-inline__amount summary-inline__amount--small">
+                          {{ c.inicio | date:"EEE, d MMM":undefined:'es-ES' }}
                         </div>
+                        <span class="meta-tag" [attr.data-state]="c.estado">
+                          <span class="pill-dot pill-dot--cyan"></span>
+                          {{ c.estado }}
+                        </span>
+                      </div>
+
+                      <div class="compact-copy">
+                        {{ c.inicio | date:'HH:mm':undefined:'es-ES' }}
                       </div>
                     } @else {
-                      <div class="empty-pro">
+                      <div class="compact-empty compact-empty--centered">
                         <mat-icon>event_busy</mat-icon>
                         <div>
-                          <div class="empty-title">Aún no programada</div>
-                          <div class="empty-sub">Define fecha y hora para agendar la visita.</div>
+                          <div class="compact-empty__title">Sin registros aún</div>
+                          <div class="compact-empty__text">Todavía no hay una cita programada.</div>
                         </div>
                       </div>
                     }
 
                     @if (editCita()) {
-                      <div class="cita-fields">
-                        <mat-form-field appearance="outline" class="mf mf-date" subscriptSizing="dynamic">
-                          <mat-label>Fecha</mat-label>
-                          <input matInput [matDatepicker]="dp1" [formControl]="formCita.controls.fechaInicio">
+                      <div class="minimal-grid minimal-grid--2 compact-edit-grid">
+                        <div class="rs-input-group">
+                          <label>Fecha</label>
+                          <input matInput [matDatepicker]="dp1" [formControl]="formCita.controls.fechaInicio" class="rs-input-minimal" />
                           <mat-datepicker-toggle matIconSuffix [for]="dp1"></mat-datepicker-toggle>
                           <mat-datepicker #dp1></mat-datepicker>
-                        </mat-form-field>
+                        </div>
 
-                        <div class="time-row">
-                          <mat-form-field appearance="outline" class="mf mf-time" subscriptSizing="dynamic">
-                            <mat-label>Hora</mat-label>
-                            <input matInput type="text" inputmode="numeric" placeholder="0900"
-                                   [formControl]="formCita.controls.horaInicio"
-                                   (input)="onHoraInput($event)"
-                                   (blur)="onHoraBlur()">
-                          </mat-form-field>
+                        <div class="minimal-grid minimal-grid--2 minimal-grid--tight">
+                          <div class="rs-input-group">
+                            <label>Hora</label>
+                            <input
+                              class="rs-input-minimal"
+                              type="text"
+                              inputmode="numeric"
+                              placeholder="0900"
+                              [formControl]="formCita.controls.horaInicio"
+                              (input)="onHoraInput($event)"
+                              (blur)="onHoraBlur()" />
+                          </div>
 
-                          <div class="period-toggle">
-                            <div class="pt-label">Período</div>
-                            <mat-button-toggle-group class="pt-group"
-                                                     [formControl]="formCita.controls.periodo"
-                                                     aria-label="Periodo">
+                          <div class="rs-input-group">
+                            <label>Período</label>
+                            <mat-button-toggle-group class="pt-group" [formControl]="formCita.controls.periodo">
                               <mat-button-toggle value="AM">AM</mat-button-toggle>
                               <mat-button-toggle value="PM">PM</mat-button-toggle>
                             </mat-button-toggle-group>
@@ -371,15 +405,13 @@
                         </div>
                       </div>
 
-                      <div class="btn-row">
+                      <div class="section-actions section-actions--compact">
                         @if (!tieneCita()) {
-                          <button mat-flat-button class="btn-mini btn-primary"
-                                  (click)="crearCita()" [disabled]="busy() || formCita.invalid">
+                          <button mat-flat-button class="btn-primary btn-mini btn-primary--schedule" (click)="crearCita()" [disabled]="busy() || formCita.invalid">
                             Programar
                           </button>
                         } @else {
-                          <button mat-flat-button class="btn-mini btn-primary"
-                                  (click)="reprogramarPrimera()" [disabled]="busy() || formCita.invalid">
+                          <button mat-flat-button class="btn-primary btn-mini btn-primary--schedule" (click)="reprogramarPrimera()" [disabled]="busy() || formCita.invalid">
                             Reprogramar
                           </button>
                         }
@@ -388,50 +420,45 @@
                   </div>
                 </mat-card>
 
-                <mat-card class="card compact compact-card">
-                  <div class="compact-top">
+                <mat-card class="card surface-card compact-card card-anim">
+                  <div class="compact-head">
                     <div class="compact-title"><mat-icon>payments</mat-icon><span>Pago</span></div>
                   </div>
 
-                  <div class="card-body">
-                    <div class="pro-summary">
-                      <div class="pro-left">
-                        <div class="pro-amount">
-                          @if (totalPresupuesto(); as t) { {{ t | number:'1.0-2' }} € } @else { — }
-                        </div>
-                        <div class="pro-meta">
-                          <span class="tag" [attr.data-tone]="pagoLabel()">{{ pagoLabel() }}</span>
-                        </div>
+                  <div class="compact-body">
+                    <div class="summary-inline">
+                      <div class="summary-inline__amount">
+                        @if (totalPresupuesto(); as t) { {{ t | number:'1.0-2' }} € } @else { — }
                       </div>
+                      <span class="meta-tag" [attr.data-state]="pagoLabel()">
+                        <span class="pill-dot" [class.pill-dot--green]="pagoConfirmado()" [class.pill-dot--neutral]="!pagoConfirmado()"></span>
+                        {{ pagoLabel() }}
+                      </span>
                     </div>
 
                     <div class="proof-block">
                       <div class="proof-label">Comprobante</div>
 
                       @if (data.pago?.comprobanteUrl; as comprobanteUrl) {
-                        <button mat-button class="link-btn" type="button" (click)="verComprobante(comprobanteUrl)">
-                          <mat-icon>receipt_long</mat-icon>
-                          Ver comprobante
+                        <button mat-button class="link-action" type="button" (click)="verComprobante(comprobanteUrl)">
+                          Ver recibo
                         </button>
                       } @else {
-                        <div class="proof-empty">Sin comprobante disponible</div>
+                        <div class="compact-copy compact-copy--muted compact-empty-copy">Sin registros aún</div>
                       }
                     </div>
 
                     @if (pagoConfirmado()) {
-                      <div class="status-inline">
+                      <div class="pay-state">
                         <mat-icon>check_circle</mat-icon>
                         <span>Pagado</span>
                       </div>
                     } @else {
-                      <div class="status-inline status-inline--pending">
-                        <mat-icon>schedule</mat-icon>
-                        <span>Pendiente</span>
-                      </div>
-
-                      <button mat-flat-button class="btn-primary w100"
-                              (click)="marcarTransferencia()"
-                              [disabled]="busy()">
+                      <button
+                        mat-flat-button
+                        class="btn-primary btn-pay"
+                        (click)="marcarTransferencia()"
+                        [disabled]="busy()">
                         Marcar como pagado
                       </button>
                     }
@@ -442,13 +469,18 @@
           </mat-tab>
 
           <mat-tab label="Adjuntos">
-            <div class="pane">
-              <mat-card class="card">
-                <div class="compact-top compact-top--plain">
-                  <div class="compact-title"><mat-icon>photo</mat-icon><span>Fotos</span></div>
-                  <label class="upload-btn" matRipple>
+            <div class="tab-pane">
+              <mat-card class="card surface-card card-anim">
+                <div class="section-head">
+                  <div class="section-title-block">
+                    <h2 class="section-title">Adjuntos</h2>
+                    <div class="section-subtitle">Fotos y evidencias del servicio</div>
+                  </div>
+
+                  <label class="upload-pill" matRipple>
                     <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
                     <mat-icon>add_a_photo</mat-icon>
+                    <span>Subir</span>
                   </label>
                 </div>
 
@@ -458,7 +490,7 @@
                       <img [src]="fileUrl(f.url)" alt="foto" />
                     </button>
                   } @empty {
-                    <div class="empty pad">Sin fotos</div>
+                    <div class="empty-state-inline">Sin registros aún</div>
                   }
                 </div>
               </mat-card>
@@ -466,35 +498,42 @@
           </mat-tab>
 
           <mat-tab label="Notas">
-            <div class="pane">
-              <mat-card class="card">
-                <div class="compact-top compact-top--plain">
-                  <div class="compact-title"><mat-icon>note</mat-icon><span>Notas</span></div>
+            <div class="tab-pane">
+              <mat-card class="card surface-card card-anim">
+                <div class="section-head">
+                  <div class="section-title-block">
+                    <h2 class="section-title">Notas</h2>
+                    <div class="section-subtitle">Observaciones internas del equipo</div>
+                  </div>
                 </div>
 
-                <div class="card-body">
-                  <div class="note-list">
-                    @for (n of data.notas; track trackById($index, n)) {
-                      <div class="note-item">
-                        <div class="note-text">{{ n.contenido }}</div>
-                        <div class="note-date">{{ n.createdAt | date:'d MMM, HH:mm' }}</div>
-                      </div>
-                    } @empty {
-                      <div class="empty">Sin notas</div>
-                    }
-                  </div>
+                <div class="notes-composer notes-composer--compact">
+                  <textarea
+                    class="rs-input-minimal rs-input-minimal--textarea rs-input-minimal--compact"
+                    rows="3"
+                    placeholder="Escribe una nota interna..."
+                    [formControl]="formNota.controls.contenido"></textarea>
 
-                  <div class="note-add">
-                    <input class="rs-input" placeholder="Añadir nota..."
-                           [formControl]="formNota.controls.contenido"
-                           (keyup.enter)="anadirNota()" />
-                    <button mat-icon-button class="icon-btn icon-btn--primary"
-                            (click)="anadirNota()"
-                            [disabled]="busy() || formNota.invalid"
-                            matTooltip="Añadir">
-                      <mat-icon>add</mat-icon>
+                  <div class="section-actions section-actions--compact">
+                    <button
+                      mat-flat-button
+                      class="btn-primary btn-mini"
+                      (click)="anadirNota()"
+                      [disabled]="busy() || formNota.invalid">
+                      Agregar nota
                     </button>
                   </div>
+                </div>
+
+                <div class="note-list">
+                  @for (n of data.notas; track trackById($index, n)) {
+                    <div class="note-item">
+                      <div class="note-text">{{ n.contenido }}</div>
+                      <div class="note-date">{{ n.createdAt | date:'d MMM, HH:mm' }}</div>
+                    </div>
+                  } @empty {
+                    <div class="empty-state-inline">Sin registros aún</div>
+                  }
                 </div>
               </mat-card>
             </div>
@@ -503,19 +542,19 @@
       </main>
 
       <aside class="side">
-        <mat-card class="card side-chat">
-          <div class="compact-top compact-top--chat">
-            <div class="compact-title"><mat-icon>chat</mat-icon><span>Mensajes</span></div>
-            <button mat-icon-button class="icon-btn" (click)="recargarVista()" [disabled]="busy()" matTooltip="Recargar">
-              <mat-icon>refresh</mat-icon>
-            </button>
+        <mat-card class="card collab-card collab-card--chat card-anim">
+          <div class="collab-card__head">
+            <div class="section-title-block">
+              <h2 class="section-title">Mensajes</h2>
+              <div class="section-subtitle">Canal de servicio</div>
+            </div>
           </div>
 
-          <div class="chat-scroll" #chatScroll>
+          <div class="chat-block" #chatScroll>
             @if (data.mensajes.length > 0) {
               @for (m of data.mensajes; track trackById($index, m)) {
                 <div class="bubble-row" [class.me]="m.remitenteTipo === 'CLIENTE'">
-                  <div class="bubble">
+                  <div class="bubble" [class.bubble--client]="m.remitenteTipo === 'CLIENTE'" [class.bubble--admin]="m.remitenteTipo !== 'CLIENTE'">
                     <div class="bubble-meta">
                       <span class="name">{{ m.remitenteNombre }}</span>
                       <span class="time">{{ m.createdAt | date:'HH:mm' }}</span>
@@ -527,41 +566,56 @@
             } @else {
               <div class="chat-empty">
                 <mat-icon>forum</mat-icon>
-                <div class="chat-empty-title">Aún no hay mensajes</div>
-                <div class="chat-empty-sub">Cuando el taller te escriba, la conversación aparecerá aquí.</div>
+                <div class="chat-empty-title">Sin registros aún</div>
+                <div class="chat-empty-sub">Cuando exista conversación, aparecerá aquí.</div>
               </div>
             }
           </div>
 
           <div class="composer">
-            <textarea class="composer-input" placeholder="Escribe a tu técnico…"
-                      [formControl]="formMsg.controls.contenido"
-                      (keydown)="onMsgKeydown($event)"></textarea>
+            <label class="attach-btn" matRipple>
+              <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
+              <mat-icon>attach_file</mat-icon>
+            </label>
 
-            <button mat-icon-button class="icon-btn icon-btn--primary"
-                    (click)="enviarMensaje()" [disabled]="busy() || formMsg.invalid" matTooltip="Enviar">
+            <input
+              class="message-input"
+              placeholder="Escribe a tu técnico..."
+              [formControl]="formMsg.controls.contenido"
+              (keydown)="onMsgKeydown($event)" />
+
+            <button
+              mat-icon-button
+              class="send-btn"
+              (click)="enviarMensaje()"
+              [disabled]="busy() || formMsg.invalid"
+              matTooltip="Enviar">
               <mat-icon>send</mat-icon>
             </button>
           </div>
         </mat-card>
 
-        <mat-card class="card timeline-card">
-          <div class="compact-top compact-top--plain">
-            <div class="compact-title"><mat-icon>bolt</mat-icon><span>Último</span></div>
+        <mat-card class="card collab-card timeline-card card-anim">
+          <div class="collab-card__head">
+            <div class="section-title-block">
+              <h2 class="section-title">Último</h2>
+              <div class="section-subtitle">Actividad reciente</div>
+            </div>
           </div>
 
-          <div class="timeline timeline--mini">
+          <div class="timeline-block">
             @for (h of historialPreview(); track $index) {
-              <div class="t-row">
-                <div class="t-line"></div>
-                <div class="t-dot"></div>
-                <div class="t-body">
-                  <div class="t-text">{{ h.descripcion }}</div>
-                  <div class="t-date">{{ h.fecha | date:'d MMM, HH:mm' }}</div>
+              <div class="timeline-row" [class.timeline-row--latest]="$index === 0">
+                <div class="timeline-node">
+                  <div class="timeline-dot"></div>
+                </div>
+                <div class="timeline-body">
+                  <div class="timeline-text">{{ h.descripcion }}</div>
+                  <div class="timeline-date">{{ h.fecha | date:'d MMM, HH:mm' }}</div>
                 </div>
               </div>
             } @empty {
-              <div class="empty pad">—</div>
+              <div class="empty-state-inline empty-state-inline--sm">Sin registros aún</div>
             }
           </div>
         </mat-card>

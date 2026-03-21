@@ -121,7 +121,7 @@
             </div>
           </section>
 
-          <!-- CONTROL Y UBICACIÓN -->
+          <!-- CONTROL -->
           <section class="rs-form-group">
             <div class="rs-group-head">
               <div class="rs-group-eyebrow">Control</div>
@@ -142,7 +142,11 @@
               <div class="rs-field-shell rs-span-4">
                 <div class="rs-field-label">Fecha de compra</div>
                 <mat-form-field appearance="outline" class="rs-premium-field">
-                  <input matInput [matDatepicker]="pickerCompra" formControlName="fechaCompra" placeholder="Selecciona una fecha" />
+                  <input
+                    matInput
+                    [matDatepicker]="pickerCompra"
+                    formControlName="fechaCompra"
+                    placeholder="Selecciona una fecha" />
                   <mat-datepicker-toggle matIconSuffix [for]="pickerCompra"></mat-datepicker-toggle>
                   <mat-datepicker #pickerCompra></mat-datepicker>
                 </mat-form-field>
@@ -151,7 +155,11 @@
               <div class="rs-field-shell rs-span-4">
                 <div class="rs-field-label">Garantía hasta</div>
                 <mat-form-field appearance="outline" class="rs-premium-field">
-                  <input matInput [matDatepicker]="pickerGarantia" formControlName="garantiaHasta" placeholder="Selecciona una fecha" />
+                  <input
+                    matInput
+                    [matDatepicker]="pickerGarantia"
+                    formControlName="garantiaHasta"
+                    placeholder="Selecciona una fecha" />
                   <mat-datepicker-toggle matIconSuffix [for]="pickerGarantia"></mat-datepicker-toggle>
                   <mat-datepicker #pickerGarantia></mat-datepicker>
                 </mat-form-field>
@@ -159,7 +167,7 @@
             </div>
           </section>
 
-          <!-- DESCRIPCIÓN Y NOTAS -->
+          <!-- CONTEXTO -->
           <section class="rs-form-group">
             <div class="rs-group-head">
               <div class="rs-group-eyebrow">Contexto</div>
@@ -173,8 +181,8 @@
                   <textarea
                     matInput
                     cdkTextareaAutosize
-                    cdkAutosizeMinRows="3"
-                    cdkAutosizeMaxRows="8"
+                    cdkAutosizeMinRows="2"
+                    cdkAutosizeMaxRows="5"
                     formControlName="descripcionGeneral"
                     placeholder="Ej. Portátil con desgaste leve en tapa, cargador original incluido..."></textarea>
                 </mat-form-field>
@@ -186,8 +194,8 @@
                   <textarea
                     matInput
                     cdkTextareaAutosize
-                    cdkAutosizeMinRows="3"
-                    cdkAutosizeMaxRows="8"
+                    cdkAutosizeMinRows="2"
+                    cdkAutosizeMaxRows="5"
                     formControlName="notasTecnicas"
                     placeholder="Ej. BIOS protegida, clave entregada por cliente, revisar batería..."></textarea>
                 </mat-form-field>
@@ -215,14 +223,12 @@
               </div>
 
               <input id="equipoAdjuntos" type="file" multiple hidden />
-
               <label for="equipoAdjuntos" class="rs-upload-btn">
                 Seleccionar archivos
               </label>
             </div>
           </section>
 
-          <!-- ESTADO -->
           <div class="rs-status-row">
             <mat-slide-toggle formControlName="estadoActivo" color="primary">
               Equipo activo en el sistema
