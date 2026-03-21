@@ -15,10 +15,9 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { ClientesService } from '../clientes.service';
+import { WhatsappService } from '../../../core/services/whatsapp.service';
 import { ClienteResumen } from '../../../core/models/tipos';
-import {
-  ConfirmDeleteDialogComponent
-} from '../../../shared/confirm-delete-dialog/confirm-delete-dialog.component';
+import { ConfirmDeleteDialogComponent } from '../../../shared/confirm-delete-dialog/confirm-delete-dialog.component';
 
 function getSpanishPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
@@ -73,6 +72,7 @@ function getSpanishPaginatorIntl(): MatPaginatorIntl {
 export class ClientesListComponent implements OnInit {
   private fb = inject(FormBuilder);
   private clientes = inject(ClientesService);
+  private whatsapp = inject(WhatsappService);
   private snack = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
@@ -83,6 +83,7 @@ export class ClientesListComponent implements OnInit {
   page = 0;
   size = 10;
   deletingId: string | null = null;
+  whatsappLoading = false;
 
   form = this.fb.group({ query: [''] });
 
@@ -134,6 +135,26 @@ export class ClientesListComponent implements OnInit {
 
   eliminando(row: ClienteResumen): boolean {
     return this.deletingId === row.id;
+  }
+
+  invitarPorWhatsapp(): void {
+    if (this.whatsappLoading) return;
+
+    this.whatsappLoading = true;
+
+    this.whatsapp.invitarRegistro().subscribe({
+      next: (res) => {
+        this.whatsappLoading = false;
+        window.open(res.url, '_blank', 'noopener,noreferrer');
+      },
+      error: (err) => {
+        this.whatsappLoading = false;
+        console.error('Error generando invitación WhatsApp:', err);
+        this.snack.open('No se pudo generar la invitación de WhatsApp', 'OK', {
+          duration: 3000
+        });
+      }
+    });
   }
 
   eliminar(row: ClienteResumen): void {

@@ -11,11 +11,9 @@
   </div>
 
   <form [formGroup]="form" (ngSubmit)="guardar()" class="rs-layout-shell">
-    <!-- FORMULARIO PRINCIPAL -->
     <mat-card class="rs-form-card">
       <mat-card-content class="rs-form-content">
         <div class="rs-form-stack">
-          <!-- DATOS PRINCIPALES -->
           <section class="rs-form-group">
             <div class="rs-group-head">
               <div class="rs-group-eyebrow">Principal</div>
@@ -75,7 +73,6 @@
             </div>
           </section>
 
-          <!-- DETALLES DEL EQUIPO -->
           <section class="rs-form-group">
             <div class="rs-group-head">
               <div class="rs-group-eyebrow">Equipo</div>
@@ -121,7 +118,6 @@
             </div>
           </section>
 
-          <!-- CONTROL -->
           <section class="rs-form-group">
             <div class="rs-group-head">
               <div class="rs-group-eyebrow">Control</div>
@@ -167,7 +163,6 @@
             </div>
           </section>
 
-          <!-- CONTEXTO -->
           <section class="rs-form-group">
             <div class="rs-group-head">
               <div class="rs-group-eyebrow">Contexto</div>
@@ -182,7 +177,7 @@
                     matInput
                     cdkTextareaAutosize
                     cdkAutosizeMinRows="2"
-                    cdkAutosizeMaxRows="5"
+                    cdkAutosizeMaxRows="4"
                     formControlName="descripcionGeneral"
                     placeholder="Ej. Portátil con desgaste leve en tapa, cargador original incluido..."></textarea>
                 </mat-form-field>
@@ -195,7 +190,7 @@
                     matInput
                     cdkTextareaAutosize
                     cdkAutosizeMinRows="2"
-                    cdkAutosizeMaxRows="5"
+                    cdkAutosizeMaxRows="4"
                     formControlName="notasTecnicas"
                     placeholder="Ej. BIOS protegida, clave entregada por cliente, revisar batería..."></textarea>
                 </mat-form-field>
@@ -203,7 +198,6 @@
             </div>
           </section>
 
-          <!-- ADJUNTOS -->
           <section class="rs-form-group">
             <div class="rs-group-head">
               <div class="rs-group-eyebrow">Adjuntos</div>
@@ -253,7 +247,6 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- CARD LATERAL -->
     <mat-card class="rs-side-card">
       <mat-card-content class="rs-side-content">
         <div class="rs-side-eyebrow">Clasificación</div>

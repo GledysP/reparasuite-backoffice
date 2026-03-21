@@ -11,6 +11,10 @@ import { EquiposService } from '../equipos/equipos.service';
 import { InventarioService } from '../inventario/inventario.service';
 import { OtListaItem, EquipoResumenDto, InventarioItemResumenDto } from '../../core/models/tipos';
 
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { WhatsappService } from '../../core/services/whatsapp.service';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
 interface CalendarDay {
   label: number;
   currentMonth: boolean;
@@ -27,6 +31,7 @@ interface CalendarDay {
     MatIconModule,
     MatButtonModule,
     RouterLink,
+    MatSnackBarModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -35,6 +40,9 @@ export class DashboardComponent implements OnInit {
   private ordenesService = inject(OrdenesTrabajoService);
   private equiposService = inject(EquiposService);
   private inventarioService = inject(InventarioService);
+  private whatsappService = inject(WhatsappService);
+  private snack = inject(MatSnackBar);
+  
 
   stats = {
     received: 0,
@@ -275,5 +283,30 @@ export class DashboardComponent implements OnInit {
     }
 
     this.calendarDays = result;
+  }
+
+  invitarPorWhatsapp(): void {
+    this.whatsappService.invitarRegistro().subscribe({
+      next: (res) => {
+        if (!res?.url) {
+          this.snack.open('No se pudo generar el enlace de WhatsApp', 'Cerrar', {
+            duration: 3000
+          });
+          return;
+        }
+  
+        window.open(res.url, '_blank', 'noopener,noreferrer');
+      },
+      error: (err) => {
+        console.error('Error generando invitación WhatsApp:', err);
+        const msg =
+          err?.error?.message ||
+          'No se pudo generar el enlace de invitación por WhatsApp';
+  
+        this.snack.open(msg, 'Cerrar', {
+          duration: 3500
+        });
+      }
+    });
   }
 }

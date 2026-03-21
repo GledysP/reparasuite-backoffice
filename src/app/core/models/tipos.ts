@@ -315,3 +315,7 @@ export interface InventarioMovimientoDto {
   observacion?: string | null;
   fechaMovimiento: string;
 }
+
+export interface WhatsappLinkResponse {
+  url: string;
+}

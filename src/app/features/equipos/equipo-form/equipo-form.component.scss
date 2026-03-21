@@ -1,7 +1,3 @@
-// ======================================================
-// REPARASUITE · EQUIPO FORM · PREMIUM REFINED
-// ======================================================
-
 $blue-deep: #081a4b;
 $blue-deep-2: #0a1f5c;
 $blue-neon: #00d1ff;
@@ -35,7 +31,6 @@ $radius-pill: 999px;
   }
 }
 
-// PAGE
 .rs-main-container {
   width: 100%;
   min-height: 100%;
@@ -71,7 +66,6 @@ $radius-pill: 999px;
   line-height: 1.4;
 }
 
-// LAYOUT
 .rs-layout-shell {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 272px;
@@ -79,7 +73,6 @@ $radius-pill: 999px;
   align-items: start;
 }
 
-// CARDS
 .rs-form-card,
 .rs-side-card {
   background: $card-surface !important;
@@ -119,7 +112,6 @@ $radius-pill: 999px;
   padding: 16px !important;
 }
 
-// FORM STACK
 .rs-form-stack {
   display: flex;
   flex-direction: column;
@@ -155,7 +147,6 @@ $radius-pill: 999px;
   letter-spacing: -0.01em;
 }
 
-// GRID
 .rs-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -166,7 +157,6 @@ $radius-pill: 999px;
 .rs-span-6 { grid-column: span 6; }
 .rs-span-4 { grid-column: span 4; }
 
-// FIELD WRAPPERS
 .rs-field-shell {
   min-width: 0;
 }
@@ -191,7 +181,6 @@ $radius-pill: 999px;
   margin-top: 2px;
 }
 
-// FIELDS
 :host ::ng-deep {
   .mat-mdc-form-field {
     width: 100%;
@@ -231,9 +220,9 @@ $radius-pill: 999px;
   }
 
   .mat-mdc-form-field-infix {
-    min-height: 40px !important;
-    padding-top: 7px !important;
-    padding-bottom: 7px !important;
+    min-height: 42px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
   }
 
   .mat-mdc-select-value,
@@ -251,8 +240,8 @@ $radius-pill: 999px;
 
   textarea.mat-mdc-input-element {
     resize: vertical;
-    min-height: 44px;
-    line-height: 1.45;
+    min-height: 50px;
+    line-height: 1.4;
   }
 
   .mat-datepicker-toggle {
@@ -264,17 +253,35 @@ $radius-pill: 999px;
     font-size: 12.5px;
     font-weight: 600;
   }
+
+  .mat-mdc-select-panel,
+  .mat-mdc-autocomplete-panel {
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 14px 36px rgba(15, 23, 42, 0.10) !important;
+    padding: 6px !important;
+  }
+
+  .mat-mdc-option {
+    min-height: 40px !important;
+    border-radius: 10px !important;
+  }
+
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+    background: rgba(15, 23, 42, 0.04) !important;
+  }
 }
 
 .rs-textarea-field {
   ::ng-deep .mat-mdc-form-field-infix {
-    min-height: 44px !important;
-    padding-top: 7px !important;
-    padding-bottom: 7px !important;
+    min-height: 50px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
   }
 }
 
-// SIDE CARD
 .rs-side-eyebrow {
   color: $blue-action;
   font-size: 9px;
@@ -346,7 +353,6 @@ $radius-pill: 999px;
   border-top: 1px solid rgba(15, 23, 42, 0.05);
 }
 
-// UPLOAD
 .rs-upload-card {
   display: flex;
   align-items: center;
@@ -415,14 +421,12 @@ $radius-pill: 999px;
   }
 }
 
-// STATUS
 .rs-status-row {
   display: flex;
   align-items: center;
   padding-top: 0;
 }
 
-// BUTTONS
 .rs-btn-inline-primary,
 .rs-btn-primary {
   background: linear-gradient(135deg, #081a4b 0%, #0a2a74 42%, #00b8f5 160%) !important;
@@ -503,7 +507,6 @@ $radius-pill: 999px;
   border-radius: 14px !important;
 }
 
-// RESPONSIVE
 @media (max-width: 1280px) {
   .rs-layout-shell {
     grid-template-columns: 1fr;
@@ -584,9 +587,9 @@ $radius-pill: 999px;
 
   :host ::ng-deep {
     .mat-mdc-form-field-infix {
-      min-height: 38px !important;
-      padding-top: 7px !important;
-      padding-bottom: 7px !important;
+      min-height: 40px !important;
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
     }
 
     .mat-mdc-select-value,
@@ -596,7 +599,7 @@ $radius-pill: 999px;
     }
 
     textarea.mat-mdc-input-element {
-      min-height: 42px;
+      min-height: 44px;
     }
   }
 

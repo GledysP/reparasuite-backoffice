@@ -159,6 +159,54 @@ $rs-table-hover: rgba(15, 23, 42, 0.03);
   }
 }
 
+.rs-btn-whatsapp-outline {
+  height: 44px !important;
+  border-radius: 14px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+
+  .wa-icon-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  .wa-svg {
+    width: 20px;
+    height: 20px;
+    color: #25d366;
+    display: block;
+    flex: 0 0 auto;
+  }
+
+  &:hover:not(:disabled) {
+    background: #25d366 !important;
+    color: #ffffff !important;
+    border-color: #25d366 !important;
+    box-shadow: 0 12px 24px rgba(37, 211, 102, 0.22) !important;
+    transform: translateY(-1px);
+
+    .wa-svg {
+      color: #ffffff !important;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 .rs-kpi-card {
   position: relative;
   overflow: hidden;
@@ -377,25 +425,6 @@ $rs-table-hover: rgba(15, 23, 42, 0.03);
   @media (max-width: 1180px) {
     display: block;
     margin-bottom: 18px;
-  }
-}
-
-.rs-btn-whatsapp-flat {
-  // Mismo fondo que tu botón primario pero en verde WhatsApp
-  background: linear-gradient(135deg, #128c7e 0%, #25d366 100%) !important;
-  margin-top: 10px; // Separación opcional
-
-  .wa-icon-container {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 8px;
-    vertical-align: middle;
-  }
-
-  .wa-svg {
-    width: 20px;
-    height: 20px;
-    color: white;
   }
 }
 
