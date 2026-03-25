@@ -12,13 +12,20 @@ import { EquipoResumenDto } from '../../../core/models/tipos';
 @Component({
   selector: 'rs-equipos-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule
+  ],
   templateUrl: './equipos-list.component.html',
   styleUrl: './equipos-list.component.scss'
 })
 export class EquiposListComponent implements OnInit {
-  private service = inject(EquiposService);
-  private router = inject(Router);
+  private readonly service = inject(EquiposService);
+  private readonly router = inject(Router);
 
   loading = signal(false);
   items = signal<EquipoResumenDto[]>([]);
@@ -29,12 +36,15 @@ export class EquiposListComponent implements OnInit {
 
   cargar(): void {
     this.loading.set(true);
+
     this.service.listar({ activo: true, page: 0, size: 50 }).subscribe({
       next: (res) => {
-        this.items.set(res.items);
+        this.items.set(res.items ?? []);
         this.loading.set(false);
       },
-      error: () => this.loading.set(false)
+      error: () => {
+        this.loading.set(false);
+      }
     });
   }
 

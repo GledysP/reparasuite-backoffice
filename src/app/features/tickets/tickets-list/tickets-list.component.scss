@@ -1,7 +1,6 @@
 $blue-deep: #081a4b;
 $blue-deep-2: #0a1f5c;
 $blue-neon: #00d1ff;
-$blue-neon-soft: #67e8f9;
 $blue-action: #0891b2;
 
 $text-primary: #0f172a;
@@ -9,36 +8,37 @@ $text-secondary: #64748b;
 $text-muted: #7f91a7;
 $text-muted-2: #94a3b8;
 
-$surface: #ffffff;
 $surface-soft: #f8fafc;
-$surface-muted: #f1f5f9;
 
 $border-subtle: rgba(15, 23, 42, 0.05);
 $border-soft: rgba(15, 23, 42, 0.10);
 
+$glass-bg: rgba(255, 255, 255, 0.84);
+$glass-border: rgba(15, 23, 42, 0.06);
+
 $shadow-card:
   0 12px 28px rgba(15, 23, 42, 0.038),
   0 4px 10px rgba(15, 23, 42, 0.018),
-  inset 0 1px 0 rgba(255, 255, 255, 0.74);
+  inset 0 1px 0 rgba(255, 255, 255, 0.72);
 $shadow-card-hover:
-  0 14px 28px rgba(15, 23, 42, 0.06),
-  0 0 20px rgba(0, 209, 255, 0.05);
+  0 18px 34px rgba(15, 23, 42, 0.055),
+  0 0 18px rgba(0, 209, 255, 0.05);
 $shadow-soft: 0 10px 24px rgba(15, 23, 42, 0.05);
 
 $radius-card: 22px;
 $radius-pill: 999px;
 
-$status-open-bg: rgba(0, 209, 255, 0.10);
-$status-open-color: #0b6b84;
-$status-open-border: rgba(0, 209, 255, 0.16);
+$status-open-bg: rgba(0, 209, 255, 0.08);
+$status-open-color: #155e75;
+$status-open-border: rgba(0, 209, 255, 0.12);
 
-$status-review-bg: rgba(245, 158, 11, 0.10);
+$status-review-bg: rgba(245, 158, 11, 0.08);
 $status-review-color: #b45309;
-$status-review-border: rgba(245, 158, 11, 0.15);
+$status-review-border: rgba(245, 158, 11, 0.12);
 
-$status-closed-bg: rgba(239, 68, 68, 0.09);
-$status-closed-color: #b91c1c;
-$status-closed-border: rgba(239, 68, 68, 0.13);
+$status-closed-bg: rgba(148, 163, 184, 0.10);
+$status-closed-color: #475569;
+$status-closed-border: rgba(148, 163, 184, 0.14);
 
 $status-default-bg: #f1f5f9;
 $status-default-color: #475569;
@@ -101,7 +101,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 18px;
+  margin-bottom: 34px;
 }
 
 .rs-header-copy {
@@ -153,42 +153,46 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-  margin-top: 22px;
+  margin-top: 36px;
   margin-bottom: 24px;
 }
 
 .ticket-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid $border-subtle !important;
+  border: 1px solid $glass-border !important;
   border-radius: $radius-card !important;
-  background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%) !important;
+  background: $glass-bg !important;
   box-shadow: $shadow-card !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   opacity: 0;
   animation: rsFadeUp 0.42s ease forwards;
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
-    border-color 0.18s ease;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at top right, rgba(103, 232, 249, 0.05), transparent 36%);
-    pointer-events: none;
-    opacity: 0.85;
-  }
+    border-color 0.18s ease,
+    background 0.18s ease;
 
   &:hover {
-    transform: translateY(-2px);
-    border-color: rgba(15, 23, 42, 0.08) !important;
+    transform: translateY(-4px);
+    border-color: rgba(0, 209, 255, 0.10) !important;
     box-shadow: $shadow-card-hover !important;
   }
 
+  &:hover .ticket-card-topline {
+    opacity: 0.95;
+  }
+
+  &:hover .ticket-icon {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: rgba(0, 209, 255, 0.12);
+    box-shadow: 0 10px 18px rgba(0, 209, 255, 0.04);
+  }
+
   &:hover .ghost-view-btn {
-    color: $blue-deep !important;
     background: rgba(15, 23, 42, 0.03) !important;
+    color: $blue-deep !important;
   }
 }
 
@@ -204,7 +208,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
 .ticket-card-content {
   position: relative;
   z-index: 1;
-  padding: 16px !important;
+  padding: 15px !important;
 }
 
 .ticket-card-topline {
@@ -212,17 +216,18 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   top: 0;
   left: 16px;
   right: 16px;
-  height: 2px;
+  height: 1.5px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(8, 26, 75, 0.88), rgba(0, 209, 255, 0.88));
-  opacity: 0.78;
+  background: linear-gradient(90deg, rgba(8, 26, 75, 0.26), rgba(0, 209, 255, 0.38));
+  opacity: 0.68;
+  transition: opacity 180ms ease;
 }
 
 .ticket-card-inner {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 132px;
+  gap: 11px;
+  min-height: 124px;
 }
 
 .ticket-card-head {
@@ -237,7 +242,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   min-width: 0;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 11px;
   flex: 1 1 auto;
 }
 
@@ -248,14 +253,18 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: rgba(15, 23, 42, 0.03);
+  background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(15, 23, 42, 0.05);
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 
   mat-icon {
     color: $blue-deep;
-    font-size: 17px;
-    width: 17px;
-    height: 17px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -320,7 +329,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 180px;
+    max-width: 175px;
   }
 }
 
@@ -329,20 +338,20 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 10px;
+  gap: 9px;
 }
 
 .status-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 28px;
-  padding: 0 12px;
+  min-height: 27px;
+  padding: 0 11px;
   border-radius: $radius-pill;
   border: 1px solid transparent;
   font-size: 10px;
   font-weight: 900;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
   background: $status-default-bg;
   color: $status-default-color;
@@ -351,7 +360,6 @@ $status-default-border: rgba(71, 85, 105, 0.10);
     background: $status-open-bg;
     color: $status-open-color;
     border-color: $status-open-border;
-    box-shadow: 0 0 14px rgba(0, 209, 255, 0.08);
   }
 
   &.is-review {
@@ -378,7 +386,6 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   height: 6px;
   border-radius: 50%;
   background: currentColor;
-  box-shadow: 0 0 10px currentColor;
   flex: 0 0 6px;
 }
 
@@ -416,13 +423,13 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  min-height: 27px;
+  min-height: 26px;
   padding: 0 10px;
   border-radius: $radius-pill;
   font-size: 10px;
   font-weight: 700;
   border: 1px solid $border-subtle;
-  background: $surface-soft;
+  background: rgba(248, 250, 252, 0.85);
   white-space: nowrap;
 
   mat-icon {
@@ -434,7 +441,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
 
 .linked-ot {
   color: $blue-action;
-  background: rgba(8, 145, 178, 0.06);
+  background: rgba(8, 145, 178, 0.05);
   border-color: rgba(8, 145, 178, 0.10);
 
   mat-icon {
@@ -444,7 +451,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
 
 .pending-ot {
   color: $text-secondary;
-  background: $surface-soft;
+  background: rgba(248, 250, 252, 0.85);
   border-color: $border-subtle;
 
   mat-icon {
@@ -453,7 +460,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
 }
 
 .ghost-view-btn {
-  min-height: 34px;
+  min-height: 32px;
   padding: 0 10px !important;
   border-radius: 12px !important;
   color: $blue-deep !important;
@@ -467,13 +474,14 @@ $status-default-border: rgba(71, 85, 105, 0.10);
     transform 0.18s ease;
 
   mat-icon {
-    width: 16px;
-    height: 16px;
-    font-size: 16px;
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
     margin-right: 4px;
   }
 
   &:hover {
+    background: rgba(15, 23, 42, 0.03) !important;
     transform: translateY(-1px);
   }
 }
@@ -485,7 +493,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
 }
 
 .empty-state {
-  min-height: 240px;
+  min-height: 220px;
   display: grid;
   place-items: center;
   text-align: center;
@@ -495,8 +503,8 @@ $status-default-border: rgba(71, 85, 105, 0.10);
 }
 
 .empty-icon {
-  width: 58px;
-  height: 58px;
+  width: 56px;
+  height: 56px;
   border-radius: 18px;
   display: grid;
   place-items: center;
@@ -505,9 +513,9 @@ $status-default-border: rgba(71, 85, 105, 0.10);
 
   mat-icon {
     color: $blue-deep;
-    font-size: 26px;
-    width: 26px;
-    height: 26px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -524,7 +532,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
 }
 
 .paginator-shell {
-  margin-top: 4px;
+  margin-top: 6px;
   border: 1px solid $border-soft;
   border-radius: 18px;
   background: #ffffff;
@@ -605,14 +613,6 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   .cards-wrap {
     gap: 14px;
   }
-
-  .ticket-card-content {
-    padding: 15px !important;
-  }
-
-  .ticket-title {
-    font-size: 14px;
-  }
 }
 
 @media (max-width: 1200px) {
@@ -631,7 +631,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
 
 @media (max-width: 640px) {
   .rs-header-row {
-    margin-bottom: 14px;
+    margin-bottom: 24px;
   }
 
   .rs-page-title {
@@ -647,7 +647,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   .cards-wrap {
     grid-template-columns: 1fr;
     gap: 10px;
-    margin-top: 14px;
+    margin-top: 22px;
     margin-bottom: 18px;
   }
 
@@ -662,7 +662,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
   .ticket-card-topline {
     left: 12px;
     right: 12px;
-    height: 2px;
+    height: 1.5px;
   }
 
   .ticket-card-inner {
@@ -721,7 +721,7 @@ $status-default-border: rgba(71, 85, 105, 0.10);
     }
 
     span:last-child {
-      max-width: 160px;
+      max-width: 150px;
     }
   }
 

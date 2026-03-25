@@ -1,12 +1,6 @@
-// ======================================================
-// REPARASUITE · EQUIPOS · UNIFIED CARD SYSTEM · FINAL
-// ======================================================
-
 $blue-deep: #081a4b;
 $blue-deep-2: #0a1f5c;
-$blue-deep-3: #0d276d;
 $blue-neon: #00d1ff;
-$blue-neon-soft: #67e8f9;
 $blue-action: #0891b2;
 
 $text-primary: #0f172a;
@@ -14,16 +8,26 @@ $text-secondary: #64748b;
 $text-muted: #7f91a7;
 $text-muted-2: #94a3b8;
 
-$surface: #ffffff;
-$surface-soft: #f8fafc;
-
 $border-subtle: rgba(15, 23, 42, 0.05);
 $border-soft: rgba(15, 23, 42, 0.10);
 
-$shadow-card: 0 4px 20px rgba(0, 0, 0, 0.03);
-$shadow-card-hover: 0 10px 28px rgba(15, 23, 42, 0.06);
+$glass-bg: rgba(255, 255, 255, 0.84);
+$glass-border: rgba(15, 23, 42, 0.06);
 
-$radius-card: 20px;
+$shadow-card:
+  0 12px 28px rgba(15, 23, 42, 0.038),
+  0 4px 10px rgba(15, 23, 42, 0.018),
+  inset 0 1px 0 rgba(255, 255, 255, 0.72);
+
+$shadow-card-hover:
+  0 18px 34px rgba(15, 23, 42, 0.055),
+  0 0 18px rgba(0, 209, 255, 0.05);
+
+$shadow-cta:
+  0 12px 24px rgba(8, 26, 75, 0.16),
+  0 0 20px rgba(0, 209, 255, 0.10);
+
+$radius-card: 22px;
 $radius-pill: 999px;
 
 @keyframes rsFadeUp {
@@ -38,19 +42,72 @@ $radius-pill: 999px;
   }
 }
 
-.rs-page-wrap {
-  padding: 28px;
-  background: $surface;
-  min-height: calc(100vh - 64px);
+@keyframes rsButtonShimmer {
+  0% {
+    transform: translateX(-160%) skewX(-24deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-24deg);
+  }
+}
+
+:host {
+  display: block;
+}
+
+.rs-page-wrap.rs-equipos-page {
+  position: relative;
+  min-height: 100%;
+  background: #ffffff;
+  padding: 18px 22px 24px;
+  overflow-x: clip;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -120px;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 209, 255, 0.05) 0%, rgba(0, 209, 255, 0) 72%);
+    filter: blur(18px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @media (max-width: 768px) {
+    padding: 14px 12px 20px;
+  }
+}
+
+.rs-page-wrap > * {
+  position: relative;
+  z-index: 1;
+}
+
+.rs-page-shell {
+  width: 100%;
+}
+
+.rs-fade-up {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: rsFadeUp 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .rs-topbar {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
   align-items: flex-start;
-  margin-bottom: 20px;
+  gap: 18px;
   flex-wrap: wrap;
+  margin-bottom: 28px;
+
+  @media (max-width: 768px) {
+    gap: 14px;
+    margin-bottom: 22px;
+  }
 }
 
 .rs-topbar-copy {
@@ -59,42 +116,105 @@ $radius-pill: 999px;
 
 .rs-title {
   margin: 0;
-  color: $text-primary;
-  font-size: 28px;
-  line-height: 1.05;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  color: $blue-deep;
+  font-size: clamp(1.75rem, 1.9vw, 2.05rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.038em;
 }
 
 .rs-subtitle {
-  margin: 8px 0 0;
+  margin: 10px 0 0;
   color: $text-secondary;
-  font-size: 13.5px;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.45;
+
+  @media (max-width: 640px) {
+    font-size: 12.5px;
+    margin-top: 8px;
+  }
 }
 
 .rs-primary-btn {
-  min-height: 44px;
-  padding: 0 18px !important;
-  border-radius: 16px !important;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 38px !important;
+  height: 38px !important;
+  padding: 0 15px !important;
+  border-radius: 15px !important;
   background: linear-gradient(135deg, #081a4b 0%, #0a2a74 42%, #00b8f5 160%) !important;
   color: #ffffff !important;
   font-weight: 800 !important;
+  font-size: 12px !important;
   letter-spacing: -0.01em;
-  box-shadow: 0 12px 24px rgba(8, 26, 75, 0.16);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
-
-  mat-icon {
-    margin-right: 6px;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
+  box-shadow: $shadow-cta !important;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 16px 28px rgba(8, 26, 75, 0.20);
     filter: brightness(1.02);
+    box-shadow:
+      0 16px 28px rgba(8, 26, 75, 0.18),
+      0 0 24px rgba(0, 209, 255, 0.12) !important;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.rs-primary-btn__label {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  line-height: 1;
+}
+
+.rs-primary-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.rs-primary-btn__shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -30%;
+    width: 32%;
+    height: 140%;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.08) 30%,
+      rgba(255, 255, 255, 0.30) 50%,
+      rgba(255, 255, 255, 0.08) 70%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: rsButtonShimmer 3.8s linear infinite;
   }
 }
 
@@ -120,17 +240,33 @@ $radius-pill: 999px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-  margin-top: 22px;
+  margin-top: 28px;
+
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 920px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 20px;
+  }
 }
 
 .rs-card {
   position: relative;
   overflow: hidden;
-  min-height: 184px;
+  min-height: 126px;
   border-radius: $radius-card !important;
-  border: 1px solid $border-subtle !important;
-  background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%) !important;
+  border: 1px solid $glass-border !important;
+  background: $glass-bg !important;
   box-shadow: $shadow-card !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   opacity: 0;
   animation: rsFadeUp 0.42s ease forwards;
   transition:
@@ -138,24 +274,19 @@ $radius-pill: 999px;
     box-shadow 0.18s ease,
     border-color 0.18s ease;
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at top right, rgba(103, 232, 249, 0.05), transparent 36%);
-    pointer-events: none;
-    opacity: 0.85;
-  }
-
   &:hover {
-    transform: translateY(-2px);
-    border-color: rgba(15, 23, 42, 0.08) !important;
+    transform: translateY(-4px);
+    border-color: rgba(0, 209, 255, 0.10) !important;
     box-shadow: $shadow-card-hover !important;
   }
 
+  &:hover .rs-card-topline {
+    opacity: 0.95;
+  }
+
   &:hover .ghost-view-btn {
-    color: $blue-deep !important;
     background: rgba(15, 23, 42, 0.03) !important;
+    color: $blue-deep !important;
   }
 }
 
@@ -173,10 +304,11 @@ $radius-pill: 999px;
   top: 0;
   left: 16px;
   right: 16px;
-  height: 2px;
+  height: 1.5px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(8, 26, 75, 0.88), rgba(0, 209, 255, 0.88));
-  opacity: 0.78;
+  background: linear-gradient(90deg, rgba(8, 26, 75, 0.26), rgba(0, 209, 255, 0.38));
+  opacity: 0.7;
+  transition: opacity 180ms ease;
 }
 
 .rs-card-inner,
@@ -190,8 +322,8 @@ $radius-pill: 999px;
 .rs-card-inner {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 24px 18px 18px;
+  gap: 9px;
+  padding: 13px 15px 13px;
   height: 100%;
 }
 
@@ -200,19 +332,19 @@ $radius-pill: 999px;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  padding-top: 2px;
+  padding-top: 1px;
 }
 
 .rs-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-  padding: 0 10px;
+  min-height: 22px;
+  padding: 0 9px;
   border-radius: $radius-pill;
   background: rgba(8, 145, 178, 0.07);
   border: 1px solid rgba(8, 145, 178, 0.12);
   color: $blue-action;
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 800;
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -222,13 +354,13 @@ $radius-pill: 999px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 24px;
-  padding: 0 10px;
+  min-height: 22px;
+  padding: 0 9px;
   border-radius: $radius-pill;
   background: rgba(34, 197, 94, 0.10);
   border: 1px solid rgba(34, 197, 94, 0.14);
   color: #15803d;
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 800;
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -252,71 +384,71 @@ $radius-pill: 999px;
 .rs-card-body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-height: 0;
 }
 
 .rs-card-title {
-  font-size: 14px;
-  line-height: 1.32;
-  font-weight: 600;
+  font-size: 12.5px;
+  line-height: 1.28;
+  font-weight: 700;
   color: $text-primary;
   letter-spacing: -0.02em;
 }
 
 .rs-card-sub {
   color: $text-muted;
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 10.5px;
+  line-height: 1.35;
   font-weight: 500;
 }
 
 .rs-client-line {
-  margin-top: 8px;
+  margin-top: 6px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   color: $text-secondary;
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 10.5px;
+  line-height: 1.35;
   font-weight: 600;
 
   mat-icon {
-    font-size: 13px;
-    width: 13px;
-    height: 13px;
+    font-size: 11px;
+    width: 11px;
+    height: 11px;
     color: $blue-action;
   }
 }
 
 .rs-meta-inline {
-  margin-top: 8px;
+  margin-top: 6px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .rs-meta-item {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   color: $text-muted;
-  font-size: 11px;
-  line-height: 1.35;
+  font-size: 9.5px;
+  line-height: 1.3;
   font-weight: 600;
 
   mat-icon {
-    font-size: 12px;
-    width: 12px;
-    height: 12px;
+    font-size: 10px;
+    width: 10px;
+    height: 10px;
     color: $text-muted-2;
   }
 }
 
 .rs-meta-dot {
   color: $text-muted-2;
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1;
 }
 
@@ -328,12 +460,12 @@ $radius-pill: 999px;
 }
 
 .ghost-view-btn {
-  min-height: 34px;
-  padding: 0 10px !important;
+  min-height: 28px;
+  padding: 0 8px !important;
   border-radius: 12px !important;
   color: $blue-deep !important;
   background: transparent !important;
-  font-size: 11px !important;
+  font-size: 10px !important;
   font-weight: 700 !important;
   letter-spacing: -0.01em;
   transition:
@@ -343,9 +475,9 @@ $radius-pill: 999px;
 
   mat-icon {
     margin-right: 4px;
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
   }
 
   &:hover {
@@ -354,43 +486,15 @@ $radius-pill: 999px;
   }
 }
 
-@media (max-width: 1480px) {
-  .rs-grid-cards {
-    gap: 14px;
-  }
-
-  .rs-card-inner {
-    padding: 22px 16px 16px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .rs-grid-cards {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-  }
-}
-
-@media (max-width: 900px) {
-  .rs-page-wrap {
-    padding: 22px 18px 18px;
-  }
-
-  .rs-grid-cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-  }
-}
-
 @media (max-width: 768px) {
-  .rs-page-wrap {
-    padding: 14px;
+  .rs-topbar {
+    margin-bottom: 22px;
   }
 
   .rs-title {
     font-size: 22px;
     line-height: 1.05;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.03em;
   }
 
@@ -400,23 +504,6 @@ $radius-pill: 999px;
     margin-top: 6px;
   }
 
-  .rs-topbar {
-    align-items: stretch;
-  }
-
-  .rs-primary-btn {
-    width: 100%;
-    min-height: 40px;
-    justify-content: center;
-    box-shadow: 0 8px 18px rgba(8, 26, 75, 0.14);
-  }
-
-  .rs-grid-cards {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-top: 16px;
-  }
-
   .rs-card {
     min-height: auto;
     border-radius: 18px !important;
@@ -424,57 +511,40 @@ $radius-pill: 999px;
 
   .rs-card-inner {
     gap: 8px;
-    padding: 18px 12px 12px;
+    padding: 12px;
   }
 
   .rs-card-topline {
     left: 12px;
     right: 12px;
-    height: 2px;
+    height: 1.5px;
   }
 
   .rs-card-head {
     gap: 8px;
-    padding-top: 0;
   }
 
   .rs-badge,
   .rs-state {
-    min-height: 22px;
-    padding: 0 9px;
+    min-height: 21px;
+    padding: 0 8px;
     font-size: 8px;
     letter-spacing: 0.09em;
   }
 
   .rs-card-title {
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.24;
   }
 
   .rs-card-sub {
-    font-size: 10.5px;
+    font-size: 10px;
   }
 
   .rs-client-line {
     margin-top: 5px;
-    font-size: 10.5px;
+    font-size: 10px;
     gap: 5px;
-
-    mat-icon {
-      font-size: 11px;
-      width: 11px;
-      height: 11px;
-    }
-  }
-
-  .rs-meta-inline {
-    margin-top: 5px;
-    gap: 5px;
-  }
-
-  .rs-meta-item {
-    gap: 4px;
-    font-size: 9.5px;
 
     mat-icon {
       font-size: 10px;
@@ -483,20 +553,36 @@ $radius-pill: 999px;
     }
   }
 
+  .rs-meta-inline {
+    margin-top: 5px;
+    gap: 4px;
+  }
+
+  .rs-meta-item {
+    gap: 4px;
+    font-size: 9px;
+
+    mat-icon {
+      font-size: 9px;
+      width: 9px;
+      height: 9px;
+    }
+  }
+
   .rs-meta-dot {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .ghost-view-btn {
-    min-height: 28px;
+    min-height: 27px;
     padding: 0 7px !important;
-    font-size: 9.5px !important;
+    font-size: 9px !important;
 
     mat-icon {
       margin-right: 3px;
-      font-size: 11px;
-      width: 11px;
-      height: 11px;
+      font-size: 10px;
+      width: 10px;
+      height: 10px;
     }
   }
 }
