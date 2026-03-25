@@ -2,13 +2,9 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { InventarioService } from '../inventario.service';
@@ -20,13 +16,9 @@ import { InventarioCategoriaDto } from '../../../core/models/tipos';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatCheckboxModule,
+    MatSlideToggleModule,
     MatSnackBarModule
   ],
   templateUrl: './inventario-form.component.html',
@@ -42,6 +34,9 @@ export class InventarioFormComponent implements OnInit {
   id: string | null = null;
   loading = signal(false);
   categorias = signal<InventarioCategoriaDto[]>([]);
+  imagenPreviewUrl = signal<string | null>(null);
+
+  private imagenFile: File | null = null;
 
   form = this.fb.group({
     sku: ['', Validators.required],
@@ -91,9 +86,67 @@ export class InventarioFormComponent implements OnInit {
             notas: i.notas ?? '',
             activo: i.activo
           });
+
+          const imagenExistente =
+            (i as any)?.imagenUrl ||
+            (i as any)?.fotoUrl ||
+            (i as any)?.imageUrl ||
+            null;
+
+          if (imagenExistente) {
+            this.imagenPreviewUrl.set(imagenExistente);
+          }
         }
       });
     }
+  }
+
+  get margenGanancia(): number {
+    const precio = this.toNumber(this.form.get('precioVenta')?.value);
+    const ultimoCosto = this.toNumber(this.form.get('ultimoCosto')?.value);
+    return precio - ultimoCosto;
+  }
+
+  triggerImageInput(input: HTMLInputElement): void {
+    input.click();
+  }
+
+  onImageSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0] ?? null;
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.snack.open('Selecciona un archivo de imagen válido.', 'OK', { duration: 2400 });
+      target.value = '';
+      return;
+    }
+
+    this.imagenFile = file;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagenPreviewUrl.set(typeof reader.result === 'string' ? reader.result : null);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeImage(input: HTMLInputElement): void {
+    this.imagenFile = null;
+    this.imagenPreviewUrl.set(null);
+    input.value = '';
+  }
+
+  private toNumber(value: unknown): number {
+    if (value === null || value === undefined || value === '') {
+      return 0;
+    }
+
+    const parsed = Number(String(value).replace(',', '.'));
+    return Number.isFinite(parsed) ? parsed : 0;
   }
 
   guardar(): void {

@@ -16,6 +16,7 @@
   }
 
   <div class="rs-grid-cards">
+    
     @for (i of items(); track i.id) {
       <a class="rs-card-link" [routerLink]="['/inventario', i.id]">
         <mat-card class="rs-card">

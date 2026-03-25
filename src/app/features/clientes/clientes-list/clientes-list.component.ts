@@ -15,9 +15,12 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { ClientesService } from '../clientes.service';
-import { WhatsappService } from '../../../core/services/whatsapp.service';
 import { ClienteResumen } from '../../../core/models/tipos';
 import { ConfirmDeleteDialogComponent } from '../../../shared/confirm-delete-dialog/confirm-delete-dialog.component';
+import {
+  ClienteFormDialogComponent,
+  ClienteFormDialogData
+} from '../cliente-form-dialog/cliente-form-dialog.component';
 
 function getSpanishPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
@@ -67,12 +70,11 @@ function getSpanishPaginatorIntl(): MatPaginatorIntl {
     }
   ],
   templateUrl: './clientes-list.component.html',
-  styleUrl: './clientes-list.component.scss',
+  styleUrl: './clientes-list.component.scss'
 })
 export class ClientesListComponent implements OnInit {
   private fb = inject(FormBuilder);
   private clientes = inject(ClientesService);
-  private whatsapp = inject(WhatsappService);
   private snack = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
@@ -83,7 +85,7 @@ export class ClientesListComponent implements OnInit {
   page = 0;
   size = 10;
   deletingId: string | null = null;
-  whatsappLoading = false;
+  saving = false;
 
   form = this.fb.group({ query: [''] });
 
@@ -137,23 +139,84 @@ export class ClientesListComponent implements OnInit {
     return this.deletingId === row.id;
   }
 
-  invitarPorWhatsapp(): void {
-    if (this.whatsappLoading) return;
+  abrirModalCrear(): void {
+    if (this.saving) return;
 
-    this.whatsappLoading = true;
+    const ref = this.dialog.open(ClienteFormDialogComponent, {
+      width: '560px',
+      maxWidth: '95vw',
+      autoFocus: false,
+      restoreFocus: true,
+      data: {
+        modo: 'crear',
+        cliente: null
+      } satisfies ClienteFormDialogData
+    });
 
-    this.whatsapp.invitarRegistro().subscribe({
-      next: (res) => {
-        this.whatsappLoading = false;
-        window.open(res.url, '_blank', 'noopener,noreferrer');
-      },
-      error: (err) => {
-        this.whatsappLoading = false;
-        console.error('Error generando invitación WhatsApp:', err);
-        this.snack.open('No se pudo generar la invitación de WhatsApp', 'OK', {
-          duration: 3000
-        });
-      }
+    ref.afterClosed().subscribe((payload) => {
+      if (!payload) return;
+
+      this.saving = true;
+
+      this.clientes.crear(payload).subscribe({
+        next: () => {
+          this.saving = false;
+          this.page = 0;
+          this.cargar();
+          this.snack.open('Cliente creado correctamente', 'OK', { duration: 2200 });
+        },
+        error: (err) => {
+          console.error('Error creando cliente:', err);
+          this.saving = false;
+
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            'No se pudo crear el cliente';
+
+          this.snack.open(msg, 'OK', { duration: 3200 });
+        }
+      });
+    });
+  }
+
+  abrirModalEditar(row: ClienteResumen): void {
+    if (!row?.id || this.saving) return;
+
+    const ref = this.dialog.open(ClienteFormDialogComponent, {
+      width: '560px',
+      maxWidth: '95vw',
+      autoFocus: false,
+      restoreFocus: true,
+      data: {
+        modo: 'editar',
+        cliente: row
+      } satisfies ClienteFormDialogData
+    });
+
+    ref.afterClosed().subscribe((payload) => {
+      if (!payload) return;
+
+      this.saving = true;
+
+      this.clientes.actualizar(row.id, payload).subscribe({
+        next: () => {
+          this.saving = false;
+          this.cargar();
+          this.snack.open('Cliente actualizado correctamente', 'OK', { duration: 2200 });
+        },
+        error: (err) => {
+          console.error('Error actualizando cliente:', err);
+          this.saving = false;
+
+          const msg =
+            err?.error?.message ||
+            err?.error?.error ||
+            'No se pudo actualizar el cliente';
+
+          this.snack.open(msg, 'OK', { duration: 3200 });
+        }
+      });
     });
   }
 

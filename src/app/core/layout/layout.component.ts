@@ -54,11 +54,11 @@ interface NavItem {
 export class LayoutComponent {
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
-  private breakpointObserver = inject(BreakpointObserver);
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  private dialog = inject(MatDialog);
-  private notifs = inject(LayoutNotificacionesService);
+  private readonly breakpointObserver = inject(BreakpointObserver);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
+  private readonly notifs = inject(LayoutNotificacionesService);
 
   isMobile = false;
   isCollapsed = false;
@@ -72,7 +72,7 @@ export class LayoutComponent {
 
   readonly navItems: NavItem[] = [
     { label: 'Panel', route: '/dashboard', icon: 'dashboard', exact: true },
-    { label: 'Órdenes de trabajo', route: '/ordenes-trabajo', icon: 'assignment' },
+    { label: 'Órdenes de trabajo', route: '/ordenes-trabajo', icon: 'assignment', exact: false },
     { label: 'Tickets', route: '/tickets', icon: 'confirmation_number' },
     { label: 'Clientes', route: '/clientes', icon: 'group' },
     { label: 'Equipos', route: '/equipos', icon: 'memory' },
@@ -109,6 +109,7 @@ export class LayoutComponent {
       this.sidenav.toggle();
       return;
     }
+
     this.isCollapsed = !this.isCollapsed;
   }
 
@@ -175,9 +176,10 @@ export class LayoutComponent {
   onGlobalKeydown(e: KeyboardEvent): void {
     const key = e.key.toLowerCase();
     const isCmdK = (e.ctrlKey || e.metaKey) && key === 'k';
-    if (isCmdK) {
-      e.preventDefault();
-      this.openCommandPalette();
-    }
+
+    if (!isCmdK) return;
+
+    e.preventDefault();
+    this.openCommandPalette();
   }
 }

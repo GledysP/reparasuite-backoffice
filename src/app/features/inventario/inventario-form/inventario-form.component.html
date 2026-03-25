@@ -1,110 +1,297 @@
 <div class="rs-page-wrap">
-  <mat-card class="rs-form-card">
-    <div class="rs-form-head">
-      <div>
-        <h1 class="rs-title">{{ id ? 'Editar item' : 'Nuevo item' }}</h1>
-        <p class="rs-subtitle">Alta profesional de inventario para taller y servicio técnico.</p>
+  <div class="rs-form-head">
+    <h1 class="rs-title">{{ id ? 'Editar item' : 'Registro de Activo Tecnológico' }}</h1>
+    <p class="rs-subtitle">
+      Alta profesional de inventario para taller y servicio técnico.
+    </p>
+  </div>
+
+  <div class="rs-form-card">
+    <form [formGroup]="form" class="rs-form-shell">
+      <div class="rs-layout">
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="rs-column rs-column-left">
+          <section class="rs-section">
+            <div class="rs-section-head">
+              <div class="rs-section-kicker">Identificación técnica</div>
+              <p class="rs-section-subtitle">
+                Datos base para clasificación, búsqueda y compatibilidad del item.
+              </p>
+            </div>
+
+            <div class="rs-grid">
+              <div class="rs-field col-6">
+                <label class="rs-field-label">SKU <span class="req">*</span></label>
+                <div class="rs-control">
+                  <mat-icon>qr_code_2</mat-icon>
+                  <input class="rs-input" type="text" formControlName="sku" />
+                </div>
+              </div>
+
+              <div class="rs-field col-6">
+                <label class="rs-field-label">Código de barras</label>
+                <div class="rs-control">
+                  <mat-icon>barcode</mat-icon>
+                  <input class="rs-input" type="text" formControlName="codigoBarras" />
+                </div>
+              </div>
+
+              <div class="rs-field col-12">
+                <label class="rs-field-label">Nombre <span class="req">*</span></label>
+                <div class="rs-control">
+                  <mat-icon>sell</mat-icon>
+                  <input class="rs-input" type="text" formControlName="nombre" />
+                </div>
+              </div>
+
+              <div class="rs-field col-6">
+                <label class="rs-field-label">Marca</label>
+                <div class="rs-control">
+                  <mat-icon>copyright</mat-icon>
+                  <input class="rs-input" type="text" formControlName="marca" />
+                </div>
+              </div>
+
+              <div class="rs-field col-6">
+                <label class="rs-field-label">Categoría</label>
+                <div class="rs-control">
+                  <mat-icon>category</mat-icon>
+                  <select class="rs-select" formControlName="categoriaId">
+                    <option value="">Sin categoría</option>
+                    @for (c of categorias(); track c.id) {
+                      <option [value]="c.id">{{ c.nombre }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <div class="rs-field col-12">
+                <label class="rs-field-label">Compatibilidad</label>
+                <div class="rs-control">
+                  <mat-icon>precision_manufacturing</mat-icon>
+                  <input class="rs-input" type="text" formControlName="modeloCompatibilidad" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="rs-section">
+            <div class="rs-section-head">
+              <div class="rs-section-kicker">Imagen / referencia visual</div>
+              <p class="rs-section-subtitle">
+                Área preparada para fotografía o recurso visual del item.
+              </p>
+            </div>
+
+            <input
+              #fileInput
+              type="file"
+              accept="image/*"
+              class="rs-hidden-file-input"
+              (change)="onImageSelected($event)"
+            />
+
+            <div class="rs-media-dropzone" [class.has-image]="!!imagenPreviewUrl()">
+              <div
+                class="rs-media-preview"
+                [class.has-image]="!!imagenPreviewUrl()"
+                [class.is-hoverable]="!!imagenPreviewUrl()"
+              >
+                @if (imagenPreviewUrl()) {
+                  <img [src]="imagenPreviewUrl()" alt="Preview de imagen del item" />
+
+                  <button
+                    type="button"
+                    class="rs-media-remove-fab"
+                    aria-label="Quitar imagen"
+                    (click)="removeImage(fileInput)"
+                  >
+                    ×
+                  </button>
+                } @else {
+                  <mat-icon>add_a_photo</mat-icon>
+                }
+              </div>
+
+              <div class="rs-media-copy">
+                <div class="rs-media-dropzone-title">
+                  {{ imagenPreviewUrl() ? 'Imagen seleccionada' : 'Subir imagen de referencia' }}
+                </div>
+
+                <div class="rs-media-dropzone-sub">
+                  JPG, PNG o WEBP · componente visual premium
+                </div>
+
+                <div class="rs-media-dropzone-actions">
+                  <button
+                    mat-stroked-button
+                    type="button"
+                    class="rs-upload-btn"
+                    (click)="triggerImageInput(fileInput)"
+                  >
+                    {{ imagenPreviewUrl() ? 'Cambiar imagen' : 'Buscar imagen' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="rs-section rs-section-last-left">
+            <div class="rs-section-head">
+              <div class="rs-section-kicker">Detalles avanzados</div>
+              <p class="rs-section-subtitle">
+                Información descriptiva y controles del sistema.
+              </p>
+            </div>
+
+            <div class="rs-grid">
+              <div class="rs-field col-6">
+                <label class="rs-field-label">Descripción</label>
+                <div class="rs-control rs-control-textarea">
+                  <mat-icon>description</mat-icon>
+                  <textarea class="rs-textarea" rows="4" formControlName="descripcion"></textarea>
+                </div>
+              </div>
+
+              <div class="rs-field col-6">
+                <label class="rs-field-label">Notas</label>
+                <div class="rs-control rs-control-textarea">
+                  <mat-icon>sticky_note_2</mat-icon>
+                  <textarea class="rs-textarea" rows="4" formControlName="notas"></textarea>
+                </div>
+              </div>
+
+              <div class="col-12 rs-toggle-row">
+                <mat-slide-toggle formControlName="controlaStock">Controla stock</mat-slide-toggle>
+                <mat-slide-toggle formControlName="permiteStockNegativo">Permite stock negativo</mat-slide-toggle>
+                <mat-slide-toggle formControlName="activo">Activo</mat-slide-toggle>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <div class="rs-column rs-column-right">
+          <div class="rs-right-top-row">
+            <section class="rs-section rs-section-half">
+              <div class="rs-section-head rs-section-head-inline">
+                <div>
+                  <div class="rs-section-kicker">Precios y costos</div>
+                  <p class="rs-section-subtitle">
+                    Lectura financiera rápida del activo.
+                  </p>
+                </div>
+
+                <div class="rs-margin-chip">
+                  <span class="rs-margin-label">Margen estimado</span>
+                  <strong class="rs-margin-value" [class.is-negative]="margenGanancia < 0">
+                    {{ margenGanancia | number:'1.2-2' }}
+                  </strong>
+                </div>
+              </div>
+
+              <div class="rs-grid rs-grid-single">
+                <div class="rs-field col-12">
+                  <label class="rs-field-label">Costo promedio</label>
+                  <div class="rs-control">
+                    <mat-icon>payments</mat-icon>
+                    <input class="rs-input" type="number" formControlName="costoPromedio" />
+                  </div>
+                </div>
+
+                <div class="rs-field col-12">
+                  <label class="rs-field-label">Último costo</label>
+                  <div class="rs-control">
+                    <mat-icon>attach_money</mat-icon>
+                    <input class="rs-input" type="number" formControlName="ultimoCosto" />
+                  </div>
+                </div>
+
+                <div class="rs-field col-12">
+                  <label class="rs-field-label">Precio venta</label>
+                  <div class="rs-control rs-control-with-badge">
+                    <mat-icon>local_atm</mat-icon>
+                    <input class="rs-input" type="number" formControlName="precioVenta" />
+                    <span class="rs-inline-badge" [class.is-negative]="margenGanancia < 0">
+                      {{ margenGanancia | number:'1.2-2' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="rs-section rs-section-half">
+              <div class="rs-section-head">
+                <div class="rs-section-kicker">Stock y almacén</div>
+                <p class="rs-section-subtitle">
+                  Umbrales, unidad y localización física.
+                </p>
+              </div>
+
+              <div class="rs-grid rs-grid-single">
+                <div class="rs-field col-12">
+                  <label class="rs-field-label">Unidad de medida <span class="req">*</span></label>
+                  <div class="rs-control">
+                    <mat-icon>straighten</mat-icon>
+                    <select class="rs-select" formControlName="unidadMedida">
+                      <option value="UNIDAD">UNIDAD</option>
+                      <option value="METRO">METRO</option>
+                      <option value="LITRO">LITRO</option>
+                      <option value="KILOGRAMO">KILOGRAMO</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="rs-field col-12">
+                  <label class="rs-field-label">Stock mínimo</label>
+                  <div class="rs-control">
+                    <mat-icon>inventory_2</mat-icon>
+                    <input class="rs-input" type="number" formControlName="stockMinimo" />
+                  </div>
+                </div>
+
+                <div class="rs-field col-12">
+                  <label class="rs-field-label">Stock máximo</label>
+                  <div class="rs-control">
+                    <mat-icon>store</mat-icon>
+                    <input class="rs-input" type="number" formControlName="stockMaximo" />
+                  </div>
+                </div>
+
+                <div class="rs-field col-12">
+                  <label class="rs-field-label">Ubicación almacén</label>
+                  <div class="rs-control">
+                    <mat-icon>place</mat-icon>
+                    <input class="rs-input" type="text" formControlName="ubicacionAlmacen" />
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <form [formGroup]="form" class="rs-form-grid">
-      <mat-form-field appearance="outline">
-        <mat-label>SKU *</mat-label>
-        <input matInput formControlName="sku" />
-      </mat-form-field>
+      <div class="rs-form-footer">
+        <button
+          mat-stroked-button
+          type="button"
+          class="rs-secondary-btn rs-secondary-btn-light"
+          (click)="cancelar()"
+        >
+          Cancelar
+        </button>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Código de barras</mat-label>
-        <input matInput formControlName="codigoBarras" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Nombre *</mat-label>
-        <input matInput formControlName="nombre" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Categoría</mat-label>
-        <mat-select formControlName="categoriaId">
-          <mat-option value="">Sin categoría</mat-option>
-          @for (c of categorias(); track c.id) {
-            <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Marca</mat-label>
-        <input matInput formControlName="marca" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Compatibilidad</mat-label>
-        <input matInput formControlName="modeloCompatibilidad" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Unidad medida</mat-label>
-        <mat-select formControlName="unidadMedida">
-          <mat-option value="UNIDAD">UNIDAD</mat-option>
-          <mat-option value="METRO">METRO</mat-option>
-          <mat-option value="LITRO">LITRO</mat-option>
-          <mat-option value="KILOGRAMO">KILOGRAMO</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Stock mínimo</mat-label>
-        <input matInput formControlName="stockMinimo" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Stock máximo</mat-label>
-        <input matInput formControlName="stockMaximo" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Costo promedio</mat-label>
-        <input matInput formControlName="costoPromedio" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Último costo</mat-label>
-        <input matInput formControlName="ultimoCosto" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Precio venta</mat-label>
-        <input matInput formControlName="precioVenta" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="span-2">
-        <mat-label>Ubicación almacén</mat-label>
-        <input matInput formControlName="ubicacionAlmacen" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="span-2">
-        <mat-label>Descripción</mat-label>
-        <textarea matInput rows="3" formControlName="descripcion"></textarea>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="span-2">
-        <mat-label>Notas</mat-label>
-        <textarea matInput rows="4" formControlName="notas"></textarea>
-      </mat-form-field>
-
-      <div class="span-2 check-grid">
-        <mat-checkbox formControlName="controlaStock">Controla stock</mat-checkbox>
-        <mat-checkbox formControlName="permiteStockNegativo">Permite stock negativo</mat-checkbox>
-        <mat-checkbox formControlName="activo">Activo</mat-checkbox>
+        <button
+          mat-flat-button
+          class="rs-primary-btn"
+          type="button"
+          (click)="guardar()"
+          [disabled]="loading()"
+        >
+          <mat-icon>save</mat-icon>
+          {{ loading() ? 'Guardando...' : 'Guardar item' }}
+        </button>
       </div>
     </form>
-
-    <div class="rs-actions">
-      <button mat-stroked-button type="button" (click)="cancelar()">Cancelar</button>
-      <button mat-flat-button class="rs-primary-btn" type="button" (click)="guardar()" [disabled]="loading()">
-        {{ loading() ? 'Guardando...' : 'Guardar item' }}
-      </button>
-    </div>
-  </mat-card>
+  </div>
 </div>

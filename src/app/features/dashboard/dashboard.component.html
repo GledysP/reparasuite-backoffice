@@ -1,34 +1,64 @@
-<div class="rs-main-container rs-dashboard-page">
-  <div class="rs-dashboard-top rs-fade-up">
-    <div class="rs-title-block">
-      <div class="rs-title-row">
-        <div>
-          <h1 class="rs-page-title">Dashboard</h1>
-          <p class="rs-page-subtitle">
-            Visualiza el estado general del taller y accede rápido a tus órdenes.
-          </p>
-        </div>
-
-        <button
-          mat-flat-button
-          class="rs-btn-primary rs-btn-create"
-          routerLink="/ordenes-trabajo/nueva"
-        >
-          <mat-icon>add</mat-icon>
-          Nueva OT
-        </button>
+<div class="rs-dashboard-page">
+  <div class="rs-dashboard-shell">
+    <header class="rs-dashboard-head rs-fade-up">
+      <div class="rs-head-copy">
+        <h1 class="rs-page-title">Dashboard</h1>
+        <p class="rs-page-subtitle">
+          Visualiza el estado operativo del taller con una interfaz limpia, tecnológica y precisa.
+        </p>
       </div>
-    </div>
-  </div>
 
-  <section class="rs-kpi-grid" aria-label="Indicadores del dashboard">
-    <mat-card class="rs-kpi-card kpi-primary rs-fade-up" [style.animationDelay]="'40ms'">
-      <div class="rs-kpi-shell">
+      <div class="rs-tech-hero" aria-hidden="true">
+        <svg viewBox="0 0 900 220" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="rsTechLine" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="rgba(0,209,255,0)" />
+              <stop offset="22%" stop-color="rgba(0,209,255,0.48)" />
+              <stop offset="58%" stop-color="rgba(0,209,255,0.78)" />
+              <stop offset="100%" stop-color="rgba(0,209,255,0)" />
+            </linearGradient>
+
+            <radialGradient id="rsTechGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(0,209,255,0.65)" />
+              <stop offset="100%" stop-color="rgba(0,209,255,0)" />
+            </radialGradient>
+          </defs>
+
+          <g class="rs-tech-paths">
+            <path d="M80 154 H180 Q198 154 198 136 V104 Q198 86 216 86 H306" />
+            <path d="M252 146 H338 Q356 146 356 128 V70 Q356 52 374 52 H484" />
+            <path d="M438 146 H542 Q560 146 560 126 V98 Q560 78 578 78 H676" />
+            <path d="M598 158 H690 Q708 158 708 140 V116 Q708 98 726 98 H822" />
+            <path d="M312 102 H412" />
+            <path d="M486 122 H602" />
+          </g>
+
+          <g class="rs-tech-nodes">
+            <circle cx="180" cy="154" r="4.2" />
+            <circle cx="198" cy="104" r="4.2" />
+            <circle cx="306" cy="86" r="4.2" />
+            <circle cx="356" cy="70" r="4.2" />
+            <circle cx="484" cy="52" r="4.2" />
+            <circle cx="542" cy="146" r="4.2" />
+            <circle cx="560" cy="98" r="4.2" />
+            <circle cx="676" cy="78" r="4.2" />
+            <circle cx="708" cy="116" r="4.2" />
+            <circle cx="822" cy="98" r="4.2" />
+          </g>
+
+          <g class="rs-tech-glow">
+            <circle cx="306" cy="86" r="16" />
+            <circle cx="484" cy="52" r="18" />
+            <circle cx="676" cy="78" r="18" />
+          </g>
+        </svg>
+      </div>
+    </header>
+
+    <section class="rs-kpi-grid" aria-label="Indicadores">
+      <mat-card class="rs-kpi-card kpi-received rs-fade-up" [style.animationDelay]="'40ms'">
         <div class="rs-kpi-top">
-          <div class="rs-kpi-icon">
-            <mat-icon>inventory_2</mat-icon>
-          </div>
-
+          <div class="rs-kpi-icon"><mat-icon>inventory_2</mat-icon></div>
           <div class="rs-kpi-copy">
             <div class="rs-kpi-label">Recibidas</div>
             <div class="rs-kpi-hint">Pendientes de avanzar</div>
@@ -37,24 +67,18 @@
 
         <div class="rs-kpi-bottom">
           <div class="rs-kpi-value">{{ stats.received }}</div>
-
-          <div class="rs-kpi-spark">
-            <svg viewBox="0 0 120 36" aria-hidden="true">
+          <div class="rs-kpi-spark" aria-hidden="true">
+            <svg viewBox="0 0 120 36">
               <path class="spark-line" d="M4 22 C 16 8, 28 30, 40 20 S 64 8, 76 16 S 100 26, 116 10"></path>
               <path class="spark-line glow" d="M4 22 C 16 8, 28 30, 40 20 S 64 8, 76 16 S 100 26, 116 10"></path>
             </svg>
           </div>
         </div>
-      </div>
-    </mat-card>
+      </mat-card>
 
-    <mat-card class="rs-kpi-card kpi-gold rs-fade-up" [style.animationDelay]="'90ms'">
-      <div class="rs-kpi-shell">
+      <mat-card class="rs-kpi-card kpi-quotation rs-fade-up" [style.animationDelay]="'80ms'">
         <div class="rs-kpi-top">
-          <div class="rs-kpi-icon">
-            <mat-icon>request_quote</mat-icon>
-          </div>
-
+          <div class="rs-kpi-icon"><mat-icon>request_quote</mat-icon></div>
           <div class="rs-kpi-copy">
             <div class="rs-kpi-label">Cotización</div>
             <div class="rs-kpi-hint">Esperando respuesta</div>
@@ -63,76 +87,58 @@
 
         <div class="rs-kpi-bottom">
           <div class="rs-kpi-value">{{ stats.quotation }}</div>
-
-          <div class="rs-kpi-spark">
-            <svg viewBox="0 0 120 36" aria-hidden="true">
+          <div class="rs-kpi-spark" aria-hidden="true">
+            <svg viewBox="0 0 120 36">
               <path class="spark-line" d="M4 24 C 18 20, 30 8, 40 18 S 66 28, 78 12 S 100 8, 116 14"></path>
               <path class="spark-line glow" d="M4 24 C 18 20, 30 8, 40 18 S 66 28, 78 12 S 100 8, 116 14"></path>
             </svg>
           </div>
         </div>
-      </div>
-    </mat-card>
+      </mat-card>
 
-    <mat-card class="rs-kpi-card kpi-teal rs-fade-up" [style.animationDelay]="'140ms'">
-      <div class="rs-kpi-shell">
+      <mat-card class="rs-kpi-card kpi-progress rs-fade-up" [style.animationDelay]="'120ms'">
         <div class="rs-kpi-top">
-          <div class="rs-kpi-icon">
-            <mat-icon>sync</mat-icon>
-          </div>
-
+          <div class="rs-kpi-icon"><mat-icon>sync</mat-icon></div>
           <div class="rs-kpi-copy">
             <div class="rs-kpi-label">En proceso</div>
-            <div class="rs-kpi-hint">Trabajo en curso</div>
+            <div class="rs-kpi-hint">Trabajo activo</div>
           </div>
         </div>
 
         <div class="rs-kpi-bottom">
           <div class="rs-kpi-value">{{ stats.inProgress }}</div>
-
-          <div class="rs-kpi-spark">
-            <svg viewBox="0 0 120 36" aria-hidden="true">
+          <div class="rs-kpi-spark" aria-hidden="true">
+            <svg viewBox="0 0 120 36">
               <path class="spark-line" d="M4 18 C 18 10, 26 28, 40 22 S 60 10, 76 14 S 98 28, 116 12"></path>
               <path class="spark-line glow" d="M4 18 C 18 10, 26 28, 40 22 S 60 10, 76 14 S 98 28, 116 12"></path>
             </svg>
           </div>
         </div>
-      </div>
-    </mat-card>
+      </mat-card>
 
-    <mat-card class="rs-kpi-card kpi-blue rs-fade-up" [style.animationDelay]="'190ms'">
-      <div class="rs-kpi-shell">
+      <mat-card class="rs-kpi-card kpi-completed rs-fade-up" [style.animationDelay]="'160ms'">
         <div class="rs-kpi-top">
-          <div class="rs-kpi-icon">
-            <mat-icon>task_alt</mat-icon>
-          </div>
-
+          <div class="rs-kpi-icon"><mat-icon>task_alt</mat-icon></div>
           <div class="rs-kpi-copy">
             <div class="rs-kpi-label">Completadas</div>
-            <div class="rs-kpi-hint">Cerradas con éxito</div>
+            <div class="rs-kpi-hint">Órdenes cerradas</div>
           </div>
         </div>
 
         <div class="rs-kpi-bottom">
           <div class="rs-kpi-value">{{ stats.completed }}</div>
-
-          <div class="rs-kpi-spark">
-            <svg viewBox="0 0 120 36" aria-hidden="true">
+          <div class="rs-kpi-spark" aria-hidden="true">
+            <svg viewBox="0 0 120 36">
               <path class="spark-line" d="M4 26 C 16 28, 26 10, 40 18 S 62 30, 76 12 S 98 8, 116 10"></path>
               <path class="spark-line glow" d="M4 26 C 16 28, 26 10, 40 18 S 62 30, 76 12 S 98 8, 116 10"></path>
             </svg>
           </div>
         </div>
-      </div>
-    </mat-card>
+      </mat-card>
 
-    <mat-card class="rs-kpi-card kpi-slate rs-fade-up" [style.animationDelay]="'240ms'">
-      <div class="rs-kpi-shell">
+      <mat-card class="rs-kpi-card kpi-today rs-fade-up" [style.animationDelay]="'200ms'">
         <div class="rs-kpi-top">
-          <div class="rs-kpi-icon">
-            <mat-icon>today</mat-icon>
-          </div>
-
+          <div class="rs-kpi-icon"><mat-icon>today</mat-icon></div>
           <div class="rs-kpi-copy">
             <div class="rs-kpi-label">Movimientos hoy</div>
             <div class="rs-kpi-hint">Actividad del día</div>
@@ -141,24 +147,18 @@
 
         <div class="rs-kpi-bottom">
           <div class="rs-kpi-value">{{ stats.today }}</div>
-
-          <div class="rs-kpi-spark">
-            <svg viewBox="0 0 120 36" aria-hidden="true">
+          <div class="rs-kpi-spark" aria-hidden="true">
+            <svg viewBox="0 0 120 36">
               <path class="spark-line" d="M4 18 C 22 24, 32 10, 46 14 S 64 30, 80 20 S 100 8, 116 12"></path>
               <path class="spark-line glow" d="M4 18 C 22 24, 32 10, 46 14 S 64 30, 80 20 S 100 8, 116 12"></path>
             </svg>
           </div>
         </div>
-      </div>
-    </mat-card>
+      </mat-card>
 
-    <mat-card class="rs-kpi-card kpi-red rs-fade-up" [style.animationDelay]="'290ms'">
-      <div class="rs-kpi-shell">
+      <mat-card class="rs-kpi-card kpi-overdue rs-fade-up" [style.animationDelay]="'240ms'">
         <div class="rs-kpi-top">
-          <div class="rs-kpi-icon">
-            <mat-icon>warning_amber</mat-icon>
-          </div>
-
+          <div class="rs-kpi-icon"><mat-icon>warning_amber</mat-icon></div>
           <div class="rs-kpi-copy">
             <div class="rs-kpi-label">Vencidas</div>
             <div class="rs-kpi-hint">Requieren atención</div>
@@ -167,69 +167,38 @@
 
         <div class="rs-kpi-bottom">
           <div class="rs-kpi-value">{{ stats.overdue }}</div>
-
-          <div class="rs-kpi-spark">
-            <svg viewBox="0 0 120 36" aria-hidden="true">
+          <div class="rs-kpi-spark" aria-hidden="true">
+            <svg viewBox="0 0 120 36">
               <path class="spark-line" d="M4 28 C 18 14, 34 12, 46 20 S 70 30, 82 14 S 100 10, 116 18"></path>
               <path class="spark-line glow" d="M4 28 C 18 14, 34 12, 46 20 S 70 30, 82 14 S 100 10, 116 18"></path>
             </svg>
           </div>
         </div>
-      </div>
-    </mat-card>
-  </section>
+      </mat-card>
+    </section>
 
-  <div class="rs-mobile-actions">
-    <mat-card class="rs-content-card rs-actions-card rs-fade-up">
-      <div class="rs-card-header">
-        <div>
-          <h3 class="card-section-title">Acciones rápidas</h3>
-          <p class="card-section-subtitle">Atajos para trabajar más rápido.</p>
-        </div>
-      </div>
-
-      <div class="actions-list">
-        <button mat-flat-button class="rs-btn-primary rs-btn-full" routerLink="/ordenes-trabajo/nueva">
-          <mat-icon>add</mat-icon>
-          Nueva orden de trabajo
-        </button>
-
-        <button mat-button class="rs-btn-outline rs-btn-full" routerLink="/ordenes-trabajo">
-          <mat-icon>assignment</mat-icon>
-          Ver órdenes de trabajo
-        </button>
-
-        <button mat-button class="rs-btn-outline rs-btn-full" routerLink="/clientes">
-          <mat-icon>people</mat-icon>
-          Ver clientes
-        </button>
-      </div>
-    </mat-card>
-  </div>
-
-  <div class="rs-dashboard-main-content">
-    <div class="rs-dashboard-row rs-dashboard-row-top">
-      <div class="rs-dashboard-main-card">
-        <mat-card class="rs-content-card rs-orders-card rs-fade-up" [style.animationDelay]="'320ms'">
-          <div class="rs-card-header">
+    <section class="rs-workspace">
+      <div class="rs-main-stack">
+        <mat-card class="rs-panel rs-orders-panel rs-fade-up" [style.animationDelay]="'280ms'">
+          <div class="rs-panel-head">
             <div>
-              <h3 class="card-section-title">Órdenes recientes</h3>
-              <p class="card-section-subtitle">Últimas 5 órdenes actualizadas.</p>
+              <h3 class="rs-panel-title">Últimas órdenes</h3>
+              <p class="rs-panel-subtitle">Actividad reciente del taller.</p>
             </div>
 
-            <button mat-button class="rs-btn-ghost" routerLink="/ordenes-trabajo">
+            <button mat-button class="rs-link-btn" routerLink="/ordenes-trabajo">
               Ver todas
               <mat-icon>chevron_right</mat-icon>
             </button>
           </div>
 
-          <mat-card-content class="rs-card-body">
-            <div class="rs-desktop-table">
-              <div class="rs-table-responsive">
-                <table mat-table [dataSource]="recentOrders" class="rs-dashboard-table rs-table">
+          <div class="rs-panel-body">
+            <ng-container *ngIf="recentOrders.length > 0; else emptyOrdersState">
+              <div class="rs-table-shell rs-desktop-only">
+                <table mat-table [dataSource]="recentOrders" class="rs-table rs-table-main">
                   <ng-container matColumnDef="codigo">
                     <th mat-header-cell *matHeaderCellDef>OT</th>
-                    <td mat-cell *matCellDef="let row" class="bold-text">
+                    <td mat-cell *matCellDef="let row" class="rs-code-cell">
                       {{ row.codigo }}
                     </td>
                   </ng-container>
@@ -237,14 +206,19 @@
                   <ng-container matColumnDef="cliente">
                     <th mat-header-cell *matHeaderCellDef>Cliente</th>
                     <td mat-cell *matCellDef="let row">
-                      {{ row.clienteNombre }}
+                      <div class="rs-client-cell">
+                        <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.clienteNombre)">
+                          {{ getClientInitials(row.clienteNombre) }}
+                        </span>
+                        <span class="rs-client-name">{{ row.clienteNombre || 'Sin cliente' }}</span>
+                      </div>
                     </td>
                   </ng-container>
 
                   <ng-container matColumnDef="estado">
                     <th mat-header-cell *matHeaderCellDef>Estado</th>
                     <td mat-cell *matCellDef="let row">
-                      <span class="status-badge-table" [attr.data-status]="row.estado">
+                      <span class="rs-badge rs-status-badge" [attr.data-status]="row.estado">
                         {{ statusLabel(row.estado) }}
                       </span>
                     </td>
@@ -253,7 +227,7 @@
                   <ng-container matColumnDef="prioridad">
                     <th mat-header-cell *matHeaderCellDef>Prioridad</th>
                     <td mat-cell *matCellDef="let row">
-                      <span class="priority-badge" [attr.data-priority]="getPriorityTone(row)">
+                      <span class="rs-badge rs-priority-badge" [attr.data-priority]="getPriorityTone(row)">
                         {{ getPriorityLabel(row) }}
                       </span>
                     </td>
@@ -281,12 +255,13 @@
                   </ng-container>
 
                   <ng-container matColumnDef="accion">
-                    <th mat-header-cell *matHeaderCellDef></th>
-                    <td mat-cell *matCellDef="let row" class="rs-cell-action">
+                    <th mat-header-cell *matHeaderCellDef class="rs-action-head">Acción</th>
+                    <td mat-cell *matCellDef="let row" class="rs-action-cell">
                       <button
                         mat-icon-button
+                        type="button"
+                        class="rs-icon-action"
                         [routerLink]="['/ordenes-trabajo', row.id]"
-                        class="rs-btn-action"
                         aria-label="Ver orden"
                       >
                         <mat-icon>visibility</mat-icon>
@@ -295,192 +270,149 @@
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr
-                    mat-row
-                    *matRowDef="let row; columns: displayedColumns;"
-                    class="rs-table-row"
-                  ></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="rs-row"></tr>
                 </table>
               </div>
-            </div>
 
-            <div class="rs-mobile-cards" *ngIf="recentOrders.length > 0; else emptyState">
-              <div
-                class="rs-order-card"
-                *ngFor="let row of recentOrders; trackBy: trackByOrderId"
-                [routerLink]="['/ordenes-trabajo', row.id]"
-              >
-                <div class="oc-top">
-                  <div class="oc-main">
-                    <div class="oc-ot">{{ row.codigo }}</div>
-                    <div class="oc-client">{{ row.clienteNombre }}</div>
+              <div class="rs-mobile-cards">
+                <a
+                  class="rs-order-card"
+                  *ngFor="let row of recentOrders; trackBy: trackByOrderId"
+                  [routerLink]="['/ordenes-trabajo', row.id]"
+                >
+                  <div class="rs-order-card-head">
+                    <div>
+                      <div class="rs-code-cell">{{ row.codigo }}</div>
+                      <div class="rs-client-cell rs-client-cell--compact">
+                        <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.clienteNombre)">
+                          {{ getClientInitials(row.clienteNombre) }}
+                        </span>
+                        <span class="rs-client-name">{{ row.clienteNombre || 'Sin cliente' }}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      mat-icon-button
+                      type="button"
+                      class="rs-icon-action"
+                      aria-label="Ver orden"
+                      (click)="$event.preventDefault()"
+                    >
+                      <mat-icon>visibility</mat-icon>
+                    </button>
                   </div>
 
-                  <div class="oc-badges">
-                    <span class="status-badge-table" [attr.data-status]="row.estado">
+                  <div class="rs-order-card-badges">
+                    <span class="rs-badge rs-status-badge" [attr.data-status]="row.estado">
                       {{ statusLabel(row.estado) }}
                     </span>
-
-                    <span class="priority-badge" [attr.data-priority]="getPriorityTone(row)">
+                    <span class="rs-badge rs-priority-badge" [attr.data-priority]="getPriorityTone(row)">
                       {{ getPriorityLabel(row) }}
                     </span>
                   </div>
-                </div>
 
-                <div class="oc-meta">
-                  <div class="oc-meta-item">
-                    <mat-icon>home_repair_service</mat-icon>
+                  <div class="rs-order-card-meta">
                     <span>{{ textLabel(row.tipo) }}</span>
+                    <span>{{ row.tecnicoNombre || 'Sin técnico' }}</span>
+                    <span>{{ toDateSafe(row.updatedAt) }}</span>
                   </div>
-
-                  <div class="oc-meta-item">
-                    <mat-icon>engineering</mat-icon>
-                    <span>{{ row.tecnicoNombre || 'Sin técnico asignado' }}</span>
-                  </div>
-
-                  <div class="oc-meta-item">
-                    <mat-icon>update</mat-icon>
-                    <span>Actualizado {{ toDateSafe(row.updatedAt) }}</span>
-                  </div>
-                </div>
-
-                <div class="oc-cta">
-                  <span>Ver detalles</span>
-                  <mat-icon>chevron_right</mat-icon>
-                </div>
+                </a>
               </div>
-            </div>
+            </ng-container>
 
-            <ng-template #emptyState>
-              <div class="rs-empty">
+            <ng-template #emptyOrdersState>
+              <div class="rs-empty-state">
                 <mat-icon>inbox</mat-icon>
                 <div>
                   <div class="rs-empty-title">Sin órdenes recientes</div>
-                  <div class="rs-empty-subtitle">Aún no hay órdenes para mostrar.</div>
+                  <div class="rs-empty-subtitle">Aún no hay actividad para mostrar.</div>
                 </div>
               </div>
             </ng-template>
-          </mat-card-content>
-        </mat-card>
-      </div>
-
-      <aside class="rs-dashboard-side-card">
-        <mat-card class="rs-content-card rs-actions-card rs-fade-up" [style.animationDelay]="'350ms'">
-          <div class="rs-card-header">
-            <div>
-              <h3 class="card-section-title">Acciones rápidas</h3>
-              <p class="card-section-subtitle">Atajos para trabajar más rápido.</p>
-            </div>
-          </div>
-
-          <div class="actions-list">
-            <button mat-flat-button class="rs-btn-primary rs-btn-full" routerLink="/ordenes-trabajo/nueva">
-              <mat-icon>add</mat-icon>
-              Nueva orden de trabajo
-            </button>
-
-            <button
-                mat-button
-                type="button"
-                class="rs-btn-whatsapp-outline rs-btn-full"
-                (click)="invitarPorWhatsapp()"
-              >
-                <span class="wa-icon-container" aria-hidden="true">
-                  <svg
-                    class="wa-svg"
-                    viewBox="0 0 32 32"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M19.11 17.27c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.6.14-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.15-.42-2.19-1.35-.81-.72-1.35-1.61-1.51-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.14-.6-1.45-.82-1.98-.22-.53-.45-.46-.6-.47h-.51c-.18 0-.47.07-.72.34-.25.27-.94.92-.94 2.25 0 1.32.96 2.6 1.1 2.78.13.18 1.89 2.89 4.58 4.05.64.28 1.14.45 1.53.57.64.2 1.22.17 1.68.1.51-.08 1.58-.65 1.81-1.28.22-.63.22-1.17.15-1.28-.07-.11-.25-.18-.52-.31Z"
-                    />
-                    <path
-                      d="M16 3C8.83 3 3 8.73 3 15.79c0 2.26.6 4.47 1.74 6.42L3 29l6.99-1.82a13.1 13.1 0 0 0 6.01 1.45H16c7.17 0 13-5.73 13-12.79C29 8.73 23.17 3 16 3Zm0 23.5h-.01a10.9 10.9 0 0 1-5.55-1.51l-.4-.24-4.15 1.08 1.11-4.03-.26-.42a10.63 10.63 0 0 1-1.63-5.59C5.11 9.84 9.99 5.04 16 5.04c2.91 0 5.64 1.12 7.69 3.14a10.62 10.62 0 0 1 3.2 7.61c0 5.95-4.89 10.71-10.89 10.71Z"
-                    />
-                  </svg>
-                </span>
-                Invitar por WhatsApp
-              </button>
-
-            <button mat-button class="rs-btn-outline rs-btn-full" routerLink="/ordenes-trabajo">
-              <mat-icon>assignment</mat-icon>
-              Ver órdenes de trabajo
-            </button>
-
-            <button mat-button class="rs-btn-outline rs-btn-full" routerLink="/clientes">
-              <mat-icon>people</mat-icon>
-              Ver clientes
-            </button>
           </div>
         </mat-card>
-      </aside>
-    </div>
 
-    <div class="rs-dashboard-row rs-dashboard-row-bottom">
-      <div class="rs-dashboard-main-card">
-        <div class="rs-dashboard-bottom-grid">
-          <mat-card class="rs-content-card rs-fade-up" [style.animationDelay]="'380ms'">
-            <div class="rs-card-header">
+        <div class="rs-bottom-grid">
+          <mat-card class="rs-panel rs-fade-up" [style.animationDelay]="'320ms'">
+            <div class="rs-panel-head">
               <div>
-                <h3 class="card-section-title">Últimos Equipos</h3>
-                <p class="card-section-subtitle">Dispositivos registrados de clientes.</p>
+                <h3 class="rs-panel-title">Últimos equipos</h3>
+                <p class="rs-panel-subtitle">Dispositivos registrados.</p>
               </div>
-              <button mat-button class="rs-btn-ghost" routerLink="/equipos">
+
+              <button mat-button class="rs-link-btn" routerLink="/equipos">
                 Ver todos
               </button>
             </div>
 
-            <mat-card-content class="rs-card-body">
-              <div class="rs-table-responsive">
+            <div class="rs-panel-body">
+              <div class="rs-table-shell">
                 <table mat-table [dataSource]="recentEquipos" class="rs-table">
                   <ng-container matColumnDef="codigo">
                     <th mat-header-cell *matHeaderCellDef>Cód.</th>
-                    <td mat-cell *matCellDef="let row" class="bold-text">{{ row.codigoEquipo }}</td>
+                    <td mat-cell *matCellDef="let row" class="rs-code-cell">
+                      {{ row.codigoEquipo }}
+                    </td>
                   </ng-container>
 
                   <ng-container matColumnDef="modelo">
                     <th mat-header-cell *matHeaderCellDef>Modelo</th>
-                    <td mat-cell *matCellDef="let row">{{ row.marca }} {{ row.modelo }}</td>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.marca }} {{ row.modelo }}
+                    </td>
                   </ng-container>
 
                   <ng-container matColumnDef="cliente">
                     <th mat-header-cell *matHeaderCellDef>Dueño</th>
-                    <td mat-cell *matCellDef="let row">{{ row.clienteNombre }}</td>
+                    <td mat-cell *matCellDef="let row">
+                      <div class="rs-client-cell">
+                        <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.clienteNombre)">
+                          {{ getClientInitials(row.clienteNombre) }}
+                        </span>
+                        <span class="rs-client-name">{{ row.clienteNombre || 'Sin cliente' }}</span>
+                      </div>
+                    </td>
                   </ng-container>
 
                   <ng-container matColumnDef="accion">
-                    <th mat-header-cell *matHeaderCellDef></th>
-                    <td mat-cell *matCellDef="let row" class="rs-cell-action">
-                      <button mat-icon-button [routerLink]="['/equipos', row.id]" class="rs-btn-action">
+                    <th mat-header-cell *matHeaderCellDef class="rs-action-head">Acción</th>
+                    <td mat-cell *matCellDef="let row" class="rs-action-cell">
+                      <button
+                        mat-icon-button
+                        type="button"
+                        class="rs-icon-action"
+                        [routerLink]="['/equipos', row.id]"
+                        aria-label="Ver equipo"
+                      >
                         <mat-icon>visibility</mat-icon>
                       </button>
                     </td>
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="equipoColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: equipoColumns;" class="rs-table-row"></tr>
+                  <tr mat-row *matRowDef="let row; columns: equipoColumns;" class="rs-row"></tr>
                 </table>
 
                 <div *ngIf="recentEquipos.length === 0" class="rs-empty-mini">
                   No hay equipos registrados.
                 </div>
               </div>
-            </mat-card-content>
+            </div>
           </mat-card>
 
-          <mat-card class="rs-content-card rs-inventory-card rs-fade-up" [style.animationDelay]="'440ms'">
-            <div class="rs-card-header">
+          <mat-card class="rs-panel rs-fade-up" [style.animationDelay]="'360ms'">
+            <div class="rs-panel-head">
               <div>
-                <h3 class="card-section-title">Stock de Piezas</h3>
-                <p class="card-section-subtitle">Repuestos y materiales en almacén.</p>
+                <h3 class="rs-panel-title">Stock de piezas</h3>
+                <p class="rs-panel-subtitle">Repuestos y materiales.</p>
               </div>
-              <button mat-button class="rs-btn-ghost" routerLink="/inventario">
+
+              <button mat-button class="rs-link-btn" routerLink="/inventario">
                 Ver todo
               </button>
             </div>
 
-            <mat-card-content class="rs-card-body rs-inventory-body">
+            <div class="rs-panel-body">
               <div class="rs-stock-list" *ngIf="recentPiezas.length > 0; else emptyInventory">
                 <a
                   class="rs-stock-item"
@@ -495,10 +427,7 @@
                       </div>
                     </div>
 
-                    <div
-                      class="rs-stock-value"
-                      [class.text-danger]="+row.stockActual <= +row.stockMinimo"
-                    >
+                    <div class="rs-stock-percent">
                       {{ getStockPercent(row) }}%
                     </div>
                   </div>
@@ -514,25 +443,131 @@
               </div>
 
               <ng-template #emptyInventory>
-                <div class="rs-empty-mini">Inventario vacío.</div>
+                <div class="rs-empty-state rs-empty-state--compact">
+                  <mat-icon>inventory</mat-icon>
+                  <div>
+                    <div class="rs-empty-title">Inventario vacío</div>
+                    <div class="rs-empty-subtitle">Agrega piezas para visualizar stock crítico.</div>
+                  </div>
+                </div>
               </ng-template>
-            </mat-card-content>
+            </div>
           </mat-card>
         </div>
       </div>
 
-      <aside class="rs-dashboard-side-card">
-        <mat-card class="rs-content-card rs-calendar-card rs-fade-up" [style.animationDelay]="'420ms'">
-          <div class="rs-card-header rs-calendar-head">
+      <aside class="rs-side-stack">
+        <mat-card class="rs-panel rs-fade-up" [style.animationDelay]="'300ms'">
+          <div class="rs-panel-head">
             <div>
-              <h3 class="card-section-title">Calendario</h3>
-              <p class="card-section-subtitle">Vista rápida del mes actual.</p>
+              <h3 class="rs-panel-title">Acciones rápidas</h3>
+              <p class="rs-panel-subtitle">Atajos operativos.</p>
             </div>
-
-            <div class="rs-calendar-month">{{ calendarMonthLabel }}</div>
           </div>
 
-          <mat-card-content class="rs-card-body">
+          <div class="rs-quick-actions">
+            <button
+              mat-flat-button
+              type="button"
+              class="rs-btn rs-btn--primary"
+              routerLink="/ordenes-trabajo/nueva"
+            >
+              <span class="rs-btn__shimmer"></span>
+              <span class="rs-btn__label">
+                <span class="rs-btn__icon-slot">
+                  <mat-icon>add</mat-icon>
+                </span>
+                <span class="rs-btn__text">Nueva orden de trabajo</span>
+              </span>
+            </button>
+
+            <button
+              mat-button
+              type="button"
+              class="rs-btn-outline"
+              (click)="invitarPorWhatsapp()"
+            >
+              <span class="rs-outline-icon rs-outline-icon-slot" aria-hidden="true">
+                <svg
+                  class="wa-svg"
+                  viewBox="0 0 32 32"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19.11 17.27c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.6.14-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.15-.42-2.19-1.35-.81-.72-1.35-1.61-1.51-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.14-.6-1.45-.82-1.98-.22-.53-.45-.46-.6-.47h-.51c-.18 0-.47.07-.72.34-.25.27-.94.92-.94 2.25 0 1.32.96 2.6 1.1 2.78.13.18 1.89 2.89 4.58 4.05.64.28 1.14.45 1.53.57.64.2 1.22.17 1.68.1.51-.08 1.58-.65 1.81-1.28.22-.63.22-1.17.15-1.28-.07-.11-.25-.18-.52-.31Z"
+                  />
+                  <path
+                    d="M16 3C8.83 3 3 8.73 3 15.79c0 2.26.6 4.47 1.74 6.42L3 29l6.99-1.82a13.1 13.1 0 0 0 6.01 1.45H16c7.17 0 13-5.73 13-12.79C29 8.73 23.17 3 16 3Zm0 23.5h-.01a10.9 10.9 0 0 1-5.55-1.51l-.4-.24-4.15 1.08 1.11-4.03-.26-.42a10.63 10.63 0 0 1-1.63-5.59C5.11 9.84 9.99 5.04 16 5.04c2.91 0 5.64 1.12 7.69 3.14a10.62 10.62 0 0 1 3.2 7.61c0 5.95-4.89 10.71-10.89 10.71Z"
+                  />
+                </svg>
+              </span>
+              <span class="rs-outline-text">Invitar por WhatsApp</span>
+            </button>
+
+            <button mat-button class="rs-btn-outline" routerLink="/ordenes-trabajo">
+              <span class="rs-outline-icon rs-outline-icon-slot">
+                <mat-icon>assignment</mat-icon>
+              </span>
+              <span class="rs-outline-text">Ver órdenes de trabajo</span>
+            </button>
+
+            <button mat-button class="rs-btn-outline" routerLink="/clientes">
+              <span class="rs-outline-icon rs-outline-icon-slot">
+                <mat-icon>people</mat-icon>
+              </span>
+              <span class="rs-outline-text">Ver clientes</span>
+            </button>
+          </div>
+        </mat-card>
+
+        <mat-card class="rs-panel rs-fade-up" [style.animationDelay]="'340ms'">
+          <div class="rs-panel-head">
+            <div>
+              <h3 class="rs-panel-title">Pipeline del taller</h3>
+              <p class="rs-panel-subtitle">Distribución operativa actual.</p>
+            </div>
+
+            <div class="rs-chip">Mensual</div>
+          </div>
+
+          <div class="rs-panel-body rs-chart-body">
+            <div class="rs-donut-wrap">
+              <div class="rs-donut" [style.background]="orderChartGradient" aria-hidden="true">
+                <div class="rs-donut-core">
+                  <div class="rs-donut-total">{{ orderChartTotal }}</div>
+                  <div class="rs-donut-caption">Órdenes</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rs-chart-list">
+              <div class="rs-chart-item" *ngFor="let segment of orderChartSegments">
+                <div class="rs-chart-left">
+                  <span class="rs-chart-dot" [style.background]="segment.color"></span>
+                  <span class="rs-chart-label">{{ segment.label }}</span>
+                </div>
+
+                <div class="rs-chart-right">
+                  <strong>{{ segment.value }}</strong>
+                  <span>{{ segment.percent }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+
+        <mat-card class="rs-panel rs-fade-up" [style.animationDelay]="'380ms'">
+          <div class="rs-panel-head">
+            <div>
+              <h3 class="rs-panel-title">Calendario</h3>
+              <p class="rs-panel-subtitle">Vista rápida del mes.</p>
+            </div>
+
+            <div class="rs-chip">{{ calendarMonthLabel }}</div>
+          </div>
+
+          <div class="rs-panel-body">
             <div class="rs-calendar">
               <div class="rs-calendar-weekdays">
                 <span *ngFor="let day of weekDays">{{ day }}</span>
@@ -545,14 +580,19 @@
                   *ngFor="let day of calendarDays"
                   [class.is-empty]="!day.currentMonth"
                   [class.is-today]="day.isToday"
+                  [class.has-event]="day.hasEvent && day.currentMonth"
                 >
-                  {{ day.label }}
+                  <span class="rs-calendar-day-number">{{ day.label }}</span>
+                  <span
+                    class="rs-calendar-dot"
+                    *ngIf="day.hasEvent && day.currentMonth && !day.isToday"
+                  ></span>
                 </button>
               </div>
             </div>
-          </mat-card-content>
+          </div>
         </mat-card>
       </aside>
-    </div>
+    </section>
   </div>
 </div>

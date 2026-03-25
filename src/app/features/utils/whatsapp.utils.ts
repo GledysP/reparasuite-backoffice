@@ -1,29 +1,53 @@
-export function invitarARegistroSoporte(nombreCliente: string | null | undefined, url: string): string {
-    const nombre = (nombreCliente ?? '').trim();
-  
-    const saludo = nombre
-      ? `¡Hola *${nombre}*! 👋`
-      : '¡Hola! 👋';
-  
-    const mensaje =
-      `${saludo}\n\n` +
-      `Es un gusto saludarte de parte de *ReparaSuite*.\n\n` +
-      `Para realizar tu solicitud de soporte, gestionar la garantía de tu equipo, ver fotos del proceso y autorizar presupuestos, por favor completa tu registro en nuestro portal oficial aquí:\n${url}`;
-  
-    return `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-  }
-  
-  export function invitarCliente(nombreCliente: string | null | undefined, url: string): string {
-    const nombre = (nombreCliente ?? '').trim();
-  
-    const saludo = nombre
-      ? `¡Hola *${nombre}*! 👋`
-      : '¡Hola! 👋';
-  
-    const mensaje =
-      `${saludo}\n\n` +
-      `Te invito a registrarte en *ReparaSuite* para gestionar tus equipos y ver tus órdenes en tiempo real.\n\n` +
-      `Regístrate aquí:\n${url}`;
-  
-    return `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-  }
+export function invitarARegistroSoporte(
+  nombreCliente: string | null | undefined,
+  url: string
+): string {
+  const nombre = (nombreCliente ?? '').trim();
+
+  const saludo = nombre
+    ? `¡Hola *${nombre}*! 👋`
+    : '¡Hola! 👋';
+
+  const mensaje =
+    `${saludo}\n\n` +
+    `Es un gusto saludarte de parte de *ReparaSuite*.\n\n` +
+    `Para realizar tu solicitud de soporte, gestionar la garantía de tu equipo, ver fotos del proceso y autorizar presupuestos, por favor completa tu registro en nuestro portal oficial aquí:\n${url}`;
+
+  return `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+}
+
+export function invitarCliente(
+  nombreCliente: string | null | undefined,
+  url: string
+): string {
+  const nombre = (nombreCliente ?? '').trim();
+
+  const saludo = nombre
+    ? `¡Hola *${nombre}*! 👋`
+    : '¡Hola! 👋';
+
+  const mensaje =
+    `${saludo}\n\n` +
+    `Te invito a registrarte en *ReparaSuite* para gestionar tus equipos y ver tus órdenes en tiempo real.\n\n` +
+    `Regístrate aquí:\n${url}`;
+
+  return `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+}
+
+export function seguimientoOtWhatsapp(
+  nombreCliente: string | null | undefined,
+  url: string
+): string {
+  const nombre = (nombreCliente ?? '').trim();
+
+  const saludo = nombre
+    ? `¡Hola *${nombre}*! 👋`
+    : '¡Hola! 👋';
+
+  const mensaje =
+    `${saludo}\n\n` +
+    `Desde *ReparaSuite* te compartimos el acceso para que puedas revisar el estado actual de tu orden, ver avances, fotos del proceso y seguimiento del servicio.\n\n` +
+    `Consulta aquí:\n${url}`;
+
+  return `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+}

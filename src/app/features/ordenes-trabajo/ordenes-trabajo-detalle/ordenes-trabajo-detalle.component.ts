@@ -39,6 +39,7 @@ import { UsuariosService } from '../../usuarios/usuarios.service';
 
 import { EstadoOt } from '../../../core/models/enums';
 import { OtDetalle, UsuarioResumen } from '../../../core/models/tipos';
+import { WhatsappService } from '../../../core/services/whatsapp.service';
 
 type UiAction =
   | 'estado'
@@ -96,6 +97,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
   private fb = inject(FormBuilder);
   private bp = inject(BreakpointObserver);
+  private whatsappService = inject(WhatsappService);
 
   @ViewChild('imageModal') imageModal!: TemplateRef<unknown>;
   @ViewChild('comprobanteModal') comprobanteModal!: TemplateRef<unknown>;
@@ -807,5 +809,27 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
   trackById(index: number, item: any): any {
     return item?.id ?? index;
+  }
+
+  enviarSeguimientoWhatsapp(): void {
+    const data = this.ot();
+    if (!data?.id) return;
+
+    this.whatsappService.generarSeguimientoOt(data.id).subscribe({
+      next: (res) => {
+        if (!res?.url) {
+          this.toast('No se pudo generar el enlace de WhatsApp', 'error');
+          return;
+        }
+        window.open(res.url, '_blank', 'noopener,noreferrer');
+      },
+      error: (err) => {
+        console.error('Error generando enlace WhatsApp OT:', err);
+        const msg =
+          err?.error?.message ||
+          'Error generando enlace de WhatsApp';
+        this.toast(msg, 'error');
+      },
+    });
   }
 }

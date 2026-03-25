@@ -13,14 +13,18 @@
     [disableClose]="!isMobile"
   >
     <div class="rs-sidebar-inner">
+      <div class="rs-side-tech" aria-hidden="true"></div>
+
       <div class="rs-side-header">
         <div class="rs-side-logo">
+          <span class="rs-side-logo-aura"></span>
           <img src="assets/logo.png" alt="ReparaSuite" />
         </div>
 
         <div class="rs-side-brand">
           <div class="rs-side-title">ReparaSuite</div>
           <div class="rs-side-subtitle">BACKOFFICE</div>
+          <div class="rs-side-kicker">Taller electrónico</div>
         </div>
       </div>
 
@@ -43,6 +47,7 @@
           (click)="closeMobileSidenav()"
         >
           <span class="rs-nav-item-glow"></span>
+          <span class="rs-nav-active-rail"></span>
 
           <mat-icon matListItemIcon class="rs-nav-icon" fontSet="material-symbols-outlined">
             {{ item.icon }}
@@ -71,7 +76,13 @@
         <mat-form-field appearance="outline" class="rs-search rs-search-mobile" subscriptSizing="dynamic">
           <mat-icon matPrefix fontSet="material-symbols-outlined">search</mat-icon>
           <input matInput placeholder="Buscar..." />
-          <button mat-icon-button matSuffix type="button" aria-label="Cerrar búsqueda" (click)="closeMobileSearch()">
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Cerrar búsqueda"
+            (click)="closeMobileSearch()"
+          >
             <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
           </button>
         </mat-form-field>
@@ -125,11 +136,14 @@
       <button
         mat-icon-button
         class="rs-icon-btn rs-notif-btn"
+        [class.has-unread]="((unreadCount$ | async) ?? 0) > 0"
         type="button"
         aria-label="Notificaciones"
         [matMenuTriggerFor]="menuNotificaciones"
         (menuOpened)="refreshNotifications()"
       >
+        <span class="rs-notif-ring" *ngIf="((unreadCount$ | async) ?? 0) > 0"></span>
+
         <mat-icon
           class="rs-notif-icon"
           fontSet="material-symbols-outlined"
@@ -144,7 +158,11 @@
 
       <mat-menu #menuNotificaciones="matMenu" class="rs-notif-menu" xPosition="before" yPosition="below">
         <div class="rs-notif-head" (click)="$event.stopPropagation()">
-          <div class="rs-notif-title">Notificaciones</div>
+          <div class="rs-notif-head-copy">
+            <div class="rs-notif-title">Notificaciones</div>
+            <div class="rs-notif-subtitle">Actividad reciente del sistema</div>
+          </div>
+
           <button mat-button class="rs-notif-action" type="button" (click)="markAllRead()">
             Marcar todo como leído
           </button>
@@ -158,16 +176,22 @@
               <button
                 mat-menu-item
                 class="rs-notif-item"
+                [class.is-unread]="n.unread"
                 *ngFor="let n of list"
                 (click)="openNotification(n)"
               >
-                <mat-icon class="rs-notif-item-ic" fontSet="material-symbols-outlined">{{ n.icon }}</mat-icon>
+                <span class="rs-notif-item-badge"></span>
+
+                <mat-icon class="rs-notif-item-ic" fontSet="material-symbols-outlined">
+                  {{ n.icon }}
+                </mat-icon>
 
                 <div class="rs-notif-text">
                   <div class="rs-notif-row">
                     <div class="rs-notif-item-title">{{ n.title }}</div>
                     <span class="rs-notif-dot" *ngIf="n.unread"></span>
                   </div>
+
                   <div class="rs-notif-item-sub">{{ n.subtitle }}</div>
                   <div class="rs-notif-item-time">{{ n.timeLabel }}</div>
                 </div>
@@ -175,7 +199,13 @@
             </ng-container>
 
             <ng-template #noNotif>
-              <div class="rs-notif-empty">No tienes notificaciones.</div>
+              <div class="rs-notif-empty">
+                <mat-icon fontSet="material-symbols-outlined">notifications_none</mat-icon>
+                <div>
+                  <div class="rs-notif-empty-title">Sin notificaciones</div>
+                  <div class="rs-notif-empty-sub">Cuando ocurra algo importante aparecerá aquí.</div>
+                </div>
+              </div>
             </ng-template>
           </ng-container>
         </div>

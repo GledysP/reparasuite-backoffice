@@ -126,6 +126,16 @@
                 <span class="rowi"><mat-icon>call</mat-icon>{{ data.cliente.telefono || '—' }}</span>
                 <span class="rowi"><mat-icon>mail_outline</mat-icon>{{ data.cliente.email || '—' }}</span>
               </div>
+              <div class="client-actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="client-wa-btn"
+                  (click)="enviarSeguimientoWhatsapp()">
+                  <mat-icon svgIcon="whatsapp"></mat-icon>
+                  WhatsApp
+                </button>
+              </div>
             </div>
           </div>
         </div>
