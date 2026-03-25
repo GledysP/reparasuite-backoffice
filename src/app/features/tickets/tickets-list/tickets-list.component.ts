@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,7 +29,8 @@ import { TicketBackofficeListaItem } from '../../../core/models/tipos';
   styleUrl: './tickets-list.component.scss'
 })
 export class TicketsListComponent implements OnInit {
-  private ticketsService = inject(TicketsService);
+  private readonly ticketsService = inject(TicketsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   loading = false;
 
@@ -43,14 +45,24 @@ export class TicketsListComponent implements OnInit {
 
   cargar(): void {
     this.loading = true;
-    this.ticketsService.listar(this.page, this.size).subscribe({
-      next: (res) => {
-        this.items = res.items ?? [];
-        this.total = res.total ?? 0;
-      },
-      error: (e) => console.error('Error tickets:', e),
-      complete: () => (this.loading = false)
-    });
+
+    this.ticketsService
+      .listar(this.page, this.size)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.items = res.items ?? [];
+          this.total = res.total ?? 0;
+        },
+        error: (e) => {
+          console.error('Error tickets:', e);
+          this.items = [];
+          this.total = 0;
+        },
+        complete: () => {
+          this.loading = false;
+        }
+      });
   }
 
   paginar(e: PageEvent): void {
@@ -65,9 +77,11 @@ export class TicketsListComponent implements OnInit {
 
   estadoClass(estado?: string | null): string {
     const e = (estado || '').toUpperCase();
+
     if (e.includes('ABIERTO')) return 'is-open';
     if (e.includes('REVISION')) return 'is-review';
     if (e.includes('CERRADO')) return 'is-closed';
+
     return 'is-default';
   }
 

@@ -201,6 +201,29 @@ export class OrdenesTrabajoListComponent implements OnInit {
     }
   }
 
+  getClientInitials(name: string | null | undefined): string {
+    if (!name?.trim()) return 'CL';
+
+    const parts = name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2);
+
+    const initials = parts.map((part) => part.charAt(0).toUpperCase()).join('');
+    return initials || 'CL';
+  }
+
+  getAvatarTone(name: string | null | undefined): 'neon' | 'ice' | 'slate' | 'navy' {
+    const value = (name ?? '').trim();
+    if (!value) return 'slate';
+
+    const hash = Array.from(value).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const tones: Array<'neon' | 'ice' | 'slate' | 'navy'> = ['neon', 'ice', 'slate', 'navy'];
+
+    return tones[hash % tones.length];
+  }
+
   eliminando(row: OtListaItem): boolean {
     return this.deletingId === row.id;
   }

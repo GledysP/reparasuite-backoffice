@@ -1,4 +1,4 @@
-<div class="rs-main-container rs-clientes-page">
+<div class="rs-page-container rs-clientes-page">
   <div class="rs-page-shell">
     <div class="rs-header-row rs-fade-up">
       <div class="rs-header-copy">
@@ -12,18 +12,41 @@
         <button
           type="button"
           mat-stroked-button
-          class="rs-wa-invite-btn">
-          <mat-icon svgIcon="whatsapp"></mat-icon>
-          <span>Invitar por WhatsApp</span>
+          class="rs-wa-header-btn"
+          (click)="invitarPorWhatsapp()"
+        >
+          <span class="rs-wa-header-btn__inner">
+            <span class="rs-wa-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 32 32"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19.11 17.27c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.6.14-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.15-.42-2.19-1.35-.81-.72-1.35-1.61-1.51-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.14-.6-1.45-.82-1.98-.22-.53-.45-.46-.6-.47h-.51c-.18 0-.47.07-.72.34-.25.27-.94.92-.94 2.25 0 1.32.96 2.6 1.1 2.78.13.18 1.89 2.89 4.58 4.05.64.28 1.14.45 1.53.57.64.2 1.22.17 1.68.1.51-.08 1.58-.65 1.81-1.28.22-.63.22-1.17.15-1.28-.07-.11-.25-.18-.52-.31Z"
+                />
+                <path
+                  d="M16 3C8.83 3 3 8.73 3 15.79c0 2.26.6 4.47 1.74 6.42L3 29l6.99-1.82a13.1 13.1 0 0 0 6.01 1.45H16c7.17 0 13-5.73 13-12.79C29 8.73 23.17 3 16 3Zm0 23.5h-.01a10.9 10.9 0 0 1-5.55-1.51l-.4-.24-4.15 1.08 1.11-4.03-.26-.42a10.63 10.63 0 0 1-1.63-5.59C5.11 9.84 9.99 5.04 16 5.04c2.91 0 5.64 1.12 7.69 3.14a10.62 10.62 0 0 1 3.2 7.61c0 5.95-4.89 10.71-10.89 10.71Z"
+                />
+              </svg>
+            </span>
+            <span>Invitar por WhatsApp</span>
+          </span>
         </button>
 
         <button
           type="button"
           mat-flat-button
-          class="rs-primary-btn"
-          (click)="abrirModalCrear()">
-          <mat-icon>add</mat-icon>
-          Nuevo cliente
+          class="rs-btn rs-btn--primary rs-new-client-btn"
+          (click)="abrirModalCrear()"
+        >
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">
+            <span class="rs-btn__icon-slot">
+              <mat-icon>add</mat-icon>
+            </span>
+            <span class="rs-btn__text">Nuevo cliente</span>
+          </span>
         </button>
       </div>
     </div>
@@ -37,13 +60,23 @@
 
               <mat-form-field appearance="outline" class="rs-search-field">
                 <mat-icon matPrefix>search</mat-icon>
-                <input matInput formControlName="query" placeholder="Ej: Juan Pérez..." />
+                <input
+                  matInput
+                  formControlName="query"
+                  placeholder="Ej: Juan Pérez..."
+                  autocomplete="off"
+                />
               </mat-form-field>
             </div>
 
-            <button type="button" mat-stroked-button class="rs-clear-btn" (click)="limpiarBusqueda()">
+            <button
+              type="button"
+              mat-stroked-button
+              class="rs-clear-btn"
+              (click)="limpiarBusqueda()"
+            >
               <mat-icon>refresh</mat-icon>
-              Limpiar
+              <span>Limpiar</span>
             </button>
           </div>
         </form>
@@ -52,64 +85,88 @@
 
     <mat-card class="rs-table-card rs-fade-up" [style.animationDelay]="'120ms'">
       <mat-card-content class="no-padding">
-        <div class="rs-desktop-table">
+        <div class="rs-desktop-table" *ngIf="items.length; else emptyDesktop">
           <div class="rs-table-responsive">
             <table mat-table [dataSource]="items" class="rs-table">
               <ng-container matColumnDef="nombre">
                 <th mat-header-cell *matHeaderCellDef>Clientes</th>
-                <td mat-cell *matCellDef="let row" class="fw-bold">{{ row.nombre }}</td>
+                <td mat-cell *matCellDef="let row">
+                  <div class="rs-client-cell">
+                    <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.nombre)">
+                      {{ getClientInitials(row.nombre) }}
+                    </span>
+
+                    <div class="rs-client-copy">
+                      <div class="rs-client-name">{{ row.nombre }}</div>
+                    </div>
+                  </div>
+                </td>
               </ng-container>
 
               <ng-container matColumnDef="telefono">
-                <th mat-header-cell *matHeaderCellDef>Telefono</th>
-                <td mat-cell *matCellDef="let row">{{ row.telefono || '—' }}</td>
+                <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.telefono || '—' }}
+                </td>
               </ng-container>
 
               <ng-container matColumnDef="email">
-                <th mat-header-cell *matHeaderCellDef>Correo electronico</th>
-                <td mat-cell *matCellDef="let row" class="text-muted">{{ row.email || '—' }}</td>
+                <th mat-header-cell *matHeaderCellDef>Correo electrónico</th>
+                <td mat-cell *matCellDef="let row" class="rs-cell-muted">
+                  {{ row.email || '—' }}
+                </td>
               </ng-container>
 
               <ng-container matColumnDef="totalWos">
                 <th mat-header-cell *matHeaderCellDef class="cell-center">Total OT</th>
-                <td mat-cell *matCellDef="let row" class="cell-center">{{ row.totalWos ?? 0 }}</td>
+                <td mat-cell *matCellDef="let row" class="cell-center">
+                  <span class="rs-count-pill">{{ row.totalWos ?? 0 }}</span>
+                </td>
               </ng-container>
 
               <ng-container matColumnDef="lastWoDate">
-                <th mat-header-cell *matHeaderCellDef class="cell-center">Fecha ultima OT</th>
-                <td mat-cell *matCellDef="let row" class="cell-center">
-                  {{ (row.lastWoDate | date:'yyyy-MM-dd') || '—' }}
+                <th mat-header-cell *matHeaderCellDef class="cell-center">Fecha última OT</th>
+                <td mat-cell *matCellDef="let row" class="cell-center rs-cell-muted">
+                  {{ row.lastWoDate ? (row.lastWoDate | date:'dd/MM/yyyy') : '—' }}
                 </td>
               </ng-container>
 
               <ng-container matColumnDef="accion">
-                <th mat-header-cell *matHeaderCellDef class="cell-right">Acción</th>
-                <td mat-cell *matCellDef="let row" class="cell-right">
+                <th mat-header-cell *matHeaderCellDef class="cell-center rs-action-head">
+                  Acción
+                </th>
+                <td mat-cell *matCellDef="let row" class="cell-center rs-action-cell">
                   <div class="rs-actions-container">
                     <button
                       mat-icon-button
                       [routerLink]="['/clientes', row.id]"
-                      class="rs-btn-action"
+                      class="rs-btn-action rs-btn-action--view"
                       [disabled]="!!deletingId || saving"
-                      matTooltip="Ver detalle">
+                      type="button"
+                      aria-label="Ver detalle"
+                    >
                       <mat-icon>visibility</mat-icon>
                     </button>
 
                     <button
                       mat-icon-button
                       (click)="abrirModalEditar(row)"
-                      class="rs-btn-action edit-btn"
+                      class="rs-btn-action rs-btn-action--edit"
                       [disabled]="!!deletingId || saving"
-                      matTooltip="Editar cliente">
+                      type="button"
+                      aria-label="Editar cliente"
+                    >
                       <mat-icon>edit</mat-icon>
                     </button>
 
                     <button
                       mat-icon-button
                       (click)="eliminar(row)"
-                      class="rs-btn-action del-btn"
+                      class="rs-btn-action rs-btn-action--delete"
                       [disabled]="eliminando(row) || saving"
-                      matTooltip="Eliminar cliente">
+                      type="button"
+                      aria-label="Eliminar cliente"
+                    >
                       <mat-icon>
                         {{ eliminando(row) ? 'hourglass_top' : 'delete_outline' }}
                       </mat-icon>
@@ -119,7 +176,11 @@
               </ng-container>
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="rs-table-row"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: displayedColumns"
+                class="rs-table-row"
+              ></tr>
             </table>
           </div>
 
@@ -129,16 +190,31 @@
             [pageIndex]="page"
             [pageSize]="size"
             [pageSizeOptions]="[10, 20, 50]"
-            (page)="paginar($event)">
+            (page)="paginar($event)"
+          >
           </mat-paginator>
         </div>
 
-        <div class="rs-mobile-cards">
-          <mat-card class="rs-client-card" *ngFor="let row of items">
+        <ng-template #emptyDesktop>
+          <div class="rs-empty-state">
+            <mat-icon>group</mat-icon>
+            <h3>No hay clientes para mostrar</h3>
+            <p>Prueba ajustando la búsqueda o crea un nuevo cliente.</p>
+          </div>
+        </ng-template>
+
+        <div class="rs-mobile-cards" *ngIf="items.length; else emptyMobile">
+          <mat-card class="rs-client-card" *ngFor="let row of items; trackBy: trackById">
             <div class="rs-client-card-top">
-              <div class="rs-client-main">
-                <div class="rs-client-name">{{ row.nombre }}</div>
-                <div class="rs-client-email">{{ row.email || '—' }}</div>
+              <div class="rs-client-card-head">
+                <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.nombre)">
+                  {{ getClientInitials(row.nombre) }}
+                </span>
+
+                <div class="rs-client-card-copy">
+                  <div class="rs-client-name">{{ row.nombre }}</div>
+                  <div class="rs-client-email">{{ row.email || '—' }}</div>
+                </div>
               </div>
 
               <div class="rs-client-badge">
@@ -154,7 +230,7 @@
 
               <div class="rs-client-meta-item">
                 <mat-icon>history</mat-icon>
-                <span>{{ (row.lastWoDate | date:'yyyy-MM-dd') || 'Sin OT registrada' }}</span>
+                <span>{{ row.lastWoDate ? (row.lastWoDate | date:'dd/MM/yyyy') : 'Sin OT registrada' }}</span>
               </div>
             </div>
 
@@ -163,40 +239,63 @@
                 mat-button
                 class="rs-card-view-btn"
                 [routerLink]="['/clientes', row.id]"
-                [disabled]="!!deletingId || saving">
+                [disabled]="!!deletingId || saving"
+                type="button"
+              >
                 <mat-icon>visibility</mat-icon>
-                Ver detalle
+                <span>Ver detalle</span>
               </button>
 
-              <button
-                mat-icon-button
-                (click)="abrirModalEditar(row)"
-                class="rs-btn-action edit-btn"
-                [disabled]="!!deletingId || saving">
-                <mat-icon>edit</mat-icon>
-              </button>
+              <div class="rs-client-card-actions-right">
+                <button
+                  mat-icon-button
+                  (click)="abrirModalEditar(row)"
+                  class="rs-btn-action rs-btn-action--edit"
+                  [disabled]="!!deletingId || saving"
+                  type="button"
+                  aria-label="Editar cliente"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
 
-              <button
-                mat-icon-button
-                (click)="eliminar(row)"
-                class="rs-btn-action del-btn"
-                [disabled]="eliminando(row) || saving">
-                <mat-icon>
-                  {{ eliminando(row) ? 'hourglass_top' : 'delete_outline' }}
-                </mat-icon>
-              </button>
+                <button
+                  mat-icon-button
+                  (click)="eliminar(row)"
+                  class="rs-btn-action rs-btn-action--delete"
+                  [disabled]="eliminando(row) || saving"
+                  type="button"
+                  aria-label="Eliminar cliente"
+                >
+                  <mat-icon>
+                    {{ eliminando(row) ? 'hourglass_top' : 'delete_outline' }}
+                  </mat-icon>
+                </button>
+              </div>
             </div>
           </mat-card>
 
-          <mat-paginator
-            class="rs-paginator"
-            [length]="total"
-            [pageIndex]="page"
-            [pageSize]="size"
-            [pageSizeOptions]="[10, 20, 50]"
-            (page)="paginar($event)">
-          </mat-paginator>
+          <mat-card class="rs-mobile-paginator-card">
+            <mat-paginator
+              class="rs-paginator"
+              [length]="total"
+              [pageIndex]="page"
+              [pageSize]="size"
+              [pageSizeOptions]="[10, 20, 50]"
+              (page)="paginar($event)"
+            >
+            </mat-paginator>
+          </mat-card>
         </div>
+
+        <ng-template #emptyMobile>
+          <mat-card class="rs-empty-mobile-card">
+            <div class="rs-empty-state rs-empty-state--mobile">
+              <mat-icon>group</mat-icon>
+              <h3>No hay clientes para mostrar</h3>
+              <p>Prueba ajustando la búsqueda o crea un nuevo cliente.</p>
+            </div>
+          </mat-card>
+        </ng-template>
       </mat-card-content>
     </mat-card>
   </div>

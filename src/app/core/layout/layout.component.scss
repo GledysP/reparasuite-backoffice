@@ -5,9 +5,9 @@ $rs-sidebar-bg-2: #0a1f5c;
 $rs-sidebar-bg-3: #0d276d;
 $rs-text: #0f172a;
 $rs-muted: #64748b;
-$rs-topbar-h: 64px;
-$rs-sidebar-full: 240px;
-$rs-sidebar-mini: 72px;
+$rs-topbar-h: 62px;
+$rs-sidebar-full: 228px;
+$rs-sidebar-mini: 76px;
 $rs-dur: 260ms;
 $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -37,8 +37,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
     border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
     background:
       radial-gradient(circle at top left, rgba(0, 209, 255, 0.10), transparent 24%),
-      radial-gradient(circle at 85% 18%, rgba(103, 232, 249, 0.08), transparent 18%),
-      radial-gradient(circle at bottom left, rgba(103, 232, 249, 0.08), transparent 22%),
+      radial-gradient(circle at 85% 18%, rgba(103, 232, 249, 0.07), transparent 18%),
+      radial-gradient(circle at bottom left, rgba(103, 232, 249, 0.07), transparent 22%),
       linear-gradient(180deg, $rs-sidebar-bg 0%, $rs-sidebar-bg-2 52%, $rs-sidebar-bg-3 100%) !important;
     overflow: hidden;
     transition: width $rs-dur $rs-ease !important;
@@ -78,11 +78,11 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.22;
+  opacity: 0.18;
   background:
-    radial-gradient(circle at 16% 12%, rgba(0, 209, 255, 0.22) 0, rgba(0, 209, 255, 0) 17%),
-    linear-gradient(90deg, transparent 0 12%, rgba(0, 209, 255, 0.12) 12% 12.35%, transparent 12.35% 100%),
-    linear-gradient(180deg, transparent 0 18%, rgba(0, 209, 255, 0.10) 18% 18.25%, transparent 18.25% 100%);
+    radial-gradient(circle at 16% 12%, rgba(0, 209, 255, 0.18) 0, rgba(0, 209, 255, 0) 17%),
+    linear-gradient(90deg, transparent 0 12%, rgba(0, 209, 255, 0.09) 12% 12.35%, transparent 12.35% 100%),
+    linear-gradient(180deg, transparent 0 18%, rgba(0, 209, 255, 0.08) 18% 18.25%, transparent 18.25% 100%);
   mask-image: linear-gradient(180deg, #000 0%, #000 18%, transparent 54%);
   -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 18%, transparent 54%);
 }
@@ -90,11 +90,11 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-side-header {
   position: relative;
   z-index: 1;
-  min-height: 96px;
+  min-height: 92px;
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 16px 18px 14px;
+  padding: 16px 16px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.02);
 }
@@ -106,13 +106,13 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   flex: 0 0 54px;
   border-radius: 18px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0.06)),
     rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 12px 28px rgba(0, 0, 0, 0.16),
-    0 0 0 1px rgba(0, 209, 255, 0.06);
+    0 0 0 1px rgba(0, 209, 255, 0.05);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -131,7 +131,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
   inset: -14px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 209, 255, 0.24) 0%, rgba(0, 209, 255, 0) 68%);
+  background: radial-gradient(circle, rgba(0, 209, 255, 0.18) 0%, rgba(0, 209, 255, 0) 68%);
   filter: blur(8px);
   opacity: 0.8;
 }
@@ -143,17 +143,16 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-side-title {
   font-size: 18px;
   font-weight: 950;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
   color: #ffffff;
   line-height: 1;
-  text-shadow: 0 0 14px rgba(255, 255, 255, 0.05);
 }
 
 .rs-side-subtitle {
-  margin-top: 4px;
+  margin-top: 5px;
   font-size: 10px;
   font-weight: 900;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.17em;
   color: rgba(226, 232, 240, 0.82);
 }
 
@@ -161,12 +160,12 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   margin-top: 4px;
   font-size: 11px;
   font-weight: 700;
-  color: rgba(226, 232, 240, 0.58);
+  color: rgba(226, 232, 240, 0.56);
 }
 
 .rs-side-section-label {
-  padding: 18px 18px 10px;
-  color: rgba(226, 232, 240, 0.58);
+  padding: 18px 16px 10px;
+  color: rgba(226, 232, 240, 0.56);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -212,11 +211,11 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
       pointer-events: none;
       transition: opacity 180ms ease;
       background:
-        linear-gradient(90deg, rgba(0, 209, 255, 0.12), rgba(0, 209, 255, 0.03)),
-        rgba(255, 255, 255, 0.04);
+        linear-gradient(90deg, rgba(0, 209, 255, 0.10), rgba(0, 209, 255, 0.02)),
+        rgba(255, 255, 255, 0.03);
       box-shadow:
-        inset 0 0 0 1px rgba(0, 209, 255, 0.18),
-        0 0 18px rgba(0, 209, 255, 0.12);
+        inset 0 0 0 1px rgba(0, 209, 255, 0.14),
+        0 0 14px rgba(0, 209, 255, 0.08);
     }
 
     .rs-nav-active-rail {
@@ -245,9 +244,9 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     &:hover:not(.is-active) {
-      background: rgba(255, 255, 255, 0.05) !important;
-      border-color: rgba(255, 255, 255, 0.06);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+      background: rgba(255, 255, 255, 0.045) !important;
+      border-color: rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.018);
       transform: translateX(1px);
 
       .rs-nav-icon,
@@ -258,12 +257,12 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     &.is-active {
-      background: rgba(255, 255, 255, 0.06) !important;
-      border-color: rgba(0, 209, 255, 0.16);
+      background: rgba(255, 255, 255, 0.055) !important;
+      border-color: rgba(0, 209, 255, 0.14);
       box-shadow:
-        inset 0 0 0 1px rgba(0, 209, 255, 0.10),
-        0 0 14px rgba(0, 209, 255, 0.14),
-        0 0 26px rgba(0, 209, 255, 0.05);
+        inset 0 0 0 1px rgba(0, 209, 255, 0.09),
+        0 0 12px rgba(0, 209, 255, 0.10),
+        0 0 24px rgba(0, 209, 255, 0.04);
 
       .rs-nav-item-glow {
         opacity: 1;
@@ -271,12 +270,12 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
       .rs-nav-active-rail {
         background: $rs-neon;
-        box-shadow: 0 0 10px rgba(0, 209, 255, 0.48);
+        box-shadow: 0 0 8px rgba(0, 209, 255, 0.40);
       }
 
       .rs-nav-icon {
         color: $rs-neon !important;
-        filter: drop-shadow(0 0 10px rgba(0, 209, 255, 0.42));
+        filter: drop-shadow(0 0 8px rgba(0, 209, 255, 0.34));
       }
 
       .mdc-list-item__primary-text,
@@ -291,7 +290,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   .rs-side-header {
     justify-content: center;
     padding: 14px 0 12px;
-    min-height: 84px;
+    min-height: 82px;
   }
 
   .rs-side-brand,
@@ -343,12 +342,12 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 20px;
   padding: 12px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)),
     rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 10px 24px rgba(2, 6, 23, 0.12);
+    0 10px 24px rgba(2, 6, 23, 0.10);
 }
 
 .rs-side-user-avatar {
@@ -361,9 +360,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 900;
   color: #ffffff;
   flex: 0 0 auto;
-  transition: background 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
   border: 1px solid rgba(0, 209, 255, 0.95);
-  animation: rsAvatarPulse 2.8s ease-in-out infinite;
+  animation: rsAvatarPulse 3s ease-in-out infinite;
 }
 
 .rs-side-user-copy {
@@ -383,7 +381,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   margin-top: 3px;
   font-size: 11px;
   font-weight: 600;
-  color: rgba(226, 232, 240, 0.68);
+  color: rgba(226, 232, 240, 0.66);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -397,8 +395,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   min-height: $rs-topbar-h;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 22px 0 14px;
+  gap: 10px;
+  padding: 0 18px 0 12px;
   background: rgba(255, 255, 255, 0.94) !important;
   backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(226, 232, 240, 0.92);
@@ -427,9 +425,9 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .rs-icon-btn:hover {
   box-shadow:
-    0 10px 24px rgba(15, 23, 42, 0.08),
-    0 0 0 3px rgba(0, 209, 255, 0.08);
-  border-color: rgba(0, 209, 255, 0.22);
+    0 10px 22px rgba(15, 23, 42, 0.06),
+    0 0 0 3px rgba(0, 209, 255, 0.07);
+  border-color: rgba(0, 209, 255, 0.18);
   transform: translateY(-1px);
 }
 
@@ -440,10 +438,10 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-menu-btn::after {
   content: '';
   width: 1px;
-  height: 24px;
-  background: rgba(226, 232, 240, 0.95);
+  height: 22px;
+  background: rgba(226, 232, 240, 0.92);
   position: absolute;
-  right: -10px;
+  right: -8px;
   top: 50%;
   transform: translateY(-50%);
   border-radius: 999px;
@@ -459,9 +457,9 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 0;
   --mdc-outlined-text-field-container-shape: 14px;
   --mdc-outlined-text-field-outline-color: rgba(226, 232, 240, 1);
-  --mdc-outlined-text-field-hover-outline-color: rgba(0, 209, 255, 0.28);
+  --mdc-outlined-text-field-hover-outline-color: rgba(0, 209, 255, 0.24);
   --mdc-outlined-text-field-focus-outline-color: #00d1ff;
-  --mat-form-field-container-height: 40px;
+  --mat-form-field-container-height: 38px;
 
   .mat-mdc-text-field-wrapper {
     background: #ffffff;
@@ -470,13 +468,13 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   &:hover .mat-mdc-text-field-wrapper {
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
   }
 
   &.mat-focused .mat-mdc-text-field-wrapper {
     box-shadow:
-      0 10px 22px rgba(15, 23, 42, 0.06),
-      0 0 0 4px rgba(0, 209, 255, 0.10);
+      0 10px 20px rgba(15, 23, 42, 0.05),
+      0 0 0 4px rgba(0, 209, 255, 0.09);
   }
 
   .mat-mdc-form-field-subscript-wrapper,
@@ -490,8 +488,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .mat-mdc-form-field-infix {
-    padding-top: 9px !important;
-    padding-bottom: 9px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
     min-height: auto !important;
   }
 
@@ -502,8 +500,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .rs-search-desktop {
-  flex: 1 1 clamp(220px, 26vw, 320px);
-  max-width: clamp(220px, 26vw, 320px);
+  flex: 1 1 clamp(220px, 26vw, 300px);
+  max-width: clamp(220px, 26vw, 300px);
 }
 
 .rs-cmdk-hint.mat-mdc-button {
@@ -527,7 +525,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
   mat-icon {
     color: $rs-neon;
-    filter: drop-shadow(0 0 8px rgba(0, 209, 255, 0.35));
+    filter: drop-shadow(0 0 8px rgba(0, 209, 255, 0.28));
   }
 }
 
@@ -538,10 +536,10 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .rs-cmdk-hint:hover {
   background: #ffffff !important;
-  border-color: rgba(0, 209, 255, 0.18) !important;
+  border-color: rgba(0, 209, 255, 0.16) !important;
   box-shadow:
-    0 10px 20px rgba(15, 23, 42, 0.05),
-    0 0 0 3px rgba(0, 209, 255, 0.08);
+    0 10px 18px rgba(15, 23, 42, 0.04),
+    0 0 0 3px rgba(0, 209, 255, 0.07);
   transform: translateY(-1px);
 }
 
@@ -573,22 +571,22 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   overflow: visible;
 
   &.has-unread {
-    border-color: rgba(0, 209, 255, 0.24);
+    border-color: rgba(0, 209, 255, 0.22);
     box-shadow:
-      0 10px 24px rgba(15, 23, 42, 0.08),
-      0 0 0 3px rgba(0, 209, 255, 0.07),
-      0 0 18px rgba(0, 209, 255, 0.12);
+      0 10px 22px rgba(15, 23, 42, 0.06),
+      0 0 0 3px rgba(0, 209, 255, 0.06),
+      0 0 14px rgba(0, 209, 255, 0.09);
   }
 }
 
 .rs-notif-ring {
   position: absolute;
-  inset: -5px;
+  inset: -4px;
   border-radius: 18px;
-  border: 1px solid rgba(0, 209, 255, 0.34);
-  box-shadow: 0 0 18px rgba(0, 209, 255, 0.18);
+  border: 1px solid rgba(0, 209, 255, 0.26);
+  box-shadow: 0 0 14px rgba(0, 209, 255, 0.14);
   pointer-events: none;
-  animation: rsNotifPulse 2.2s ease-out infinite;
+  animation: rsNotifPulse 2.4s ease-out infinite;
 }
 
 .rs-notif-icon {
@@ -604,8 +602,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 900;
   border: 2px solid #ffffff;
   box-shadow:
-    0 0 0 3px rgba(239, 68, 68, 0.10),
-    0 0 16px rgba(239, 68, 68, 0.24);
+    0 0 0 3px rgba(239, 68, 68, 0.08),
+    0 0 12px rgba(239, 68, 68, 0.20);
   transform: scale(1.02);
 }
 
@@ -623,7 +621,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .rs-profile-chip {
-  height: 42px;
+  height: 40px;
   border-radius: 14px;
   border: 1px solid rgba(226, 232, 240, 0.95);
   background: #ffffff;
@@ -631,16 +629,16 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  max-width: 220px;
+  max-width: 214px;
   box-sizing: border-box;
   transition: box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease;
 }
 
 .rs-profile-trigger:hover .rs-profile-chip {
   box-shadow:
-    0 10px 20px rgba(15, 23, 42, 0.06),
-    0 0 0 3px rgba(0, 209, 255, 0.07);
-  border-color: rgba(0, 209, 255, 0.18);
+    0 10px 18px rgba(15, 23, 42, 0.05),
+    0 0 0 3px rgba(0, 209, 255, 0.06);
+  border-color: rgba(0, 209, 255, 0.16);
   transform: translateY(-1px);
 }
 
@@ -656,8 +654,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   flex: 0 0 auto;
   border: 1px solid rgba(0, 209, 255, 0.95);
   box-shadow:
-    0 0 0 4px rgba(0, 209, 255, 0.08),
-    0 8px 18px rgba(2, 6, 23, 0.10);
+    0 0 0 4px rgba(0, 209, 255, 0.07),
+    0 8px 16px rgba(2, 6, 23, 0.08);
 }
 
 .is-session-active {
@@ -706,9 +704,9 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 360px !important;
   border-radius: 20px !important;
   border: 1px solid rgba(15, 23, 42, 0.08) !important;
-  background: rgba(255, 255, 255, 0.96) !important;
+  background: rgba(255, 255, 255, 0.97) !important;
   box-shadow:
-    0 18px 36px rgba(15, 23, 42, 0.10),
+    0 18px 34px rgba(15, 23, 42, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.66) inset !important;
   backdrop-filter: blur(14px);
   overflow: hidden;
@@ -768,7 +766,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
   &.is-unread {
     background: rgba(0, 209, 255, 0.04) !important;
-    border-color: rgba(0, 209, 255, 0.10) !important;
+    border-color: rgba(0, 209, 255, 0.09) !important;
   }
 
   &:hover {
@@ -790,7 +788,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .rs-notif-item.is-unread .rs-notif-item-badge {
   background: $rs-neon;
-  box-shadow: 0 0 10px rgba(0, 209, 255, 0.38);
+  box-shadow: 0 0 8px rgba(0, 209, 255, 0.30);
 }
 
 .rs-notif-item-ic {
@@ -827,8 +825,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 50%;
   background: #ef4444;
   box-shadow:
-    0 0 0 4px rgba(239, 68, 68, 0.10),
-    0 0 12px rgba(239, 68, 68, 0.24);
+    0 0 0 4px rgba(239, 68, 68, 0.08),
+    0 0 10px rgba(239, 68, 68, 0.18);
 }
 
 .rs-notif-item-sub {
@@ -840,7 +838,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .rs-notif-item-time {
   margin-top: 6px;
-  color: rgba(100, 116, 139, 0.78);
+  color: rgba(100, 116, 139, 0.76);
   font-size: 11px;
   font-weight: 700;
 }
@@ -900,7 +898,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden !important;
   border: 1px solid rgba(15, 23, 42, 0.08) !important;
   box-shadow:
-    0 28px 60px rgba(15, 23, 42, 0.14),
+    0 24px 52px rgba(15, 23, 42, 0.12),
     0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
   background: rgba(255, 255, 255, 0.97) !important;
   backdrop-filter: blur(14px);
@@ -909,34 +907,34 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 @keyframes rsAvatarPulse {
   0%, 100% {
     box-shadow:
-      0 0 0 0 rgba(0, 209, 255, 0.12),
-      0 8px 16px rgba(2, 6, 23, 0.12);
+      0 0 0 0 rgba(0, 209, 255, 0.10),
+      0 8px 14px rgba(2, 6, 23, 0.10);
   }
   50% {
     box-shadow:
-      0 0 0 6px rgba(0, 209, 255, 0.04),
-      0 8px 18px rgba(2, 6, 23, 0.14);
+      0 0 0 5px rgba(0, 209, 255, 0.03),
+      0 8px 16px rgba(2, 6, 23, 0.12);
   }
 }
 
 @keyframes rsNotifPulse {
   0% {
-    opacity: 0.9;
-    transform: scale(0.96);
+    opacity: 0.85;
+    transform: scale(0.97);
   }
   70% {
     opacity: 0;
-    transform: scale(1.08);
+    transform: scale(1.07);
   }
   100% {
     opacity: 0;
-    transform: scale(1.08);
+    transform: scale(1.07);
   }
 }
 
 @media (max-width: 1024px) {
   .rs-header {
-    padding-right: 16px;
+    padding-right: 14px;
   }
 
   .rs-search-desktop {

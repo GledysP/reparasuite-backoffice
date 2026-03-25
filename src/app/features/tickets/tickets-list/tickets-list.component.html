@@ -1,128 +1,130 @@
-<div class="rs-page-container">
-  <header class="rs-header-row">
-    <div class="rs-header-copy">
-      <div class="rs-heading">
-        <div>
-          <h1 class="rs-page-title">Tickets</h1>
-          <p class="rs-page-subtitle">
-            Solicitudes de clientes y seguimiento hacia OT
-          </p>
+<div class="rs-page-container rs-tickets-page">
+  <div class="rs-page-shell">
+    <header class="rs-header-row rs-fade-up">
+      <div class="rs-header-copy">
+        <div class="rs-heading">
+          <div>
+            <h1 class="rs-page-title">Tickets</h1>
+            <p class="rs-page-subtitle">
+              Solicitudes de clientes y seguimiento hacia OT
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  @if (loading) {
-    <div class="loading-wrap">
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    </div>
-  }
-
-  <div class="cards-wrap">
-    @if (!loading && items.length === 0) {
-      <mat-card class="ticket-card empty-card" appearance="outlined">
-        <mat-card-content class="ticket-card-content">
-          <div class="empty-state">
-            <div class="empty-icon">
-              <mat-icon>inbox</mat-icon>
-            </div>
-
-            <div class="empty-title">No hay tickets</div>
-            <div class="empty-sub">
-              Cuando lleguen solicitudes del portal cliente aparecerán aquí.
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+    @if (loading) {
+      <div class="loading-wrap rs-fade-up">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
     }
 
-    @for (t of items; track t.id) {
-      <mat-card class="ticket-card" appearance="outlined">
-        <mat-card-content class="ticket-card-content">
-          <div class="ticket-card-topline"></div>
-
-          <div class="ticket-card-inner">
-            <div class="ticket-card-head">
-              <div class="ticket-main">
-                <div class="ticket-icon">
-                  <mat-icon>confirmation_number</mat-icon>
-                </div>
-
-                <div class="ticket-copy">
-                  <div class="ticket-title">
-                    <span class="ticket-prefix">Equipo:</span>
-                    <span class="ticket-name">
-                      {{ asuntoUi(t).replace('Equipo:', '').trim() || 'Sin asunto' }}
-                    </span>
-                  </div>
-
-                  <div class="ticket-subline">
-                    <span class="meta-item">
-                      <mat-icon>person</mat-icon>
-                      <span>{{ t.clienteNombre || 'Cliente sin nombre' }}</span>
-                    </span>
-
-                    <span class="meta-dot">•</span>
-
-                    <span class="meta-item">
-                      <mat-icon>mail</mat-icon>
-                      <span>{{ t.clienteEmail || 'sin correo' }}</span>
-                    </span>
-                  </div>
-                </div>
+    <div class="cards-wrap">
+      @if (!loading && items.length === 0) {
+        <mat-card class="ticket-card empty-card" appearance="outlined">
+          <mat-card-content class="ticket-card-content">
+            <div class="empty-state">
+              <div class="empty-icon">
+                <mat-icon>inbox</mat-icon>
               </div>
 
-              <div class="ticket-side">
-                <span class="status-pill" [ngClass]="estadoClass(t.estado)">
-                  <span class="status-dot"></span>
-                  {{ t.estado }}
-                </span>
-
-                <div class="ticket-time">
-                  <mat-icon>schedule</mat-icon>
-                  <span>{{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}</span>
-                </div>
+              <div class="empty-title">No hay tickets</div>
+              <div class="empty-sub">
+                Cuando lleguen solicitudes del portal cliente aparecerán aquí.
               </div>
             </div>
+          </mat-card-content>
+        </mat-card>
+      }
 
-            <div class="ticket-card-footer">
-              <div class="ticket-foot-meta">
-                @if (t.ordenTrabajoId) {
-                  <span class="soft-pill linked-ot">
-                    <mat-icon>link</mat-icon>
-                    OT vinculada
+      @for (t of items; track t.id) {
+        <mat-card class="ticket-card" appearance="outlined">
+          <mat-card-content class="ticket-card-content">
+            <div class="ticket-card-topline"></div>
+
+            <div class="ticket-card-inner">
+              <div class="ticket-card-head">
+                <div class="ticket-main">
+                  <div class="ticket-icon">
+                    <mat-icon>confirmation_number</mat-icon>
+                  </div>
+
+                  <div class="ticket-copy">
+                    <div class="ticket-title">
+                      <span class="ticket-prefix">Equipo:</span>
+                      <span class="ticket-name">
+                        {{ asuntoUi(t).replace('Equipo:', '').trim() || 'Sin asunto' }}
+                      </span>
+                    </div>
+
+                    <div class="ticket-subline">
+                      <span class="meta-item">
+                        <mat-icon>person</mat-icon>
+                        <span>{{ t.clienteNombre || 'Cliente sin nombre' }}</span>
+                      </span>
+
+                      <span class="meta-dot">•</span>
+
+                      <span class="meta-item">
+                        <mat-icon>mail</mat-icon>
+                        <span>{{ t.clienteEmail || 'sin correo' }}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ticket-side">
+                  <span class="status-pill" [ngClass]="estadoClass(t.estado)">
+                    <span class="status-dot"></span>
+                    {{ t.estado }}
                   </span>
-                } @else {
-                  <span class="soft-pill pending-ot">
+
+                  <div class="ticket-time">
                     <mat-icon>schedule</mat-icon>
-                    Pendiente de crear OT
-                  </span>
-                }
+                    <span>{{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}</span>
+                  </div>
+                </div>
               </div>
 
-              <a
-                mat-button
-                class="ghost-view-btn"
-                [routerLink]="['/tickets', t.id]">
-                <mat-icon>visibility</mat-icon>
-                Ver
-              </a>
+              <div class="ticket-card-footer">
+                <div class="ticket-foot-meta">
+                  @if (t.ordenTrabajoId) {
+                    <span class="soft-pill linked-ot">
+                      <mat-icon>link</mat-icon>
+                      OT vinculada
+                    </span>
+                  } @else {
+                    <span class="soft-pill pending-ot">
+                      <mat-icon>schedule</mat-icon>
+                      Pendiente de crear OT
+                    </span>
+                  }
+                </div>
+
+                <a
+                  mat-button
+                  class="ghost-view-btn"
+                  [routerLink]="['/tickets', t.id]">
+                  <mat-icon>visibility</mat-icon>
+                  Ver
+                </a>
+              </div>
             </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    @if (total > size) {
+      <div class="paginator-shell">
+        <mat-paginator
+          [length]="total"
+          [pageIndex]="page"
+          [pageSize]="size"
+          [pageSizeOptions]="[5, 10, 20]"
+          (page)="paginar($event)">
+        </mat-paginator>
+      </div>
     }
   </div>
-
-  @if (total > size) {
-    <div class="paginator-shell">
-      <mat-paginator
-        [length]="total"
-        [pageIndex]="page"
-        [pageSize]="size"
-        [pageSizeOptions]="[5, 10, 20]"
-        (page)="paginar($event)">
-      </mat-paginator>
-    </div>
-  }
 </div>

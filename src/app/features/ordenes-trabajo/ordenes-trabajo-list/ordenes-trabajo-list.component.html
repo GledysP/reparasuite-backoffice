@@ -8,13 +8,18 @@
     </div>
 
     <button
-      mat-raised-button
-      class="btn-new-ot"
-      routerLink="/ordenes-trabajo/nueva"
+      mat-flat-button
       type="button"
+      class="rs-btn rs-btn--primary btn-new-ot"
+      routerLink="/ordenes-trabajo/nueva"
     >
-      <mat-icon>add</mat-icon>
-      <span>Nueva orden de trabajo</span>
+      <span class="rs-btn__shimmer"></span>
+      <span class="rs-btn__label">
+        <span class="rs-btn__icon-slot">
+          <mat-icon>add</mat-icon>
+        </span>
+        <span class="rs-btn__text">Nueva orden de trabajo</span>
+      </span>
     </button>
   </div>
 
@@ -97,8 +102,13 @@
             <ng-container matColumnDef="cliente">
               <th mat-header-cell *matHeaderCellDef>Cliente</th>
               <td mat-cell *matCellDef="let row">
-                <div class="customer-info">
-                  <span class="name">{{ row.clienteNombre || 'N/A' }}</span>
+                <div class="rs-client-cell">
+                  <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.clienteNombre)">
+                    {{ getClientInitials(row.clienteNombre) }}
+                  </span>
+                  <div class="customer-info">
+                    <span class="name">{{ row.clienteNombre || 'N/A' }}</span>
+                  </div>
                 </div>
               </td>
             </ng-container>
@@ -134,13 +144,13 @@
             </ng-container>
 
             <ng-container matColumnDef="accion">
-              <th mat-header-cell *matHeaderCellDef>Acciones</th>
-              <td mat-cell *matCellDef="let row">
+              <th mat-header-cell *matHeaderCellDef class="rs-action-head">Acciones</th>
+              <td mat-cell *matCellDef="let row" class="rs-action-cell">
                 <div class="rs-actions-container">
                   <button
                     mat-icon-button
                     [routerLink]="['/ordenes-trabajo', row.id]"
-                    class="rs-btn-action"
+                    class="rs-btn-action rs-btn-action--view"
                     type="button"
                     aria-label="Ver detalle"
                     [disabled]="!!deletingId"
@@ -150,7 +160,7 @@
 
                   <button
                     mat-icon-button
-                    class="rs-btn-action rs-btn-action-danger"
+                    class="rs-btn-action rs-btn-action--delete"
                     type="button"
                     (click)="eliminarOrden(row)"
                     aria-label="Eliminar orden"
@@ -203,7 +213,13 @@
       <div class="rs-mobile-ot-top">
         <div class="rs-mobile-ot-copy">
           <div class="rs-mobile-ot-code">{{ row.codigo }}</div>
-          <div class="rs-mobile-ot-client">{{ row.clienteNombre || 'N/A' }}</div>
+
+          <div class="rs-client-cell rs-client-cell--mobile">
+            <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.clienteNombre)">
+              {{ getClientInitials(row.clienteNombre) }}
+            </span>
+            <span class="rs-mobile-ot-client">{{ row.clienteNombre || 'N/A' }}</span>
+          </div>
         </div>
 
         <span class="status-badge" [attr.data-status]="row.estado">
@@ -242,7 +258,7 @@
 
         <button
           mat-icon-button
-          class="rs-btn-action rs-btn-action-danger"
+          class="rs-btn-action rs-btn-action--delete"
           type="button"
           (click)="eliminarOrden(row)"
           aria-label="Eliminar orden"
