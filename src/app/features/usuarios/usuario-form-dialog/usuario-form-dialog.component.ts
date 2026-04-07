@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -7,16 +7,25 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'rs-usuario-form-dialog',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule,
-    MatInputModule, MatSelectModule, MatOptionModule, MatIconModule
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatIconModule,
+    MatFormFieldModule
   ],
   templateUrl: './usuario-form-dialog.component.html',
-  styleUrl: './usuario-form-dialog.component.scss'
+  styleUrl: './usuario-form-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UsuarioFormDialogComponent {
   form: FormGroup;
@@ -41,7 +50,9 @@ export class UsuarioFormDialogComponent {
   guardar(): void {
     if (this.form.valid) {
       const payload = { ...this.form.value };
-      if (this.data) delete payload.password; // No enviar password si es edición
+      if (this.data) {
+        delete payload.password;
+      }
       this.dialogRef.close(payload);
     }
   }

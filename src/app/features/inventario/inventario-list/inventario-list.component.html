@@ -1,43 +1,145 @@
-<div class="rs-page-wrap">
-  <div class="rs-topbar">
-    <div>
-      <h1 class="rs-title">Inventario</h1>
-      <p class="rs-subtitle">Control de piezas, repuestos, accesorios y consumibles.</p>
+<div class="rs-page-container rs-inventario-page">
+  <div class="rs-page-shell">
+    <div class="rs-header-row rs-fade-up">
+      <div class="rs-header-copy">
+        <div class="rs-heading">
+          <h1 class="rs-page-title">Inventario</h1>
+          <p class="rs-page-subtitle">
+            Control de piezas, repuestos, accesorios y consumibles.
+          </p>
+        </div>
+      </div>
+
+      <button
+        mat-flat-button
+        type="button"
+        class="rs-btn rs-btn--primary rs-header-cta"
+        (click)="irNuevo()"
+      >
+        <span class="rs-btn__shimmer"></span>
+
+        <span class="rs-btn__label">
+          <mat-icon>add</mat-icon>
+          Nuevo item
+        </span>
+      </button>
     </div>
 
-    <button mat-flat-button class="rs-primary-btn" (click)="irNuevo()">
-      <mat-icon>add</mat-icon>
-      Nuevo item
-    </button>
-  </div>
+    @if (loading()) {
+      <div class="loading-wrap rs-fade-up">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+    }
 
-  @if (loading()) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  }
+    @if (!loading() && items().length > 0) {
+      <div class="cards-wrap rs-fade-up">
+        @for (i of items(); track i.id) {
+          <a class="rs-card-link" [routerLink]="['/inventario', i.id]">
+            <mat-card class="ticket-card inventory-card">
+              <div class="ticket-card-topline"></div>
 
-  <div class="rs-grid-cards">
-    
-    @for (i of items(); track i.id) {
-      <a class="rs-card-link" [routerLink]="['/inventario', i.id]">
-        <mat-card class="rs-card">
-          <div class="rs-card-head">
-            <div class="rs-badge">{{ i.sku }}</div>
-            <div class="rs-state" [class.low]="bajoStock(i)">
-              {{ bajoStock(i) ? 'Bajo stock' : 'Stock OK' }}
+              <div class="ticket-card-content">
+                <div class="ticket-card-inner">
+                  <div class="ticket-card-head">
+                    <div class="ticket-main">
+                      <div class="ticket-icon">
+                        <mat-icon>inventory_2</mat-icon>
+                      </div>
+
+                      <div class="ticket-copy">
+                        <div class="inventory-name">{{ i.nombre }}</div>
+                        <div class="inventory-category">
+                          {{ i.categoriaNombre || 'Sin categoría' }}
+                        </div>
+
+                        <div class="inventory-subline">
+                          <div class="meta-item">
+                            <mat-icon>sell</mat-icon>
+                            <span>{{ i.sku || 'Sin SKU' }}</span>
+                          </div>
+
+                          <div class="meta-item">
+                            <mat-icon>business</mat-icon>
+                            <span>{{ i.marca || 'Sin marca' }}</span>
+                          </div>
+
+                          <div class="meta-item">
+                            <mat-icon>layers</mat-icon>
+                            <span>{{ i.stockActual }} {{ i.unidadMedida || 'UNIDAD' }}</span>
+                          </div>
+
+                          <div class="meta-item">
+                            <mat-icon>payments</mat-icon>
+                            <span>${{ i.precioVenta || 0 }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="ticket-side">
+                      <div
+                        class="status-pill inventory-status"
+                        [ngClass]="bajoStock(i) ? 'is-review' : 'is-open'"
+                      >
+                        <span class="status-dot"></span>
+                        {{ bajoStock(i) ? 'Bajo stock' : 'Disponible' }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="ticket-card-footer">
+                    <div class="ticket-foot-meta">
+                      <div
+                        class="soft-pill inventory-min-pill"
+                        [class.is-low]="bajoStock(i)"
+                      >
+                        <mat-icon>
+                          {{ bajoStock(i) ? 'warning_amber' : 'inventory' }}
+                        </mat-icon>
+                        <span>Stock mínimo {{ i.stockMinimo }}</span>
+                      </div>
+                    </div>
+
+                    <span class="ghost-view-btn">
+                      <mat-icon>visibility</mat-icon>
+                      Ver
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </mat-card>
+          </a>
+        }
+      </div>
+    } @else if (!loading()) {
+      <div class="cards-wrap rs-fade-up">
+        <mat-card class="ticket-card empty-card">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <mat-icon>inventory_2</mat-icon>
             </div>
-          </div>
 
-          <div class="rs-card-title">{{ i.nombre }}</div>
-          <div class="rs-card-sub">{{ i.categoriaNombre || 'Sin categoría' }}</div>
+            <div class="empty-title">No hay items registrados</div>
+            <div class="empty-sub">
+              Comienza creando tu primer item de inventario.
+            </div>
 
-          <div class="rs-meta">
-            <div><strong>Marca:</strong> {{ i.marca || '—' }}</div>
-            <div><strong>Stock:</strong> {{ i.stockActual }} {{ i.unidadMedida }}</div>
-            <div><strong>Mínimo:</strong> {{ i.stockMinimo }}</div>
-            <div><strong>Precio:</strong> {{ i.precioVenta }}</div>
+            <button
+              mat-flat-button
+              type="button"
+              class="rs-btn rs-btn--primary rs-empty-cta"
+              (click)="irNuevo()"
+            >
+              <span class="rs-btn__shimmer"></span>
+
+              <span class="rs-btn__label">
+                <mat-icon>add</mat-icon>
+                Nuevo item
+              </span>
+            </button>
           </div>
         </mat-card>
-      </a>
+      </div>
     }
   </div>
 </div>

@@ -1,445 +1,627 @@
-<div class="rs-main-container rs-enter">
-  <div class="rs-header-row">
-    <div class="rs-header-copy">
+<main class="rs-shell rs-enter">
+  <header class="rs-page-head">
+    <div class="rs-page-copy">
       <h1 class="rs-page-title">Nueva orden de trabajo</h1>
-      <p class="rs-subtitle">
-        {{ fromTicket
-          ? 'Convierte el ticket en una orden clara, operativa y lista para gestionar.'
-          : 'Crea una orden con una experiencia compacta, moderna y enfocada en productividad.' }}
+      <p class="rs-page-subtitle">
+        {{
+          fromTicket
+            ? 'Convierte el ticket en una orden precisa, elegante y lista para ejecución.'
+            : 'Crea una orden con una experiencia compacta, moderna y enfocada en productividad.'
+        }}
       </p>
-
-      <div class="rs-ticket-inline" *ngIf="fromTicket">
-        <span class="rs-ticket-inline-item" *ngIf="ticketRef?.estado">
-          <span class="rs-ticket-inline-label">Estado:</span>
-          <span class="rs-ticket-inline-value">{{ ticketRef?.estado }}</span>
-        </span>
-
-        <span class="rs-ticket-inline-item" *ngIf="ticketRef?.equipo || ticketRef?.asunto">
-          <span class="rs-ticket-inline-label">Equipo:</span>
-          <span class="rs-ticket-inline-value">{{ ticketRef?.equipo || ticketRef?.asunto }}</span>
-        </span>
-
-        <span class="rs-ticket-inline-item" *ngIf="ticketRef?.tipoServicioSugerido">
-          <span class="rs-ticket-inline-label">Tipo:</span>
-          <span class="rs-ticket-inline-value">
-            {{ ticketRef?.tipoServicioSugerido === 'DOMICILIO' ? 'A domicilio' : 'En taller' }}
-          </span>
-        </span>
-      </div>
     </div>
 
     <button
       mat-stroked-button
       type="button"
-      class="btn-top-back"
+      class="rs-btn-secondary rs-btn-secondary--top"
       (click)="cancelar()"
       [disabled]="guardando">
       <mat-icon>arrow_back</mat-icon>
       <span>Volver</span>
     </button>
-  </div>
+  </header>
 
-  <form [formGroup]="form" class="rs-form-container">
-    <div class="rs-top-cards">
-      <mat-card class="rs-section-card rs-top-card rs-card-floating">
-        <div class="rs-section-head">
-          <div>
-            <div class="rs-section-kicker">Cliente</div>
-            <h2 class="rs-section-title">Datos del cliente</h2>
-          </div>
+  <form [formGroup]="form" class="rs-form" novalidate>
+    <div class="rs-layout">
+      <section class="rs-main">
+        <mat-card class="rs-card">
+          <div class="rs-card-head">
+            <div>
+              <div class="rs-section-kicker">Cliente</div>
+              <h2 class="rs-section-title">Datos del cliente</h2>
+            </div>
 
-          <div class="rs-head-actions" *ngIf="!fromTicket">
-            <button
-              mat-stroked-button
-              type="button"
-              class="btn-soft-outline"
-              (click)="buscarCliente()"
-              [disabled]="guardando">
-              <mat-icon>search</mat-icon>
-              <span>Buscar cliente</span>
-            </button>
+            @if (!fromTicket) {
+              <div class="rs-head-actions">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="rs-btn-secondary"
+                  (click)="buscarCliente()"
+                  [disabled]="guardando">
+                  <mat-icon>search</mat-icon>
+                  <span>Buscar cliente</span>
+                </button>
 
-            <button
-              mat-button
-              type="button"
-              class="btn-soft-ghost"
-              (click)="irAClientes()"
-              [disabled]="guardando">
-              <mat-icon>group</mat-icon>
-              <span>Ir a Clientes</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="rs-grid rs-grid-client">
-          <div class="rs-field rs-span-12">
-            <div class="rs-field-label">Nombre *</div>
-            <mat-form-field
-              appearance="outline"
-              [class.rs-field-error]="hasError('clienteNombre')">
-              <input matInput formControlName="clienteNombre" autocomplete="off" />
-            </mat-form-field>
-          </div>
-
-          <div class="rs-field rs-span-6">
-            <div class="rs-field-label">Teléfono</div>
-            <mat-form-field
-              appearance="outline"
-              [class.rs-field-error]="hasError('clienteTelefono')">
-              <input
-                matInput
-                formControlName="clienteTelefono"
-                autocomplete="off"
-                inputmode="numeric"
-                (input)="onTelefonoInput($event)" />
-            </mat-form-field>
-          </div>
-
-          <div class="rs-field rs-span-6">
-            <div class="rs-field-label">Correo</div>
-            <mat-form-field
-              appearance="outline"
-              [class.rs-field-error]="hasError('clienteEmail')">
-              <input matInput formControlName="clienteEmail" autocomplete="off" />
-            </mat-form-field>
-          </div>
-        </div>
-      </mat-card>
-
-      <mat-card class="rs-section-card rs-top-card rs-card-floating">
-        <div class="rs-section-head">
-          <div>
-            <div class="rs-section-kicker">Servicio</div>
-            <h2 class="rs-section-title">Tipo de atención</h2>
-          </div>
-        </div>
-
-        <mat-radio-group
-          formControlName="tipo"
-          class="rs-service-toggle"
-          [class.rs-radio-error]="hasError('tipo')">
-          <label class="rs-service-option" [class.active]="!isDomicilio">
-            <mat-radio-button value="TIENDA">
-              <span class="rs-service-title">En taller</span>
-              <span class="rs-service-sub">Recepción física en tienda o taller</span>
-            </mat-radio-button>
-          </label>
-
-          <label class="rs-service-option" [class.active]="isDomicilio">
-            <mat-radio-button value="DOMICILIO">
-              <span class="rs-service-title">A domicilio</span>
-              <span class="rs-service-sub">Visita técnica en ubicación del cliente</span>
-            </mat-radio-button>
-          </label>
-        </mat-radio-group>
-
-        <div class="rs-grid rs-mt-8" *ngIf="!isDomicilio">
-          <div class="rs-field rs-span-12">
-            <div class="rs-field-label">Fecha de recepción</div>
-            <mat-form-field appearance="outline">
-              <input matInput [matDatepicker]="pickerRecepcion" formControlName="fechaRecepcion" />
-              <mat-datepicker-toggle matSuffix [for]="pickerRecepcion"></mat-datepicker-toggle>
-              <mat-datepicker #pickerRecepcion></mat-datepicker>
-            </mat-form-field>
-          </div>
-        </div>
-
-        <div class="rs-grid rs-mt-8" *ngIf="isDomicilio">
-          <div class="rs-field rs-span-12">
-            <div class="rs-field-label">Dirección / ubicación</div>
-            <mat-form-field appearance="outline">
-              <input matInput formControlName="direccion" autocomplete="off" />
-            </mat-form-field>
-          </div>
-
-          <div class="rs-field rs-span-12">
-            <div class="rs-field-label">Agenda de visita</div>
-
-            <div class="rs-time-cluster">
-              <div class="rs-time-slot rs-time-slot-date">
-                <mat-form-field appearance="outline">
-                  <input matInput [matDatepicker]="pickerCita" formControlName="fechaCita" />
-                  <mat-datepicker-toggle matSuffix [for]="pickerCita"></mat-datepicker-toggle>
-                  <mat-datepicker #pickerCita></mat-datepicker>
-                </mat-form-field>
+                <button
+                  mat-button
+                  type="button"
+                  class="rs-btn-ghost"
+                  (click)="irAClientes()"
+                  [disabled]="guardando">
+                  <mat-icon>group</mat-icon>
+                  <span>Ir a Clientes</span>
+                </button>
               </div>
+            }
+          </div>
 
-              <div class="rs-time-slot rs-time-slot-hour">
-                <mat-form-field appearance="outline">
-                  <input
-                    matInput
-                    formControlName="horaCita"
-                    autocomplete="off"
-                    placeholder="0900"
-                    inputmode="numeric"
-                    maxlength="5"
-                    (input)="onHoraInput($event)"
-                    (blur)="onHoraBlur()" />
-                </mat-form-field>
-              </div>
+          <div class="rs-grid rs-grid--12">
+            <div class="rs-field rs-col-12">
+              <label class="rs-field-label">Nombre *</label>
+              <mat-form-field appearance="outline" [class.rs-field-error]="hasError('clienteNombre')">
+                <input
+                  matInput
+                  formControlName="clienteNombre"
+                  autocomplete="off"
+                  placeholder="Nombre completo o razón social" />
+              </mat-form-field>
+            </div>
 
-              <div class="rs-time-slot rs-time-slot-period">
-                <mat-button-toggle-group
-                  formControlName="periodoCita"
-                  class="rs-period-toggle"
-                  aria-label="Período de visita">
-                  <mat-button-toggle value="AM">AM</mat-button-toggle>
-                  <mat-button-toggle value="PM">PM</mat-button-toggle>
-                </mat-button-toggle-group>
-              </div>
+            <div class="rs-field rs-col-6">
+              <label class="rs-field-label">Teléfono</label>
+              <mat-form-field appearance="outline" [class.rs-field-error]="hasError('clienteTelefono')">
+                <input
+                  matInput
+                  formControlName="clienteTelefono"
+                  autocomplete="off"
+                  inputmode="numeric"
+                  placeholder="8091234567"
+                  (input)="onTelefonoInput($event)" />
+              </mat-form-field>
+            </div>
+
+            <div class="rs-field rs-col-6">
+              <label class="rs-field-label">Correo</label>
+              <mat-form-field appearance="outline" [class.rs-field-error]="hasError('clienteEmail')">
+                <input
+                  matInput
+                  formControlName="clienteEmail"
+                  autocomplete="off"
+                  placeholder="cliente@correo.com" />
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-card>
+
+        <mat-card class="rs-card rs-card--work">
+          <div class="rs-card-accent"></div>
+
+          <div class="rs-card-head">
+            <div>
+              <div class="rs-section-kicker">Trabajo</div>
+              <h2 class="rs-section-title">Trabajo a realizar</h2>
+            </div>
+
+            <div class="rs-head-actions">
+              <button
+                mat-stroked-button
+                type="button"
+                class="rs-btn-secondary"
+                (click)="irANuevoEquipo()"
+                [disabled]="guardando">
+                <mat-icon>memory</mat-icon>
+                <span>Nuevo equipo</span>
+              </button>
             </div>
           </div>
 
-          <div class="rs-field rs-span-12">
-            <div class="rs-field-label">Notas de acceso</div>
-            <mat-form-field appearance="outline" class="rs-notes-field">
-              <textarea
-                matInput
-                rows="2"
-                formControlName="notasAcceso"
-                placeholder="Ej: portería, torre, piso, referencias de acceso">
-              </textarea>
-            </mat-form-field>
-          </div>
-        </div>
-      </mat-card>
-    </div>
+          <div class="rs-grid rs-grid--12">
+            <div class="rs-field rs-col-4">
+              <label class="rs-field-label">Vincular equipo existente</label>
+              <mat-form-field appearance="outline">
+                <mat-select formControlName="equipoId" panelClass="rs-tech-panel">
+                  <mat-option [value]="null">No vincular equipo existente</mat-option>
 
-    <mat-card class="rs-section-card rs-card-work rs-card-floating">
-      <div class="rs-card-accent"></div>
+                  @for (eq of equiposCliente(); track eq.id) {
+                    <mat-option [value]="eq.id">
+                      {{ eq.codigoEquipo }}
+                      @if (eq.categoriaEquipoNombre) {
+                        <span> · {{ eq.categoriaEquipoNombre }}</span>
+                      }
+                      @if (eq.marca || eq.modelo) {
+                        <span> · {{ eq.marca || '' }} {{ eq.modelo || '' }}</span>
+                      }
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
 
-      <div class="rs-section-head">
-        <div>
-          <div class="rs-section-kicker">Trabajo</div>
-          <h2 class="rs-section-title">Detalle operativo</h2>
-        </div>
+              <div class="rs-field-help">
+                Si el cliente ya tiene un equipo registrado, puedes vincularlo aquí.
+              </div>
+            </div>
 
-        <div class="rs-head-actions">
-          <button
-            mat-stroked-button
-            type="button"
-            class="btn-soft-outline"
-            (click)="irANuevoEquipo()"
-            [disabled]="guardando">
-            <mat-icon>memory</mat-icon>
-            <span>Nuevo equipo</span>
-          </button>
-        </div>
-      </div>
+            <div class="rs-field rs-col-4">
+              <label class="rs-field-label">Categoría *</label>
+              <mat-form-field appearance="outline" [class.rs-field-error]="hasError('categoriaEquipoId')">
+                <mat-select formControlName="categoriaEquipoId" panelClass="rs-tech-panel">
+                  <mat-option [value]="null">Selecciona una categoría</mat-option>
 
-      <div class="rs-grid rs-grid-work-main">
-        <div class="rs-field rs-span-4">
-          <div class="rs-field-label">Vincular equipo existente</div>
-          <mat-form-field appearance="outline">
-            <mat-select formControlName="equipoId" panelClass="rs-tech-panel">
-              <mat-option [value]="null">No vincular equipo existente</mat-option>
+                  @for (c of categorias(); track c.id) {
+                    <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
 
-              <mat-option *ngFor="let eq of equiposCliente()" [value]="eq.id">
-                {{ eq.codigoEquipo }}
-                <span *ngIf="eq.categoriaEquipoNombre"> · {{ eq.categoriaEquipoNombre }}</span>
-                <span *ngIf="eq.marca || eq.modelo">
-                  · {{ eq.marca || '' }} {{ eq.modelo || '' }}
-                </span>
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <div class="rs-field-help">
-            Si el cliente ya tiene un equipo registrado, puedes vincularlo aquí.
-          </div>
-        </div>
+            <div class="rs-field rs-col-4">
+              <label class="rs-field-label">Equipo *</label>
+              <mat-form-field appearance="outline" [class.rs-field-error]="hasError('equipo')">
+                <input
+                  matInput
+                  formControlName="equipo"
+                  autocomplete="off"
+                  placeholder="Ej: Televisor Samsung / Laptop Lenovo / Router TP-Link" />
+              </mat-form-field>
+            </div>
 
-        <div class="rs-field rs-span-4">
-          <div class="rs-field-label">Categoría *</div>
-          <mat-form-field
-            appearance="outline"
-            [class.rs-field-error]="hasError('categoriaEquipoId')">
-            <mat-select formControlName="categoriaEquipoId" panelClass="rs-tech-panel">
-              <mat-option [value]="null">Selecciona una categoría</mat-option>
-              <mat-option *ngFor="let c of categorias()" [value]="c.id">
-                {{ c.nombre }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+            <div class="rs-field rs-col-6">
+              <label class="rs-field-label">Falla reportada</label>
+              <mat-form-field appearance="outline">
+                <input
+                  matInput
+                  formControlName="fallaReportada"
+                  autocomplete="off"
+                  placeholder="Ej: no enciende / pantalla rota / sin señal" />
+              </mat-form-field>
+            </div>
 
-        <div class="rs-field rs-span-4">
-          <div class="rs-field-label">Equipo *</div>
-          <mat-form-field
-            appearance="outline"
-            [class.rs-field-error]="hasError('equipo')">
-            <input
-              matInput
-              formControlName="equipo"
-              autocomplete="off"
-              placeholder="Ej: Televisor Samsung / Laptop Lenovo / Router TP-Link" />
-          </mat-form-field>
-        </div>
+            <div class="rs-field rs-col-6">
+              <label class="rs-field-label">Observaciones del cliente</label>
+              <mat-form-field appearance="outline" class="rs-textarea-field">
+                <textarea
+                  matInput
+                  rows="2"
+                  formControlName="observaciones"
+                  placeholder="Detalles adicionales dados por el cliente">
+                </textarea>
+              </mat-form-field>
+            </div>
 
-        <div class="rs-field rs-span-4">
-          <div class="rs-field-label">Falla reportada</div>
-          <mat-form-field appearance="outline">
-            <input
-              matInput
-              formControlName="fallaReportada"
-              autocomplete="off"
-              placeholder="Ej: No enciende / Sin señal / Pantalla rota" />
-          </mat-form-field>
-        </div>
+            <div class="rs-field rs-col-4">
+              <label class="rs-field-label">Prioridad</label>
 
-        <div class="rs-field rs-span-4">
-          <div class="rs-field-label">Observaciones del cliente</div>
-          <mat-form-field appearance="outline" class="rs-obs-field">
-            <textarea
-              matInput
-              rows="2"
-              formControlName="observaciones"
-              placeholder="Detalles adicionales dados por el cliente">
-            </textarea>
-          </mat-form-field>
-        </div>
+              <mat-button-toggle-group
+                formControlName="prioridad"
+                class="rs-priority-group"
+                aria-label="Prioridad de la orden">
+                @for (p of priorityOptions; track p.value) {
+                  <mat-button-toggle
+                    [value]="p.value"
+                    class="rs-priority-segment"
+                    [class.rs-priority-segment--low]="p.value === 'BAJA'"
+                    [class.rs-priority-segment--med]="p.value === 'MEDIA'"
+                    [class.rs-priority-segment--high]="p.value === 'ALTA'">
+                    <span class="rs-priority-dot"></span>
+                    <span class="rs-priority-text">{{ p.label }}</span>
+                  </mat-button-toggle>
+                }
+              </mat-button-toggle-group>
+            </div>
 
-        <div class="rs-field rs-span-4">
-          <div class="rs-field-label">Prioridad y técnico</div>
-
-          <div class="rs-inline-stack">
-            <mat-button-toggle-group
-              [formControl]="form.controls.prioridad"
-              class="rs-priority-toggle"
-              aria-label="Prioridad">
-              <mat-button-toggle
-                *ngFor="let p of prioridades"
-                [value]="p"
-                class="rs-priority-option"
-                [class.rs-priority-low]="p === 'BAJA'"
-                [class.rs-priority-med]="p === 'MEDIA'"
-                [class.rs-priority-high]="p === 'ALTA'">
-                {{ p }}
-              </mat-button-toggle>
-            </mat-button-toggle-group>
-
-            <div class="rs-tech-field">
+            <div class="rs-field rs-col-8">
+              <label class="rs-field-label">Técnico asignado</label>
               <mat-form-field appearance="outline">
                 <mat-icon matPrefix>engineering</mat-icon>
                 <mat-select formControlName="tecnicoId" panelClass="rs-tech-panel">
                   <mat-option [value]="null">Sin asignar</mat-option>
-                  <mat-option *ngFor="let t of tecnicos" [value]="t.id">
-                    {{ t.nombre }}
-                  </mat-option>
+
+                  @for (t of tecnicos; track t.id) {
+                    <mat-option [value]="t.id">{{ t.nombre }}</mat-option>
+                  }
                 </mat-select>
               </mat-form-field>
             </div>
           </div>
-        </div>
-      </div>
-    </mat-card>
+        </mat-card>
 
-    <mat-card class="rs-section-card rs-section-card-attachments rs-card-floating">
-      <div class="rs-section-head">
-        <div>
-          <div class="rs-section-kicker">Adjuntos</div>
-          <h2 class="rs-section-title">Fotos y evidencia visual</h2>
-        </div>
-      </div>
-
-      <div
-        class="rs-attachments-grid"
-        [class.rs-attachments-grid-single]="!hasTicketPhotoRefs">
-
-        <div class="rs-ticket-photo-box" *ngIf="hasTicketPhotoRefs">
-          <div class="rs-ticket-photo-head">
+        <mat-card class="rs-card rs-card--attachments">
+          <div class="rs-card-head">
             <div>
-              <div class="rs-ticket-photo-title">Fotos del ticket</div>
-              <div class="rs-ticket-photo-sub">
-                Referencia visual inicial que también debe mostrarse en el detalle de la OT.
+              <div class="rs-section-kicker">Adjuntos</div>
+              <h2 class="rs-section-title">Fotos y evidencia visual</h2>
+            </div>
+
+            <div class="rs-inline-note">
+              <mat-icon>cloud_done</mat-icon>
+              <span>Arrastra imágenes o haz clic para seleccionarlas</span>
+            </div>
+          </div>
+
+          <div class="rs-attachments-body">
+            @if (hasTicketPhotoRefs && activeTicketPhoto()) {
+              <section class="rs-ticket-panel">
+                <div class="rs-ticket-panel__head">
+                  <div>
+                    <div class="rs-ticket-panel__eyebrow">Ticket</div>
+                    <div class="rs-ticket-panel__title">Evidencia visual</div>
+                  </div>
+
+                  <button
+                    mat-icon-button
+                    type="button"
+                    class="rs-ticket-panel__expand"
+                    (click)="openImageModal(activeTicketPhoto())"
+                    aria-label="Ver imagen grande">
+                    <mat-icon>open_in_full</mat-icon>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  class="rs-ticket-viewer"
+                  (click)="openImageModal(activeTicketPhoto())">
+                  @if (ticketPhotosLoading || !ticketImageReady) {
+                    <div class="rs-media-skeleton" aria-hidden="true"></div>
+                  }
+
+                  <img
+                    class="rs-ticket-viewer__image"
+                    [class.is-ready]="ticketImageReady && !ticketPhotosLoading"
+                    [src]="activeTicketPhoto()?.url || ''"
+                    [alt]="activeTicketPhoto()?.name || 'Foto del ticket'"
+                    (load)="onTicketImageLoaded()"
+                    (error)="onTicketImageError()" />
+
+                  <span class="rs-ticket-viewer__badge">Ticket</span>
+                </button>
+
+                <div class="rs-ticket-panel__name">
+                  {{ activeTicketPhoto()?.name }}
+                </div>
+
+                @if (ticketPhotoRefs.length > 1) {
+                  <div class="rs-ticket-thumbs">
+                    @for (photo of ticketPhotoRefs; track photo.url) {
+                      <button
+                        type="button"
+                        class="rs-ticket-thumb"
+                        [class.is-active]="activeTicketPhoto()?.url === photo.url"
+                        (click)="selectTicketPhoto(photo)">
+                        <img [src]="photo.url" [alt]="photo.name" loading="lazy" />
+                      </button>
+                    }
+                  </div>
+                }
+              </section>
+            }
+
+            <section class="rs-upload-panel">
+              <div
+                class="rs-dropzone"
+                (click)="!guardando && fileInput.click()"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)"
+                [class.is-dragover]="isDragOver">
+
+                <input
+                  #fileInput
+                  type="file"
+                  hidden
+                  (change)="onFileSelected($event)"
+                  accept="image/*"
+                  multiple
+                />
+
+                <div class="rs-dropzone__icon">
+                  <mat-icon>cloud_upload</mat-icon>
+                </div>
+
+                <div class="rs-dropzone__eyebrow">Archivos OT</div>
+                <div class="rs-dropzone__title">Subir fotos a la orden</div>
+                <div class="rs-dropzone__subtitle">
+                  PNG, JPG o WEBP · múltiples imágenes · vista previa inmediata
+                </div>
+
+                <div class="rs-dropzone__actions">
+                  <span class="rs-chip">Imágenes técnicas</span>
+                  <span class="rs-chip">Haz clic o arrastra</span>
+                  <span class="rs-chip">Carga segura</span>
+                </div>
+
+                @if (selectedFileName) {
+                  <div class="rs-dropzone__count">{{ selectedFileName }}</div>
+                }
+              </div>
+            </section>
+          </div>
+
+          @if (localPhotoPreviews.length > 0) {
+            <div class="rs-local-gallery">
+              @for (p of localPhotoPreviews; track p.url; let i = $index) {
+                <article class="rs-photo-card">
+                  <div class="rs-photo-badge rs-photo-badge--local">OT</div>
+
+                  <button
+                    mat-icon-button
+                    type="button"
+                    class="rs-photo-remove"
+                    (click)="removeLocalFile(i)"
+                    [disabled]="guardando"
+                    aria-label="Eliminar foto">
+                    <mat-icon>close</mat-icon>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="rs-photo-card__viewer"
+                    (click)="openImageModal(p)">
+                    <img [src]="p.url" [alt]="p.name" loading="lazy" />
+                  </button>
+
+                  <div class="rs-photo-name">{{ p.name }}</div>
+                </article>
+              }
+            </div>
+          } @else {
+            <div class="rs-empty-upload">
+              <mat-icon>image</mat-icon>
+              <span>Aún no has agregado fotos propias a esta orden.</span>
+            </div>
+          }
+        </mat-card>
+      </section>
+
+      <aside class="rs-rail">
+        <div class="rs-rail-stack">
+          <mat-card class="rs-card rs-card--service">
+            <div class="rs-card-head rs-card-head--tight">
+              <div>
+                <div class="rs-section-kicker">Servicio</div>
+                <h2 class="rs-section-title">Información del servicio</h2>
               </div>
             </div>
-          </div>
 
-          <div class="rs-thumbs rs-thumbs-ticket">
-            <a
-              class="rs-thumb rs-thumb-ticket"
-              *ngFor="let p of ticketPhotoRefs"
-              [href]="p.url"
-              target="_blank"
-              rel="noopener">
-              <img [src]="p.url" [alt]="p.name" loading="lazy" />
-              <div class="rs-thumb-badge">Ticket</div>
-              <div class="rs-thumb-name">{{ p.name }}</div>
-            </a>
-          </div>
-        </div>
+            <div class="rs-field">
+              <label class="rs-field-label">Modalidad *</label>
 
-        <div class="rs-upload-panel">
-          <div
-            class="rs-dropzone"
-            (click)="!guardando && fileInput.click()"
-            (dragover)="onDragOver($event)"
-            (dragleave)="onDragLeave($event)"
-            (drop)="onDrop($event)"
-            [class.is-dragover]="isDragOver">
+              <mat-button-toggle-group
+                formControlName="tipo"
+                class="rs-service-group rs-service-group--rail"
+                [class.rs-service-group--error]="hasError('tipo')"
+                aria-label="Tipo de atención">
+                <mat-button-toggle value="TIENDA" class="rs-service-segment">
+                  <div class="rs-service-segment__body">
+                    <span class="rs-service-segment__title">En taller</span>
+                    <span class="rs-service-segment__sub">Recepción en sede</span>
+                  </div>
+                </mat-button-toggle>
 
-            <input
-              #fileInput
-              type="file"
-              hidden
-              (change)="onFileSelected($event)"
-              accept="image/*"
-              multiple
-            />
-
-            <div class="rs-dropzone-icon-wrap">
-              <mat-icon class="rs-dropzone-icon">cloud_upload</mat-icon>
+                <mat-button-toggle value="DOMICILIO" class="rs-service-segment">
+                  <div class="rs-service-segment__body">
+                    <span class="rs-service-segment__title">A domicilio</span>
+                    <span class="rs-service-segment__sub">Desplazamiento técnico</span>
+                  </div>
+                </mat-button-toggle>
+              </mat-button-toggle-group>
             </div>
 
-            <div class="rs-dropzone-main">
-              <div class="rs-dropzone-title">Subir fotos a la OT</div>
-              <div class="rs-dropzone-sub">
-                Arrastra y suelta aquí o <span class="rs-link">haz clic para seleccionar</span>
+            @if (!isDomicilio) {
+              <section class="rs-conditional-panel rs-conditional-panel--enter">
+                <div class="rs-field">
+                  <label class="rs-field-label">Fecha de recepción *</label>
+                  <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaRecepcion')">
+                    <input
+                      matInput
+                      [matDatepicker]="pickerRecepcionRail"
+                      formControlName="fechaRecepcion" />
+                    <mat-datepicker-toggle matSuffix [for]="pickerRecepcionRail"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerRecepcionRail></mat-datepicker>
+                  </mat-form-field>
+                </div>
+              </section>
+            } @else {
+              <section class="rs-conditional-panel rs-conditional-panel--enter">
+                <div class="rs-grid rs-grid--12">
+                  <div class="rs-field rs-col-12">
+                    <label class="rs-field-label">Dirección / ubicación *</label>
+                    <mat-form-field appearance="outline" [class.rs-field-error]="hasError('direccion')">
+                      <input
+                        matInput
+                        formControlName="direccion"
+                        autocomplete="off"
+                        placeholder="Calle, sector, edificio o referencia" />
+                    </mat-form-field>
+                  </div>
+
+                  <div class="rs-field rs-col-7">
+                    <label class="rs-field-label">Fecha de visita *</label>
+                    <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaCita')">
+                      <input
+                        matInput
+                        [matDatepicker]="pickerCita"
+                        formControlName="fechaCita" />
+                      <mat-datepicker-toggle matSuffix [for]="pickerCita"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerCita></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="rs-field rs-col-3">
+                    <label class="rs-field-label">Hora *</label>
+                    <mat-form-field appearance="outline" [class.rs-field-error]="hasError('horaCita')">
+                      <input
+                        matInput
+                        formControlName="horaCita"
+                        autocomplete="off"
+                        placeholder="09:00"
+                        inputmode="numeric"
+                        maxlength="5"
+                        (input)="onHoraInput($event)"
+                        (blur)="onHoraBlur()" />
+                    </mat-form-field>
+                  </div>
+
+                  <div class="rs-field rs-col-2">
+                    <label class="rs-field-label">Período *</label>
+                    <mat-button-toggle-group
+                      formControlName="periodoCita"
+                      class="rs-period-group"
+                      aria-label="Período">
+                      <mat-button-toggle value="AM">AM</mat-button-toggle>
+                      <mat-button-toggle value="PM">PM</mat-button-toggle>
+                    </mat-button-toggle-group>
+                  </div>
+
+                  <div class="rs-field rs-col-12">
+                    <label class="rs-field-label">Notas de acceso</label>
+                    <mat-form-field appearance="outline" class="rs-textarea-field rs-textarea-field--sm">
+                      <textarea
+                        matInput
+                        rows="2"
+                        formControlName="notasAcceso"
+                        placeholder="Portería, piso, torre o referencia">
+                      </textarea>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </section>
+            }
+          </mat-card>
+
+          <mat-card class="rs-card rs-card--summary">
+            <div class="rs-card-head rs-card-head--tight">
+              <div>
+                <div class="rs-section-kicker">Resumen</div>
+                <h2 class="rs-section-title">Resumen de la orden</h2>
               </div>
             </div>
 
-            <div class="rs-dropzone-count" *ngIf="selectedFileName">
-              {{ selectedFileName }}
-            </div>
-          </div>
+            <div class="rs-summary">
+              <div class="rs-summary-row">
+                <span class="rs-summary-label">Modalidad</span>
+                <strong class="rs-summary-value">{{ summaryTipoLabel }}</strong>
+              </div>
 
-          <div class="rs-thumbs rs-thumbs-local" *ngIf="localPhotoPreviews.length > 0">
-            <div class="rs-thumb rs-thumb-local" *ngFor="let p of localPhotoPreviews; let i = index">
-              <img [src]="p.url" alt="Foto OT" loading="lazy" />
+              <div class="rs-summary-row">
+                <span class="rs-summary-label">Prioridad</span>
+                <strong class="rs-summary-value">{{ summaryPrioridadLabel }}</strong>
+              </div>
+
+              <div class="rs-summary-row">
+                <span class="rs-summary-label">Equipo</span>
+                <strong class="rs-summary-value">{{ summaryEquipoLabel }}</strong>
+              </div>
+
+              <div class="rs-summary-row">
+                <span class="rs-summary-label">Cliente</span>
+                <strong class="rs-summary-value">{{ summaryClienteLabel }}</strong>
+              </div>
+
+              <div class="rs-summary-row">
+                <span class="rs-summary-label">Técnico</span>
+                <strong class="rs-summary-value">{{ summaryTecnicoLabel }}</strong>
+              </div>
+
+              <div class="rs-summary-row">
+                <span class="rs-summary-label">Fecha</span>
+                <strong class="rs-summary-value">{{ summaryFechaLabel }}</strong>
+              </div>
+
+              <div class="rs-summary-row">
+                <span class="rs-summary-label">Fotos ticket</span>
+                <strong class="rs-summary-value">{{ ticketPhotoRefs.length }}</strong>
+              </div>
+
+              <div class="rs-summary-row">
+                <span class="rs-summary-label">Fotos OT</span>
+                <strong class="rs-summary-value">{{ localPhotoPreviews.length }}</strong>
+              </div>
+
+              <div class="rs-summary-row">
+                <span class="rs-summary-label">Vinculada a ticket</span>
+                <strong class="rs-summary-value">{{ summaryVinculoTicketLabel }}</strong>
+              </div>
+            </div>
+          </mat-card>
+
+          <mat-card class="rs-card rs-card--actions">
+            <div class="rs-actions-meta">
+              <div class="rs-actions-pill">
+                <span class="rs-actions-pill__kicker">Atajo</span>
+                <span class="rs-actions-pill__value">Ctrl / ⌘ + Enter</span>
+              </div>
+
+              <div class="rs-actions-pill">
+                <span class="rs-actions-pill__kicker">UX</span>
+                <span class="rs-actions-pill__value">Guardado rápido</span>
+              </div>
+            </div>
+
+            <div class="rs-actions-buttons">
               <button
-                mat-icon-button
+                mat-stroked-button
                 type="button"
-                class="rs-thumb-remove"
-                (click)="removeLocalFile(i)"
+                class="rs-btn-secondary rs-btn-secondary--full"
+                (click)="cancelar()"
                 [disabled]="guardando">
-                <mat-icon>close</mat-icon>
+                Cancelar
               </button>
-              <div class="rs-thumb-badge rs-thumb-badge-local">OT</div>
-              <div class="rs-thumb-name">{{ p.name }}</div>
+
+              <button
+                mat-flat-button
+                type="button"
+                class="rs-btn rs-btn--primary rs-btn--full"
+                (click)="crear()"
+                [disabled]="guardando || form.invalid">
+                <span class="rs-btn__shimmer"></span>
+
+                <span class="rs-btn__label">
+                  @if (guardando) {
+                    <mat-spinner diameter="18" strokeWidth="3"></mat-spinner>
+                  } @else {
+                    <mat-icon>task_alt</mat-icon>
+                  }
+
+                  <span>{{ guardando ? 'Guardando orden...' : 'Guardar orden de trabajo' }}</span>
+                </span>
+              </button>
             </div>
-          </div>
+
+            <div class="rs-actions-help">
+              Guarda sin quitar las manos del teclado con <strong>Ctrl / ⌘ + Enter</strong>.
+            </div>
+          </mat-card>
         </div>
-      </div>
-    </mat-card>
-
-    <div class="rs-actions-bar">
-      <button
-        mat-stroked-button
-        type="button"
-        class="btn-cancel"
-        (click)="cancelar()"
-        [disabled]="guardando">
-        Cancelar
-      </button>
-
-      <button
-        mat-flat-button
-        type="button"
-        class="btn-save"
-        (click)="crear()"
-        [disabled]="guardando || form.invalid">
-        {{ guardando ? 'Guardando...' : 'Guardar orden de trabajo' }}
-      </button>
+      </aside>
     </div>
   </form>
-</div>
+
+  @if (isImageModalOpen) {
+    <div class="rs-lightbox" (click)="closeImageModal()">
+      <div class="rs-lightbox__dialog" (click)="$event.stopPropagation()">
+        <div class="rs-lightbox__bar">
+          <div class="rs-lightbox__meta">
+            <div class="rs-lightbox__eyebrow">Vista ampliada</div>
+            <div class="rs-lightbox__name">{{ imageModalName }}</div>
+          </div>
+
+          <button
+            mat-icon-button
+            type="button"
+            class="rs-lightbox__close"
+            (click)="closeImageModal()"
+            aria-label="Cerrar">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="rs-lightbox__stage">
+          <img [src]="imageModalUrl" [alt]="imageModalName || 'Imagen'" />
+        </div>
+      </div>
+    </div>
+  }
+</main>

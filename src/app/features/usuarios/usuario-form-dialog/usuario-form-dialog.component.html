@@ -1,46 +1,118 @@
-<div class="rs-modal-card">
-  <div class="rs-modal-header">
-    <div class="rs-icon-circle">
-      <mat-icon>{{ data ? 'person_edit' : 'person_add' }}</mat-icon>
+<div class="rs-dialog-shell">
+  <div class="rs-dialog-header">
+    <button
+      mat-icon-button
+      type="button"
+      class="rs-close-btn"
+      (click)="cancelar()"
+      aria-label="Cerrar"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="rs-dialog-header__center">
+      <div class="rs-icon-orb">
+        <mat-icon>{{ data ? 'person_edit' : 'person_add' }}</mat-icon>
+      </div>
+
+      <h1 class="rs-dialog-title">
+        {{ data ? 'Editar usuario' : 'Crear nuevo usuario' }}
+      </h1>
+
+      <p class="rs-dialog-subtitle">
+        {{
+          data
+            ? 'Actualiza la información del usuario manteniendo una experiencia visual consistente.'
+            : 'Completa los datos para registrar un nuevo usuario en la plataforma.'
+        }}
+      </p>
     </div>
-    <h1 class="rs-modal-title">{{ data ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}</h1>
   </div>
 
   <mat-dialog-content class="rs-dialog-content-custom">
     <form [formGroup]="form" class="rs-form-container" autocomplete="off">
-      
       <div class="rs-form-group">
-        <label>Nombre completo</label>
-        <input type="text" formControlName="nombre" class="rs-input-base" placeholder="Nombre del usuario">
+        <label class="rs-field-label">Nombre completo</label>
+        <mat-form-field appearance="outline" class="rs-form-field">
+          <mat-icon matPrefix>person</mat-icon>
+          <input
+            matInput
+            type="text"
+            formControlName="nombre"
+            placeholder="Nombre del usuario"
+          />
+        </mat-form-field>
       </div>
 
       <div class="rs-form-group">
-        <label>Correo electrónico</label>
-        <input type="email" formControlName="email" class="rs-input-base" placeholder="correo@ejemplo.com">
+        <label class="rs-field-label">Correo electrónico</label>
+        <mat-form-field appearance="outline" class="rs-form-field">
+          <mat-icon matPrefix>mail</mat-icon>
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+            placeholder="correo@ejemplo.com"
+          />
+        </mat-form-field>
       </div>
 
       <div class="rs-form-group">
-        <label>Rol del sistema</label>
-        <mat-select formControlName="rol" 
-                    class="rs-input-base rs-select-custom" 
-                    placeholder="Selecciona un rol"
-                    panelClass="rs-select-panel-white">
-          <mat-option value="ADMIN">ADMIN</mat-option>
-          <mat-option value="TECNICO">TECNICO</mat-option>
-        </mat-select>
+        <label class="rs-field-label">Rol del sistema</label>
+        <mat-form-field appearance="outline" class="rs-form-field">
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-select
+            formControlName="rol"
+            placeholder="Selecciona un rol"
+            panelClass="rs-select-panel-white"
+          >
+            <mat-option value="ADMIN">ADMIN</mat-option>
+            <mat-option value="TECNICO">TECNICO</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
 
       <div class="rs-form-group" *ngIf="!data">
-        <label>Contraseña</label>
-        <input type="password" formControlName="password" class="rs-input-base" placeholder="••••••••">
+        <label class="rs-field-label">Contraseña</label>
+        <mat-form-field appearance="outline" class="rs-form-field">
+          <mat-icon matPrefix>lock</mat-icon>
+          <input
+            matInput
+            type="password"
+            formControlName="password"
+            placeholder="••••••••"
+          />
+        </mat-form-field>
       </div>
     </form>
   </mat-dialog-content>
 
   <mat-dialog-actions class="rs-dialog-actions-right">
-    <button mat-button (click)="cancelar()" class="btn-cancel">Cancelar</button>
-    <button mat-raised-button (click)="guardar()" [disabled]="form.invalid" class="btn-save">
-      {{ data ? 'Actualizar' : 'Guardar' }}
+    <button
+      mat-button
+      type="button"
+      (click)="cancelar()"
+      class="rs-btn-secondary"
+    >
+      Cancelar
+    </button>
+
+    <button
+      mat-flat-button
+      type="button"
+      (click)="guardar()"
+      [disabled]="form.invalid"
+      class="rs-btn rs-btn--primary rs-btn-save"
+    >
+      <span class="rs-btn__shimmer"></span>
+      <span class="rs-btn__label">
+        <span class="rs-btn__icon-slot">
+          <mat-icon>{{ data ? 'save' : 'add' }}</mat-icon>
+        </span>
+        <span class="rs-btn__text">
+          {{ data ? 'Actualizar usuario' : 'Guardar usuario' }}
+        </span>
+      </span>
     </button>
   </mat-dialog-actions>
 </div>

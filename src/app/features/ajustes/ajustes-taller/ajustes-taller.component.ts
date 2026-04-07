@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 // Angular Material
@@ -6,7 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon'; // <--- Importante añadir este
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AjustesService } from '../ajustes.service';
@@ -15,16 +16,17 @@ import { AjustesService } from '../ajustes.service';
   selector: 'rs-ajustes-taller',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
-    MatCardModule, 
-    MatFormFieldModule, 
-    MatInputModule, 
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatButtonModule,
-    MatIconModule, // <--- Y registrarlo aquí
+    MatIconModule,
     MatSnackBarModule
   ],
   templateUrl: './ajustes-taller.component.html',
-  styleUrl: './ajustes-taller.component.scss',
+  styleUrl: './ajustes-taller.component.scss'
 })
 export class AjustesTallerComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -36,13 +38,13 @@ export class AjustesTallerComponent implements OnInit {
     telefono: [''],
     email: [''],
     direccion: [''],
-    prefijoOt: [{ value: '', disabled: true }],
+    prefijoOt: [{ value: '', disabled: true }]
   });
 
   ngOnInit(): void {
     this.ajustes.obtenerTaller().subscribe({
       next: (t) => this.form.patchValue(t),
-      error: () => this.snack.open('Error cargando ajustes', 'OK', { duration: 2500 }),
+      error: () => this.snack.open('Error cargando ajustes', 'OK', { duration: 2500 })
     });
   }
 
@@ -54,10 +56,10 @@ export class AjustesTallerComponent implements OnInit {
       nombre: v.nombre!,
       telefono: v.telefono || null,
       email: v.email || null,
-      direccion: v.direccion || null,
+      direccion: v.direccion || null
     }).subscribe({
       next: () => this.snack.open('Guardado', 'OK', { duration: 2000 }),
-      error: () => this.snack.open('Error guardando', 'OK', { duration: 2500 }),
+      error: () => this.snack.open('Error guardando', 'OK', { duration: 2500 })
     });
   }
 }

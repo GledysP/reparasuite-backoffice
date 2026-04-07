@@ -6,14 +6,17 @@
         <p class="rs-subtitle">Gestiona los equipos registrados de tus clientes.</p>
       </div>
 
-      <button mat-flat-button class="rs-primary-btn" (click)="irNuevo()">
-        <span class="rs-primary-btn__shimmer"></span>
+      <button
+        mat-flat-button
+        type="button"
+        class="rs-btn rs-btn--primary rs-topbar-btn"
+        (click)="irNuevo()"
+      >
+        <span class="rs-btn__shimmer"></span>
 
-        <span class="rs-primary-btn__label">
-          <span class="rs-primary-btn__icon">
-            <mat-icon>add</mat-icon>
-          </span>
-          <span>Nuevo equipo</span>
+        <span class="rs-btn__label">
+          <mat-icon>add</mat-icon>
+          Nuevo equipo
         </span>
       </button>
     </header>
@@ -24,70 +27,72 @@
       </div>
     }
 
-    <section class="rs-grid-cards">
-      @for (e of items(); track e.id) {
-        <mat-card class="rs-card" appearance="outlined">
-          <div class="rs-card-topline"></div>
+    @if (!loading()) {
+      <section class="rs-grid-cards rs-fade-up">
+        @for (e of items(); track e.id) {
+          <mat-card class="rs-card" appearance="outlined">
+            <div class="rs-card-topline"></div>
 
-          <div class="rs-card-inner">
-            <div class="rs-card-head">
-              <div class="rs-badge">
-                {{ e.codigoEquipo || 'EQ-S/COD' }}
+            <div class="rs-card-inner">
+              <div class="rs-card-head">
+                <div class="rs-badge">
+                  {{ e.codigoEquipo || 'EQ-S/COD' }}
+                </div>
+
+                <div class="rs-state" [class.inactive]="!e.estadoActivo">
+                  <span class="rs-state-dot"></span>
+                  {{ e.estadoActivo ? 'Activo' : 'Inactivo' }}
+                </div>
               </div>
 
-              <div class="rs-state" [class.inactive]="!e.estadoActivo">
-                <span class="rs-state-dot"></span>
-                {{ e.estadoActivo ? 'Activo' : 'Inactivo' }}
+              <div class="rs-card-body">
+                <div class="rs-card-title">
+                  {{
+                    (
+                      (e.marca || '') +
+                      ((e.marca || '') && (e.modelo || '') ? ' ' : '') +
+                      (e.modelo || '')
+                    ).trim() || 'Equipo sin modelo'
+                  }}
+                </div>
+
+                <div class="rs-card-sub">
+                  {{ e.categoriaEquipoNombre || 'Sin categoría' }}
+                </div>
+
+                <div class="rs-client-line">
+                  <mat-icon>person</mat-icon>
+                  <span>{{ e.clienteNombre || '—' }}</span>
+                </div>
+
+                <div class="rs-meta-inline">
+                  <span class="rs-meta-item">
+                    <mat-icon>qr_code_2</mat-icon>
+                    <span>{{ e.numeroSerie || '—' }}</span>
+                  </span>
+
+                  <span class="rs-meta-dot">•</span>
+
+                  <span class="rs-meta-item">
+                    <mat-icon>place</mat-icon>
+                    <span>{{ e.ubicacionHabitual || '—' }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="rs-card-footer">
+                <a
+                  mat-button
+                  class="ghost-view-btn"
+                  [routerLink]="['/equipos', e.id]">
+                  <mat-icon>visibility</mat-icon>
+                  Ver
+                </a>
               </div>
             </div>
-
-            <div class="rs-card-body">
-              <div class="rs-card-title">
-                {{
-                  (
-                    (e.marca || '') +
-                    ((e.marca || '') && (e.modelo || '') ? ' ' : '') +
-                    (e.modelo || '')
-                  ).trim() || 'Equipo sin modelo'
-                }}
-              </div>
-
-              <div class="rs-card-sub">
-                {{ e.categoriaEquipoNombre || 'Sin categoría' }}
-              </div>
-
-              <div class="rs-client-line">
-                <mat-icon>person</mat-icon>
-                <span>{{ e.clienteNombre || '—' }}</span>
-              </div>
-
-              <div class="rs-meta-inline">
-                <span class="rs-meta-item">
-                  <mat-icon>qr_code_2</mat-icon>
-                  <span>{{ e.numeroSerie || '—' }}</span>
-                </span>
-
-                <span class="rs-meta-dot">•</span>
-
-                <span class="rs-meta-item">
-                  <mat-icon>place</mat-icon>
-                  <span>{{ e.ubicacionHabitual || '—' }}</span>
-                </span>
-              </div>
-            </div>
-
-            <div class="rs-card-footer">
-              <a
-                mat-button
-                class="ghost-view-btn"
-                [routerLink]="['/equipos', e.id]">
-                <mat-icon>visibility</mat-icon>
-                Ver
-              </a>
-            </div>
-          </div>
-        </mat-card>
-      }
-    </section>
+          </mat-card>
+        }
+      </section>
+    }
   </div>
 </div>

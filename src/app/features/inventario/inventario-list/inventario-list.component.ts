@@ -12,7 +12,14 @@ import { InventarioItemResumenDto } from '../../../core/models/tipos';
 @Component({
   selector: 'rs-inventario-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule
+  ],
   templateUrl: './inventario-list.component.html',
   styleUrl: './inventario-list.component.scss'
 })

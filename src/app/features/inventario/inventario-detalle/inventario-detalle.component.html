@@ -1,59 +1,274 @@
 @if (item(); as i) {
-  <div class="rs-page-wrap">
-    <div class="rs-topbar">
-      <div>
-        <h1 class="rs-title">{{ i.nombre }}</h1>
-        <p class="rs-subtitle">{{ i.sku }} · {{ i.categoria?.nombre || 'Sin categoría' }}</p>
+  <div class="rs-detail-page">
+    <header class="rs-page-header">
+      <div class="rs-page-copy">
+        <h1 class="rs-page-title">Detalle de artículo</h1>
+        <p class="rs-page-subtitle">
+          Ficha técnica, métricas operativas y trazabilidad del inventario.
+        </p>
       </div>
 
-      <div class="rs-actions">
-        <a mat-stroked-button [routerLink]="['/inventario', i.id, 'editar']">Editar</a>
-        <button mat-flat-button class="rs-primary-btn" (click)="abrirMovimiento()">Registrar movimiento</button>
+      <div class="rs-page-actions">
+        <a
+          mat-stroked-button
+          class="rs-btn rs-btn--ghost"
+          [routerLink]="['/inventario', i.id, 'editar']"
+        >
+          Editar
+        </a>
+
+        <button
+          mat-flat-button
+          type="button"
+          class="rs-btn rs-btn--primary"
+          (click)="abrirMovimiento()"
+        >
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">Registrar movimiento</span>
+        </button>
       </div>
-    </div>
+    </header>
 
-    <mat-card class="rs-card">
-      <div class="rs-grid">
-        <div><strong>Stock actual:</strong> {{ i.stockActual }}</div>
-        <div><strong>Stock mínimo:</strong> {{ i.stockMinimo }}</div>
-        <div><strong>Precio venta:</strong> {{ i.precioVenta }}</div>
-        <div><strong>Costo promedio:</strong> {{ i.costoPromedio }}</div>
-        <div><strong>Marca:</strong> {{ i.marca || '—' }}</div>
-        <div><strong>Unidad:</strong> {{ i.unidadMedida }}</div>
-        <div class="span-2"><strong>Compatibilidad:</strong> {{ i.modeloCompatibilidad || '—' }}</div>
-        <div class="span-2"><strong>Descripción:</strong> {{ i.descripcion || '—' }}</div>
-      </div>
-    </mat-card>
+    <section class="rs-main-grid">
+      <mat-card class="rs-shell rs-shell--hero">
+        <mat-card-content class="rs-shell__content">
+          <div class="rs-status-inline">
+            <span class="rs-status-inline__dot"></span>
+            <span class="rs-status-inline__text">En inventario</span>
+          </div>
 
-    <mat-card class="rs-card rs-mt">
-      <h3 class="rs-block-title">Movimientos</h3>
+          <div class="rs-hero-layout">
+            <div class="rs-hero-copy">
+              <h2 class="rs-item-title">{{ i.nombre }}</h2>
 
-      <div class="rs-table-wrap">
-        <table class="rs-table">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Tipo</th>
-              <th>Cantidad</th>
-              <th>Antes</th>
-              <th>Después</th>
-              <th>Motivo</th>
-            </tr>
-          </thead>
-          <tbody>
+              <p class="rs-hero-description">
+                Visión operativa del artículo, disponibilidad actual y métricas clave del inventario.
+              </p>
+
+              <div class="rs-meta-row">
+                <span class="rs-meta-pill">SKU {{ i.sku || 'Sin SKU' }}</span>
+                <span class="rs-meta-pill">{{ i.categoria?.nombre || 'Sin categoría' }}</span>
+                <span class="rs-meta-pill">{{ i.marca || 'Sin marca' }}</span>
+              </div>
+            </div>
+
+            <aside
+              class="rs-stock-summary"
+              [class.rs-stock-summary--low]="hasLowStock(i)"
+            >
+              <span class="rs-stock-summary__eyebrow">Disponibilidad</span>
+
+              <div class="rs-stock-summary__headline">
+                <strong class="rs-stock-summary__value">
+                  {{ numberValue(i.stockActual) }}
+                </strong>
+                <span class="rs-stock-summary__unit">
+                  {{ unitLabel(i.unidadMedida) }}
+                </span>
+              </div>
+
+              @if (hasLowStock(i)) {
+                <p class="rs-stock-summary__hint rs-stock-summary__hint--alert">
+                  Stock bajo · Reposición recomendada
+                </p>
+              } @else {
+                <p class="rs-stock-summary__hint">
+                  Mínimo {{ numberValue(i.stockMinimo) }} {{ unitLabel(i.unidadMedida) }}
+                </p>
+              }
+            </aside>
+          </div>
+
+          <div class="rs-insight-strip">
+            <div class="rs-insight-item">
+              <span class="rs-insight-item__label">Stock actual</span>
+              <strong class="rs-insight-item__value">
+                {{ numberValue(i.stockActual) }} {{ unitLabel(i.unidadMedida) }}
+              </strong>
+            </div>
+
+            <div class="rs-insight-item">
+              <span class="rs-insight-item__label">Stock mínimo</span>
+              <strong class="rs-insight-item__value">
+                {{ numberValue(i.stockMinimo) }} {{ unitLabel(i.unidadMedida) }}
+              </strong>
+            </div>
+
+            <div class="rs-insight-item">
+              <span class="rs-insight-item__label">Precio de venta</span>
+              <strong class="rs-insight-item__value">
+                {{ formatMoney(i.precioVenta) }}
+              </strong>
+            </div>
+
+            <div class="rs-insight-item">
+              <span class="rs-insight-item__label">Costo promedio</span>
+              <strong class="rs-insight-item__value">
+                {{ formatMoney(i.costoPromedio) }}
+              </strong>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="rs-shell rs-shell--specs">
+        <mat-card-content class="rs-shell__content">
+          <div class="rs-section-head">
+            <div>
+              <h3 class="rs-section-title">Información del artículo</h3>
+              <p class="rs-section-subtitle">
+                Datos técnicos y descriptivos del componente.
+              </p>
+            </div>
+          </div>
+
+          <div class="rs-spec-list">
+            <div class="rs-spec-row">
+              <span class="rs-spec-row__label">Marca</span>
+              <span class="rs-spec-row__value">{{ i.marca || '—' }}</span>
+            </div>
+
+            <div class="rs-spec-row">
+              <span class="rs-spec-row__label">Unidad</span>
+              <span class="rs-spec-row__value">{{ unitLabel(i.unidadMedida) }}</span>
+            </div>
+
+            <div class="rs-spec-row">
+              <span class="rs-spec-row__label">Compatibilidad</span>
+              <span class="rs-spec-row__value">{{ i.modeloCompatibilidad || '—' }}</span>
+            </div>
+          </div>
+
+          <div class="rs-description-panel">
+            <span class="rs-description-panel__label">Descripción</span>
+            <p class="rs-description-panel__value">
+              {{ i.descripcion || 'Sin descripción registrada.' }}
+            </p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <mat-card class="rs-shell rs-shell--table">
+      <mat-card-content class="rs-shell__content">
+        <div class="rs-section-head rs-section-head--table">
+          <div>
+            <h3 class="rs-section-title">Movimientos</h3>
+            <p class="rs-section-subtitle">
+              Entradas, salidas y ajustes registrados para este artículo.
+            </p>
+          </div>
+        </div>
+
+        @if (movimientos().length > 0) {
+          <div class="rs-table-wrap">
+            <table class="rs-data-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Cantidad</th>
+                  <th>Antes</th>
+                  <th>Después</th>
+                  <th>Motivo</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (m of movimientos(); track m.id) {
+                  <tr>
+                    <td>{{ m.fechaMovimiento | date:'dd/MM/yyyy HH:mm' }}</td>
+
+                    <td>
+                      <span
+                        class="rs-movement-badge"
+                        [attr.data-type]="m.tipoMovimiento"
+                      >
+                        {{ tipoMovimientoLabel(m.tipoMovimiento) }}
+                      </span>
+                    </td>
+
+                    <td class="rs-data-table__strong">
+                      {{ numberValue(m.cantidad) }} {{ unitLabel(i.unidadMedida) }}
+                    </td>
+
+                    <td>{{ numberValue(m.stockAnterior) }}</td>
+
+                    <td class="rs-data-table__strong">
+                      {{ numberValue(m.stockResultante) }}
+                    </td>
+
+                    <td class="rs-data-table__muted">
+                      {{ m.motivo || '—' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="rs-mobile-list">
             @for (m of movimientos(); track m.id) {
-              <tr>
-                <td>{{ m.fechaMovimiento | date:'d/MM/y HH:mm' }}</td>
-                <td>{{ m.tipoMovimiento }}</td>
-                <td>{{ m.cantidad }}</td>
-                <td>{{ m.stockAnterior }}</td>
-                <td>{{ m.stockResultante }}</td>
-                <td>{{ m.motivo || '—' }}</td>
-              </tr>
+              <article class="rs-mobile-card">
+                <div class="rs-mobile-card__top">
+                  <span
+                    class="rs-movement-badge"
+                    [attr.data-type]="m.tipoMovimiento"
+                  >
+                    {{ tipoMovimientoLabel(m.tipoMovimiento) }}
+                  </span>
+
+                  <span class="rs-mobile-card__date">
+                    {{ m.fechaMovimiento | date:'dd/MM/yyyy HH:mm' }}
+                  </span>
+                </div>
+
+                <div class="rs-mobile-grid">
+                  <div class="rs-mobile-item">
+                    <span class="rs-mobile-item__label">Cantidad</span>
+                    <span class="rs-mobile-item__value">
+                      {{ numberValue(m.cantidad) }} {{ unitLabel(i.unidadMedida) }}
+                    </span>
+                  </div>
+
+                  <div class="rs-mobile-item">
+                    <span class="rs-mobile-item__label">Antes</span>
+                    <span class="rs-mobile-item__value">
+                      {{ numberValue(m.stockAnterior) }}
+                    </span>
+                  </div>
+
+                  <div class="rs-mobile-item">
+                    <span class="rs-mobile-item__label">Después</span>
+                    <span class="rs-mobile-item__value">
+                      {{ numberValue(m.stockResultante) }}
+                    </span>
+                  </div>
+
+                  <div class="rs-mobile-item rs-mobile-item--full">
+                    <span class="rs-mobile-item__label">Motivo</span>
+                    <span class="rs-mobile-item__value rs-mobile-item__value--muted">
+                      {{ m.motivo || '—' }}
+                    </span>
+                  </div>
+                </div>
+              </article>
             }
-          </tbody>
-        </table>
-      </div>
+          </div>
+        } @else {
+          <div class="rs-empty-state">
+            <h4>No hay movimientos registrados</h4>
+            <p>Cuando existan entradas, salidas o ajustes, se mostrarán aquí.</p>
+          </div>
+        }
+      </mat-card-content>
     </mat-card>
+  </div>
+} @else {
+  <div class="rs-detail-page">
+    <div class="rs-loading-state">
+      <h3>Cargando artículo...</h3>
+      <p>Estamos preparando la información del inventario.</p>
+    </div>
   </div>
 }
