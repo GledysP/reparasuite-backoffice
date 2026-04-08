@@ -1,4 +1,4 @@
-$rs-bg: #f8f9fa;
+$rs-bg: #f8f9fa; /* FONDO ORIGINAL INTACTO */
 $rs-white: #ffffff;
 
 $rs-text-strong: #1f2937;
@@ -9,7 +9,8 @@ $rs-label: #94a3b8;
 $rs-border: rgba(15, 23, 42, 0.08);
 $rs-border-soft: rgba(15, 23, 42, 0.06);
 
-$rs-shadow-card: 0 4px 12px rgba(0, 0, 0, 0.03);
+/* Sombras suavizadas Premium */
+$rs-shadow-card: 0 10px 30px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02);
 $rs-shadow-soft: 0 12px 28px rgba(15, 23, 42, 0.06);
 $rs-shadow-modal: 0 28px 80px rgba(15, 23, 42, 0.28);
 $rs-shadow-cta:
@@ -33,7 +34,7 @@ $rs-danger: #dc3f5f;
 $rs-danger-soft: rgba(220, 63, 95, 0.14);
 
 $rs-radius-card: 22px;
-$rs-radius-field: 22px;
+$rs-radius-field: 16px; /* Cambiado de 22px a 16px para el look Pill más estilizado */
 $rs-radius-pill: 999px;
 
 $rs-field-height: 44px;
@@ -69,13 +70,10 @@ $rs-field-height: 44px;
   }
 }
 
+/* Animación Shimmer que me diste */
 @keyframes rsShimmer {
-  0% {
-    transform: translateX(-160%) skewX(-24deg);
-  }
-  100% {
-    transform: translateX(220%) skewX(-24deg);
-  }
+  0% { transform: translateX(-160%) skewX(-24deg); }
+  100% { transform: translateX(220%) skewX(-24deg); }
 }
 
 :host,
@@ -169,7 +167,7 @@ $rs-field-height: 44px;
   position: relative;
   overflow: hidden;
   border-radius: $rs-radius-card !important;
-  border: 1px solid $rs-border-soft !important;
+  border: 1px solid rgba(15, 23, 42, 0.04) !important; /* Borde más suave */
   background: $rs-white !important;
   box-shadow: $rs-shadow-card !important;
   padding: 16px !important;
@@ -313,15 +311,17 @@ $rs-field-height: 44px;
   border-radius: 16px;
 }
 
+/* Modificado para Toggle iOS */
 .rs-service-segment {
   border: 1px solid $rs-border !important;
-  border-radius: 18px !important;
+  border-radius: 16px !important;
   background: $rs-white !important;
   overflow: hidden;
   transition:
     transform 150ms ease,
     box-shadow 150ms ease,
-    border-color 150ms ease !important;
+    border-color 150ms ease,
+    background 150ms ease !important;
 
   &:hover {
     transform: translateY(-1px);
@@ -330,6 +330,7 @@ $rs-field-height: 44px;
 
   &.mat-button-toggle-checked {
     border-color: rgba(0, 191, 245, 0.25) !important;
+    background: #f0fbff !important;
     box-shadow:
       0 6px 18px rgba(15, 23, 42, 0.04),
       inset 0 -2px 0 rgba(0, 191, 245, 0.95) !important;
@@ -370,7 +371,7 @@ $rs-field-height: 44px;
 
 .rs-priority-segment {
   min-height: 40px !important;
-  border-radius: 999px !important;
+  border-radius: 16px !important; /* Estilo iOS */
   border: 1px solid $rs-border !important;
   background: $rs-white !important;
   transition:
@@ -520,10 +521,12 @@ $rs-field-height: 44px;
   color: $rs-text-strong;
 }
 
+/* Modificado para separar los botones */
 .rs-actions-buttons {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 8px; /* Espaciado extra con la card de arriba */
 }
 
 .rs-actions-help {
@@ -561,6 +564,7 @@ $rs-field-height: 44px;
   color: $rs-muted !important;
 }
 
+/* Botón Primary Premium que me enviaste */
 .rs-btn {
   min-width: 292px;
   height: 48px !important;
@@ -591,7 +595,7 @@ $rs-field-height: 44px;
   }
 
   &:disabled {
-    opacity: 0.72;
+    opacity: 0.7;
     box-shadow: none !important;
   }
 }
@@ -630,6 +634,7 @@ $rs-field-height: 44px;
   }
 }
 
+/* Todo el bloque de Attachments Intacto */
 .rs-attachments-body {
   display: grid;
   grid-template-columns: 290px minmax(0, 1fr);
@@ -1062,6 +1067,7 @@ $rs-field-height: 44px;
   }
 }
 
+/* Overrides Premium inyectados en tu bloque original */
 :host ::ng-deep {
   .mat-icon {
     font-family: 'Material Icons', 'Material Symbols Outlined' !important;
@@ -1086,7 +1092,7 @@ $rs-field-height: 44px;
     min-height: $rs-field-height !important;
     border-radius: $rs-radius-field !important;
     background: #ffffff !important;
-    box-shadow: none !important;
+    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.02) !important; /* Añadida sombra muy sutil */
     overflow: hidden !important;
     transition:
       border-color 160ms ease,
@@ -1108,14 +1114,15 @@ $rs-field-height: 44px;
     border-width: 1px !important;
   }
 
+  /* El focus Neón que le da el toque caro */
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-    border-color: rgba(0, 191, 245, 0.26) !important;
+    border-color: #00d1ff !important;
   }
 
   .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
-    box-shadow: 0 0 0 3px rgba(0, 191, 245, 0.08) !important;
+    box-shadow: 0 0 0 3px rgba(0, 209, 255, 0.1) !important;
   }
 
   .rs-field-error .mdc-notched-outline__leading,
@@ -1140,7 +1147,7 @@ $rs-field-height: 44px;
   textarea.mat-mdc-input-element,
   .mat-mdc-select-value-text {
     color: $rs-text-strong !important;
-    font-size: 12.5px !important;
+    font-size: 13px !important; /* Mejor lectura */
     font-weight: 600 !important;
     letter-spacing: -0.01em;
   }

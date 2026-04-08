@@ -547,53 +547,34 @@
             </div>
           </mat-card>
 
-          <mat-card class="rs-card rs-card--actions">
-            <div class="rs-actions-meta">
-              <div class="rs-actions-pill">
-                <span class="rs-actions-pill__kicker">Atajo</span>
-                <span class="rs-actions-pill__value">Ctrl / ⌘ + Enter</span>
-              </div>
+          <div class="rs-actions-buttons">
+            <button
+              mat-stroked-button
+              type="button"
+              class="rs-btn-secondary rs-btn-secondary--full"
+              (click)="cancelar()"
+              [disabled]="guardando">
+              Cancelar
+            </button>
 
-              <div class="rs-actions-pill">
-                <span class="rs-actions-pill__kicker">UX</span>
-                <span class="rs-actions-pill__value">Guardado rápido</span>
-              </div>
-            </div>
+            <button
+              mat-flat-button
+              type="button"
+              class="rs-btn rs-btn--primary rs-btn--full"
+              (click)="crear()"
+              [disabled]="guardando || form.invalid">
+              <span class="rs-btn__shimmer"></span>
 
-            <div class="rs-actions-buttons">
-              <button
-                mat-stroked-button
-                type="button"
-                class="rs-btn-secondary rs-btn-secondary--full"
-                (click)="cancelar()"
-                [disabled]="guardando">
-                Cancelar
-              </button>
-
-              <button
-                mat-flat-button
-                type="button"
-                class="rs-btn rs-btn--primary rs-btn--full"
-                (click)="crear()"
-                [disabled]="guardando || form.invalid">
-                <span class="rs-btn__shimmer"></span>
-
-                <span class="rs-btn__label">
-                  @if (guardando) {
-                    <mat-spinner diameter="18" strokeWidth="3"></mat-spinner>
-                  } @else {
-                    <mat-icon>task_alt</mat-icon>
-                  }
-
-                  <span>{{ guardando ? 'Guardando orden...' : 'Guardar orden de trabajo' }}</span>
-                </span>
-              </button>
-            </div>
-
-            <div class="rs-actions-help">
-              Guarda sin quitar las manos del teclado con <strong>Ctrl / ⌘ + Enter</strong>.
-            </div>
-          </mat-card>
+              <span class="rs-btn__label">
+                @if (guardando) {
+                  <mat-spinner diameter="18" strokeWidth="3"></mat-spinner>
+                } @else {
+                  <mat-icon>task_alt</mat-icon>
+                }
+                <span>{{ guardando ? 'Guardando orden...' : 'Guardar orden de trabajo' }}</span>
+              </span>
+            </button>
+          </div>
         </div>
       </aside>
     </div>
