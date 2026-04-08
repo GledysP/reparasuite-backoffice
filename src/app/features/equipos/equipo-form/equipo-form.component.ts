@@ -224,7 +224,7 @@ export class EquipoFormComponent implements OnInit {
       this.equipos.categorias().subscribe(list => {
         this.categorias.set(list);
         this.form.patchValue({ categoriaEquipoId: created.id });
-        this.snack.open('Categoría creada', 'OK', { duration: 2200 });
+        this.snack.open('Categoría creada correctamente.', 'OK', { duration: 2200 });
       });
     });
   }
@@ -233,14 +233,14 @@ export class EquipoFormComponent implements OnInit {
     const categoriaId = this.form.controls.categoriaEquipoId.value;
 
     if (!categoriaId) {
-      this.snack.open('Selecciona una categoría primero', 'OK', { duration: 2200 });
+      this.snack.open('Por favor, selecciona una categoría primero.', 'OK', { duration: 2200 });
       return;
     }
 
     const categoria = this.categorias().find(item => item.id === categoriaId);
 
     if (!categoria) {
-      this.snack.open('No se encontró la categoría seleccionada', 'OK', { duration: 2200 });
+      this.snack.open('No se encontró la categoría seleccionada.', 'OK', { duration: 2200 });
       return;
     }
 
@@ -256,7 +256,7 @@ export class EquipoFormComponent implements OnInit {
       this.equipos.categorias().subscribe(list => {
         this.categorias.set(list);
         this.form.patchValue({ categoriaEquipoId: updated.id });
-        this.snack.open('Categoría actualizada', 'OK', { duration: 2200 });
+        this.snack.open('Categoría actualizada correctamente.', 'OK', { duration: 2200 });
       });
     });
   }
@@ -367,7 +367,7 @@ export class EquipoFormComponent implements OnInit {
   guardar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snack.open('Completa los campos requeridos antes de guardar', 'OK', {
+      this.snack.open('Por favor, completa los campos requeridos antes de guardar.', 'OK', {
         duration: 2200
       });
       return;
@@ -400,12 +400,12 @@ export class EquipoFormComponent implements OnInit {
     request$.subscribe({
       next: (res) => {
         this.loading.set(false);
-        this.snack.open('Equipo guardado', 'OK', { duration: 2200 });
+        this.snack.open('Equipo guardado correctamente.', 'OK', { duration: 2200 });
         this.router.navigate(['/equipos', res.id]);
       },
       error: () => {
         this.loading.set(false);
-        this.snack.open('Error al guardar equipo', 'OK', { duration: 2600 });
+        this.snack.open('No se pudo guardar el equipo.', 'OK', { duration: 2600 });
       }
     });
   }

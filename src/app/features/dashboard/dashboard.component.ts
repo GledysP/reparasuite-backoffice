@@ -271,7 +271,7 @@ export class DashboardComponent implements OnInit {
     this.whatsappService.invitarRegistro().subscribe({
       next: (res) => {
         if (!res?.url) {
-          this.snack.open('No se pudo generar el enlace de WhatsApp', 'Cerrar', {
+          this.snack.open('No se pudo generar el enlace de WhatsApp.', 'Cerrar', {
             duration: 3000,
           });
           return;
@@ -283,7 +283,7 @@ export class DashboardComponent implements OnInit {
         console.error('Error generando invitación WhatsApp:', err);
 
         const msg =
-          err?.error?.message || 'No se pudo generar el enlace de invitación por WhatsApp';
+          err?.error?.message || 'No se pudo generar el enlace de invitación por WhatsApp.';
 
         this.snack.open(msg, 'Cerrar', {
           duration: 3500,

@@ -366,7 +366,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     if (this.guardando) return;
 
     if (this.fromTicket && this.clienteId) {
-      this.snack.open('Esta OT viene de un ticket. El cliente ya está vinculado.', 'OK', {
+      this.snack.open('Esta OT proviene de un ticket. El cliente ya está vinculado.', 'OK', {
         duration: 2500
       });
       return;
@@ -403,7 +403,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   irANuevoEquipo(): void {
     if (!this.clienteId) {
-      this.snack.open('Primero selecciona un cliente', 'OK', { duration: 2200 });
+      this.snack.open('Por favor, selecciona un cliente primero.', 'OK', { duration: 2200 });
       return;
     }
 
@@ -510,12 +510,12 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: ({ id }) => {
-        this.snack.open('¡Orden creada con éxito!', 'Cerrar', { duration: 2500 });
+        this.snack.open('Orden creada correctamente.', 'Cerrar', { duration: 2500 });
         this.clearLocalFiles();
         this.router.navigate(['/ordenes-trabajo', id]);
       },
       error: (error) => {
-        this.snack.open(error?.error?.message || 'Error al crear la orden', 'OK', {
+        this.snack.open(error?.error?.message || 'No se pudo crear la orden.', 'OK', {
           duration: 3000
         });
       }

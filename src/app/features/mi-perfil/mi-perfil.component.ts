@@ -69,7 +69,7 @@ export class MiPerfilComponent {
     const id = this.getUserIdFromToken();
     if (!id) {
       this.loading.set(false);
-      this.snack.open('No se pudo identificar el usuario (token inválido)', 'OK', { duration: 2600 });
+      this.snack.open('No se pudo identificar al usuario (token inválido).', 'OK', { duration: 2600 });
       return;
     }
 
@@ -99,7 +99,7 @@ export class MiPerfilComponent {
           this.snapshot = this.form.getRawValue();
         },
         error: () => {
-          this.snack.open('Error al cargar el perfil', 'OK', { duration: 2600 });
+          this.snack.open('No se pudo cargar el perfil.', 'OK', { duration: 2600 });
         },
       });
   }
@@ -139,9 +139,9 @@ export class MiPerfilComponent {
             { emitEvent: false }
           );
           this.snapshot = this.form.getRawValue();
-          this.snack.open('Perfil actualizado', 'OK', { duration: 2000 });
+          this.snack.open('Perfil actualizado correctamente.', 'OK', { duration: 2000 });
         },
-        error: () => this.snack.open('Error al actualizar perfil', 'OK', { duration: 2600 }),
+        error: () => this.snack.open('No se pudo actualizar el perfil.', 'OK', { duration: 2600 }),
       });
   }
 

@@ -186,12 +186,12 @@ export class InventarioFormComponent implements OnInit {
     obs.subscribe({
       next: (res) => {
         this.loading.set(false);
-        this.snack.open('Item guardado', 'OK', { duration: 2200 });
+        this.snack.open('Ítem guardado correctamente.', 'OK', { duration: 2200 });
         this.router.navigate(['/inventario', res.id]);
       },
       error: () => {
         this.loading.set(false);
-        this.snack.open('Error al guardar item', 'OK', { duration: 2600 });
+        this.snack.open('No se pudo guardar el ítem.', 'OK', { duration: 2600 });
       }
     });
   }

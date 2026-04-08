@@ -127,7 +127,7 @@ export class ClientesListComponent implements OnInit {
           console.error('Error cargando clientes:', err);
           this.items = [];
           this.total = 0;
-          this.snack.open('No se pudieron cargar los clientes', 'OK', { duration: 2500 });
+          this.snack.open('No se pudieron cargar los clientes.', 'OK', { duration: 2500 });
         }
       });
   }
@@ -213,7 +213,7 @@ export class ClientesListComponent implements OnInit {
               this.saving = false;
               this.page = 0;
               this.cargar();
-              this.snack.open('Cliente creado correctamente', 'OK', { duration: 2200 });
+              this.snack.open('Cliente creado correctamente.', 'OK', { duration: 2200 });
             },
             error: (err) => {
               console.error('Error creando cliente:', err);
@@ -258,7 +258,7 @@ export class ClientesListComponent implements OnInit {
             next: () => {
               this.saving = false;
               this.cargar();
-              this.snack.open('Cliente actualizado correctamente', 'OK', { duration: 2200 });
+              this.snack.open('Cliente actualizado correctamente.', 'OK', { duration: 2200 });
             },
             error: (err) => {
               console.error('Error actualizando cliente:', err);
@@ -304,7 +304,7 @@ export class ClientesListComponent implements OnInit {
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {
-              this.snack.open('Cliente eliminado correctamente', 'OK', { duration: 2200 });
+              this.snack.open('Cliente eliminado correctamente.', 'OK', { duration: 2200 });
               this.deletingId = null;
               this.items = this.items.filter(x => x.id !== row.id);
               this.total = Math.max(0, this.total - 1);

@@ -60,7 +60,7 @@
                       matInput
                       [formControl]="clienteSearchCtrl"
                       [matAutocomplete]="clienteAuto"
-                      placeholder="Ej. Carlos Pérez" />
+                      placeholder="Ej.: Carlos Pérez" />
 
                     <mat-autocomplete
                       #clienteAuto="matAutocomplete"
@@ -88,7 +88,7 @@
                       matInput
                       formControlName="tipoEquipo"
                       [matAutocomplete]="tipoAuto"
-                      placeholder="Ej. Portátil, Smartphone, TV" />
+                      placeholder="Ej.: Portátil, Smartphone, TV" />
 
                     <mat-autocomplete #tipoAuto="matAutocomplete" class="rs-overlay-panel">
                       @for (tipo of filteredTiposEquipo(); track tipo) {
@@ -106,7 +106,7 @@
                     <input
                       matInput
                       formControlName="numeroSerie"
-                      placeholder="Ej. SN-XPS13-2025" />
+                      placeholder="Ej.: SN-XPS13-2025" />
                   </mat-form-field>
                 </div>
               </div>
@@ -131,7 +131,7 @@
                       matInput
                       formControlName="marca"
                       [matAutocomplete]="marcaAuto"
-                      placeholder="Ej. Dell, Samsung, Lenovo" />
+                      placeholder="Ej.: Dell, Samsung, Lenovo" />
 
                     <mat-autocomplete #marcaAuto="matAutocomplete" class="rs-overlay-panel">
                       @for (marca of filteredMarcas(); track marca) {
@@ -149,7 +149,7 @@
                     <input
                       matInput
                       formControlName="modelo"
-                      placeholder="Ej. XPS 13, Galaxy S24, ThinkPad E14" />
+                      placeholder="Ej.: XPS 13, Galaxy S24, ThinkPad E14" />
                   </mat-form-field>
                 </div>
 
@@ -161,7 +161,7 @@
                     <input
                       matInput
                       formControlName="codigoInterno"
-                      placeholder="Ej. INV-00124" />
+                      placeholder="Ej.: INV-00124" />
                   </mat-form-field>
                 </div>
               </div>
@@ -185,7 +185,7 @@
                     <input
                       matInput
                       formControlName="ubicacionHabitual"
-                      placeholder="Ej. Oficina principal, Recepción, Casa cliente" />
+                      placeholder="Ej.: Oficina principal, Recepción, Casa cliente" />
                   </mat-form-field>
                 </div>
 
@@ -242,7 +242,7 @@
                       cdkAutosizeMinRows="2"
                       cdkAutosizeMaxRows="3"
                       formControlName="descripcionGeneral"
-                      placeholder="Ej. Portátil con desgaste leve en tapa, cargador original incluido..."></textarea>
+                      placeholder="Ej.: Portátil con desgaste leve en tapa, cargador original incluido..."></textarea>
                   </mat-form-field>
                 </div>
 
@@ -257,7 +257,7 @@
                       cdkAutosizeMinRows="2"
                       cdkAutosizeMaxRows="3"
                       formControlName="notasTecnicas"
-                      placeholder="Ej. BIOS protegida, clave entregada por cliente, revisar batería..."></textarea>
+                      placeholder="Ej.: BIOS protegida, clave entregada por cliente, revisar batería..."></textarea>
                   </mat-form-field>
                 </div>
               </div>

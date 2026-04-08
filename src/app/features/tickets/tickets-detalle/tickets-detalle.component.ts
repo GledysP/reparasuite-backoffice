@@ -80,7 +80,7 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
 
   ngOnInit(): void {
     if (!this.id) {
-      this.snack.open('Ticket inválido', 'OK', { duration: 2500 });
+      this.snack.open('El ticket no es válido.', 'OK', { duration: 2500 });
       return;
     }
 
@@ -135,7 +135,7 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
         this.hidratarFotosBlob(this.ticket);
       },
       error: () => {
-        this.snack.open('No se pudo cargar el ticket', 'OK', { duration: 2500 });
+        this.snack.open('No se pudo cargar el ticket.', 'OK', { duration: 2500 });
       },
       complete: () => {
         this.loading = false;
@@ -205,9 +205,9 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
         document.body.removeChild(textarea);
       }
 
-      this.snack.open(`${label} copiado`, 'OK', { duration: 1400 });
+      this.snack.open(`${label} copiado al portapapeles.`, 'OK', { duration: 1400 });
     } catch {
-      this.snack.open('No se pudo copiar', 'OK', { duration: 1600 });
+      this.snack.open('No se pudo copiar al portapapeles.', 'OK', { duration: 1600 });
     }
   }
 
@@ -251,14 +251,14 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
 
   verOt(): void {
     if (!this.otVinculadaId) {
-      this.snack.open('No se encontró una OT vinculada para este ticket', 'OK', {
+      this.snack.open('No se encontró una OT vinculada para este ticket.', 'OK', {
         duration: 2500,
       });
       return;
     }
 
     this.router.navigate(['/ordenes-trabajo', this.otVinculadaId]).catch(() => {
-      this.snack.open('No se pudo abrir la orden vinculada', 'OK', {
+      this.snack.open('No se pudo abrir la orden vinculada.', 'OK', {
         duration: 2500,
       });
     });

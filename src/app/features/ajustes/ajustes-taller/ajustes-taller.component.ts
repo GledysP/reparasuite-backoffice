@@ -44,7 +44,7 @@ export class AjustesTallerComponent implements OnInit {
   ngOnInit(): void {
     this.ajustes.obtenerTaller().subscribe({
       next: (t) => this.form.patchValue(t),
-      error: () => this.snack.open('Error cargando ajustes', 'OK', { duration: 2500 })
+      error: () => this.snack.open('No se pudieron cargar los ajustes.', 'OK', { duration: 2500 })
     });
   }
 
@@ -58,8 +58,8 @@ export class AjustesTallerComponent implements OnInit {
       email: v.email || null,
       direccion: v.direccion || null
     }).subscribe({
-      next: () => this.snack.open('Guardado', 'OK', { duration: 2000 }),
-      error: () => this.snack.open('Error guardando', 'OK', { duration: 2500 })
+      next: () => this.snack.open('Cambios guardados correctamente.', 'OK', { duration: 2000 }),
+      error: () => this.snack.open('No se pudieron guardar los cambios.', 'OK', { duration: 2500 })
     });
   }
 }
