@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { environment } from '../../../environments/environment';
 import {
   ApiListaResponse,
@@ -11,8 +10,9 @@ import {
   InventarioMovimientoDto
 } from '../../core/models/tipos';
 
+// Interfaz para la creación/edición de items
 export interface InventarioGuardarRequest {
-  sku: string;
+  sku?: string | null; // ✅ Opcional para dejar que el backend lo genere
   codigoBarras?: string | null;
   nombre: string;
   descripcion?: string | null;
@@ -29,15 +29,8 @@ export interface InventarioGuardarRequest {
   precioVenta?: string | null;
   ubicacionAlmacen?: string | null;
   notas?: string | null;
+  imagenUrl?: string | null; 
   activo?: boolean | null;
-}
-
-export interface InventarioMovimientoGuardarRequest {
-  tipoMovimiento: string;
-  cantidad: string;
-  costoUnitario?: string | null;
-  motivo?: string | null;
-  observacion?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -46,12 +39,8 @@ export class InventarioService {
   private base = `${environment.apiBaseUrl}/inventario`;
 
   listar(f: { activo?: boolean; page?: number; size?: number }): Observable<ApiListaResponse<InventarioItemResumenDto>> {
-    let params = new HttpParams()
-      .set('page', String(f.page ?? 0))
-      .set('size', String(f.size ?? 20));
-
+    let params = new HttpParams().set('page', String(f.page ?? 0)).set('size', String(f.size ?? 20));
     if (typeof f.activo === 'boolean') params = params.set('activo', String(f.activo));
-
     return this.http.get<ApiListaResponse<InventarioItemResumenDto>>(this.base, { params });
   }
 
@@ -71,11 +60,15 @@ export class InventarioService {
     return this.http.get<InventarioCategoriaDto[]>(`${this.base}/catalogos/categorias`);
   }
 
+  crearCategoria(body: Partial<InventarioCategoriaDto>): Observable<InventarioCategoriaDto> {
+    return this.http.post<InventarioCategoriaDto>(`${this.base}/catalogos/categorias`, body);
+  }
+
   movimientos(id: string): Observable<InventarioMovimientoDto[]> {
     return this.http.get<InventarioMovimientoDto[]>(`${this.base}/${id}/movimientos`);
   }
 
-  registrarMovimiento(id: string, body: InventarioMovimientoGuardarRequest): Observable<InventarioMovimientoDto> {
+  registrarMovimiento(id: string, body: any): Observable<InventarioMovimientoDto> {
     return this.http.post<InventarioMovimientoDto>(`${this.base}/${id}/movimientos`, body);
   }
 }

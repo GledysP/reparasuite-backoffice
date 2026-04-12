@@ -37,6 +37,7 @@ export interface OtCrearRequest {
   fechaPrevista?: string | null;
   direccion?: string | null;
   notasAcceso?: string | null;
+  categoriasTrabajo?: string[];
 }
 
 export interface OtRevisionTecnicaRequest {

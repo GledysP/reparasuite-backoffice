@@ -6,9 +6,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // Agregado para el diálogo
 
-import { InventarioService } from '../inventario.service';
+import { InventarioService, InventarioGuardarRequest } from '../inventario.service';
 import { InventarioCategoriaDto } from '../../../core/models/tipos';
+import { InventarioCategoriaDialogComponent } from '../inventario-categoria-dialog/inventario-categoria-dialog.component';
 
 @Component({
   selector: 'rs-inventario-form',
@@ -19,7 +21,8 @@ import { InventarioCategoriaDto } from '../../../core/models/tipos';
     MatButtonModule,
     MatIconModule,
     MatSlideToggleModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatDialogModule // Agregado
   ],
   templateUrl: './inventario-form.component.html',
   styleUrl: './inventario-form.component.scss'
@@ -30,6 +33,7 @@ export class InventarioFormComponent implements OnInit {
   private router = inject(Router);
   private snack = inject(MatSnackBar);
   private service = inject(InventarioService);
+  private dialog = inject(MatDialog); // Inyectado para categorías
 
   id: string | null = null;
   loading = signal(false);
@@ -39,7 +43,7 @@ export class InventarioFormComponent implements OnInit {
   private imagenFile: File | null = null;
 
   form = this.fb.group({
-    sku: ['', Validators.required],
+    sku: [''], // <-- CAMBIO: Ahora es opcional (el backend lo genera solo)
     codigoBarras: [''],
     nombre: ['', Validators.required],
     descripcion: [''],
@@ -61,7 +65,7 @@ export class InventarioFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('id');
-    this.service.categorias().subscribe(x => this.categorias.set(x));
+    this.cargarCategorias(); // Refactorizado a un método
 
     if (this.id) {
       this.service.obtener(this.id).subscribe({
@@ -87,18 +91,37 @@ export class InventarioFormComponent implements OnInit {
             activo: i.activo
           });
 
-          const imagenExistente =
-            (i as any)?.imagenUrl ||
-            (i as any)?.fotoUrl ||
-            (i as any)?.imageUrl ||
-            null;
-
+          // CAMBIO: Aseguramos que cargue la imagen si existe
+          const imagenExistente = i.imagenUrl || (i as any)?.fotoUrl || null;
           if (imagenExistente) {
             this.imagenPreviewUrl.set(imagenExistente);
           }
         }
       });
     }
+  }
+
+  cargarCategorias(): void {
+    this.service.categorias().subscribe(x => this.categorias.set(x));
+  }
+
+  // MÉTODO NUEVO: Abrir diálogo de categorías
+  abrirDialogoCategoria(): void {
+    const dialogRef = this.dialog.open(InventarioCategoriaDialogComponent, {
+      width: '500px',
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(newCat => {
+      if (newCat) {
+        // Recargamos la lista y seleccionamos la nueva automáticamente
+        this.service.categorias().subscribe(list => {
+          this.categorias.set(list);
+          this.form.get('categoriaId')?.setValue(newCat.id);
+          this.snack.open('Categoría creada y seleccionada.', 'OK', { duration: 2000 });
+        });
+      }
+    });
   }
 
   get margenGanancia(): number {
@@ -114,10 +137,7 @@ export class InventarioFormComponent implements OnInit {
   onImageSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0] ?? null;
-
-    if (!file) {
-      return;
-    }
+    if (!file) return;
 
     if (!file.type.startsWith('image/')) {
       this.snack.open('Selecciona un archivo de imagen válido.', 'OK', { duration: 2400 });
@@ -126,7 +146,6 @@ export class InventarioFormComponent implements OnInit {
     }
 
     this.imagenFile = file;
-
     const reader = new FileReader();
     reader.onload = () => {
       this.imagenPreviewUrl.set(typeof reader.result === 'string' ? reader.result : null);
@@ -141,25 +160,27 @@ export class InventarioFormComponent implements OnInit {
   }
 
   private toNumber(value: unknown): number {
-    if (value === null || value === undefined || value === '') {
-      return 0;
-    }
-
+    if (value === null || value === undefined || value === '') return 0;
     const parsed = Number(String(value).replace(',', '.'));
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
+ 
   guardar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.snack.open('Por favor, completa los campos marcados en rojo.', 'Cerrar', { 
+        duration: 3500,
+        verticalPosition: 'bottom'
+      });
       return;
     }
 
     this.loading.set(true);
     const body = this.form.getRawValue();
 
-    const req = {
-      sku: body.sku!,
+    const req: InventarioGuardarRequest = {
+      sku: body.sku || null,
       codigoBarras: body.codigoBarras || null,
       nombre: body.nombre!,
       descripcion: body.descripcion || null,
@@ -176,6 +197,7 @@ export class InventarioFormComponent implements OnInit {
       precioVenta: body.precioVenta || '0',
       ubicacionAlmacen: body.ubicacionAlmacen || null,
       notas: body.notas || null,
+      imagenUrl: this.imagenPreviewUrl(),
       activo: !!body.activo
     };
 
@@ -189,9 +211,12 @@ export class InventarioFormComponent implements OnInit {
         this.snack.open('Ítem guardado correctamente.', 'OK', { duration: 2200 });
         this.router.navigate(['/inventario', res.id]);
       },
-      error: () => {
+      // CORRECCIÓN: Pasamos 'err' como parámetro aquí
+      error: (err) => { 
         this.loading.set(false);
-        this.snack.open('No se pudo guardar el ítem.', 'OK', { duration: 2600 });
+        // Extraemos el mensaje real del backend
+        const mensajeBackend = err?.error?.message || err?.error?.error || 'Revisa los datos e intenta de nuevo';
+        this.snack.open(`No se pudo guardar: ${mensajeBackend}`, 'OK', { duration: 5000 });
       }
     });
   }

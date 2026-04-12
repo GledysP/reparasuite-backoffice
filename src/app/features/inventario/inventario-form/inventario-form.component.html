@@ -1,297 +1,237 @@
 <div class="rs-page-wrap">
-  <div class="rs-form-head">
-    <h1 class="rs-title">{{ id ? 'Editar item' : 'Registro de Activo Tecnológico' }}</h1>
-    <p class="rs-subtitle">
-      Alta profesional de inventario para taller y servicio técnico.
-    </p>
+  <div class="rs-form-head rs-anim-fade">
+    <h1 class="rs-title">{{ id ? 'Editar activo' : 'Registro de Activo Tecnológico' }}</h1>
+    <p class="rs-subtitle">Alta profesional de inventario para taller y servicio técnico.</p>
   </div>
 
-  <div class="rs-form-card">
-    <form [formGroup]="form" class="rs-form-shell">
-      <div class="rs-layout">
-        <!-- COLUMNA IZQUIERDA -->
-        <div class="rs-column rs-column-left">
-          <section class="rs-section">
-            <div class="rs-section-head">
-              <div class="rs-section-kicker">Identificación técnica</div>
-              <p class="rs-section-subtitle">
-                Datos base para clasificación, búsqueda y compatibilidad del item.
-              </p>
-            </div>
-
-            <div class="rs-grid">
-              <div class="rs-field col-6">
-                <label class="rs-field-label">SKU <span class="req">*</span></label>
-                <div class="rs-control">
-                  <mat-icon>qr_code_2</mat-icon>
-                  <input class="rs-input" type="text" formControlName="sku" />
-                </div>
-              </div>
-
-              <div class="rs-field col-6">
-                <label class="rs-field-label">Código de barras</label>
-                <div class="rs-control">
-                  <mat-icon>barcode</mat-icon>
-                  <input class="rs-input" type="text" formControlName="codigoBarras" />
-                </div>
-              </div>
-
-              <div class="rs-field col-12">
-                <label class="rs-field-label">Nombre <span class="req">*</span></label>
-                <div class="rs-control">
-                  <mat-icon>sell</mat-icon>
-                  <input class="rs-input" type="text" formControlName="nombre" />
-                </div>
-              </div>
-
-              <div class="rs-field col-6">
-                <label class="rs-field-label">Marca</label>
-                <div class="rs-control">
-                  <mat-icon>copyright</mat-icon>
-                  <input class="rs-input" type="text" formControlName="marca" />
-                </div>
-              </div>
-
-              <div class="rs-field col-6">
-                <label class="rs-field-label">Categoría</label>
-                <div class="rs-control">
-                  <mat-icon>category</mat-icon>
-                  <select class="rs-select" formControlName="categoriaId">
-                    <option value="">Sin categoría</option>
-                    @for (c of categorias(); track c.id) {
-                      <option [value]="c.id">{{ c.nombre }}</option>
-                    }
-                  </select>
-                </div>
-              </div>
-
-              <div class="rs-field col-12">
-                <label class="rs-field-label">Compatibilidad</label>
-                <div class="rs-control">
-                  <mat-icon>precision_manufacturing</mat-icon>
-                  <input class="rs-input" type="text" formControlName="modeloCompatibilidad" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="rs-section">
-            <div class="rs-section-head">
-              <div class="rs-section-kicker">Imagen / referencia visual</div>
-              <p class="rs-section-subtitle">
-                Área preparada para fotografía o recurso visual del item.
-              </p>
-            </div>
-
-            <input
-              #fileInput
-              type="file"
-              accept="image/*"
-              class="rs-hidden-file-input"
-              (change)="onImageSelected($event)"
-            />
-
-            <div class="rs-media-dropzone" [class.has-image]="!!imagenPreviewUrl()">
-              <div
-                class="rs-media-preview"
-                [class.has-image]="!!imagenPreviewUrl()"
-                [class.is-hoverable]="!!imagenPreviewUrl()"
-              >
-                @if (imagenPreviewUrl()) {
-                  <img [src]="imagenPreviewUrl()" alt="Preview de imagen del item" />
-
-                  <button
-                    type="button"
-                    class="rs-media-remove-fab"
-                    aria-label="Quitar imagen"
-                    (click)="removeImage(fileInput)"
-                  >
-                    ×
-                  </button>
-                } @else {
-                  <mat-icon>add_a_photo</mat-icon>
-                }
-              </div>
-
-              <div class="rs-media-copy">
-                <div class="rs-media-dropzone-title">
-                  {{ imagenPreviewUrl() ? 'Imagen seleccionada' : 'Subir imagen de referencia' }}
-                </div>
-
-                <div class="rs-media-dropzone-sub">
-                  JPG, PNG o WEBP · componente visual premium
-                </div>
-
-                <div class="rs-media-dropzone-actions">
-                  <button
-                    mat-stroked-button
-                    type="button"
-                    class="rs-upload-btn"
-                    (click)="triggerImageInput(fileInput)"
-                  >
-                    {{ imagenPreviewUrl() ? 'Cambiar imagen' : 'Buscar imagen' }}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="rs-section rs-section-last-left">
-            <div class="rs-section-head">
-              <div class="rs-section-kicker">Detalles avanzados</div>
-              <p class="rs-section-subtitle">
-                Información descriptiva y controles del sistema.
-              </p>
-            </div>
-
-            <div class="rs-grid">
-              <div class="rs-field col-6">
-                <label class="rs-field-label">Descripción</label>
-                <div class="rs-control rs-control-textarea">
-                  <mat-icon>description</mat-icon>
-                  <textarea class="rs-textarea" rows="4" formControlName="descripcion"></textarea>
-                </div>
-              </div>
-
-              <div class="rs-field col-6">
-                <label class="rs-field-label">Notas</label>
-                <div class="rs-control rs-control-textarea">
-                  <mat-icon>sticky_note_2</mat-icon>
-                  <textarea class="rs-textarea" rows="4" formControlName="notas"></textarea>
-                </div>
-              </div>
-
-              <div class="col-12 rs-toggle-row">
-                <mat-slide-toggle formControlName="controlaStock">Controla stock</mat-slide-toggle>
-                <mat-slide-toggle formControlName="permiteStockNegativo">Permite stock negativo</mat-slide-toggle>
-                <mat-slide-toggle formControlName="activo">Activo</mat-slide-toggle>
-              </div>
-            </div>
-          </section>
+  <form [formGroup]="form" class="rs-form-shell">
+    
+    <div class="rs-layout-top rs-anim-fade-up">
+      
+      <section class="rs-section rs-card-floating">
+        <div class="rs-section-header-title">
+          <div class="rs-icon-circle rs-icon-blue"><mat-icon>fingerprint</mat-icon></div>
+          <span class="rs-section-kicker">Identificación técnica</span>
         </div>
 
-        <!-- COLUMNA DERECHA -->
-        <div class="rs-column rs-column-right">
-          <div class="rs-right-top-row">
-            <section class="rs-section rs-section-half">
-              <div class="rs-section-head rs-section-head-inline">
-                <div>
-                  <div class="rs-section-kicker">Precios y costos</div>
-                  <p class="rs-section-subtitle">
-                    Lectura financiera rápida del activo.
-                  </p>
-                </div>
+        <div class="rs-grid">
+          <div class="rs-field col-12">
+            <label class="rs-field-label">Nombre <span class="req">*</span></label>
+            <div class="rs-control" [class.has-error]="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+              <mat-icon>sell</mat-icon>
+              <input class="rs-input" type="text" formControlName="nombre" placeholder="Ej: Pantalla OLED iPhone 15" />
+            </div>
+            @if (form.get('nombre')?.invalid && form.get('nombre')?.touched) {
+              <span class="rs-error-msg">El nombre es obligatorio.</span>
+            }
+          </div>
 
-                <div class="rs-margin-chip">
-                  <span class="rs-margin-label">Margen estimado</span>
-                  <strong class="rs-margin-value" [class.is-negative]="margenGanancia < 0">
-                    {{ margenGanancia | number:'1.2-2' }}
-                  </strong>
-                </div>
-              </div>
+          <div class="rs-field col-6">
+            <label class="rs-field-label">Marca</label>
+            <div class="rs-control">
+              <mat-icon>copyright</mat-icon>
+              <input class="rs-input" type="text" formControlName="marca" />
+            </div>
+          </div>
 
-              <div class="rs-grid rs-grid-single">
-                <div class="rs-field col-12">
-                  <label class="rs-field-label">Costo promedio</label>
-                  <div class="rs-control">
-                    <mat-icon>payments</mat-icon>
-                    <input class="rs-input" type="number" formControlName="costoPromedio" />
-                  </div>
-                </div>
+          <div class="rs-field col-6">
+            <label class="rs-field-label">Categoría</label>
+            <div class="rs-control rs-control--with-action">
+              <mat-icon>category</mat-icon>
+              <select class="rs-select" formControlName="categoriaId">
+                <option value="">Sin categoría</option>
+                @for (c of categorias(); track c.id) {
+                  <option [value]="c.id">{{ c.nombre }}</option>
+                }
+              </select>
+              <button type="button" class="rs-btn-icon-clean" (click)="abrirDialogoCategoria()" matTooltip="Nueva categoría">
+                <mat-icon>add_circle</mat-icon>
+              </button>
+            </div>
+          </div>
 
-                <div class="rs-field col-12">
-                  <label class="rs-field-label">Último costo</label>
-                  <div class="rs-control">
-                    <mat-icon>attach_money</mat-icon>
-                    <input class="rs-input" type="number" formControlName="ultimoCosto" />
-                  </div>
-                </div>
-
-                <div class="rs-field col-12">
-                  <label class="rs-field-label">Precio venta</label>
-                  <div class="rs-control rs-control-with-badge">
-                    <mat-icon>local_atm</mat-icon>
-                    <input class="rs-input" type="number" formControlName="precioVenta" />
-                    <span class="rs-inline-badge" [class.is-negative]="margenGanancia < 0">
-                      {{ margenGanancia | number:'1.2-2' }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="rs-section rs-section-half">
-              <div class="rs-section-head">
-                <div class="rs-section-kicker">Stock y almacén</div>
-                <p class="rs-section-subtitle">
-                  Umbrales, unidad y localización física.
-                </p>
-              </div>
-
-              <div class="rs-grid rs-grid-single">
-                <div class="rs-field col-12">
-                  <label class="rs-field-label">Unidad de medida <span class="req">*</span></label>
-                  <div class="rs-control">
-                    <mat-icon>straighten</mat-icon>
-                    <select class="rs-select" formControlName="unidadMedida">
-                      <option value="UNIDAD">UNIDAD</option>
-                      <option value="METRO">METRO</option>
-                      <option value="LITRO">LITRO</option>
-                      <option value="KILOGRAMO">KILOGRAMO</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="rs-field col-12">
-                  <label class="rs-field-label">Stock mínimo</label>
-                  <div class="rs-control">
-                    <mat-icon>inventory_2</mat-icon>
-                    <input class="rs-input" type="number" formControlName="stockMinimo" />
-                  </div>
-                </div>
-
-                <div class="rs-field col-12">
-                  <label class="rs-field-label">Stock máximo</label>
-                  <div class="rs-control">
-                    <mat-icon>store</mat-icon>
-                    <input class="rs-input" type="number" formControlName="stockMaximo" />
-                  </div>
-                </div>
-
-                <div class="rs-field col-12">
-                  <label class="rs-field-label">Ubicación almacén</label>
-                  <div class="rs-control">
-                    <mat-icon>place</mat-icon>
-                    <input class="rs-input" type="text" formControlName="ubicacionAlmacen" />
-                  </div>
-                </div>
-              </div>
-            </section>
+          <div class="rs-field col-12">
+            <label class="rs-field-label">Compatibilidad</label>
+            <div class="rs-control">
+              <mat-icon>precision_manufacturing</mat-icon>
+              <input class="rs-input" type="text" formControlName="modeloCompatibilidad" />
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="rs-form-footer">
-        <button
-          mat-stroked-button
-          type="button"
-          class="rs-secondary-btn rs-secondary-btn-light"
-          (click)="cancelar()"
-        >
-          Cancelar
-        </button>
+      <section class="rs-section rs-card-floating">
+        <div class="rs-section-header-title rs-header-space-between">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="rs-icon-circle rs-icon-blue"><mat-icon>payments</mat-icon></div>
+            <span class="rs-section-kicker">Precios y costos</span>
+          </div>
+          <div class="rs-margin-chip">
+            <strong class="rs-margin-value" [class.is-negative]="margenGanancia < 0">
+              <span style="font-size: 11px; color: #64748b; margin-right: 2px;">$</span> {{ margenGanancia | number:'1.2-2' }}
+            </strong>
+          </div>
+        </div>
 
-        <button
-          mat-flat-button
-          class="rs-primary-btn"
-          type="button"
-          (click)="guardar()"
-          [disabled]="loading()"
-        >
+        <div class="rs-grid-single">
+          <div class="rs-field col-12">
+            <label class="rs-field-label">Costo promedio</label>
+            <div class="rs-control">
+              <mat-icon>payments</mat-icon>
+              <input class="rs-input" type="number" formControlName="costoPromedio" />
+            </div>
+          </div>
+
+          <div class="rs-field col-12">
+            <label class="rs-field-label">Último costo</label>
+            <div class="rs-control">
+              <mat-icon>attach_money</mat-icon>
+              <input class="rs-input" type="number" formControlName="ultimoCosto" />
+            </div>
+          </div>
+
+          <div class="rs-field col-12">
+            <label class="rs-field-label">Precio venta</label>
+            <div class="rs-control rs-control-with-badge">
+              <mat-icon>local_atm</mat-icon>
+              <input class="rs-input" type="number" formControlName="precioVenta" />
+              <span class="rs-inline-badge" [class.is-negative]="margenGanancia < 0">
+                $ {{ margenGanancia | number:'1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="rs-section rs-card-floating">
+        <div class="rs-section-header-title">
+          <div class="rs-icon-circle rs-icon-blue"><mat-icon>image</mat-icon></div>
+          <span class="rs-section-kicker">Referencia visual</span>
+        </div>
+
+        <input #fileInput type="file" accept="image/*" class="rs-hidden-file-input" (change)="onImageSelected($event)" />
+
+        <div class="rs-media-dropzone-pro" [class.has-image]="!!imagenPreviewUrl()" (click)="triggerImageInput(fileInput)">
+          @if (imagenPreviewUrl()) {
+            <img [src]="imagenPreviewUrl()" class="rs-media-img-full" alt="Preview" />
+            <button type="button" class="rs-media-remove-fab" (click)="removeImage(fileInput); $event.stopPropagation()">×</button>
+          } @else {
+            <div class="rs-media-empty-state">
+              <mat-icon>cloud_upload</mat-icon>
+              <span class="rs-media-title">Arrastrar imagen premium</span>
+              <span class="rs-media-sub">PNG, JPG hasta 5MB</span>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+
+    <div class="rs-layout-bottom rs-anim-fade-up" style="animation-delay: 0.1s;">
+      
+      <section class="rs-section rs-card-floating">
+        <div class="rs-section-header-title">
+          <div class="rs-icon-circle rs-icon-blue"><mat-icon>inventory_2</mat-icon></div>
+          <span class="rs-section-kicker">Stock y almacén</span>
+        </div>
+
+        <div class="rs-grid">
+          <div class="rs-field col-6">
+            <label class="rs-field-label">Unidad de medida <span class="req">*</span></label>
+            <div class="rs-control" [class.has-error]="form.get('unidadMedida')?.invalid && form.get('unidadMedida')?.touched">
+              <mat-icon>straighten</mat-icon>
+              <select class="rs-select" formControlName="unidadMedida">
+                <option value="UNIDAD">UNIDAD</option>
+                <option value="METRO">METRO</option>
+                <option value="LITRO">LITRO</option>
+                <option value="KILOGRAMO">KILOGRAMO</option>
+              </select>
+            </div>
+            @if (form.get('unidadMedida')?.invalid && form.get('unidadMedida')?.touched) {
+              <span class="rs-error-msg">Selecciona una unidad.</span>
+            }
+          </div>
+
+          <div class="rs-field col-6">
+            <label class="rs-field-label">Ubicación almacén</label>
+            <div class="rs-control">
+              <mat-icon>place</mat-icon>
+              <input class="rs-input" type="text" formControlName="ubicacionAlmacen" />
+            </div>
+          </div>
+
+          <div class="rs-field col-6">
+            <label class="rs-field-label">Stock mínimo</label>
+            <div class="rs-control">
+              <mat-icon>inventory_2</mat-icon>
+              <input class="rs-input" type="number" formControlName="stockMinimo" />
+            </div>
+          </div>
+
+          <div class="rs-field col-6">
+            <label class="rs-field-label">Stock máximo</label>
+            <div class="rs-control">
+              <mat-icon>store</mat-icon>
+              <input class="rs-input" type="number" formControlName="stockMaximo" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="rs-section rs-card-floating">
+        <div class="rs-section-header-title">
+          <div class="rs-icon-circle rs-icon-blue"><mat-icon>tune</mat-icon></div>
+          <span class="rs-section-kicker">Detalles avanzados y control</span>
+        </div>
+
+        <div class="rs-grid" style="height: 100%; display: flex; flex-direction: column;">
+          <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px;">
+            <div class="rs-field col-6">
+              <label class="rs-field-label">Descripción</label>
+              <div class="rs-control rs-control-textarea">
+                <mat-icon>description</mat-icon>
+                <textarea class="rs-textarea" rows="2" formControlName="descripcion"></textarea>
+              </div>
+            </div>
+
+            <div class="rs-field col-6">
+              <label class="rs-field-label">Notas</label>
+              <div class="rs-control rs-control-textarea">
+                <mat-icon>sticky_note_2</mat-icon>
+                <textarea class="rs-textarea" rows="2" formControlName="notas"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="rs-toggles-container" style="margin-top: auto;">
+            <div class="rs-toggle-pill">
+              <mat-slide-toggle formControlName="controlaStock"></mat-slide-toggle>
+              <span>Gestionar inventario</span>
+            </div>
+            <div class="rs-toggle-pill">
+              <mat-slide-toggle formControlName="permiteStockNegativo"></mat-slide-toggle>
+              <span>Stock negativo</span>
+            </div>
+            <div class="rs-toggle-pill">
+              <mat-slide-toggle formControlName="activo"></mat-slide-toggle>
+              <span>Activo en catálogo</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="rs-form-footer rs-anim-fade-up" style="animation-delay: 0.15s;">
+      <button mat-stroked-button type="button" class="rs-secondary-btn-light" (click)="cancelar()">
+        Cancelar
+      </button>
+
+      <button mat-flat-button type="submit" class="rs-btn rs-btn--primary" (click)="guardar()" [disabled]="loading()">
+        <span class="rs-btn__shimmer"></span>
+        <span class="rs-btn__label">
           <mat-icon>save</mat-icon>
-          {{ loading() ? 'Guardando...' : 'Guardar item' }}
-        </button>
-      </div>
-    </form>
-  </div>
+          Guardar item
+        </span>
+      </button>
+    </div>
+  </form>
 </div>

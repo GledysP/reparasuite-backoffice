@@ -31,7 +31,7 @@
   --rs-page-gap: 16px;
 
   /* Typography scale */
-  --rs-title: 24px;
+  --rs-title: 28px; /* Ajustado para look premium */
   --rs-subtitle: 15px;
   --rs-body: 13px;
   --rs-small: 12px;
@@ -54,7 +54,7 @@
   :root {
     --rs-page-pad: 24px;
     --rs-page-gap: 14px;
-    --rs-title: 22px;
+    --rs-title: 24px;
   }
 }
 
@@ -62,7 +62,7 @@
   :root {
     --rs-page-pad: 16px;
     --rs-page-gap: 12px;
-    --rs-title: 20px;
+    --rs-title: 22px;
 
     --rs-th-pad-y: 14px;
     --rs-th-pad-x: 16px;
@@ -134,45 +134,56 @@ body {
 ========================= */
 .rs-main-container,
 .rs-page-container,
-.rs-page-wrapper {
+.rs-page-wrapper,
+.rs-page-wrap,
+.rs-dashboard-page {
   min-height: 100vh;
-  padding: var(--rs-page-pad);
+  padding: var(--rs-page-pad) !important;
   display: flex;
   flex-direction: column;
   gap: var(--rs-page-gap);
   box-sizing: border-box;
 }
 
-.rs-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.rs-header-row,
+.rs-dashboard-head,
+.rs-topbar,
+.rs-header-section {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
   flex-wrap: wrap;
   gap: 16px;
-  margin: 0;
-  padding: 0;
+  margin: 0 0 24px 0 !important; /* Margen constante inferior */
+  padding: 0 !important;
 }
 
 /* =========================
    RS TYPOGRAPHY (Uniform)
 ========================= */
-.rs-page-title {
-  margin: 0;
-  font-size: var(--rs-title);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+.rs-page-title,
+.rs-title {
+  margin: 0 !important;
+  font-size: var(--rs-title) !important;
+  font-weight: 800 !important; /* Peso extra para look Premium */
+  letter-spacing: -0.03em !important;
+  line-height: 1.1 !important;
+  color: #0f172a !important;
 }
 
+.rs-page-subtitle,
+.rs-subtitle,
 .section-subtitle,
 .rs-section-title,
 .card-section-title,
 .card-label {
-  font-size: var(--rs-subtitle);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-  margin: 0;
+  font-size: var(--rs-subtitle) !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.4 !important;
+  margin: 4px 0 0 0 !important; /* Distancia fija con el título */
+  display: block !important;
 }
 
 .rs-muted {
@@ -235,14 +246,6 @@ body {
 
 .rs-full {
   width: 100%;
-}
-
-.rs-header-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: space-between;
-  margin-bottom: 20px;
 }
 
 /* 6. SISTEMA DE REJILLA (Grid) */
@@ -496,5 +499,80 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
   &.mat-focused .mat-mdc-text-field-wrapper {
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(18, 78, 89, 0.15) !important;
+  }
+}
+
+
+/* =========================================================
+   SNACKBAR PROFESIONAL Mensajes de error (Estilo Premium)
+   ========================================================= */
+.rs-snack--error .mdc-snackbar__surface {
+  background-color: #C62828 !important; /* Rojo profundo, elegante y no chillón */
+  border-radius: 6px !important; /* Bordes ligeramente redondeados, como en la imagen */
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.25) !important;
+  min-height: 48px !important;
+  padding-left: 12px !important;
+}
+
+.rs-snack--error .mdc-snackbar__label {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: flex;
+  align-items: center;
+  padding: 0 !important;
+}
+
+/* El ícono de la "x" en un círculo */
+.rs-snack--error .mdc-snackbar__label::before {
+  content: 'cancel'; /* Ícono de Material Design que parece una X en un círculo */
+  font-family: 'Material Icons';
+  margin-right: 12px;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+/* El botón de la derecha (Entendido/OK) */
+.rs-snack--error .mat-mdc-button .mdc-button__label {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+}
+
+/* =========================================================
+   src/app/core/css/styles.scss (Global CSS)
+   NUEVA VARIANTE DE BOTÓN: rs-btn-head-premiun
+   ========================================================= */
+
+.mat-mdc-button, .mat-mdc-stroked-button {
+  /* Botón Premiun específico para el Header de Cliente */
+  &.rs-btn-head-premiun {
+    border-radius: 999px !important; /* Totalmente redondeado (Pill) */
+    border: 1px solid rgba(0, 191, 245, 0.2) !important; /* Borde cian muy suave */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(0, 191, 245, 0.03) 100%) !important; /* Fondo degradado blanco-cian */
+    color: #081a4b !important; /* Texto Navy corporativo */
+    font-weight: 700 !important;
+    font-size: 11.5px !important;
+    transition: all 0.2s ease;
+    
+    .mat-icon {
+      color: #00d1ff !important; /* Ícono cian brillante */
+      transition: color 0.2s ease;
+    }
+    
+    /* Hover Premiun */
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(0, 191, 245, 0.08) 100%) !important;
+      border-color: rgba(0, 191, 245, 0.4) !important;
+      box-shadow: 0 6px 20px rgba(0, 191, 245, 0.12), 0 1px 2px rgba(15, 23, 42, 0.02) !important; /* Sombra corporativa */
+      
+      .mat-icon { color: #00bff5 !important; }
+    }
+    
+    /* Active/Pressed */
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(0, 191, 245, 0.1), 0 1px 1px rgba(15, 23, 42, 0.01) !important;
+    }
   }
 }

@@ -1,9 +1,18 @@
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, HostListener, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -25,14 +34,17 @@ import {
   ClienteResumen,
   EquipoResumenDto,
   TicketDetalleDto,
-  UsuarioResumen
+  UsuarioResumen,
 } from '../../../core/models/tipos';
 
 import { TicketsService } from '../../tickets/tickets.service';
 import { UsuariosService } from '../../usuarios/usuarios.service';
 import { EquiposService } from '../../equipos/equipos.service';
 import { ClienteBuscarDialogComponent } from './cliente-buscar-dialog.component';
-import { OrdenesTrabajoService, OtCrearRequest } from '../ordenes-trabajo.service';
+import {
+  OrdenesTrabajoService,
+  OtCrearRequest,
+} from '../ordenes-trabajo.service';
 
 type FotoPreview = {
   id?: string;
@@ -60,8 +72,10 @@ type PeriodoHora = 'AM' | 'PM';
   selector: 'rs-ordenes-trabajo-nueva',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatChipsModule,
     MatButtonToggleModule,
     MatCardModule,
     MatDatepickerModule,
@@ -72,10 +86,10 @@ type PeriodoHora = 'AM' | 'PM';
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    MatSnackBarModule
+    MatSnackBarModule,
   ],
   templateUrl: './ordenes-trabajo-nueva.component.html',
-  styleUrl: './ordenes-trabajo-nueva.component.scss'
+  styleUrl: './ordenes-trabajo-nueva.component.scss',
 })
 export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
@@ -95,7 +109,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   private ticketBlobUrls: Record<string, string> = {};
 
   tecnicos: UsuarioResumen[] = [];
-
+ 
   readonly categorias = signal<CategoriaEquipoDto[]>([]);
   readonly equiposCliente = signal<EquipoResumenDto[]>([]);
   readonly activeTicketPhoto = signal<FotoPreview | null>(null);
@@ -103,7 +117,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   readonly priorityOptions: Array<{ value: PrioridadOt; label: string }> = [
     { value: 'BAJA', label: 'Baja' },
     { value: 'MEDIA', label: 'Media' },
-    { value: 'ALTA', label: 'Alta' }
+    { value: 'ALTA', label: 'Alta' },
   ];
 
   clienteId: string | null = null;
@@ -125,14 +139,18 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   form = this.fb.group({
     clienteNombre: this.fb.nonNullable.control('', [Validators.required]),
-    clienteTelefono: this.fb.nonNullable.control('', [Validators.pattern(/^\d*$/)]),
+    clienteTelefono: this.fb.nonNullable.control('', [
+      Validators.pattern(/^\d*$/),
+    ]),
     clienteEmail: this.fb.nonNullable.control('', [Validators.email]),
 
     tipo: this.fb.nonNullable.control<TipoOt>('TIENDA', [Validators.required]),
     direccion: this.fb.nonNullable.control(''),
     notasAcceso: this.fb.nonNullable.control(''),
 
-    fechaRecepcion: this.fb.control<Date | null>(new Date(), [Validators.required]),
+    fechaRecepcion: this.fb.control<Date | null>(new Date(), [
+      Validators.required,
+    ]),
 
     fechaCita: this.fb.control<Date | null>(null),
     horaCita: this.fb.nonNullable.control('09:00'),
@@ -141,19 +159,26 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     fechaPrevista: this.fb.control<string | null>(null),
 
     equipoId: this.fb.control<string | null>(null),
-    categoriaEquipoId: this.fb.control<string | null>(null, [Validators.required]),
+    categoriaEquipoId: this.fb.control<string | null>(null, [
+      Validators.required,
+    ]),
 
-    equipo: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(2)]),
+    equipo: this.fb.nonNullable.control('', [
+      Validators.required,
+      Validators.minLength(2),
+    ]),
     fallaReportada: this.fb.nonNullable.control(''),
     observaciones: this.fb.nonNullable.control(''),
 
     prioridad: this.fb.nonNullable.control<PrioridadOt>('MEDIA'),
-    tecnicoId: this.fb.control<string | null>(null)
+    tecnicoId: this.fb.control<string | null>(null),
+    categoriasTrabajo: [[] as string[], [Validators.required, Validators.minLength(1)]],
   });
 
   ngOnInit(): void {
     this.ticketId = this.route.snapshot.queryParamMap.get('ticketId');
-    this.fromTicket = this.route.snapshot.queryParamMap.get('fromTicket') === '1';
+    this.fromTicket =
+      this.route.snapshot.queryParamMap.get('fromTicket') === '1';
 
     this.loadTecnicos();
     this.loadCategorias();
@@ -208,7 +233,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     const map: Record<PrioridadOt, string> = {
       BAJA: 'Baja',
       MEDIA: 'Media',
-      ALTA: 'Alta'
+      ALTA: 'Alta',
     };
     return map[this.form.controls.prioridad.value] ?? 'Media';
   }
@@ -227,7 +252,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     const tecnicoId = this.form.controls.tecnicoId.value;
     if (!tecnicoId) return 'Sin asignar';
 
-    return this.tecnicos.find((t) => t.id === tecnicoId)?.nombre ?? 'Sin asignar';
+    return (
+      this.tecnicos.find((t) => t.id === tecnicoId)?.nombre ?? 'Sin asignar'
+    );
   }
 
   get summaryVinculoTicketLabel(): string {
@@ -257,7 +284,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const isSaveShortcut = (event.ctrlKey || event.metaKey) && event.key === 'Enter';
+    const isSaveShortcut =
+      (event.ctrlKey || event.metaKey) && event.key === 'Enter';
     if (!isSaveShortcut || this.isImageModalOpen) return;
 
     event.preventDefault();
@@ -269,7 +297,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   hasError(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return !!control && control.touched && control.invalid;
+    // Mostrará el error si el control es inválido Y (el usuario lo tocó O ya intentó enviar el formulario)
+    return !!control && control.invalid && (control.touched || this.form.touched);
   }
 
   openImageModal(photo?: FotoPreview | null): void {
@@ -366,34 +395,40 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     if (this.guardando) return;
 
     if (this.fromTicket && this.clienteId) {
-      this.snack.open('Esta OT proviene de un ticket. El cliente ya está vinculado.', 'OK', {
-        duration: 2500
-      });
+      this.snack.open(
+        'Esta OT proviene de un ticket. El cliente ya está vinculado.',
+        'OK',
+        {
+          duration: 2500,
+        },
+      );
       return;
     }
 
     const dialogRef = this.dialog.open(ClienteBuscarDialogComponent, {
       width: '520px',
       maxWidth: '92vw',
-      panelClass: 'rs-dialog-custom'
+      panelClass: 'rs-dialog-custom',
     });
 
     this.subs.add(
-      dialogRef.afterClosed().subscribe((cliente: ClienteResumen | undefined) => {
-        if (!cliente) return;
+      dialogRef
+        .afterClosed()
+        .subscribe((cliente: ClienteResumen | undefined) => {
+          if (!cliente) return;
 
-        this.clienteId = cliente.id;
+          this.clienteId = cliente.id;
 
-        this.form.patchValue({
-          clienteNombre: cliente.nombre ?? '',
-          clienteTelefono: String(cliente.telefono ?? '').replace(/\D/g, ''),
-          clienteEmail: cliente.email ?? '',
-          equipoId: null,
-          categoriaEquipoId: null
-        });
+          this.form.patchValue({
+            clienteNombre: cliente.nombre ?? '',
+            clienteTelefono: String(cliente.telefono ?? '').replace(/\D/g, ''),
+            clienteEmail: cliente.email ?? '',
+            equipoId: null,
+            categoriaEquipoId: null,
+          });
 
-        this.cargarEquiposCliente(cliente.id);
-      })
+          this.cargarEquiposCliente(cliente.id);
+        }),
     );
   }
 
@@ -403,12 +438,14 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   irANuevoEquipo(): void {
     if (!this.clienteId) {
-      this.snack.open('Por favor, selecciona un cliente primero.', 'OK', { duration: 2200 });
+      this.snack.open('Por favor, selecciona un cliente primero.', 'OK', {
+        duration: 2200,
+      });
       return;
     }
 
     this.router.navigate(['/equipos/nuevo'], {
-      queryParams: { clienteId: this.clienteId }
+      queryParams: { clienteId: this.clienteId },
     });
   }
 
@@ -450,21 +487,24 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snack.open('Completa los campos obligatorios marcados.', 'OK', {
-        duration: 2600
+      this.snack.open('Por favor, completa los campos en rojo antes de guardar.', 'Entendido', {
+        duration: 3500,
+        panelClass: 'rs-snack--error'
       });
       return;
     }
 
     const v = this.form.getRawValue();
-    const observaciones = this.cleanObservacionesText((v.observaciones ?? '').trim());
+    const observaciones = this.cleanObservacionesText(
+      (v.observaciones ?? '').trim(),
+    );
 
     const body: OtCrearRequest = {
       cliente: {
         id: this.clienteId,
         nombre: (v.clienteNombre ?? '').trim(),
         telefono: (v.clienteTelefono ?? '').trim() || null,
-        email: (v.clienteEmail ?? '').trim() || null
+        email: (v.clienteEmail ?? '').trim() || null,
       },
       tipo: (v.tipo ?? 'TIENDA') as TipoOt,
       prioridad: (v.prioridad ?? 'MEDIA') as PrioridadOt,
@@ -472,54 +512,66 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       equipoId: v.equipoId || null,
       categoriaEquipoId: v.categoriaEquipoId || null,
       fallaReportada: (v.fallaReportada ?? '').trim() || null,
-      descripcion: observaciones || '',
+      descripcion: observaciones ? observaciones : '-',
       ticketId: this.fromTicket && this.ticketId ? this.ticketId : null,
       tecnicoId: v.tecnicoId || null,
       fechaPrevista: v.fechaPrevista || null,
-      direccion: v.tipo === 'DOMICILIO' ? ((v.direccion ?? '').trim() || null) : null,
-      notasAcceso: v.tipo === 'DOMICILIO' ? ((v.notasAcceso ?? '').trim() || null) : null
+      direccion:
+        v.tipo === 'DOMICILIO' ? (v.direccion ?? '').trim() || null : null,
+      notasAcceso:
+        v.tipo === 'DOMICILIO' ? (v.notasAcceso ?? '').trim() || null : null,
+      categoriasTrabajo: v.categoriasTrabajo && v.categoriasTrabajo.length > 0 ? v.categoriasTrabajo : undefined,
     };
 
     this.guardando = true;
 
-    this.ordenes.crear(body).pipe(
-      switchMap((res: any) => {
-        const id = res.id as string;
+    this.ordenes
+      .crear(body)
+      .pipe(
+        switchMap((res: any) => {
+          const id = res.id as string;
 
-        if (this.ticketId && id) {
-          this.guardarVinculoTicketOtEnCache(this.ticketId, id);
-        }
+          if (this.ticketId && id) {
+            this.guardarVinculoTicketOtEnCache(this.ticketId, id);
+          }
 
-        if (!this.fotos.length) {
-          return of({ id });
-        }
+          if (!this.fotos.length) {
+            return of({ id });
+          }
 
-        const uploads = this.fotos.map((file) =>
-          this.ordenes.subirFoto(id, file).pipe(
-            catchError((error) => {
-              console.error('Error subiendo foto:', error);
-              return of(null);
-            })
-          )
-        );
+          const uploads = this.fotos.map((file) =>
+            this.ordenes.subirFoto(id, file).pipe(
+              catchError((error) => {
+                console.error('Error subiendo foto:', error);
+                return of(null);
+              }),
+            ),
+          );
 
-        return forkJoin(uploads).pipe(switchMap(() => of({ id })));
-      }),
-      finalize(() => {
-        this.guardando = false;
-      })
-    ).subscribe({
-      next: ({ id }) => {
-        this.snack.open('Orden creada correctamente.', 'Cerrar', { duration: 2500 });
-        this.clearLocalFiles();
-        this.router.navigate(['/ordenes-trabajo', id]);
-      },
-      error: (error) => {
-        this.snack.open(error?.error?.message || 'No se pudo crear la orden.', 'OK', {
-          duration: 3000
-        });
-      }
-    });
+          return forkJoin(uploads).pipe(switchMap(() => of({ id })));
+        }),
+        finalize(() => {
+          this.guardando = false;
+        }),
+      )
+      .subscribe({
+        next: ({ id }) => {
+          this.snack.open('Orden creada correctamente.', 'Cerrar', {
+            duration: 2500,
+          });
+          this.clearLocalFiles();
+          this.router.navigate(['/ordenes-trabajo', id]);
+        },
+        error: (error) => {
+          this.snack.open(
+            error?.error?.message || 'No se pudo crear la orden.',
+            'OK',
+            {
+              duration: 3000,
+            },
+          );
+        },
+      });
   }
 
   resolveFileUrl(url?: string | null): string {
@@ -588,7 +640,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.usuarios.listar(true).subscribe((users) => {
         this.tecnicos = users.filter((user) => user.rol === 'TECNICO');
-      })
+      }),
     );
   }
 
@@ -596,8 +648,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.equiposService.categorias().subscribe({
         next: (cats) => this.categorias.set(cats),
-        error: () => this.categorias.set([])
-      })
+        error: () => this.categorias.set([]),
+      }),
     );
   }
 
@@ -614,11 +666,12 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         this.form.patchValue(
           {
             equipoId: null,
-            categoriaEquipoId: null
+            categoriaEquipoId: null,
+            categoriasTrabajo: [],
           },
-          { emitEvent: false }
+          { emitEvent: false },
         );
-      })
+      }),
     );
   }
 
@@ -627,7 +680,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       this.form.controls.equipoId.valueChanges.subscribe((equipoId) => {
         if (!equipoId) return;
 
-        const found = this.equiposCliente().find((item) => item.id === equipoId);
+        const found = this.equiposCliente().find(
+          (item) => item.id === equipoId,
+        );
         if (!found) return;
 
         const equipoTexto = [found.marca, found.modelo]
@@ -635,16 +690,20 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
           .join(' ')
           .trim();
 
-        const currentEquipo = String(this.form.controls.equipo.value ?? '').trim();
+        const currentEquipo = String(
+          this.form.controls.equipo.value ?? '',
+        ).trim();
 
         this.form.patchValue(
           {
             equipo: currentEquipo || equipoTexto || found.codigoEquipo,
-            categoriaEquipoId: found.categoriaEquipoId ?? this.form.controls.categoriaEquipoId.value
+            categoriaEquipoId:
+              found.categoriaEquipoId ??
+              this.form.controls.categoriaEquipoId.value,
           },
-          { emitEvent: false }
+          { emitEvent: false },
         );
-      })
+      }),
     );
   }
 
@@ -656,27 +715,31 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     }
 
     this.subs.add(
-      this.equiposService.listar({ clienteId, activo: true, page: 0, size: 100 }).subscribe({
-        next: (res) => {
-          this.equiposCliente.set(res.items ?? []);
+      this.equiposService
+        .listar({ clienteId, activo: true, page: 0, size: 100 })
+        .subscribe({
+          next: (res) => {
+            this.equiposCliente.set(res.items ?? []);
 
-          const currentId = this.form.controls.equipoId.value;
-          if (!currentId) return;
+            const currentId = this.form.controls.equipoId.value;
+            if (!currentId) return;
 
-          const exists = (res.items ?? []).some((item) => item.id === currentId);
-          if (!exists) {
+            const exists = (res.items ?? []).some(
+              (item) => item.id === currentId,
+            );
+            if (!exists) {
+              this.form.controls.equipoId.setValue(null, { emitEvent: false });
+            }
+          },
+          error: () => {
+            this.equiposCliente.set([]);
             this.form.controls.equipoId.setValue(null, { emitEvent: false });
-          }
-        },
-        error: () => {
-          this.equiposCliente.set([]);
-          this.form.controls.equipoId.setValue(null, { emitEvent: false });
-        }
-      })
+          },
+        }),
     );
   }
 
-  private setupPrefillFromQueryParams(): void {
+private setupPrefillFromQueryParams(): void {
     this.subs.add(
       this.route.queryParamMap.subscribe((queryParams) => {
         const clienteId = queryParams.get('clienteId');
@@ -688,12 +751,17 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         const direccion = queryParams.get('direccion');
 
         const equipo = queryParams.get('equipo') || queryParams.get('asunto');
+        
+        // 1. Extraemos y limpiamos las categorías
+        const catsStr = queryParams.get('categoriasTrabajo');
+        const categoriasArray = catsStr ? catsStr.split(',').map(c => c.trim().toUpperCase()).filter(Boolean) : [];
+
         const descripcionFalla = queryParams.get('descripcionFalla');
         const descripcionLegacy = queryParams.get('descripcion');
 
         const descripcionLimpia = this.buildDescripcionTrabajoPrefill(
           descripcionFalla,
-          descripcionLegacy
+          descripcionLegacy,
         );
 
         const obsQP = this.cleanObservacionesText(
@@ -702,7 +770,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
             queryParams.get('detalleAdicional') ||
             queryParams.get('comentarios') ||
             ''
-          ).trim()
+          ).trim(),
         );
 
         if (clienteId) {
@@ -710,22 +778,24 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
           this.cargarEquiposCliente(clienteId);
         }
 
-        this.form.patchValue({
-          clienteNombre: clienteNombre || this.form.controls.clienteNombre.value || '',
-          clienteTelefono: String(
-            clienteTelefono || this.form.controls.clienteTelefono.value || ''
-          ).replace(/\D/g, ''),
-          clienteEmail: clienteEmail || this.form.controls.clienteEmail.value || '',
-          tipo:
-            tipo === 'DOMICILIO' || tipo === 'TIENDA'
-              ? tipo
-              : this.form.controls.tipo.value,
-          direccion: direccion || this.form.controls.direccion.value || '',
-          equipo: equipo || this.form.controls.equipo.value || '',
-          fallaReportada: descripcionLimpia || this.form.controls.fallaReportada.value || '',
-          observaciones: obsQP || this.form.controls.observaciones.value || ''
-        }, { emitEvent: false });
+        // 2. Prellenamos el formulario
+        this.form.patchValue(
+          {
+            clienteNombre: clienteNombre || this.form.controls.clienteNombre.value || '',
+            clienteTelefono: String(clienteTelefono || this.form.controls.clienteTelefono.value || '').replace(/\D/g, ''),
+            clienteEmail: clienteEmail || this.form.controls.clienteEmail.value || '',
+            tipo: tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : this.form.controls.tipo.value,
+            direccion: direccion || this.form.controls.direccion.value || '',
+            equipo: equipo || this.form.controls.equipo.value || '',
+            fallaReportada: descripcionLimpia || this.form.controls.fallaReportada.value || '',
+            observaciones: obsQP || this.form.controls.observaciones.value || '',
+            // Asignamos las categorías extraídas del URL
+            categoriasTrabajo: categoriasArray,
+          },
+          { emitEvent: false },
+        );
 
+// 3. Guardamos la referencia si viene de un ticket
         if (this.fromTicket || this.ticketId) {
           this.ticketRef = {
             id: this.ticketId || '',
@@ -734,16 +804,15 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
             asunto: queryParams.get('asunto'),
             descripcionFalla: descripcionLimpia || null,
             observacionesOriginales: obsQP || null,
-            tipoServicioSugerido:
-              tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : null,
-            direccion: direccion || null
+            tipoServicioSugerido: tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : null,
+            direccion: direccion || null,
           };
         }
 
         this.applyTipoValidators();
         this.ensureDefaultDates();
         this.syncFechaPrevista();
-      })
+      }),
     );
   }
 
@@ -753,30 +822,41 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         this.applyTipoValidators();
         this.ensureDefaultDates();
         this.syncFechaPrevista();
-      })
+      }),
     );
 
     this.subs.add(
-      this.form.controls.fechaRecepcion.valueChanges.subscribe(() => this.syncFechaPrevista())
+      this.form.controls.fechaRecepcion.valueChanges.subscribe(() =>
+        this.syncFechaPrevista(),
+      ),
     );
     this.subs.add(
-      this.form.controls.fechaCita.valueChanges.subscribe(() => this.syncFechaPrevista())
+      this.form.controls.fechaCita.valueChanges.subscribe(() =>
+        this.syncFechaPrevista(),
+      ),
     );
     this.subs.add(
-      this.form.controls.horaCita.valueChanges.subscribe(() => this.syncFechaPrevista())
+      this.form.controls.horaCita.valueChanges.subscribe(() =>
+        this.syncFechaPrevista(),
+      ),
     );
     this.subs.add(
-      this.form.controls.periodoCita.valueChanges.subscribe(() => this.syncFechaPrevista())
+      this.form.controls.periodoCita.valueChanges.subscribe(() =>
+        this.syncFechaPrevista(),
+      ),
     );
   }
 
   private applyTipoValidators(): void {
     if (this.isDomicilio) {
-      this.form.controls.direccion.setValidators([Validators.required, Validators.minLength(5)]);
+      this.form.controls.direccion.setValidators([
+        Validators.required,
+        Validators.minLength(5),
+      ]);
       this.form.controls.fechaCita.setValidators([Validators.required]);
       this.form.controls.horaCita.setValidators([
         Validators.required,
-        Validators.pattern(/^\d{2}:\d{2}$/)
+        Validators.pattern(/^\d{2}:\d{2}$/),
       ]);
       this.form.controls.periodoCita.setValidators([Validators.required]);
 
@@ -794,7 +874,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     this.form.controls.fechaCita.updateValueAndValidity({ emitEvent: false });
     this.form.controls.horaCita.updateValueAndValidity({ emitEvent: false });
     this.form.controls.periodoCita.updateValueAndValidity({ emitEvent: false });
-    this.form.controls.fechaRecepcion.updateValueAndValidity({ emitEvent: false });
+    this.form.controls.fechaRecepcion.updateValueAndValidity({
+      emitEvent: false,
+    });
   }
 
   private ensureDefaultDates(): void {
@@ -812,7 +894,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       }
     } else {
       if (!this.form.controls.fechaRecepcion.value) {
-        this.form.controls.fechaRecepcion.setValue(new Date(), { emitEvent: false });
+        this.form.controls.fechaRecepcion.setValue(new Date(), {
+          emitEvent: false,
+        });
       }
     }
   }
@@ -866,17 +950,24 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
           const descripcion = this.firstNonBlank(
             x.descripcionFalla,
             this.extractDescripcionFallaFromLegacy(x.descripcion),
-            x.descripcion
+            x.descripcion,
           );
 
           const tipo =
-            x.tipoServicioSugerido === 'DOMICILIO' || x.tipoServicioSugerido === 'TIENDA'
+            x.tipoServicioSugerido === 'DOMICILIO' ||
+            x.tipoServicioSugerido === 'TIENDA'
               ? x.tipoServicioSugerido
               : null;
 
-          const direccion = this.firstNonBlank(x.direccion, x.direccionSolicitud);
+          const direccion = this.firstNonBlank(
+            x.direccion,
+            x.direccionSolicitud,
+          );
           const obs = this.cleanObservacionesText(
-            this.firstNonBlank(x.observaciones, this.pickObservacionesOnly(x)) || ''
+            this.firstNonBlank(
+              x.observaciones,
+              this.pickObservacionesOnly(x),
+            ) || '',
           );
 
           this.ticketRef = {
@@ -887,30 +978,53 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
             descripcionFalla: descripcion,
             observacionesOriginales: obs || null,
             tipoServicioSugerido: tipo,
-            direccion
+            direccion,
           };
 
-          this.clienteId = this.firstNonBlank(x.clienteId, this.clienteId) as string | null;
+          this.clienteId = this.firstNonBlank(x.clienteId, this.clienteId) as
+            | string
+            | null;
           this.cargarEquiposCliente(this.clienteId);
 
-          this.form.patchValue({
-            clienteNombre:
-              this.firstNonBlank(x.clienteNombre, this.form.controls.clienteNombre.value) || '',
-            clienteTelefono: String(
-              this.firstNonBlank(x.clienteTelefono, this.form.controls.clienteTelefono.value) || ''
-            ).replace(/\D/g, ''),
-            clienteEmail:
-              this.firstNonBlank(x.clienteEmail, this.form.controls.clienteEmail.value) || '',
-            tipo:
-              tipo === 'DOMICILIO' || tipo === 'TIENDA'
-                ? tipo
-                : this.form.controls.tipo.value,
-            direccion: this.firstNonBlank(direccion, this.form.controls.direccion.value) || '',
-            equipo: this.firstNonBlank(equipo, this.form.controls.equipo.value) || '',
-            fallaReportada:
-              this.firstNonBlank(descripcion, this.form.controls.fallaReportada.value) || '',
-            observaciones: obs || ''
-          }, { emitEvent: false });
+          this.form.patchValue(
+            {
+              clienteNombre:
+                this.firstNonBlank(
+                  x.clienteNombre,
+                  this.form.controls.clienteNombre.value,
+                ) || '',
+              clienteTelefono: String(
+                this.firstNonBlank(
+                  x.clienteTelefono,
+                  this.form.controls.clienteTelefono.value,
+                ) || '',
+              ).replace(/\D/g, ''),
+              clienteEmail:
+                this.firstNonBlank(
+                  x.clienteEmail,
+                  this.form.controls.clienteEmail.value,
+                ) || '',
+              tipo:
+                tipo === 'DOMICILIO' || tipo === 'TIENDA'
+                  ? tipo
+                  : this.form.controls.tipo.value,
+              direccion:
+                this.firstNonBlank(
+                  direccion,
+                  this.form.controls.direccion.value,
+                ) || '',
+              equipo:
+                this.firstNonBlank(equipo, this.form.controls.equipo.value) ||
+                '',
+              fallaReportada:
+                this.firstNonBlank(
+                  descripcion,
+                  this.form.controls.fallaReportada.value,
+                ) || '',
+              observaciones: obs || '',
+            },
+            { emitEvent: false },
+          );
 
           this.applyTipoValidators();
           this.ensureDefaultDates();
@@ -918,10 +1032,10 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         },
         error: () => {
           this.snack.open('No se pudo leer el ticket para prellenar.', 'OK', {
-            duration: 2500
+            duration: 2500,
           });
-        }
-      })
+        },
+      }),
     );
   }
 
@@ -944,7 +1058,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
                 id: foto?.id,
                 source: 'ticket',
                 url,
-                name: foto?.nombreOriginal || 'foto-ticket'
+                name: foto?.nombreOriginal || 'foto-ticket',
               });
             }
           } else if (x.fotoUrl) {
@@ -954,12 +1068,14 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
                 id: 'legacy-foto',
                 source: 'ticket',
                 url,
-                name: 'foto-ticket'
+                name: 'foto-ticket',
               });
             }
           }
 
-          const locals = this.fotoPreviews.filter((preview) => preview.source === 'local');
+          const locals = this.fotoPreviews.filter(
+            (preview) => preview.source === 'local',
+          );
           this.fotoPreviews = [...refs, ...locals];
 
           if (refs.length > 0) {
@@ -977,15 +1093,17 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
           this.ticketPhotosLoading = false;
           this.ticketImageReady = true;
           this.activeTicketPhoto.set(null);
-        }
-      })
+        },
+      }),
     );
   }
 
   private hydrateTicketPhotoBlobs(): void {
     this.releaseTicketBlobUrls();
 
-    const ticketPhotos = this.fotoPreviews.filter((p) => p.source === 'ticket' && !!p.url);
+    const ticketPhotos = this.fotoPreviews.filter(
+      (p) => p.source === 'ticket' && !!p.url,
+    );
     if (!ticketPhotos.length) return;
 
     for (const photo of ticketPhotos) {
@@ -1005,18 +1123,18 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
           });
 
           const active = this.activeTicketPhoto();
-          const activeKey = active ? (active.id || active.url) : null;
+          const activeKey = active ? active.id || active.url : null;
 
           if (active && active.source === 'ticket' && activeKey === key) {
             this.activeTicketPhoto.set({
               ...active,
-              url: blobUrl
+              url: blobUrl,
             });
           }
         },
         error: () => {
           // fallback silencioso
-        }
+        },
       });
     }
   }
@@ -1049,13 +1167,17 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       file,
       url: URL.createObjectURL(file),
       name: file.name,
-      size: file.size
+      size: file.size,
     }));
 
-    const ticketRefs = this.fotoPreviews.filter((preview) => preview.source === 'ticket');
+    const ticketRefs = this.fotoPreviews.filter(
+      (preview) => preview.source === 'ticket',
+    );
     this.fotoPreviews = [...ticketRefs, ...localPreviews];
 
-    this.snack.open(`${this.fotos.length} foto(s) lista(s).`, 'OK', { duration: 2000 });
+    this.snack.open(`${this.fotos.length} foto(s) lista(s).`, 'OK', {
+      duration: 2000,
+    });
   }
 
   private clearLocalPreviews(): void {
@@ -1067,17 +1189,21 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.fotoPreviews = this.fotoPreviews.filter((preview) => preview.source !== 'local');
+    this.fotoPreviews = this.fotoPreviews.filter(
+      (preview) => preview.source !== 'local',
+    );
   }
 
   private buildDescripcionTrabajoPrefill(
     descripcionFalla?: string | null,
-    descripcionLegacy?: string | null
+    descripcionLegacy?: string | null,
   ): string {
     const falla = (descripcionFalla || '').trim();
     if (falla) return falla;
 
-    const fromLegacy = this.extractDescripcionFallaFromLegacy(descripcionLegacy || '');
+    const fromLegacy = this.extractDescripcionFallaFromLegacy(
+      descripcionLegacy || '',
+    );
     if (fromLegacy) return fromLegacy;
 
     return (descripcionLegacy || '').trim();
@@ -1093,7 +1219,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     const m2 = raw.match(/Descripci[oó]n de la falla:\s*(.+)/i);
     if (m2?.[1]) return m2[1].trim();
 
-    const m3 = raw.match(/Falla reportada:\s*([\s\S]*?)(?:\n[A-ZÁÉÍÓÚa-z].*?:|$)/i);
+    const m3 = raw.match(
+      /Falla reportada:\s*([\s\S]*?)(?:\n[A-ZÁÉÍÓÚa-z].*?:|$)/i,
+    );
     if (m3?.[1]) return m3[1].trim();
 
     return '';
@@ -1113,13 +1241,15 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       x?.informacionAdicional,
       x?.infoAdicional,
       x?.detalle,
-      x?.comentario
+      x?.comentario,
     );
 
     const directText = (typeof direct === 'string' ? direct : '').trim();
     if (directText) return directText;
 
-    return this.extractObservacionesFromDescription(String(x?.descripcion ?? ''));
+    return this.extractObservacionesFromDescription(
+      String(x?.descripcion ?? ''),
+    );
   }
 
   private cleanObservacionesText(text: string): string {

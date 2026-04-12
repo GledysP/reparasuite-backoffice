@@ -48,6 +48,7 @@ export interface OtListaItem {
 
   clienteNombre: string;
   tecnicoNombre: string | null;
+  categoriasTrabajo?: string[];
   updatedAt: string;
 }
 
@@ -133,6 +134,7 @@ export interface OtDetalle {
   pago: PagoDto | null;
   citas: CitaDto[];
   mensajes: MensajeOtDto[];
+  categoriasTrabajo?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -192,6 +194,7 @@ export interface TicketDetalleDto {
   fotos?: TicketFotoDto[];
 
   fotoUrl?: string | null;
+  categoriasTrabajo?: string[];
   direccionSolicitud?: string | null;
   tipoServicioSolicitado?: 'TIENDA' | 'DOMICILIO' | string | null;
 }
@@ -299,6 +302,7 @@ export interface InventarioItemDetalleDto {
   precioVenta: string;
   ubicacionAlmacen?: string | null;
   notas?: string | null;
+  imagenUrl?: string | null; 
   activo: boolean;
   createdAt: string;
   updatedAt: string;

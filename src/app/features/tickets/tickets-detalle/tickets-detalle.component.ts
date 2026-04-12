@@ -245,6 +245,7 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
         direccion,
         observaciones,
         ticketFotoUrl: primeraFoto,
+        categoriasTrabajo: this.ticket.categoriasTrabajo?.join(',')
       },
     });
   }

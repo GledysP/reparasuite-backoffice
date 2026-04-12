@@ -3,55 +3,34 @@
     <div class="rs-page-copy">
       <h1 class="rs-page-title">Nueva orden de trabajo</h1>
       <p class="rs-page-subtitle">
-        {{
-          fromTicket
-            ? 'Convierte el ticket en una orden precisa, elegante y lista para ejecución.'
-            : 'Crea una orden con una experiencia compacta, moderna y enfocada en productividad.'
-        }}
+        {{ fromTicket ? "Convierte el ticket en una orden precisa, elegante y lista para ejecución." : "Crea una orden con una experiencia compacta, moderna y enfocada en productividad." }}
       </p>
     </div>
 
-    <button
-      mat-stroked-button
-      type="button"
-      class="rs-btn-secondary rs-btn-secondary--top"
-      (click)="cancelar()"
-      [disabled]="guardando">
+    <button mat-stroked-button type="button" class="rs-btn-secondary rs-btn-secondary--top" (click)="cancelar()" [disabled]="guardando">
       <mat-icon>arrow_back</mat-icon>
       <span>Volver</span>
     </button>
   </header>
 
   <form [formGroup]="form" class="rs-form" novalidate>
-    <div class="rs-layout">
-      <section class="rs-main">
-        <mat-card class="rs-card">
+    <div class="rs-form-grid-layout">
+      
+      <div class="rs-row-aligned rs-col-12">
+        
+        <mat-card class="rs-card rs-col-8">
           <div class="rs-card-head">
-            <div>
-              <div class="rs-section-kicker">Cliente</div>
-              <h2 class="rs-section-title">Datos del cliente</h2>
+            <div class="rs-section-title-group">
+              <div class="rs-icon-square rs-icon-square--small"><mat-icon>person</mat-icon></div>
+              <div>
+                <div class="rs-section-kicker">Identificación</div>
+                <h2 class="rs-section-title">Datos del cliente</h2>
+              </div>
             </div>
-
             @if (!fromTicket) {
               <div class="rs-head-actions">
-                <button
-                  mat-stroked-button
-                  type="button"
-                  class="rs-btn-secondary"
-                  (click)="buscarCliente()"
-                  [disabled]="guardando">
-                  <mat-icon>search</mat-icon>
-                  <span>Buscar cliente</span>
-                </button>
-
-                <button
-                  mat-button
-                  type="button"
-                  class="rs-btn-ghost"
-                  (click)="irAClientes()"
-                  [disabled]="guardando">
-                  <mat-icon>group</mat-icon>
-                  <span>Ir a Clientes</span>
+                <button mat-stroked-button type="button" class="rs-btn-secondary" (click)="buscarCliente()" [disabled]="guardando">
+                  <mat-icon>search</mat-icon> <span>Buscar cliente</span>
                 </button>
               </div>
             }
@@ -61,548 +40,244 @@
             <div class="rs-field rs-col-12">
               <label class="rs-field-label">Nombre *</label>
               <mat-form-field appearance="outline" [class.rs-field-error]="hasError('clienteNombre')">
-                <input
-                  matInput
-                  formControlName="clienteNombre"
-                  autocomplete="off"
-                  placeholder="Nombre completo o razón social" />
+                <input matInput formControlName="clienteNombre" autocomplete="off" placeholder="Nombre completo o razón social" />
               </mat-form-field>
             </div>
-
             <div class="rs-field rs-col-6">
               <label class="rs-field-label">Teléfono</label>
               <mat-form-field appearance="outline" [class.rs-field-error]="hasError('clienteTelefono')">
-                <input
-                  matInput
-                  formControlName="clienteTelefono"
-                  autocomplete="off"
-                  inputmode="numeric"
-                  placeholder="8091234567"
-                  (input)="onTelefonoInput($event)" />
+                <input matInput formControlName="clienteTelefono" autocomplete="off" inputmode="numeric" placeholder="8091234567" (input)="onTelefonoInput($event)" />
               </mat-form-field>
             </div>
-
             <div class="rs-field rs-col-6">
               <label class="rs-field-label">Correo</label>
               <mat-form-field appearance="outline" [class.rs-field-error]="hasError('clienteEmail')">
-                <input
-                  matInput
-                  formControlName="clienteEmail"
-                  autocomplete="off"
-                  placeholder="cliente@correo.com" />
+                <input matInput formControlName="clienteEmail" autocomplete="off" placeholder="cliente@correo.com" />
               </mat-form-field>
             </div>
           </div>
         </mat-card>
 
-        <mat-card class="rs-card rs-card--work">
-          <div class="rs-card-accent"></div>
-
+        <mat-card class="rs-card rs-card-cristal-azul rs-col-4">
           <div class="rs-card-head">
-            <div>
-              <div class="rs-section-kicker">Trabajo</div>
-              <h2 class="rs-section-title">Trabajo a realizar</h2>
+            <div class="rs-section-title-group">
+              <div class="rs-icon-square rs-icon-square--small rs-icon-square--white"><mat-icon>local_shipping</mat-icon></div>
+              <div>
+                <div class="rs-section-kicker rs-text-white-opaque">Servicio</div>
+                <h2 class="rs-section-title rs-text-white">Logística</h2>
+              </div>
+            </div>
+          </div>
+
+          <div class="rs-grid rs-grid--12">
+            <div class="rs-field rs-col-12">
+              <label class="rs-field-label rs-text-white-opaque">Modalidad *</label>
+              <mat-button-toggle-group formControlName="tipo" class="rs-priority-group" [class.rs-service-group--error]="hasError('tipo')">
+                <mat-button-toggle value="TIENDA" class="rs-priority-segment">Taller</mat-button-toggle>
+                <mat-button-toggle value="DOMICILIO" class="rs-priority-segment">Domicilio</mat-button-toggle>
+              </mat-button-toggle-group>
             </div>
 
+            @if (!isDomicilio) {
+              <div class="rs-field rs-col-12 rs-field-dark">
+                <label class="rs-field-label">Fecha de recepción *</label>
+                <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaRecepcion')">
+                  <input matInput [matDatepicker]="pickerRecepcion" formControlName="fechaRecepcion" />
+                  <mat-datepicker-toggle matSuffix [for]="pickerRecepcion"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerRecepcion></mat-datepicker>
+                </mat-form-field>
+              </div>
+            } @else {
+              <div class="rs-field rs-col-12 rs-field-dark">
+                <label class="rs-field-label">Dirección / ubicación *</label>
+                <mat-form-field appearance="outline" [class.rs-field-error]="hasError('direccion')">
+                  <input matInput formControlName="direccion" placeholder="Calle, sector..." />
+                </mat-form-field>
+              </div>
+              <div class="rs-field rs-col-12 rs-field-dark">
+                <label class="rs-field-label">Fecha de visita *</label>
+                <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaCita')">
+                  <input matInput [matDatepicker]="pickerCita" formControlName="fechaCita" />
+                  <mat-datepicker-toggle matSuffix [for]="pickerCita"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerCita></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="rs-field rs-col-6 rs-field-dark">
+                <label class="rs-field-label">Hora *</label>
+                <mat-form-field appearance="outline" [class.rs-field-error]="hasError('horaCita')">
+                  <input matInput formControlName="horaCita" placeholder="00:00" inputmode="numeric" maxlength="5" (input)="onHoraInput($event)" (blur)="onHoraBlur()" />
+                </mat-form-field>
+              </div>
+              <div class="rs-field rs-col-6 rs-field-dark">
+                <label class="rs-field-label">Período *</label>
+                <mat-button-toggle-group formControlName="periodoCita" class="rs-period-group">
+                  <mat-button-toggle value="AM">AM</mat-button-toggle>
+                  <mat-button-toggle value="PM">PM</mat-button-toggle>
+                </mat-button-toggle-group>
+              </div>
+            }
+          </div>
+        </mat-card>
+      </div>
+
+      <div class="rs-row-aligned rs-col-12">
+        
+        <mat-card class="rs-card rs-col-8">
+          <div class="rs-card-accent"></div>
+          <div class="rs-card-head">
+            <div>
+              <div class="rs-section-kicker">Operativa</div>
+              <h2 class="rs-section-title">Trabajo a realizar</h2>
+            </div>
             <div class="rs-head-actions">
-              <button
-                mat-stroked-button
-                type="button"
-                class="rs-btn-secondary"
-                (click)="irANuevoEquipo()"
-                [disabled]="guardando">
-                <mat-icon>memory</mat-icon>
-                <span>Nuevo equipo</span>
+              <button mat-stroked-button type="button" class="rs-btn-secondary" (click)="irANuevoEquipo()" [disabled]="guardando">
+                <mat-icon>memory</mat-icon> <span>Nuevo equipo</span>
               </button>
             </div>
           </div>
 
           <div class="rs-grid rs-grid--12">
+            <div class="rs-field rs-col-12">
+              <label class="rs-field-label" [class.rs-field-error]="hasError('categoriasTrabajo')">Servicios a realizar *</label>
+              <div [class.rs-chips-error]="hasError('categoriasTrabajo')">
+                <mat-chip-listbox multiple formControlName="categoriasTrabajo" class="rs-custom-chips">
+                  <mat-chip-option value="REPARACION"><mat-icon>build</mat-icon> Reparación</mat-chip-option>
+                  <mat-chip-option value="MANTENIMIENTO"><mat-icon>settings</mat-icon> Mantenimiento</mat-chip-option>
+                  <mat-chip-option value="INSTALACION"><mat-icon>power</mat-icon> Instalación</mat-chip-option>
+                </mat-chip-listbox>
+              </div>
+              @if (hasError('categoriasTrabajo')) { <span class="rs-chips-error-msg">Debes seleccionar al menos un servicio.</span> }
+            </div>
+
             <div class="rs-field rs-col-4">
               <label class="rs-field-label">Vincular equipo existente</label>
               <mat-form-field appearance="outline">
                 <mat-select formControlName="equipoId" panelClass="rs-tech-panel">
-                  <mat-option [value]="null">No vincular equipo existente</mat-option>
-
-                  @for (eq of equiposCliente(); track eq.id) {
-                    <mat-option [value]="eq.id">
-                      {{ eq.codigoEquipo }}
-                      @if (eq.categoriaEquipoNombre) {
-                        <span> · {{ eq.categoriaEquipoNombre }}</span>
-                      }
-                      @if (eq.marca || eq.modelo) {
-                        <span> · {{ eq.marca || '' }} {{ eq.modelo || '' }}</span>
-                      }
-                    </mat-option>
-                  }
+                  <mat-option [value]="null">No vincular equipo</mat-option>
+                  @for (eq of equiposCliente(); track eq.id) { <mat-option [value]="eq.id">{{ eq.codigoEquipo }}</mat-option> }
                 </mat-select>
               </mat-form-field>
-
-              <div class="rs-field-help">
-                Si el cliente ya tiene un equipo registrado, puedes vincularlo aquí.
-              </div>
             </div>
-
             <div class="rs-field rs-col-4">
               <label class="rs-field-label">Categoría *</label>
               <mat-form-field appearance="outline" [class.rs-field-error]="hasError('categoriaEquipoId')">
                 <mat-select formControlName="categoriaEquipoId" panelClass="rs-tech-panel">
                   <mat-option [value]="null">Selecciona una categoría</mat-option>
-
-                  @for (c of categorias(); track c.id) {
-                    <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
-                  }
+                  @for (c of categorias(); track c.id) { <mat-option [value]="c.id">{{ c.nombre }}</mat-option> }
                 </mat-select>
               </mat-form-field>
             </div>
-
             <div class="rs-field rs-col-4">
               <label class="rs-field-label">Equipo *</label>
               <mat-form-field appearance="outline" [class.rs-field-error]="hasError('equipo')">
-                <input
-                  matInput
-                  formControlName="equipo"
-                  autocomplete="off"
-                  placeholder="Ej.: Televisor Samsung / Laptop Lenovo / Router TP-Link" />
+                <input matInput formControlName="equipo" placeholder="Ej.: Televisor Samsung" />
               </mat-form-field>
             </div>
 
             <div class="rs-field rs-col-6">
               <label class="rs-field-label">Falla reportada</label>
               <mat-form-field appearance="outline">
-                <input
-                  matInput
-                  formControlName="fallaReportada"
-                  autocomplete="off"
-                  placeholder="Ej.: no enciende / pantalla rota / sin señal" />
+                <input matInput formControlName="fallaReportada" placeholder="Ej.: no enciende" />
               </mat-form-field>
             </div>
-
             <div class="rs-field rs-col-6">
               <label class="rs-field-label">Observaciones del cliente</label>
               <mat-form-field appearance="outline" class="rs-textarea-field">
-                <textarea
-                  matInput
-                  rows="2"
-                  formControlName="observaciones"
-                  placeholder="Detalles adicionales dados por el cliente">
-                </textarea>
+                <textarea matInput rows="2" formControlName="observaciones" placeholder="Detalles adicionales..."></textarea>
               </mat-form-field>
             </div>
+          </div>
+        </mat-card>
 
-            <div class="rs-field rs-col-4">
-              <label class="rs-field-label">Prioridad</label>
+        <mat-card class="rs-card rs-col-4">
+          <div class="rs-card-accent rs-card-accent-assignment"></div>
+          <div class="rs-card-head rs-card-head--tight">
+             <div class="rs-section-title-group">
+              <div class="rs-icon-square rs-icon-square--small rs-icon-square--cyan"><mat-icon>assignment_ind</mat-icon></div>
+              <div>
+                <div class="rs-section-kicker">Asignación</div>
+                <h2 class="rs-section-title">Flujo de trabajo</h2>
+              </div>
+            </div>
+          </div>
 
-              <mat-button-toggle-group
-                formControlName="prioridad"
-                class="rs-priority-group"
-                aria-label="Prioridad de la orden">
+          <div class="rs-grid rs-grid--12" style="height: 100%; align-content: flex-start; margin-top: 16px;">
+            <div class="rs-field rs-col-12">
+              <label class="rs-field-label">Prioridad de la orden</label>
+              <mat-button-toggle-group formControlName="prioridad" class="rs-priority-group">
                 @for (p of priorityOptions; track p.value) {
-                  <mat-button-toggle
-                    [value]="p.value"
-                    class="rs-priority-segment"
-                    [class.rs-priority-segment--low]="p.value === 'BAJA'"
-                    [class.rs-priority-segment--med]="p.value === 'MEDIA'"
-                    [class.rs-priority-segment--high]="p.value === 'ALTA'">
-                    <span class="rs-priority-dot"></span>
-                    <span class="rs-priority-text">{{ p.label }}</span>
+                  <mat-button-toggle [value]="p.value" class="rs-priority-segment" [class.rs-priority-segment--low]="p.value === 'BAJA'" [class.rs-priority-segment--med]="p.value === 'MEDIA'" [class.rs-priority-segment--high]="p.value === 'ALTA'">
+                    <span class="rs-priority-dot"></span><span class="rs-priority-text">{{ p.label }}</span>
                   </mat-button-toggle>
                 }
               </mat-button-toggle-group>
             </div>
 
-            <div class="rs-field rs-col-8">
-              <label class="rs-field-label">Técnico asignado</label>
+            <div class="rs-field rs-col-12" style="margin-top: 16px;">
+              <label class="rs-field-label">Técnico responsable</label>
               <mat-form-field appearance="outline">
                 <mat-icon matPrefix>engineering</mat-icon>
                 <mat-select formControlName="tecnicoId" panelClass="rs-tech-panel">
                   <mat-option [value]="null">Sin asignar</mat-option>
-
-                  @for (t of tecnicos; track t.id) {
-                    <mat-option [value]="t.id">{{ t.nombre }}</mat-option>
-                  }
+                  @for (t of tecnicos; track t.id) { <mat-option [value]="t.id">{{ t.nombre }}</mat-option> }
                 </mat-select>
               </mat-form-field>
             </div>
           </div>
         </mat-card>
+      </div>
 
-        <mat-card class="rs-card rs-card--attachments">
-          <div class="rs-card-head">
+      <mat-card class="rs-card rs-col-12">
+        <div class="rs-card-head" style="margin-bottom: 12px;">
+          <div class="rs-section-title-group">
+            <div class="rs-icon-square rs-icon-square--small"><mat-icon>cloud_upload</mat-icon></div>
             <div>
-              <div class="rs-section-kicker">Adjuntos</div>
-              <h2 class="rs-section-title">Fotos y evidencia visual</h2>
-            </div>
-
-            <div class="rs-inline-note">
-              <mat-icon>cloud_done</mat-icon>
-              <span>Arrastra imágenes o haz clic para seleccionarlas</span>
+              <div class="rs-section-kicker">Evidencia</div>
+              <h2 class="rs-section-title">Evidencia visual OT</h2>
             </div>
           </div>
-
-          <div class="rs-attachments-body">
-            @if (hasTicketPhotoRefs && activeTicketPhoto()) {
-              <section class="rs-ticket-panel">
-                <div class="rs-ticket-panel__head">
-                  <div>
-                    <div class="rs-ticket-panel__eyebrow">Ticket</div>
-                    <div class="rs-ticket-panel__title">Evidencia visual</div>
-                  </div>
-
-                  <button
-                    mat-icon-button
-                    type="button"
-                    class="rs-ticket-panel__expand"
-                    (click)="openImageModal(activeTicketPhoto())"
-                    aria-label="Ver imagen grande">
-                    <mat-icon>open_in_full</mat-icon>
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  class="rs-ticket-viewer"
-                  (click)="openImageModal(activeTicketPhoto())">
-                  @if (ticketPhotosLoading || !ticketImageReady) {
-                    <div class="rs-media-skeleton" aria-hidden="true"></div>
-                  }
-
-                  <img
-                    class="rs-ticket-viewer__image"
-                    [class.is-ready]="ticketImageReady && !ticketPhotosLoading"
-                    [src]="activeTicketPhoto()?.url || ''"
-                    [alt]="activeTicketPhoto()?.name || 'Foto del ticket'"
-                    (load)="onTicketImageLoaded()"
-                    (error)="onTicketImageError()" />
-
-                  <span class="rs-ticket-viewer__badge">Ticket</span>
-                </button>
-
-                <div class="rs-ticket-panel__name">
-                  {{ activeTicketPhoto()?.name }}
-                </div>
-
-                @if (ticketPhotoRefs.length > 1) {
-                  <div class="rs-ticket-thumbs">
-                    @for (photo of ticketPhotoRefs; track photo.url) {
-                      <button
-                        type="button"
-                        class="rs-ticket-thumb"
-                        [class.is-active]="activeTicketPhoto()?.url === photo.url"
-                        (click)="selectTicketPhoto(photo)">
-                        <img [src]="photo.url" [alt]="photo.name" loading="lazy" />
-                      </button>
-                    }
-                  </div>
-                }
-              </section>
-            }
-
-            <section class="rs-upload-panel">
-              <div
-                class="rs-dropzone"
-                (click)="!guardando && fileInput.click()"
-                (dragover)="onDragOver($event)"
-                (dragleave)="onDragLeave($event)"
-                (drop)="onDrop($event)"
-                [class.is-dragover]="isDragOver">
-
-                <input
-                  #fileInput
-                  type="file"
-                  hidden
-                  (change)="onFileSelected($event)"
-                  accept="image/*"
-                  multiple
-                />
-
-                <div class="rs-dropzone__icon">
-                  <mat-icon>cloud_upload</mat-icon>
-                </div>
-
-                <div class="rs-dropzone__eyebrow">Archivos OT</div>
-                <div class="rs-dropzone__title">Subir fotos a la orden</div>
-                <div class="rs-dropzone__subtitle">
-                  PNG, JPG o WEBP · múltiples imágenes · vista previa inmediata
-                </div>
-
-                <div class="rs-dropzone__actions">
-                  <span class="rs-chip">Imágenes técnicas</span>
-                  <span class="rs-chip">Haz clic o arrastra</span>
-                  <span class="rs-chip">Carga segura</span>
-                </div>
-
-                @if (selectedFileName) {
-                  <div class="rs-dropzone__count">{{ selectedFileName }}</div>
-                }
-              </div>
-            </section>
-          </div>
-
           @if (localPhotoPreviews.length > 0) {
-            <div class="rs-local-gallery">
+            <button mat-stroked-button class="rs-btn-secondary" type="button" (click)="fileInput.click()">
+              <mat-icon>add</mat-icon> Añadir foto
+            </button>
+          }
+        </div>
+
+        <div class="rs-attachments-container">
+          <input #fileInput type="file" hidden (change)="onFileSelected($event)" accept="image/*" multiple />
+
+          @if (localPhotoPreviews.length === 0) {
+            <div class="rs-premium-dropzone" (click)="fileInput.click()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" [class.is-dragover]="isDragOver">
+              <div class="rs-premium-dropzone__icon"><mat-icon>add_photo_alternate</mat-icon></div>
+              <div class="rs-premium-dropzone__title">Arrastrar imágenes premium</div>
+              <div class="rs-premium-dropzone__subtitle">Haz clic o arrastra fotos de la OT aquí (PNG, JPG hasta 5MB)</div>
+            </div>
+          } @else {
+            <div class="rs-photo-gallery">
               @for (p of localPhotoPreviews; track p.url; let i = $index) {
                 <article class="rs-photo-card">
                   <div class="rs-photo-badge rs-photo-badge--local">OT</div>
-
-                  <button
-                    mat-icon-button
-                    type="button"
-                    class="rs-photo-remove"
-                    (click)="removeLocalFile(i)"
-                    [disabled]="guardando"
-                    aria-label="Eliminar foto">
-                    <mat-icon>close</mat-icon>
-                  </button>
-
-                  <button
-                    type="button"
-                    class="rs-photo-card__viewer"
-                    (click)="openImageModal(p)">
-                    <img [src]="p.url" [alt]="p.name" loading="lazy" />
-                  </button>
-
-                  <div class="rs-photo-name">{{ p.name }}</div>
+                  <button mat-icon-button type="button" class="rs-photo-remove" (click)="removeLocalFile(i)" [disabled]="guardando"><mat-icon>close</mat-icon></button>
+                  <button type="button" class="rs-photo-viewer" (click)="openImageModal(p)"><img [src]="p.url" [alt]="p.name" loading="lazy" /></button>
                 </article>
               }
             </div>
-          } @else {
-            <div class="rs-empty-upload">
-              <mat-icon>image</mat-icon>
-              <span>Aún no has agregado fotos propias a esta orden.</span>
-            </div>
           }
-        </mat-card>
-      </section>
-
-      <aside class="rs-rail">
-        <div class="rs-rail-stack">
-          <mat-card class="rs-card rs-card--service">
-            <div class="rs-card-head rs-card-head--tight">
-              <div>
-                <div class="rs-section-kicker">Servicio</div>
-                <h2 class="rs-section-title">Información del servicio</h2>
-              </div>
-            </div>
-
-            <div class="rs-field">
-              <label class="rs-field-label">Modalidad *</label>
-
-              <mat-button-toggle-group
-                formControlName="tipo"
-                class="rs-service-group rs-service-group--rail"
-                [class.rs-service-group--error]="hasError('tipo')"
-                aria-label="Tipo de atención">
-                <mat-button-toggle value="TIENDA" class="rs-service-segment">
-                  <div class="rs-service-segment__body">
-                    <span class="rs-service-segment__title">En taller</span>
-                    <span class="rs-service-segment__sub">Recepción en sede</span>
-                  </div>
-                </mat-button-toggle>
-
-                <mat-button-toggle value="DOMICILIO" class="rs-service-segment">
-                  <div class="rs-service-segment__body">
-                    <span class="rs-service-segment__title">A domicilio</span>
-                    <span class="rs-service-segment__sub">Desplazamiento técnico</span>
-                  </div>
-                </mat-button-toggle>
-              </mat-button-toggle-group>
-            </div>
-
-            @if (!isDomicilio) {
-              <section class="rs-conditional-panel rs-conditional-panel--enter">
-                <div class="rs-field">
-                  <label class="rs-field-label">Fecha de recepción *</label>
-                  <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaRecepcion')">
-                    <input
-                      matInput
-                      [matDatepicker]="pickerRecepcionRail"
-                      formControlName="fechaRecepcion" />
-                    <mat-datepicker-toggle matSuffix [for]="pickerRecepcionRail"></mat-datepicker-toggle>
-                    <mat-datepicker #pickerRecepcionRail></mat-datepicker>
-                  </mat-form-field>
-                </div>
-              </section>
-            } @else {
-              <section class="rs-conditional-panel rs-conditional-panel--enter">
-                <div class="rs-grid rs-grid--12">
-                  <div class="rs-field rs-col-12">
-                    <label class="rs-field-label">Dirección / ubicación *</label>
-                    <mat-form-field appearance="outline" [class.rs-field-error]="hasError('direccion')">
-                      <input
-                        matInput
-                        formControlName="direccion"
-                        autocomplete="off"
-                        placeholder="Calle, sector, edificio o referencia" />
-                    </mat-form-field>
-                  </div>
-
-                  <div class="rs-field rs-col-7">
-                    <label class="rs-field-label">Fecha de visita *</label>
-                    <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaCita')">
-                      <input
-                        matInput
-                        [matDatepicker]="pickerCita"
-                        formControlName="fechaCita" />
-                      <mat-datepicker-toggle matSuffix [for]="pickerCita"></mat-datepicker-toggle>
-                      <mat-datepicker #pickerCita></mat-datepicker>
-                    </mat-form-field>
-                  </div>
-
-                  <div class="rs-field rs-col-3">
-                    <label class="rs-field-label">Hora *</label>
-                    <mat-form-field appearance="outline" [class.rs-field-error]="hasError('horaCita')">
-                      <input
-                        matInput
-                        formControlName="horaCita"
-                        autocomplete="off"
-                        placeholder="00:00"
-                        inputmode="numeric"
-                        maxlength="5"
-                        (input)="onHoraInput($event)"
-                        (blur)="onHoraBlur()" />
-                    </mat-form-field>
-                  </div>
-
-                  <div class="rs-field rs-col-2">
-                    <label class="rs-field-label">Período *</label>
-                    <mat-button-toggle-group
-                      formControlName="periodoCita"
-                      class="rs-period-group"
-                      aria-label="Período">
-                      <mat-button-toggle value="AM">AM</mat-button-toggle>
-                      <mat-button-toggle value="PM">PM</mat-button-toggle>
-                    </mat-button-toggle-group>
-                  </div>
-
-                  <div class="rs-field rs-col-12">
-                    <label class="rs-field-label">Notas de acceso</label>
-                    <mat-form-field appearance="outline" class="rs-textarea-field rs-textarea-field--sm">
-                      <textarea
-                        matInput
-                        rows="2"
-                        formControlName="notasAcceso"
-                        placeholder="Portería, piso, torre o referencia">
-                      </textarea>
-                    </mat-form-field>
-                  </div>
-                </div>
-              </section>
-            }
-          </mat-card>
-
-          <mat-card class="rs-card rs-card--summary">
-            <div class="rs-card-head rs-card-head--tight">
-              <div>
-                <div class="rs-section-kicker">Resumen</div>
-                <h2 class="rs-section-title">Resumen de la orden</h2>
-              </div>
-            </div>
-
-            <div class="rs-summary">
-              <div class="rs-summary-row">
-                <span class="rs-summary-label">Modalidad</span>
-                <strong class="rs-summary-value">{{ summaryTipoLabel }}</strong>
-              </div>
-
-              <div class="rs-summary-row">
-                <span class="rs-summary-label">Prioridad</span>
-                <strong class="rs-summary-value">{{ summaryPrioridadLabel }}</strong>
-              </div>
-
-              <div class="rs-summary-row">
-                <span class="rs-summary-label">Equipo</span>
-                <strong class="rs-summary-value">{{ summaryEquipoLabel }}</strong>
-              </div>
-
-              <div class="rs-summary-row">
-                <span class="rs-summary-label">Cliente</span>
-                <strong class="rs-summary-value">{{ summaryClienteLabel }}</strong>
-              </div>
-
-              <div class="rs-summary-row">
-                <span class="rs-summary-label">Técnico</span>
-                <strong class="rs-summary-value">{{ summaryTecnicoLabel }}</strong>
-              </div>
-
-              <div class="rs-summary-row">
-                <span class="rs-summary-label">Fecha</span>
-                <strong class="rs-summary-value">{{ summaryFechaLabel }}</strong>
-              </div>
-
-              <div class="rs-summary-row">
-                <span class="rs-summary-label">Fotos ticket</span>
-                <strong class="rs-summary-value">{{ ticketPhotoRefs.length }}</strong>
-              </div>
-
-              <div class="rs-summary-row">
-                <span class="rs-summary-label">Fotos OT</span>
-                <strong class="rs-summary-value">{{ localPhotoPreviews.length }}</strong>
-              </div>
-
-              <div class="rs-summary-row">
-                <span class="rs-summary-label">Vinculada a ticket</span>
-                <strong class="rs-summary-value">{{ summaryVinculoTicketLabel }}</strong>
-              </div>
-            </div>
-          </mat-card>
-
-          <div class="rs-actions-buttons">
-            <button
-              mat-stroked-button
-              type="button"
-              class="rs-btn-secondary rs-btn-secondary--full"
-              (click)="cancelar()"
-              [disabled]="guardando">
-              Cancelar
-            </button>
-
-            <button
-              mat-flat-button
-              type="button"
-              class="rs-btn rs-btn--primary rs-btn--full"
-              (click)="crear()"
-              [disabled]="guardando || form.invalid">
-              <span class="rs-btn__shimmer"></span>
-
-              <span class="rs-btn__label">
-                @if (guardando) {
-                  <mat-spinner diameter="18" strokeWidth="3"></mat-spinner>
-                } @else {
-                  <mat-icon>task_alt</mat-icon>
-                }
-                <span>{{ guardando ? 'Guardando orden...' : 'Guardar orden de trabajo' }}</span>
-              </span>
-            </button>
-          </div>
         </div>
-      </aside>
+      </mat-card>
+
+      <div class="rs-col-12 rs-actions-footer">
+        <button mat-stroked-button type="button" class="rs-btn-secondary" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
+        <button mat-flat-button type="button" class="rs-btn rs-btn--primary" (click)="crear()" [disabled]="guardando">
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">
+            @if (guardando) { <mat-spinner diameter="18" strokeWidth="3"></mat-spinner> } 
+            @else { <mat-icon>task_alt</mat-icon> }
+            <span>{{ guardando ? "Guardando orden..." : "Guardar orden de trabajo" }}</span>
+          </span>
+        </button>
+      </div>
+
     </div>
   </form>
-
-  @if (isImageModalOpen) {
-    <div class="rs-lightbox" (click)="closeImageModal()">
-      <div class="rs-lightbox__dialog" (click)="$event.stopPropagation()">
-        <div class="rs-lightbox__bar">
-          <div class="rs-lightbox__meta">
-            <div class="rs-lightbox__eyebrow">Vista ampliada</div>
-            <div class="rs-lightbox__name">{{ imageModalName }}</div>
-          </div>
-
-          <button
-            mat-icon-button
-            type="button"
-            class="rs-lightbox__close"
-            (click)="closeImageModal()"
-            aria-label="Cerrar">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-
-        <div class="rs-lightbox__stage">
-          <img [src]="imageModalUrl" [alt]="imageModalName || 'Imagen'" />
-        </div>
-      </div>
-    </div>
-  }
 </main>
