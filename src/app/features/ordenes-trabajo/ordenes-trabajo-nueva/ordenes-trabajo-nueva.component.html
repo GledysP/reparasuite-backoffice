@@ -1,6 +1,6 @@
-<main class="rs-shell rs-enter">
-  <header class="rs-page-head">
-    <div class="rs-page-copy">
+<main class="rs-page-container rs-fade-up"> 
+  <header class="rs-header-row">
+    <div class="rs-header-copy">
       <h1 class="rs-page-title">Nueva orden de trabajo</h1>
       <p class="rs-page-subtitle">
         {{ fromTicket ? "Convierte el ticket en una orden precisa, elegante y lista para ejecución." : "Crea una orden con una experiencia compacta, moderna y enfocada en productividad." }}
@@ -19,6 +19,7 @@
       <div class="rs-row-aligned rs-col-12">
         
         <mat-card class="rs-card rs-col-8">
+          <div class="rs-card-accent"></div>
           <div class="rs-card-head">
             <div class="rs-section-title-group">
               <div class="rs-icon-square rs-icon-square--small"><mat-icon>person</mat-icon></div>
@@ -58,28 +59,29 @@
           </div>
         </mat-card>
 
-        <mat-card class="rs-card rs-card-cristal-azul rs-col-4">
+        <mat-card class="rs-card rs-col-4">
+          <div class="rs-card-accent"></div>
           <div class="rs-card-head">
             <div class="rs-section-title-group">
-              <div class="rs-icon-square rs-icon-square--small rs-icon-square--white"><mat-icon>local_shipping</mat-icon></div>
+              <div class="rs-icon-square rs-icon-square--small"><mat-icon>local_shipping</mat-icon></div>
               <div>
-                <div class="rs-section-kicker rs-text-white-opaque">Servicio</div>
-                <h2 class="rs-section-title rs-text-white">Logística</h2>
+                <div class="rs-section-kicker">Servicio</div>
+                <h2 class="rs-section-title">Información logística</h2>
               </div>
             </div>
           </div>
 
           <div class="rs-grid rs-grid--12">
             <div class="rs-field rs-col-12">
-              <label class="rs-field-label rs-text-white-opaque">Modalidad *</label>
+              <label class="rs-field-label">Modalidad *</label>
               <mat-button-toggle-group formControlName="tipo" class="rs-priority-group" [class.rs-service-group--error]="hasError('tipo')">
-                <mat-button-toggle value="TIENDA" class="rs-priority-segment">Taller</mat-button-toggle>
-                <mat-button-toggle value="DOMICILIO" class="rs-priority-segment">Domicilio</mat-button-toggle>
+                <mat-button-toggle value="TIENDA" class="rs-priority-segment"><mat-icon>storefront</mat-icon> Taller</mat-button-toggle>
+                <mat-button-toggle value="DOMICILIO" class="rs-priority-segment"><mat-icon>home</mat-icon> Domicilio</mat-button-toggle>
               </mat-button-toggle-group>
             </div>
 
             @if (!isDomicilio) {
-              <div class="rs-field rs-col-12 rs-field-dark">
+              <div class="rs-field rs-col-12 rs-conditional-panel--enter">
                 <label class="rs-field-label">Fecha de recepción *</label>
                 <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaRecepcion')">
                   <input matInput [matDatepicker]="pickerRecepcion" formControlName="fechaRecepcion" />
@@ -88,13 +90,13 @@
                 </mat-form-field>
               </div>
             } @else {
-              <div class="rs-field rs-col-12 rs-field-dark">
+              <div class="rs-field rs-col-12 rs-conditional-panel--enter">
                 <label class="rs-field-label">Dirección / ubicación *</label>
                 <mat-form-field appearance="outline" [class.rs-field-error]="hasError('direccion')">
                   <input matInput formControlName="direccion" placeholder="Calle, sector..." />
                 </mat-form-field>
               </div>
-              <div class="rs-field rs-col-12 rs-field-dark">
+              <div class="rs-field rs-col-6 rs-conditional-panel--enter">
                 <label class="rs-field-label">Fecha de visita *</label>
                 <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaCita')">
                   <input matInput [matDatepicker]="pickerCita" formControlName="fechaCita" />
@@ -102,18 +104,15 @@
                   <mat-datepicker #pickerCita></mat-datepicker>
                 </mat-form-field>
               </div>
-              <div class="rs-field rs-col-6 rs-field-dark">
+              <div class="rs-field rs-col-6 rs-conditional-panel--enter">
                 <label class="rs-field-label">Hora *</label>
-                <mat-form-field appearance="outline" [class.rs-field-error]="hasError('horaCita')">
-                  <input matInput formControlName="horaCita" placeholder="00:00" inputmode="numeric" maxlength="5" (input)="onHoraInput($event)" (blur)="onHoraBlur()" />
-                </mat-form-field>
-              </div>
-              <div class="rs-field rs-col-6 rs-field-dark">
-                <label class="rs-field-label">Período *</label>
-                <mat-button-toggle-group formControlName="periodoCita" class="rs-period-group">
-                  <mat-button-toggle value="AM">AM</mat-button-toggle>
-                  <mat-button-toggle value="PM">PM</mat-button-toggle>
-                </mat-button-toggle-group>
+                <div class="rs-time-wrapper-white" [class.rs-field-error]="hasError('horaCita')">
+                  <input class="rs-time-input-white" formControlName="horaCita" placeholder="09:00" inputmode="numeric" maxlength="5" (input)="onHoraInput($event)" (blur)="onHoraBlur()" />
+                  <mat-button-toggle-group formControlName="periodoCita" class="rs-period-group-white">
+                    <mat-button-toggle value="AM">AM</mat-button-toggle>
+                    <mat-button-toggle value="PM">PM</mat-button-toggle>
+                  </mat-button-toggle-group>
+                </div>
               </div>
             }
           </div>
@@ -125,9 +124,12 @@
         <mat-card class="rs-card rs-col-8">
           <div class="rs-card-accent"></div>
           <div class="rs-card-head">
-            <div>
-              <div class="rs-section-kicker">Operativa</div>
-              <h2 class="rs-section-title">Trabajo a realizar</h2>
+            <div class="rs-section-title-group">
+              <div class="rs-icon-square rs-icon-square--small"><mat-icon>build</mat-icon></div>
+              <div>
+                <div class="rs-section-kicker">Operativa</div>
+                <h2 class="rs-section-title">Trabajo a realizar</h2>
+              </div>
             </div>
             <div class="rs-head-actions">
               <button mat-stroked-button type="button" class="rs-btn-secondary" (click)="irANuevoEquipo()" [disabled]="guardando">
@@ -190,10 +192,10 @@
         </mat-card>
 
         <mat-card class="rs-card rs-col-4">
-          <div class="rs-card-accent rs-card-accent-assignment"></div>
+          <div class="rs-card-accent"></div>
           <div class="rs-card-head rs-card-head--tight">
              <div class="rs-section-title-group">
-              <div class="rs-icon-square rs-icon-square--small rs-icon-square--cyan"><mat-icon>assignment_ind</mat-icon></div>
+              <div class="rs-icon-square rs-icon-square--small"><mat-icon>assignment_ind</mat-icon></div>
               <div>
                 <div class="rs-section-kicker">Asignación</div>
                 <h2 class="rs-section-title">Flujo de trabajo</h2>
@@ -228,6 +230,7 @@
       </div>
 
       <mat-card class="rs-card rs-col-12">
+        <div class="rs-card-accent"></div>
         <div class="rs-card-head" style="margin-bottom: 12px;">
           <div class="rs-section-title-group">
             <div class="rs-icon-square rs-icon-square--small"><mat-icon>cloud_upload</mat-icon></div>
@@ -268,7 +271,8 @@
 
       <div class="rs-col-12 rs-actions-footer">
         <button mat-stroked-button type="button" class="rs-btn-secondary" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
-        <button mat-flat-button type="button" class="rs-btn rs-btn--primary" (click)="crear()" [disabled]="guardando">
+        
+        <button mat-flat-button type="submit" class="rs-btn rs-btn--primary" (click)="crear()" [disabled]="guardando">
           <span class="rs-btn__shimmer"></span>
           <span class="rs-btn__label">
             @if (guardando) { <mat-spinner diameter="18" strokeWidth="3"></mat-spinner> } 

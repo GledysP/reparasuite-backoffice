@@ -31,7 +31,9 @@
   --rs-page-gap: 16px;
 
   /* Typography scale */
-  --rs-title: 28px; /* Ajustado para look premium */
+  /* Ajusto mi título a 26px y le quito peso (700) para que se vea más elegante en todo el sistema */
+  --rs-title: 26px; 
+  --rs-title-weight: 700; 
   --rs-subtitle: 15px;
   --rs-body: 13px;
   --rs-small: 12px;
@@ -45,7 +47,8 @@
   --rs-td-pad-x: 20px;
 
   /* Density */
-  --rs-density-btn-h: 40px;
+  /* Subo la altura de mis botones a 48px para ese look SaaS Premium */
+  --rs-density-btn-h: 48px; 
   --rs-density-field-h: 44px;
   --rs-density-radius: 12px;
 }
@@ -148,14 +151,17 @@ body {
 .rs-header-row,
 .rs-dashboard-head,
 .rs-topbar,
-.rs-header-section {
+.rs-header-section,
+.rs-page-head { /* Agrego rs-page-head aquí para controlarlo globalmente */
   display: flex !important;
   justify-content: space-between !important;
-  align-items: center !important;
+  align-items: flex-start !important; /* Cambio center por flex-start para alineación perfecta */
   flex-wrap: wrap;
   gap: 16px;
-  margin: 0 0 24px 0 !important; /* Margen constante inferior */
+  /* Unifico mi margen inferior a 32px para que todas las páginas respiren igual */
+  margin: 0 0 32px 0 !important; 
   padding: 0 !important;
+  width: 100%;
 }
 
 /* =========================
@@ -165,10 +171,10 @@ body {
 .rs-title {
   margin: 0 !important;
   font-size: var(--rs-title) !important;
-  font-weight: 800 !important; /* Peso extra para look Premium */
+  font-weight: var(--rs-title-weight) !important; /* Uso mi variable de peso 700 */
   letter-spacing: -0.03em !important;
   line-height: 1.1 !important;
-  color: #0f172a !important;
+  color: #081a4b !important; /* Unifico el azul oscuro corporativo en todos los títulos */
 }
 
 .rs-page-subtitle,
@@ -182,7 +188,7 @@ body {
   color: #64748b !important;
   letter-spacing: -0.01em !important;
   line-height: 1.4 !important;
-  margin: 4px 0 0 0 !important; /* Distancia fija con el título */
+  margin: 8px 0 0 0 !important; /* Ajusto la distancia fija con el título */
   display: block !important;
 }
 
@@ -502,7 +508,6 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
   }
 }
 
-
 /* =========================================================
    SNACKBAR PROFESIONAL Mensajes de error (Estilo Premium)
    ========================================================= */
@@ -540,10 +545,8 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
 }
 
 /* =========================================================
-   src/app/core/css/styles.scss (Global CSS)
    NUEVA VARIANTE DE BOTÓN: rs-btn-head-premiun
    ========================================================= */
-
 .mat-mdc-button, .mat-mdc-stroked-button {
   /* Botón Premiun específico para el Header de Cliente */
   &.rs-btn-head-premiun {
@@ -574,5 +577,114 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
       transform: translateY(0);
       box-shadow: 0 4px 10px rgba(0, 191, 245, 0.1), 0 1px 1px rgba(15, 23, 42, 0.01) !important;
     }
+  }
+}
+
+/* =========================================================
+   ALERTAS GLOBALES (TOASTS) - PAMBYTE
+   ========================================================= */
+.mat-mdc-snack-bar-container {
+  &.rs-toast-info .mdc-snackbar__surface { background-color: #4a8df8 !important; }
+  &.rs-toast-success .mdc-snackbar__surface { background-color: #2ecc71 !important; }
+  &.rs-toast-warning .mdc-snackbar__surface { background-color: #f3b15b !important; }
+  &.rs-toast-error .mdc-snackbar__surface { background-color: #fb5867 !important; }
+
+  .mdc-snackbar__surface {
+    border-radius: 6px !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+    min-height: 52px !important;
+    padding-left: 16px !important;
+  }
+
+  .mdc-snackbar__label {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 13.5px !important;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    padding: 0 !important;
+    
+    &::before {
+      content: '\e5cd'; /* Código Material Icon para 'close' / cruz */
+      font-family: 'Material Icons';
+      margin-right: 12px;
+      font-size: 18px;
+      color: #ffffff;
+      font-weight: bold;
+    }
+  }
+}
+
+/* =========================================================
+   SISTEMA DE ANIMACIONES GLOBALES (Para que mis páginas entren suave)
+   ========================================================= */
+@keyframes rsFadeUpGlobal {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rs-fade-up, .rs-enter {
+  opacity: 0;
+  animation: rsFadeUpGlobal 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* =========================================================
+   SISTEMA DE BOTONES GLOBALES (SaaS Pro)
+   ========================================================= */
+@keyframes rsShimmerGlobal {
+  0% { transform: translateX(-160%) skewX(-24deg); }
+  100% { transform: translateX(220%) skewX(-24deg); }
+}
+
+/* Base de todos mis botones principales */
+.rs-btn { 
+  height: var(--rs-density-btn-h) !important; 
+  border-radius: var(--rs-density-radius) !important; 
+  font-weight: 700 !important; 
+  letter-spacing: -0.01em; 
+  padding: 0 32px !important; 
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* Mi botón primario (El que llama a la acción, con gradiente y shimmer) */
+.rs-btn--primary {
+  position: relative; overflow: hidden; isolation: isolate; color: #ffffff !important;
+  background: linear-gradient(135deg, #081a4b 0%, #00bff5 100%) !important;
+  box-shadow: 0 14px 30px rgba(0, 122, 255, 0.16), 0 0 28px rgba(0, 209, 255, 0.14) !important;
+  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+
+  &:hover:not(:disabled) { filter: brightness(1.05); transform: translateY(-1px); }
+  &:active:not(:disabled) { transform: translateY(0); }
+  &:disabled { opacity: 0.7; box-shadow: none !important; }
+}
+
+.rs-btn__label { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 8px; }
+
+.rs-btn__shimmer {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  &::before {
+    content: ''; position: absolute; top: -20%; left: -30%; width: 32%; height: 140%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.08) 70%, rgba(255,255,255,0) 100%);
+    animation: rsShimmerGlobal 3.6s linear infinite;
+  }
+}
+
+/* Mis botones secundarios (Blancos, pero al pasar el mouse se iluminan en azul corporativo) */
+.rs-btn-secondary { 
+  height: var(--rs-density-btn-h) !important;
+  border-radius: var(--rs-density-radius) !important; 
+  font-weight: 600 !important; 
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important; 
+  background-color: #ffffff !important; 
+  padding: 0 24px !important; display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.2s ease !important;
+
+  &:hover:not(:disabled) {
+    border-color: #0d276d !important;
+    color: #0d276d !important;
+    background-color: rgba(13, 39, 109, 0.03) !important;
+    transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13, 39, 109, 0.08) !important;
   }
 }

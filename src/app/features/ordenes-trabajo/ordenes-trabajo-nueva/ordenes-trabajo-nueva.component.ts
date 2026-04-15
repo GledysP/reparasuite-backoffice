@@ -109,7 +109,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   private ticketBlobUrls: Record<string, string> = {};
 
   tecnicos: UsuarioResumen[] = [];
- 
+  
   readonly categorias = signal<CategoriaEquipoDto[]>([]);
   readonly equiposCliente = signal<EquipoResumenDto[]>([]);
   readonly activeTicketPhoto = signal<FotoPreview | null>(null);
@@ -136,6 +136,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   isImageModalOpen = false;
   imageModalUrl = '';
   imageModalName = '';
+
+  // Agrego mi variable bandera para saber si ya presioné el botón de guardar alguna vez
+  formSubmitted = false;
 
   form = this.fb.group({
     clienteNombre: this.fb.nonNullable.control('', [Validators.required]),
@@ -297,8 +300,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   hasError(controlName: string): boolean {
     const control = this.form.get(controlName);
-    // Mostrará el error si el control es inválido Y (el usuario lo tocó O ya intentó enviar el formulario)
-    return !!control && control.invalid && (control.touched || this.form.touched);
+    // Valido que el control exista, esté inválido y que yo lo haya tocado, modificado, o ya haya presionado 'Guardar'
+    return !!(control && control.invalid && (control.dirty || control.touched || this.formSubmitted));
   }
 
   openImageModal(photo?: FotoPreview | null): void {
@@ -400,6 +403,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         'OK',
         {
           duration: 2500,
+          panelClass: 'rs-toast-info'
         },
       );
       return;
@@ -440,6 +444,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     if (!this.clienteId) {
       this.snack.open('Por favor, selecciona un cliente primero.', 'OK', {
         duration: 2200,
+        panelClass: 'rs-toast-warning'
       });
       return;
     }
@@ -469,15 +474,43 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const files = input.files;
+  onFileSelected(event: any): void {
+    const files: FileList = event.target.files;
+    
+    if (files && files.length > 0) {
+      // Filtro para asegurarme de que solo pasen imágenes
+      const nuevosArchivos = Array.from(files).filter(file => file.type.startsWith('image/'));
 
-    if (files?.length) {
-      this.setFiles(Array.from(files));
+      if (!nuevosArchivos.length) {
+        this.snack.open('Selecciona imágenes válidas.', 'OK', { duration: 2500, panelClass: 'rs-toast-warning' });
+        return;
+      }
+
+      // Agrego los nuevos archivos a mi arreglo existente (para poder subir múltiples)
+      this.fotos = [...this.fotos, ...nuevosArchivos];
+
+      // Recorro TODOS los archivos nuevos seleccionados para generar sus vistas previas
+      for (let i = 0; i < nuevosArchivos.length; i++) {
+        const file = nuevosArchivos[i];
+        
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.fotoPreviews.push({
+            file: file,
+            url: e.target.result,
+            name: file.name,
+            source: 'local'
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Muestro mi alerta global verde de que las fotos cargaron
+      this.snack.open(`${nuevosArchivos.length} foto(s) agregada(s).`, 'OK', {
+        duration: 2500,
+        panelClass: 'rs-toast-success'
+      });
     }
-
-    input.value = '';
   }
 
   crear(): void {
@@ -485,11 +518,15 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
     this.syncFechaPrevista();
 
+    // Le digo a mi sistema que ya intenté guardar, así se activan las líneas rojas
+    this.formSubmitted = true;
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snack.open('Por favor, completa los campos en rojo antes de guardar.', 'Entendido', {
+      // Muestro mi alerta roja usando la clase global que definimos en styles.scss
+      this.snack.open('Por favor, completa los campos obligatorios antes de guardar.', 'Entendido', {
         duration: 3500,
-        panelClass: 'rs-snack--error'
+        panelClass: 'rs-toast-error'
       });
       return;
     }
@@ -556,8 +593,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: ({ id }) => {
-          this.snack.open('Orden creada correctamente.', 'Cerrar', {
+          this.snack.open('Orden creada correctamente.', 'OK', {
             duration: 2500,
+            panelClass: 'rs-toast-success'
           });
           this.clearLocalFiles();
           this.router.navigate(['/ordenes-trabajo', id]);
@@ -568,6 +606,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
             'OK',
             {
               duration: 3000,
+              panelClass: 'rs-toast-error'
             },
           );
         },
@@ -739,7 +778,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     );
   }
 
-private setupPrefillFromQueryParams(): void {
+  private setupPrefillFromQueryParams(): void {
     this.subs.add(
       this.route.queryParamMap.subscribe((queryParams) => {
         const clienteId = queryParams.get('clienteId');
@@ -752,7 +791,6 @@ private setupPrefillFromQueryParams(): void {
 
         const equipo = queryParams.get('equipo') || queryParams.get('asunto');
         
-        // 1. Extraemos y limpiamos las categorías
         const catsStr = queryParams.get('categoriasTrabajo');
         const categoriasArray = catsStr ? catsStr.split(',').map(c => c.trim().toUpperCase()).filter(Boolean) : [];
 
@@ -778,7 +816,6 @@ private setupPrefillFromQueryParams(): void {
           this.cargarEquiposCliente(clienteId);
         }
 
-        // 2. Prellenamos el formulario
         this.form.patchValue(
           {
             clienteNombre: clienteNombre || this.form.controls.clienteNombre.value || '',
@@ -789,13 +826,11 @@ private setupPrefillFromQueryParams(): void {
             equipo: equipo || this.form.controls.equipo.value || '',
             fallaReportada: descripcionLimpia || this.form.controls.fallaReportada.value || '',
             observaciones: obsQP || this.form.controls.observaciones.value || '',
-            // Asignamos las categorías extraídas del URL
             categoriasTrabajo: categoriasArray,
           },
           { emitEvent: false },
         );
 
-// 3. Guardamos la referencia si viene de un ticket
         if (this.fromTicket || this.ticketId) {
           this.ticketRef = {
             id: this.ticketId || '',
@@ -1033,6 +1068,7 @@ private setupPrefillFromQueryParams(): void {
         error: () => {
           this.snack.open('No se pudo leer el ticket para prellenar.', 'OK', {
             duration: 2500,
+            panelClass: 'rs-toast-warning'
           });
         },
       }),
@@ -1155,12 +1191,12 @@ private setupPrefillFromQueryParams(): void {
     const onlyImages = files.filter((file) => file.type.startsWith('image/'));
 
     if (!onlyImages.length) {
-      this.snack.open('Selecciona imágenes válidas.', 'OK', { duration: 2000 });
+      this.snack.open('Selecciona imágenes válidas.', 'OK', { duration: 2000, panelClass: 'rs-toast-warning' });
       return;
     }
 
-    this.clearLocalPreviews();
-    this.fotos = onlyImages;
+    // Aquí también lo cambio para que soporte arrastrar múltiples veces sin borrar las anteriores
+    this.fotos = [...this.fotos, ...onlyImages];
 
     const localPreviews: FotoPreview[] = onlyImages.map((file) => ({
       source: 'local',
@@ -1173,10 +1209,13 @@ private setupPrefillFromQueryParams(): void {
     const ticketRefs = this.fotoPreviews.filter(
       (preview) => preview.source === 'ticket',
     );
-    this.fotoPreviews = [...ticketRefs, ...localPreviews];
+    // Unimos los tickets, las locales viejas y las nuevas agregadas por drag & drop
+    const localsViejas = this.fotoPreviews.filter(p => p.source === 'local');
+    this.fotoPreviews = [...ticketRefs, ...localsViejas, ...localPreviews];
 
-    this.snack.open(`${this.fotos.length} foto(s) lista(s).`, 'OK', {
-      duration: 2000,
+    this.snack.open(`${onlyImages.length} foto(s) agregada(s).`, 'OK', {
+      duration: 2500,
+      panelClass: 'rs-toast-success'
     });
   }
 
