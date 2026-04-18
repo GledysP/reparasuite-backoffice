@@ -1,3 +1,7 @@
+/* ==========================================================================
+   DETALLE DE ORDEN DE TRABAJO - SCSS ORIGINAL
+   ========================================================================== */
+
 :host {
   --rs-bg: #ffffff;
   --rs-card: #ffffff;
@@ -22,9 +26,8 @@
 }
 
 .rs-page {
-  background: #fff;
+  background: transparent;
   min-height: 100%;
-  padding: 18px 20px 20px;
 }
 
 .pad {
@@ -37,7 +40,6 @@
   justify-content: space-between;
   gap: 20px;
   align-items: flex-start;
-  margin-bottom: 14px;
 }
 
 .hdr-left {
@@ -420,9 +422,7 @@ mat-card.card {
   color: var(--rs-muted);
 }
 
-.ot-badge,
-.state-pill,
-.meta-tag {
+.ot-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1293,89 +1293,88 @@ mat-card.card {
   100% { transform: scale(1.35); opacity: 0; }
 }
 
-/* Responsive */
-@media (max-width: 1280px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
 
-  .top-row {
-    flex-direction: column;
-  }
+/* ==========================================================================
+   === GRILLA MAESTRA UNIFICADA Y MEJORAS SAAS PRO (Inyectadas al final) ===
+   ========================================================================== */
 
-  .top-row > .top-card,
-  .collab-card--chat,
-  .workspace-tabs,
-  .timeline-card {
-    min-height: auto;
-  }
-
-  .chat-block,
-  .timeline-block {
-    max-height: none;
-  }
+/* 1. Layout Principal (Wireframe - LEGO PERFECTO) */
+.rs-dashboard-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 340px !important;
+  gap: 24px 40px !important; 
+  align-items: stretch !important; /* Fuerza la alineación de las filas */
 }
 
-@media (max-width: 980px) {
-  .hdr {
-    flex-direction: column;
-  }
-
-  .hdr-actions {
-    width: 100%;
-    justify-content: flex-end;
-  }
-
-  .stats-grid,
-  .grid-3,
-  .minimal-grid--2,
-  .info-list {
-    grid-template-columns: 1fr;
-  }
-
-  .review-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .client-meta {
-    flex-direction: column;
-    gap: 6px;
-  }
+/* Evita colapsos en las tarjetas hijas directas */
+.rs-dashboard-grid > mat-card {
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
-@media (max-width: 640px) {
-  .rs-page {
-    padding: 14px;
-  }
+/* Contenedor Fila 1 y 2 Izquierda */
+.stats-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.top-row-2col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; align-items: stretch;}
+.top-row-2col > mat-card { margin: 0 !important; display: flex !important; flex-direction: column !important; height: auto !important;}
+.tabs-container { min-width: 0; }
 
-  .hdr-title {
-    font-size: 1.6rem;
-  }
+/* 2. Títulos y Textos Limpios */
+.rs-unified-title { font-family: 'Inter', sans-serif !important; font-size: 16px !important; font-weight: 800 !important; color: #0f172a !important; margin: 0 !important; }
+.rs-section-label { font-size: 11px !important; font-weight: 800 !important; color: #64748b !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; margin-bottom: 4px !important; }
 
-  .composer {
-    grid-template-columns: 1fr;
-  }
+/* 3. Tarjetas Flotantes y Botones */
+.rs-card-elevated { border-radius: 16px !important; box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04) !important; border: 1px solid rgba(15, 23, 42, 0.06) !important; background: #ffffff !important; }
+.rs-btn-secondary { border-radius: 10px !important; height: 40px !important; background: #fff !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; font-weight: 700 !important; transition: 0.2s; }
+.rs-btn-secondary:hover { background: #f8fafc !important; border-color: #94a3b8 !important; }
+.rs-menu-white { background: #ffffff !important; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12) !important; border-radius: 12px !important; }
 
-  .stats-grid {
-    gap: 8px;
-  }
+/* 4. Información del Servicio (2 Columnas Clean) */
+.rs-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 20px; margin-top: 12px; }
+.rs-compact-card { padding: 16px 20px !important; }
 
-  .stat {
-    min-height: auto;
-  }
+/* Colores Restaurados (Chips y Prioridad) */
+.rs-chip-service { background: rgba(8, 145, 178, 0.08) !important; color: #0891b2 !important; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;}
+.rs-priority-badge[data-priority="alta"] { background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;}
+.rs-priority-badge[data-priority="media"] { background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;}
+.rs-priority-badge[data-priority="baja"] { background: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;}
 
-  .info-card,
-  .review-card {
-    padding: 16px;
-  }
+/* 5. Tabs Transparentes */
+.rs-tabs-transparent { background: transparent !important; box-shadow: none !important; padding: 0 !important; margin-top: -12px;}
+:host ::ng-deep .rs-tabs-transparent .mat-mdc-tab-header { border-bottom: 1px solid #e2e8f0 !important; margin-bottom: 16px !important; }
+:host ::ng-deep .rs-tabs-transparent .mdc-tab__text-label { font-weight: 600 !important; color: #64748b !important; }
+:host ::ng-deep .rs-tabs-transparent .mdc-tab--active .mdc-tab__text-label { color: #0f172a !important; font-weight: 800 !important; }
+.rs-grid-inner-tabs { align-items: stretch !important; margin-top: 8px; }
 
-  .compact-head,
-  .compact-body,
-  .tab-pane,
-  .collab-card__head,
-  .timeline-block {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
+/* 6. Inputs Look Crear Orden */
+.rs-input-minimal--white { background: #ffffff !important; border: none !important; border-bottom: 2px solid #e2e8f0 !important; padding: 10px 0 !important; border-radius: 8px 8px 0 0 !important; font-weight: 600 !important; color: #0f172a !important; }
+.rs-input-minimal--white:focus { border-bottom-color: #00d1ff !important; background: rgba(0, 209, 255, 0.05) !important; outline: none; }
+:host ::ng-deep .rs-datepicker-white { background-color: #ffffff !important; border-radius: 12px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;}
+:host ::ng-deep .pt-group { border-radius: 8px !important; }
+:host ::ng-deep .pt-group .mat-button-toggle-label-content { font-weight: 700 !important; }
+:host ::ng-deep .pt-group .mat-button-toggle-checked { background: rgba(0, 209, 255, 0.05) !important; color: #00d1ff !important; }
+
+/* Cajas de Resumen para Citas y Presupuestos */
+.rs-summary-box { background: #fbfdff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 140px;}
+.rs-summary-amount { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 8px;}
+.rs-summary-date { font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 4px;}
+.rs-summary-time { font-size: 14px; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 4px; justify-content: center; }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1400px) {
+  .rs-dashboard-grid { grid-template-columns: 1fr 340px !important; }
+  .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
 }
+
+@media (max-width: 1024px) {
+  .rs-dashboard-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 768px) {
+  .stats-grid-4 { grid-template-columns: 1fr !important; }
+  .top-row-2col { grid-template-columns: 1fr !important; }
+  .rs-info-grid { grid-template-columns: 1fr !important; }
+}
+

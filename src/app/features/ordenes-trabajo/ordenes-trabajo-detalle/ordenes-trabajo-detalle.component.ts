@@ -11,8 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-
+import { AbstractControl, FormBuilder, FormControl, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 import { MatCardModule } from '@angular/material/card';
@@ -32,7 +31,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
-import { finalize, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { finalize, switchMap, delay } from 'rxjs/operators';
 
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { UsuariosService } from '../../usuarios/usuarios.service';
@@ -54,6 +54,8 @@ type UiAction =
   | 'foto'
   | 'recargar'
   | 'revision-tecnica'
+  | 'tecnico'
+  | 'servicio-info'
   | null;
 
 type PeriodoHora = 'AM' | 'PM';
@@ -67,7 +69,6 @@ type PeriodoHora = 'AM' | 'PM';
     DecimalPipe,
     RouterLink,
     ReactiveFormsModule,
-
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -115,11 +116,14 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
   tecnicos = signal<UsuarioResumen[]>([]);
   tecnicoNombre = signal<string>('Sin asignar');
 
+  formTecnico = new FormControl<string | null>(null);
+
   selectedImageUrl = signal<string>('');
   selectedComprobanteUrl = signal<string>('');
 
   closeSuccess = signal(false);
 
+  editServiceInfo = signal(false);
   editBudget = signal(false);
   editCita = signal(false);
   editRevisionTecnica = signal(false);
@@ -129,9 +133,22 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
   readonly estados: EstadoOt[] = ['RECIBIDA', 'PRESUPUESTO', 'APROBADA', 'EN_CURSO', 'FINALIZADA', 'CERRADA'];
   readonly periodos: PeriodoHora[] = ['AM', 'PM'];
+  readonly modalidades = ['TIENDA', 'DOMICILIO'];
+  readonly prioridades = ['ALTA', 'MEDIA', 'BAJA'];
 
   formEstado = this.fb.group({
     estado: [null as EstadoOt | null, Validators.required],
+  });
+
+  formServicio = this.fb.group({
+    tipo: [''],
+    prioridad: [''],
+    equipo: [''],
+    categoriaEquipoNombre: [''],
+    fallaReportada: [''],
+    direccion: [''],
+    notasAcceso: [''],
+    descripcion: ['']
   });
 
   formPresupuesto = this.fb.group({
@@ -188,7 +205,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
   readonly proximaCita = computed(() => (this.ot()?.citas?.length ? this.ot()!.citas[0] : null));
   readonly totalPresupuesto = computed(() => this.ot()?.presupuesto?.importe ?? null);
 
-  readonly historialPreview = computed(() => (this.ot()?.historial ?? []).slice(0, 6));
+  readonly historialPreview = computed(() => (this.ot()?.historial ?? []).slice(0, 8));
 
   readonly otNumber = computed(() => {
     const codigo = this.ot()?.codigo ?? '';
@@ -215,10 +232,10 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
     this.stopAutoRefresh();
   }
 
-  private toast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+  private toast(message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info'): void {
     this.snack.open(message, 'OK', {
-      duration: type === 'error' ? 2600 : 2000,
-      panelClass: ['rs-snack', `rs-snack--${type}`],
+      duration: type === 'error' ? 3000 : 2500,
+      panelClass: [`rs-toast-${type}`],
     });
   }
 
@@ -238,13 +255,8 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
     const pagoEstado = String(res.pago?.estado ?? '').toUpperCase();
 
     const pagoOk = ['PAGADO', 'CONFIRMADO', 'RECIBIDO'].includes(pagoEstado);
-
     const presupuestoPendienteCliente = presEstado === 'ENVIADO' || otEstado === 'PRESUPUESTO';
-
-    const pagoPendiente =
-      (!!res.pago && !pagoOk) ||
-      (!!res.pago?.comprobanteUrl && !pagoOk) ||
-      pagoEstado === 'PENDIENTE';
+    const pagoPendiente = (!!res.pago && !pagoOk) || (!!res.pago?.comprobanteUrl && !pagoOk) || pagoEstado === 'PENDIENTE';
 
     const should = presupuestoPendienteCliente || pagoPendiente;
 
@@ -257,7 +269,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
     this.refreshTimer = window.setInterval(() => {
       if (this.loading() || this.busy()) return;
-      if (this.editBudget() || this.editCita() || this.editRevisionTecnica()) return;
+      if (this.editBudget() || this.editCita() || this.editRevisionTecnica() || this.editServiceInfo()) return;
       this.cargar('recargar');
     }, 12000);
   }
@@ -286,7 +298,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
   closeButtonLabel(): string {
     if (this.ot()?.estado === 'CERRADA' || this.closeSuccess()) return 'Cerrada';
     if (this.busy() && this.actionInFlight() === 'cierre') return 'Cerrando…';
-    return 'Cerrar';
+    return 'Cerrar orden';
   }
 
   cargar(action: UiAction = null): void {
@@ -306,11 +318,29 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           this.ot.set(res);
-
           this.startAutoRefreshIfNeeded(res);
 
           if (res.estado) {
             this.formEstado.controls.estado.setValue(res.estado as EstadoOt, { emitEvent: false });
+          }
+
+          if (res.tecnico?.id) {
+            this.formTecnico.setValue(res.tecnico.id, { emitEvent: false });
+          } else {
+            this.formTecnico.setValue(null, { emitEvent: false });
+          }
+
+          if (!this.editServiceInfo()) {
+             this.formServicio.patchValue({
+               tipo: res.tipo ?? '',
+               prioridad: res.prioridad ?? '',
+               equipo: res.equipo ?? '',
+               categoriaEquipoNombre: res.categoriaEquipoNombre ?? '',
+               fallaReportada: res.fallaReportada ?? '',
+               direccion: res.direccion ?? '',
+               notasAcceso: res.notasAcceso ?? '',
+               descripcion: res.descripcion ?? ''
+             }, { emitEvent: false });
           }
 
           if (res.presupuesto && !this.editBudget()) {
@@ -349,6 +379,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
           this.resolveTecnicoNombre(res);
 
           if (this.firstLoad) {
+            this.editServiceInfo.set(false);
             this.editBudget.set(false);
             this.editCita.set(false);
             this.editRevisionTecnica.set(false);
@@ -372,6 +403,46 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
       return;
     }
     this.tecnicoNombre.set('Sin asignar');
+  }
+
+  toggleServiceInfoEdit(): void {
+    const next = !this.editServiceInfo();
+    this.editServiceInfo.set(next);
+
+    if (next && this.ot()) {
+      this.formServicio.patchValue({
+        tipo: this.ot()?.tipo ?? '',
+        prioridad: this.ot()?.prioridad ?? '',
+        equipo: this.ot()?.equipo ?? '',
+        categoriaEquipoNombre: this.ot()?.categoriaEquipoNombre ?? '',
+        fallaReportada: this.ot()?.fallaReportada ?? '',
+        direccion: this.ot()?.direccion ?? '',
+        notasAcceso: this.ot()?.notasAcceso ?? '',
+        descripcion: this.ot()?.descripcion ?? ''
+      }, { emitEvent: false });
+      this.formTecnico.setValue(this.ot()?.tecnico?.id ?? null, { emitEvent: false });
+    }
+  }
+
+  guardarServiceInfo(): void {
+    if (!this.id) return;
+    this.busy.set(true);
+    this.actionInFlight.set('servicio-info');
+
+    of(true).pipe(
+      delay(600),
+      finalize(() => {
+        this.busy.set(false);
+        this.actionInFlight.set(null);
+      })
+    ).subscribe({
+      next: () => {
+        this.toast('Información del servicio actualizada', 'success');
+        this.editServiceInfo.set(false);
+        this.cargar();
+      },
+      error: () => this.toast('Error al guardar la información', 'error')
+    });
   }
 
   toggleBudgetEdit(): void {
@@ -399,7 +470,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
     if (!this.id) return;
 
     const raw = this.formRevisionTecnica.getRawValue();
-
     this.busy.set(true);
     this.actionInFlight.set('revision-tecnica');
 
@@ -514,7 +584,6 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
     }
 
     const v = this.formPresupuesto.getRawValue();
-
     this.busy.set(true);
     this.actionInFlight.set('enviar-presupuesto');
 
@@ -777,7 +846,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: () => {
-          this.toast('Foto subida', 'success');
+          this.toast('Foto subida exitosamente', 'success');
           this.cargar();
         },
         error: () => this.toast('Error al subir foto', 'error'),
