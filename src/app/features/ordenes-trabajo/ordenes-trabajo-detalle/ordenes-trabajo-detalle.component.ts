@@ -23,6 +23,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
@@ -78,6 +79,7 @@ type PeriodoHora = 'AM' | 'PM';
     MatIconModule,
     MatDialogModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -121,6 +123,8 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
   selectedImageUrl = signal<string>('');
   selectedComprobanteUrl = signal<string>('');
 
+  showHistory = false; 
+  
   closeSuccess = signal(false);
 
   editServiceInfo = signal(false);

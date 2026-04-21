@@ -1,694 +1,309 @@
 @if (ot(); as data) {
-  <div class="rs-page rs-fade-up">
-    
-    <header class="hdr" style="margin-bottom: 32px;">
-      <div class="hdr-left">
-        <div class="hdr-title-wrap">
-          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-            <h1 class="hdr-title" style="font-family: 'Inter', sans-serif; font-weight: 700; color: #0f172a; letter-spacing: -0.02em;">Orden de trabajo</h1>
-          </div>
-          <p class="hdr-subtitle">Seguimiento técnico, gestión operativa y control de servicio.</p>
-        </div>
-      </div>
+<div class="rs-page-container rs-fade-up">
 
-      <div class="hdr-actions">
-        <button mat-stroked-button class="rs-btn-secondary" routerLink="/ordenes-trabajo" matTooltip="Volver">
-          <mat-icon>arrow_back</mat-icon> Volver
-        </button>
+  <header class="rs-page-head">
+    <div class="hdr-title-wrap">
+      <h1 class="rs-page-title">Orden de trabajo <span class="ot-id-badge">#{{ otNumber() }}</span></h1>
+      <p class="rs-page-subtitle">Seguimiento técnico, gestión operativa y control de servicio.</p>
+    </div>
 
-        <button
-          mat-stroked-button
-          class="rs-btn-secondary btn-close-danger"
-          (click)="cerrarOt()"
-          [disabled]="busy() || data.estado === 'CERRADA'">
-          @if (busy() && actionInFlight() === 'cierre') { 
-            <mat-icon>hourglass_top</mat-icon> 
-          }
-          @else if (closeSuccess() || data.estado === 'CERRADA') { 
-            <mat-icon>check_circle</mat-icon> 
-          }
-          @else { 
-            <mat-icon>task_alt</mat-icon> 
-          }
+    <div class="hdr-actions">
+      <button mat-stroked-button class="rs-btn-secondary" routerLink="/ordenes-trabajo">
+        <mat-icon class="material-symbols-outlined">arrow_back</mat-icon> Volver
+      </button>
+
+      <button mat-flat-button class="rs-btn--primary" (click)="cerrarOt()" [disabled]="busy() || data.estado === 'CERRADA'">
+        <div class="rs-btn__label">
+          <mat-icon class="material-symbols-outlined">{{ data.estado === 'CERRADA' ? 'check_circle' : 'task_alt' }}</mat-icon>
           {{ closeButtonLabel() }}
-        </button>
-      </div>
-    </header>
+        </div>
+        <div class="rs-btn__shimmer"></div>
+      </button>
+    </div>
+  </header>
 
-    @if (loading()) {
-      <mat-progress-bar class="topbar" mode="indeterminate"></mat-progress-bar>
-    }
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="rs-loader" style="margin-bottom: 24px;"></mat-progress-bar>
+  }
 
-    <mat-menu #estadoMenu="matMenu" panelClass="rs-menu rs-menu-white">
-      @for (e of estados; track e) {
-        <button
-          mat-menu-item
-          (click)="selectEstadoFromMenu(e)"
-          [disabled]="busy()"
-          [class.is-active]="data.estado === e">
-          <span>{{ e }}</span>
-          @if (data.estado === e) { <span class="menu-check"><mat-icon>check</mat-icon></span> }
-        </button>
-      }
-    </mat-menu>
-
-    <div class="rs-dashboard-grid">
-      
-      <div class="stats-grid-4">
-        <div class="stat glass-card rs-card-elevated">
-          <div class="rs-section-label">Estado</div>
-          <button type="button" class="chip-btn" [matMenuTriggerFor]="estadoMenu" [disabled]="busy()">
-            <span class="pill-dot pill-dot--neutral"></span>
-            {{ estadoPretty() }}
-            <mat-icon class="chip-ico">expand_more</mat-icon>
-          </button>
+  <div class="rs-main-grid-layout">
+    
+    <aside class="col-side-context">
+      <mat-card class="premium-card-clean">
+        <div class="card-header-minimal">
+          <span class="label-caps">CLIENTE</span>
         </div>
 
-        <div class="stat glass-card rs-card-elevated">
-          <div class="rs-section-label">Presupuesto</div>
-          <div class="stat-value">
-            @if (presupuestoImporte(); as imp) { {{ imp | number:'1.0-2' }} € } @else { — }
-          </div>
-          <div class="stat-meta">
-            <span class="meta-tag" [attr.data-state]="presupuestoEstado()">
-              <span class="pill-dot pill-dot--orange"></span>
-              {{ presupuestoSummary() | titlecase }}
-            </span>
-          </div>
-        </div>
-
-        <div class="stat glass-card rs-card-elevated">
-          <div class="rs-section-label">Próxima cita</div>
-          <div class="stat-value">
-            @if (proximaCita(); as c) { {{ c.inicio | date:'d MMM, HH:mm':undefined:'es-ES' }} } @else { — }
-          </div>
-          <div class="stat-meta">
-            @if (proximaCita(); as c) {
-              <span class="meta-tag" [attr.data-state]="c.estado">
-                <span class="pill-dot pill-dot--cyan"></span>
-                {{ c.estado | titlecase }}
-              </span>
-            } @else {
-              <span class="meta-tag" data-state="SIN_CITA">
-                <span class="pill-dot pill-dot--orange"></span>
-                Sin cita
-              </span>
-            }
-          </div>
-        </div>
-
-        <div class="stat glass-card rs-card-elevated">
-          <div class="rs-section-label">Balance de pago</div>
-          <div class="stat-value">
-            @if (totalPresupuesto(); as t) { {{ t | number:'1.0-2' }} € } @else { — }
-          </div>
-          <div class="stat-meta">
-            <span class="meta-tag" [attr.data-state]="pagoLabel()">
-              <span class="pill-dot" [class.pill-dot--green]="pagoConfirmado()" [class.pill-dot--neutral]="!pagoConfirmado()"></span>
-              {{ pagoLabel() | titlecase }}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <mat-card class="collab-card rs-card-elevated" style="margin: 0; display: flex; flex-direction: column; padding: 20px;">
-        <div class="section-head" style="margin-bottom: 16px; align-items: center;">
-          <h2 class="rs-unified-title">Cliente</h2>
-          <button mat-icon-button (click)="enviarSeguimientoWhatsapp()" matTooltip="Contactar por WhatsApp" style="color: #25D366; background: rgba(37, 211, 102, 0.08); border-radius: 8px; width: 36px; height: 36px; display: grid; place-items: center;">
-            <mat-icon style="font-size: 20px; width: 20px; height: 20px;">forum</mat-icon>
-          </button>
-        </div>
-        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-          <div class="client-avatar" style="width: 48px; height: 48px; font-size: 20px;">
+        <div class="profile-inline-compact">
+          <div class="avatar-depth">
             {{ (data.cliente.nombre || '?').charAt(0) }}
           </div>
-          <div style="min-width: 0;">
-            <div class="client-name" style="font-size: 16px; margin: 0; font-weight: 700; color: #0f172a;">{{ data.cliente.nombre || '—' }}</div>
-            <div style="font-size: 13px; color: #64748b;">{{ data.cliente.email || '—' }}</div>
-          </div>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <div class="rowi"><mat-icon>call</mat-icon>{{ data.cliente.telefono || '—' }}</div>
-        </div>
-      </mat-card>
-
-      <div class="top-row-2col">
-        <mat-card class="surface-card info-card rs-card-elevated rs-compact-card">
-          <div class="rs-card-accent"></div>
-          <div class="section-head">
-            <div class="section-title-block">
-              <h2 class="rs-unified-title"><mat-icon style="vertical-align: middle; margin-right: 6px; color: #0891b2;">build</mat-icon> Información del servicio</h2>
-            </div>
-            <button mat-stroked-button class="rs-btn-secondary btn-mini" (click)="toggleServiceInfoEdit()" [disabled]="busy()" style="height: 34px !important; padding: 0 12px !important;">
-              <mat-icon>@if (editServiceInfo()) { close } @else { edit }</mat-icon> {{ editServiceInfo() ? 'Cancelar' : 'Editar' }}
-            </button>
-          </div>
-
-          @if (data.categoriasTrabajo && data.categoriasTrabajo.length > 0) {
-            <div style="margin-bottom: 12px;">
-              <div class="rs-section-label" style="margin-bottom: 8px;">Servicios a realizar</div>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                @for (cat of data.categoriasTrabajo; track cat) {
-                  <span class="rs-chip-service"><mat-icon>check_circle</mat-icon> {{ cat | titlecase }}</span>
-                }
-              </div>
-            </div>
-          }
-
-          @if (!editServiceInfo()) {
-            <div class="info-list rs-info-grid">
-              <div class="info-pair">
-                <div class="info-icon"><mat-icon>storefront</mat-icon></div>
-                <div class="info-body">
-                  <div class="rs-section-label">Modalidad</div>
-                  <div class="info-value"><strong>{{ data.tipo === 'TIENDA' ? 'Taller' : data.tipo }}</strong></div>
-                </div>
-              </div>
-
-              <div class="info-pair">
-                <div class="info-icon"><mat-icon>flag</mat-icon></div>
-                <div class="info-body">
-                  <div class="rs-section-label">Prioridad</div>
-                  <div class="info-value">
-                    <span class="rs-priority-badge" [attr.data-priority]="data.prioridad.toLowerCase()">{{ data.prioridad }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="info-pair">
-                <div class="info-icon"><mat-icon>engineering</mat-icon></div>
-                <div class="info-body">
-                  <div class="rs-section-label">Técnico Responsable</div>
-                  <div class="info-value">{{ tecnicoNombre() }}</div>
-                </div>
-              </div>
-
-              <div class="info-pair">
-                <div class="info-icon"><mat-icon>tv</mat-icon></div>
-                <div class="info-body">
-                  <div class="rs-section-label">Equipo</div>
-                  <div class="info-value">{{ data.equipo || '—' }}</div>
-                </div>
-              </div>
-
-              <div class="info-pair">
-                <div class="info-icon"><mat-icon>sell</mat-icon></div>
-                <div class="info-body">
-                  <div class="rs-section-label">Categoría</div>
-                  <div class="info-value">{{ data.categoriaEquipoNombre || '—' }}</div>
-                </div>
-              </div>
-
-              <div class="info-pair info-pair--danger">
-                <div class="info-icon info-icon--danger"><mat-icon>warning_amber</mat-icon></div>
-                <div class="info-body">
-                  <div class="rs-section-label text-danger">Falla reportada</div>
-                  <div class="info-value text-danger">{{ data.fallaReportada || '—' }}</div>
-                </div>
-              </div>
-
-              <div class="info-pair">
-                <div class="info-icon"><mat-icon>place</mat-icon></div>
-                <div class="info-body">
-                  <div class="rs-section-label">Ubicación</div>
-                  <div class="info-value">{{ data.direccion || '—' }}</div>
-                </div>
-              </div>
-
-              <div class="info-pair">
-                <div class="info-icon"><mat-icon>vpn_key</mat-icon></div>
-                <div class="info-body">
-                  <div class="rs-section-label">Acceso</div>
-                  <div class="info-value">{{ data.notasAcceso || '—' }}</div>
-                </div>
-              </div>
-
-              <div class="info-desc" style="grid-column: 1 / -1;">
-                <div class="rs-section-label">Descripción</div>
-                <div class="info-desc__box" style="margin-top: 4px; padding: 12px; font-size: 13px;">{{ data.descripcion || '—' }}</div>
-              </div>
-            </div>
-          } @else {
-            <div class="minimal-grid minimal-grid--2 compact-edit-grid" style="flex-grow: 1; margin-top: 12px;">
-              <div class="rs-input-group">
-                <label class="rs-section-label">Modalidad</label>
-                <mat-form-field appearance="outline" style="width: 100%;" class="rs-input-white-bg">
-                  <mat-select [formControl]="formServicio.controls.tipo" panelClass="rs-menu-white">
-                    @for (m of modalidades; track m) { <mat-option [value]="m">{{ m }}</mat-option> }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="rs-input-group">
-                <label class="rs-section-label">Prioridad</label>
-                <mat-form-field appearance="outline" style="width: 100%;" class="rs-input-white-bg">
-                  <mat-select [formControl]="formServicio.controls.prioridad" panelClass="rs-menu-white">
-                    @for (p of prioridades; track p) { <mat-option [value]="p">{{ p }}</mat-option> }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="rs-input-group" style="grid-column: 1 / -1;">
-                <label class="rs-section-label">Técnico Responsable</label>
-                <mat-form-field appearance="outline" style="width: 100%;" class="rs-input-white-bg">
-                  <mat-select [formControl]="formTecnico" panelClass="rs-menu-white">
-                    <mat-option [value]="null">Sin asignar</mat-option>
-                    @for (t of tecnicos(); track t.id) { <mat-option [value]="t.id">{{ t.nombre }}</mat-option> }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="rs-input-group">
-                <label class="rs-section-label">Equipo</label>
-                <input class="rs-input-minimal rs-input-minimal--white" [formControl]="formServicio.controls.equipo" />
-              </div>
-              <div class="rs-input-group">
-                <label class="rs-section-label">Categoría</label>
-                <input class="rs-input-minimal rs-input-minimal--white" [formControl]="formServicio.controls.categoriaEquipoNombre" />
-              </div>
-              <div class="rs-input-group" style="grid-column: 1 / -1;">
-                <label class="rs-section-label text-danger">Falla reportada</label>
-                <input class="rs-input-minimal rs-input-minimal--white" [formControl]="formServicio.controls.fallaReportada" />
-              </div>
-              <div class="rs-input-group">
-                <label class="rs-section-label">Ubicación</label>
-                <input class="rs-input-minimal rs-input-minimal--white" [formControl]="formServicio.controls.direccion" />
-              </div>
-              <div class="rs-input-group">
-                <label class="rs-section-label">Acceso</label>
-                <input class="rs-input-minimal rs-input-minimal--white" [formControl]="formServicio.controls.notasAcceso" />
-              </div>
-              <div class="rs-input-group" style="grid-column: 1 / -1;">
-                <label class="rs-section-label">Descripción detallada</label>
-                <textarea class="rs-input-minimal rs-input-minimal--textarea rs-input-minimal--white" rows="3" [formControl]="formServicio.controls.descripcion"></textarea>
-              </div>
-            </div>
-            <div class="section-actions section-actions--compact" style="justify-content: flex-end; margin-top: 16px;">
-              <button mat-flat-button class="rs-btn--primary" (click)="guardarServiceInfo()" [disabled]="busy()">Guardar cambios</button>
-            </div>
-          }
-        </mat-card>
-
-        <mat-card class="surface-card review-card rs-card-elevated rs-compact-card">
-          <div class="section-head">
-            <div class="section-title-block">
-              <h2 class="rs-unified-title">Revisión técnica</h2>
-            </div>
-            <button mat-stroked-button class="rs-btn-secondary btn-mini" (click)="toggleRevisionTecnicaEdit()" [disabled]="busy()" style="height: 34px !important; padding: 0 12px !important;">
-              <mat-icon>@if (editRevisionTecnica()) { close } @else { edit }</mat-icon> {{ editRevisionTecnica() ? 'Cerrar' : 'Editar' }}
-            </button>
-          </div>
-
-          @if (!editRevisionTecnica()) {
-            <div class="review-grid review-grid--spaced" style="flex-grow: 1; margin-top: 4px;">
-              <div class="review-row rs-review-row-compact">
-                <div class="rs-section-label">Falla detectada</div>
-                <div class="review-value review-value--mono review-value--pill">{{ data.fallaDetectada || 'Sin registros aún' }}</div>
-              </div>
-              <div class="review-row rs-review-row-compact">
-                <div class="rs-section-label">Diagnóstico técnico</div>
-                <div class="review-value review-value--multiline review-value--mono review-value--pill">{{ data.diagnosticoTecnico || 'Sin registros aún' }}</div>
-              </div>
-              <div class="review-row rs-review-row-compact">
-                <div class="rs-section-label">Trabajo a realizar</div>
-                <div class="review-value review-value--multiline review-value--pill">{{ data.trabajoARealizar || 'Sin registros aún' }}</div>
-              </div>
-            </div>
-          } @else {
-            <div class="minimal-grid compact-edit-grid" style="flex-grow: 1; margin-top: 12px;">
-              <div class="rs-input-group">
-                <label class="rs-section-label">Falla detectada</label>
-                <input class="rs-input-minimal rs-input-minimal--white" [formControl]="formRevisionTecnica.controls.fallaDetectada" />
-              </div>
-              <div class="rs-input-group">
-                <label class="rs-section-label">Diagnóstico técnico</label>
-                <textarea class="rs-input-minimal rs-input-minimal--textarea rs-input-minimal--white" rows="3" [formControl]="formRevisionTecnica.controls.diagnosticoTecnico"></textarea>
-              </div>
-              <div class="rs-input-group">
-                <label class="rs-section-label">Trabajo a realizar</label>
-                <textarea class="rs-input-minimal rs-input-minimal--textarea rs-input-minimal--white" rows="3" [formControl]="formRevisionTecnica.controls.trabajoARealizar"></textarea>
-              </div>
-            </div>
-            <div class="section-actions section-actions--compact" style="justify-content: flex-end; margin-top: 16px;">
-              <button mat-flat-button class="rs-btn--primary" (click)="guardarRevisionTecnica()" [disabled]="busy()">Guardar diagnóstico</button>
-            </div>
-          }
-        </mat-card>
-      </div>
-
-      <mat-card class="surface-card rs-card-elevated" style="margin: 0; display: flex; flex-direction: column; padding: 24px;">
-        <div class="section-head" style="margin-bottom: 16px;">
-          <div class="section-title-block">
-            <h2 class="rs-unified-title">Evidencia</h2>
-          </div>
-          <label class="rs-btn-secondary upload-pill" matRipple style="cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0 16px; height: 36px !important;">
-            <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
-            <mat-icon style="margin-right: 6px;">add_a_photo</mat-icon>
-            <span style="font-weight: 700; font-size: 13px;">Subir</span>
-          </label>
-        </div>
-
-        <div class="photo-grid" style="margin-top: 8px;">
-          @for (f of data.fotos; track trackById($index, f)) {
-            <button class="thumb" type="button" (click)="verFoto(f)">
-              <img [src]="fileUrl(f.url)" alt="foto" />
-            </button>
-          } @empty {
-            <div class="empty-state-inline" style="grid-column: 1/-1;">No hay fotos adjuntas.</div>
-          }
-        </div>
-      </mat-card>
-
-
-      <div class="tabs-container">
-        <mat-tab-group class="workspace-tabs rs-tabs-transparent" animationDuration="150ms" [dynamicHeight]="true">
-          
-          <mat-tab label="Gestión">
-            <div class="tab-pane">
-              <div class="grid-3 rs-grid-inner-tabs">
-                
-                <mat-card class="compact-card rs-card-elevated">
-                  <div class="compact-head">
-                    <div class="compact-title"><mat-icon style="color: #081a4b;">request_quote</mat-icon><span>Presupuesto</span></div>
-                    <button mat-icon-button class="icon-btn icon-btn--small" (click)="toggleBudgetEdit()" [disabled]="presupuestoAceptado()" matTooltip="Editar">
-                      <mat-icon>edit</mat-icon>
-                    </button>
-                  </div>
-
-                  <div class="compact-body">
-                    @if (!editBudget() && (presupuestoEnviado() || presupuestoAceptado() || presupuestoImporte())) {
-                      <div class="rs-summary-box">
-                        <div class="rs-summary-amount">{{ presupuestoImporte() | number:'1.0-2' }} €</div>
-                        <span class="meta-tag" [attr.data-state]="presupuestoEstado()" style="align-self: center; margin-bottom: 8px;">
-                          <span class="pill-dot pill-dot--orange"></span> {{ presupuestoSummary() | titlecase }}
-                        </span>
-                        <div class="compact-copy" style="font-weight: 600;">Detalle: <span style="font-weight: 400;">{{ data.presupuesto?.detalle || 'Sin detalle' }}</span></div>
-                      </div>
-                    } @else {
-                      @if (!editBudget()) {
-                        <div class="compact-empty compact-empty--centered">
-                          <mat-icon>request_quote</mat-icon>
-                          <div>
-                            <div class="compact-empty__title">Sin presupuesto</div>
-                            <div class="compact-empty__text">Aún no se cotizó el servicio.</div>
-                          </div>
-                        </div>
-                        <button mat-stroked-button class="rs-btn-secondary" (click)="toggleBudgetEdit()" style="width: 100%; margin-top: auto;">Crear presupuesto</button>
-                      } @else {
-                        <div class="minimal-grid compact-edit-grid">
-                          <div class="rs-input-group">
-                            <label class="rs-section-label">Importe (€)</label>
-                            <input class="rs-input-minimal rs-input-minimal--white" type="number" [formControl]="formPresupuesto.controls.importe" />
-                          </div>
-
-                          <div class="rs-input-group">
-                            <label class="rs-section-label">Detalle</label>
-                            <textarea class="rs-input-minimal rs-input-minimal--textarea rs-input-minimal--compact rs-input-minimal--white" rows="3" [formControl]="formPresupuesto.controls.detalle"></textarea>
-                          </div>
-                        </div>
-
-                        <mat-checkbox class="rs-check" [formControl]="formPresupuesto.controls.aceptacionCheck">
-                          Requiere check
-                        </mat-checkbox>
-
-                        <div class="section-actions section-actions--compact" style="margin-top: auto; display: flex; gap: 8px;">
-                          <button mat-stroked-button class="rs-btn-secondary" (click)="guardarPresupuesto()" [disabled]="busy() || formPresupuesto.invalid || presupuestoAceptado()" style="flex: 1;">
-                            Guardar
-                          </button>
-                          <button mat-flat-button class="rs-btn--primary" (click)="enviarPresupuesto()" [disabled]="busy() || formPresupuesto.invalid || presupuestoEnviado() || presupuestoAceptado()" style="flex: 1;">
-                            Enviar
-                          </button>
-                        </div>
-                      }
-                    }
-                  </div>
-                </mat-card>
-
-                <mat-card class="compact-card rs-card-elevated">
-                  <div class="compact-head">
-                    <div class="compact-title"><mat-icon style="color: #081a4b;">event</mat-icon><span>Cita</span></div>
-                    <button mat-icon-button class="icon-btn icon-btn--small" (click)="toggleCitaEdit()" matTooltip="Programar / Reprogramar">
-                      <mat-icon>calendar_month</mat-icon>
-                    </button>
-                  </div>
-
-                  <div class="compact-body">
-                    @if (!editCita() && proximaCita()) {
-                      @if (proximaCita(); as c) {
-                        <div class="rs-summary-box">
-                          <div class="rs-summary-date">{{ c.inicio | date:"EEEE, d MMM":undefined:'es-ES' | titlecase }}</div>
-                          <div class="rs-summary-time" style="margin-bottom: 8px;"><mat-icon style="font-size: 16px; width: 16px; height: 16px; margin-right: 4px;">schedule</mat-icon> {{ c.inicio | date:'HH:mm a':undefined:'es-ES' }}</div>
-                          <span class="meta-tag" [attr.data-state]="c.estado" style="align-self: center;">
-                            <span class="pill-dot pill-dot--cyan"></span> {{ c.estado | titlecase }}
-                          </span>
-                        </div>
-                      }
-                    } @else {
-                      @if (!editCita()) {
-                        <div class="compact-empty compact-empty--centered">
-                          <mat-icon>event_busy</mat-icon>
-                          <div>
-                            <div class="compact-empty__title">Sin cita</div>
-                            <div class="compact-empty__text">No hay cita programada.</div>
-                          </div>
-                        </div>
-                        <button mat-stroked-button class="rs-btn-secondary" (click)="toggleCitaEdit()" style="width: 100%; margin-top: auto;">Programar cita</button>
-                      } @else {
-                        <div class="minimal-grid minimal-grid--2 compact-edit-grid">
-                          <div class="rs-input-group">
-                            <label class="rs-section-label">Fecha</label>
-                            <input matInput [matDatepicker]="dp1" [formControl]="formCita.controls.fechaInicio" class="rs-input-minimal rs-input-minimal--white" />
-                            <mat-datepicker-toggle matIconSuffix [for]="dp1"></mat-datepicker-toggle>
-                            <mat-datepicker #dp1 panelClass="rs-datepicker-white"></mat-datepicker>
-                          </div>
-
-                          <div class="minimal-grid minimal-grid--2 minimal-grid--tight">
-                            <div class="rs-input-group">
-                              <label class="rs-section-label">Hora</label>
-                              <input
-                                class="rs-input-minimal rs-input-minimal--white"
-                                type="text"
-                                inputmode="numeric"
-                                placeholder="00:00"
-                                [formControl]="formCita.controls.horaInicio"
-                                (input)="onHoraInput($event)"
-                                (blur)="onHoraBlur()" />
-                            </div>
-
-                            <div class="rs-input-group">
-                              <label class="rs-section-label">Período</label>
-                              <mat-button-toggle-group class="pt-group" [formControl]="formCita.controls.periodo">
-                                <mat-button-toggle value="AM">AM</mat-button-toggle>
-                                <mat-button-toggle value="PM">PM</mat-button-toggle>
-                              </mat-button-toggle-group>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="section-actions section-actions--compact" style="margin-top: auto;">
-                          @if (!tieneCita()) {
-                            <button mat-flat-button class="rs-btn--primary" (click)="crearCita()" [disabled]="busy() || formCita.invalid" style="width: 100%;">Programar</button>
-                          } @else {
-                            <button mat-flat-button class="rs-btn--primary" (click)="reprogramarPrimera()" [disabled]="busy() || formCita.invalid" style="width: 100%;">Confirmar</button>
-                          }
-                        </div>
-                      }
-                    }
-                  </div>
-                </mat-card>
-
-                <mat-card class="compact-card rs-card-elevated">
-                  <div class="compact-head">
-                    <div class="compact-title"><mat-icon style="color: #081a4b;">payments</mat-icon><span>Balance de Pago</span></div>
-                  </div>
-
-                  <div class="compact-body">
-                    <div class="summary-inline">
-                      <div class="summary-inline__amount">
-                        @if (totalPresupuesto(); as t) { {{ t | number:'1.0-2' }} € } @else { — }
-                      </div>
-                      <span class="meta-tag" [attr.data-state]="pagoLabel()">
-                        <span class="pill-dot" [class.pill-dot--green]="pagoConfirmado()" [class.pill-dot--neutral]="!pagoConfirmado()"></span>
-                        {{ pagoLabel() | titlecase }}
-                      </span>
-                    </div>
-
-                    <div class="proof-block" style="margin-top: 12px;">
-                      <div class="proof-label rs-section-label">Comprobante</div>
-                      @if (data.pago?.comprobanteUrl; as comprobanteUrl) {
-                        <button mat-button class="link-action" type="button" (click)="verComprobante(comprobanteUrl)">
-                          <mat-icon>receipt_long</mat-icon> Ver recibo
-                        </button>
-                      } @else {
-                        <div class="compact-copy compact-copy--muted compact-empty-copy">Sin registros aún</div>
-                      }
-                    </div>
-
-                    @if (pagoConfirmado()) {
-                      <div class="pay-state" style="margin-top: auto;">
-                        <mat-icon>check_circle</mat-icon>
-                        <span>Pagado</span>
-                      </div>
-                    } @else {
-                      <button
-                        mat-flat-button
-                        class="rs-btn--primary btn-pay"
-                        (click)="marcarTransferencia()"
-                        [disabled]="busy()"
-                        style="margin-top: auto;">
-                        Marcar como pagado
-                      </button>
-                    }
-                  </div>
-                </mat-card>
-              </div>
-            </div>
-          </mat-tab>
-
-          <mat-tab label="Notas">
-            <div class="tab-pane">
-              <mat-card class="rs-card-elevated" style="padding: 24px;">
-                <div class="section-head">
-                  <div class="section-title-block">
-                    <h2 class="rs-unified-title">Bitácora Interna</h2>
-                  </div>
-                </div>
-
-                <div class="notes-composer notes-composer--compact">
-                  <textarea
-                    class="rs-input-minimal rs-input-minimal--textarea rs-input-minimal--compact rs-input-minimal--white"
-                    rows="3"
-                    placeholder="Escribe una nota interna para el equipo..."
-                    [formControl]="formNota.controls.contenido"></textarea>
-
-                  <div class="section-actions section-actions--compact" style="justify-content: flex-end; margin-top: 12px;">
-                    <button
-                      mat-flat-button
-                      class="rs-btn--primary"
-                      (click)="anadirNota()"
-                      [disabled]="busy() || formNota.invalid">
-                      Agregar nota
-                    </button>
-                  </div>
-                </div>
-
-                <div class="note-list" style="margin-top: 16px;">
-                  @for (n of data.notas; track trackById($index, n)) {
-                    <div class="note-item">
-                      <div class="note-text">{{ n.contenido }}</div>
-                      <div class="note-date">{{ n.createdAt | date:'d MMM, HH:mm' }}</div>
-                    </div>
-                  } @empty {
-                    <div class="empty-state-inline">La bitácora está vacía.</div>
-                  }
-                </div>
-              </mat-card>
-            </div>
-          </mat-tab>
-
-          <mat-tab label="Actividad">
-            <div class="tab-pane">
-              <mat-card class="rs-card-elevated" style="padding: 24px;">
-                 <div class="timeline-block">
-                  @for (h of historialPreview(); track $index) {
-                    <div class="timeline-row" [class.timeline-row--latest]="$index === 0">
-                      <div class="timeline-node">
-                        <div class="timeline-dot"></div>
-                      </div>
-                      <div class="timeline-body">
-                        <div class="timeline-text">{{ h.descripcion }}</div>
-                        <div class="timeline-date">{{ h.fecha | date:'d MMM, HH:mm' }}</div>
-                      </div>
-                    </div>
-                  } @empty {
-                    <div class="empty-state-inline empty-state-inline--sm" style="border:none; background:transparent;">Sin registros aún</div>
-                  }
-                </div>
-              </mat-card>
-            </div>
-          </mat-tab>
-        </mat-tab-group>
-      </div>
-
-      <mat-card class="collab-card--chat rs-card-elevated" style="margin: 0; display: flex; flex-direction: column; min-height: 450px;">
-        <div class="collab-card__head" style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9;">
-          <div class="section-title-block">
-            <h2 class="rs-unified-title"><mat-icon style="vertical-align: middle; margin-right: 6px; color: #081a4b;">forum</mat-icon> Mensajes</h2>
+          <div class="profile-text">
+            <span class="name">{{ data.cliente.nombre || '—' }}</span>
           </div>
         </div>
 
-        <div class="chat-block" #chatScroll>
-          @if (data.mensajes.length > 0) {
-            @for (m of data.mensajes; track trackById($index, m)) {
-              <div class="bubble-row" [class.me]="m.remitenteTipo === 'CLIENTE'">
-                <div class="bubble" [class.bubble--client]="m.remitenteTipo === 'CLIENTE'" [class.bubble--admin]="m.remitenteTipo !== 'CLIENTE'">
-                  <div class="bubble-meta">
-                    <span class="name">{{ m.remitenteNombre }}</span>
-                    <span class="time">{{ m.createdAt | date:'HH:mm' }}</span>
-                  </div>
-                  <div class="bubble-text">{{ m.contenido }}</div>
-                </div>
-              </div>
-            }
-          } @else {
-            <div class="chat-empty">
-              <mat-icon style="font-size: 32px; width: 32px; height: 32px; color: #cbd5e1; margin-bottom: 8px;">forum</mat-icon>
-              <div class="chat-empty-title">Sin mensajes</div>
-              <div class="chat-empty-sub">Cuando exista conversación, aparecerá aquí.</div>
-            </div>
-          }
+        <div class="editorial-stack-compact">
+          <div class="e-row">
+            <span class="tiny">CORREO ELECTRÓNICO</span>
+            <span class="e-value weight-500">{{ data.cliente.email || '—' }}</span>
+          </div>
+
+          <div class="e-row">
+            <span class="tiny">NÚMERO DE TELÉFONO</span>
+            <span class="e-value weight-600">{{ data.cliente.telefono || '—' }}</span>
+          </div>
         </div>
 
-        <div class="composer" style="padding: 12px 14px; border-top: 1px solid #e2e8f0; background: #fff; border-radius: 0 0 16px 16px;">
-          <label class="attach-btn" matRipple>
-            <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
-            <mat-icon>attach_file</mat-icon>
-          </label>
-
-          <input
-            class="message-input rs-input-minimal--white"
-            style="padding: 8px !important; border-bottom: none !important; border-radius: 8px !important; margin: 0; min-height: 20px; flex: 1;"
-            placeholder="Escribe al cliente..."
-            [formControl]="formMsg.controls.contenido"
-            (keydown)="onMsgKeydown($event)" />
-
-          <button
-            mat-icon-button
-            class="send-btn"
-            (click)="enviarMensaje()"
-            [disabled]="busy() || formMsg.invalid"
-            matTooltip="Enviar">
-            <mat-icon>send</mat-icon>
+        <div class="card-actions-footer">
+          <button mat-flat-button class="rs-btn-whatsapp-dynamic" 
+                  (click)="enviarSeguimientoWhatsapp()" 
+                  [disabled]="busy() || !data.cliente.telefono">
+            <div class="btn-content">
+              <svg class="wa-icon-svg" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.11 17.27c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.6.14-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.15-.42-2.19-1.35-.81-.72-1.35-1.61-1.51-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.14-.6-1.45-.82-1.98-.22-.53-.45-.46-.6-.47h-.51c-.18 0-.47.07-.72.34-.25.27-.94.92-.94 2.25 0 1.32.96 2.6 1.1 2.78.13.18 1.89 2.89 4.58 4.05.64.28 1.14.45 1.53.57.64.2 1.22.17 1.68.1.51-.08 1.58-.65 1.81-1.28.22-.63.22-1.17.15-1.28-.07-.11-.25-.18-.52-.31Z"/>
+                <path d="M16 3C8.83 3 3 8.73 3 15.79c0 2.26.6 4.47 1.74 6.42L3 29l6.99-1.82a13.1 13.1 0 0 0 6.01 1.45H16c7.17 0 13-5.73 13-12.79C29 8.73 23.17 3 16 3Zm0 23.5h-.01a10.9 10.9 0 0 1-5.55-1.51l-.4-.24-4.15 1.08 1.11-4.03-.26-.42a10.63 10.63 0 0 1-1.63-5.59C5.11 9.84 9.99 5.04 16 5.04c2.91 0 5.64 1.12 7.69 3.14a10.62 10.62 0 0 1 3.2 7.61c0 5.95-4.89 10.71-10.89 10.71Z"/>
+              </svg>
+              <span>WhatsApp Cliente</span>
+            </div>
           </button>
         </div>
       </mat-card>
 
-    </div> <ng-template #imageModal>
-      <div class="modal">
-        <div class="modal-h">
-          <div>Foto / Evidencia</div>
-          <button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      <mat-card class="premium-card-clean">
+        <div class="card-header-minimal">
+          <span class="label-caps">EVIDENCIA DEL EQUIPO</span>
+          <label class="upload-icon-btn">
+            <input type="file" (change)="onFotoSelected($event)" hidden accept="image/*" />
+            <mat-icon class="material-symbols-outlined">add_a_photo</mat-icon>
+          </label>
         </div>
-        <div class="modal-b modal-b--img">
-          <img class="img-contained img-proof" [src]="selectedImageUrl()" alt="foto" />
+        <div class="evidence-gallery">
+          @for (f of data.fotos; track $index) {
+            <div class="gallery-item" (click)="verFoto(f)"><img [src]="fileUrl(f.url)" /></div>
+          } @empty {
+            <div class="empty-context">Sin imágenes de respaldo</div>
+          }
         </div>
-      </div>
-    </ng-template>
+      </mat-card>
 
-    <ng-template #comprobanteModal>
-      <div class="modal">
-        <div class="modal-h">
-          <div>Comprobante de Pago</div>
-          <button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button>
+      <mat-card class="premium-card-clean">
+        <div class="card-header-minimal">
+          <span class="label-caps">NOTAS INTERNAS</span>
         </div>
-        <div class="modal-b modal-b--img">
-          <img class="img-contained img-proof"
-               [src]="selectedComprobanteUrl()"
-               alt="comprobante"
-               (error)="closeModal()" />
+        <div class="notes-composer-mini">
+          <textarea placeholder="Añadir nota..." [formControl]="formNota.controls.contenido"></textarea>
+          <button mat-icon-button (click)="anadirNota()" [disabled]="formNota.invalid"><mat-icon>add_circle</mat-icon></button>
+        </div>
+        <div class="notes-history-list">
+          @for (n of data.notas; track $index) {
+            <div class="mini-note">
+              <p>{{ n.contenido }}</p>
+              <span class="date">{{ n.createdAt | date:'d MMM, HH:mm' }}</span>
+            </div>
+          }
+        </div>
+      </mat-card>
+
+      <div class="collapsible-history">
+        <button class="collapse-trigger" (click)="showHistory = !showHistory">
+          <span>HISTORIAL DE ACTIVIDAD</span>
+          <mat-icon>{{ showHistory ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+        @if (showHistory) {
+          <div class="history-content-pwa rs-fade-up">
+            @for (h of historialPreview(); track $index) {
+              <div class="history-log-item">
+                <div class="dot"></div>
+                <div class="text-wrap">
+                  <p>{{ h.descripcion }}</p>
+                  <span>{{ h.fecha | date:'HH:mm' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </aside>
+
+    <main class="col-main-work">
+<mat-card class="premium-card-clean core-card-pro">
+  
+  <div class="card-header-minimal">
+    <span class="label-caps">NÚCLEO DEL SERVICIO</span>
+    <button mat-stroked-button class="rs-btn-edit-minimal" (click)="toggleServiceInfoEdit()">
+      <mat-icon class="material-symbols-outlined">{{ editServiceInfo() ? 'close' : 'edit' }}</mat-icon>
+      <span>{{ editServiceInfo() ? 'Cerrar' : 'Editar' }}</span>
+    </button>
+  </div>
+
+  <div class="core-content-container">
+    @if (!editServiceInfo()) {
+      <div class="rs-grid-view rs-fade-up">
+        <div class="grid-item"><span class="label-caps tiny">MODALIDAD</span><span class="v-badge type-neutral">{{ data.tipo }}</span></div>
+        <div class="grid-item"><span class="label-caps tiny">PRIORIDAD</span><span class="v-badge priority-badge" [attr.data-priority]="data.prioridad">{{ data.prioridad }}</span></div>
+        <div class="grid-item"><span class="label-caps tiny">TÉCNICO RESPONSABLE</span><span class="v-text strong">{{ tecnicoNombre() }}</span></div>
+        <div class="grid-item"><span class="label-caps tiny">EQUIPO</span><span class="v-text strong">{{ data.equipo || '—' }}</span></div>
+        <div class="grid-item"><span class="label-caps tiny">CATEGORÍA</span><span class="v-text">{{ data.categoriaEquipoNombre || '—' }}</span></div>
+        <div class="grid-item"><span class="label-caps tiny">UBICACIÓN</span><span class="v-text">{{ data.direccion || '—' }}</span></div>
+      </div>
+
+      <div class="navy-hero-card rs-fade-up">
+        <div class="h-label"><mat-icon>report_problem</mat-icon> FALLA REPORTADA</div>
+        <p class="h-content">{{ data.fallaReportada || '—' }}</p>
+      </div>
+
+      <div class="editorial-bottom rs-fade-up">
+        <div class="bottom-block">
+          <span class="label-caps tiny">NOTAS DE ACCESO</span>
+          <p class="p-body">{{ data.notasAcceso || '—' }}</p>
+        </div>
+        <div class="bottom-block">
+          <span class="label-caps tiny">DESCRIPCIÓN ADICIONAL</span>
+          <p class="p-body">{{ data.descripcion || '—' }}</p>
         </div>
       </div>
-    </ng-template>
+
+    } @else {
+      <div class="rs-grid-edit rs-fade-up">
+        <div class="field-item"><span class="label-caps tiny">MODALIDAD</span>
+          <mat-form-field appearance="outline" class="rs-select-clean"><mat-select [formControl]="formServicio.controls.tipo">@for (m of modalidades; track m) { <mat-option [value]="m">{{m}}</mat-option> }</mat-select></mat-form-field>
+        </div>
+        <div class="field-item"><span class="label-caps tiny">PRIORIDAD</span>
+          <mat-form-field appearance="outline" class="rs-select-clean"><mat-select [formControl]="formServicio.controls.prioridad">@for (p of prioridades; track p) { <mat-option [value]="p">{{p}}</mat-option> }</mat-select></mat-form-field>
+        </div>
+        <div class="field-item span-full"><span class="label-caps tiny">TÉCNICO RESPONSABLE</span>
+          <mat-form-field appearance="outline" class="rs-select-clean"><mat-select [formControl]="formTecnico"><mat-option [value]="null">Sin asignar</mat-option>@for (t of tecnicos(); track t.id) { <mat-option [value]="t.id">{{t.nombre}}</mat-option> }</mat-select></mat-form-field>
+        </div>
+        
+        <div class="field-item"><span class="label-caps tiny">EQUIPO</span><input class="rs-input-pro" [formControl]="formServicio.controls.equipo"></div>
+        <div class="field-item"><span class="label-caps tiny">CATEGORÍA</span><input class="rs-input-pro" [formControl]="formServicio.controls.categoriaEquipoNombre"></div>
+        
+        <div class="field-item span-full"><span class="label-caps tiny">FALLA REPORTADA</span><input class="rs-input-pro highlight" [formControl]="formServicio.controls.fallaReportada"></div>
+        
+        <div class="field-item"><span class="label-caps tiny">UBICACIÓN</span><input class="rs-input-pro" [formControl]="formServicio.controls.direccion"></div>
+        <div class="field-item"><span class="label-caps tiny">NOTAS DE ACCESO</span><input class="rs-input-pro" [formControl]="formServicio.controls.notasAcceso"></div>
+        
+        <div class="field-item span-full"><span class="label-caps tiny">DESCRIPCIÓN ADICIONAL</span><textarea class="rs-input-pro rs-area" rows="2" [formControl]="formServicio.controls.descripcion"></textarea></div>
+
+        <div class="edit-footer span-full">
+          <button mat-flat-button class="rs-btn--primary" (click)="guardarServiceInfo()" [disabled]="busy()">
+            <div class="rs-btn__label">Guardar Cambios</div>
+            <div class="rs-btn__shimmer"></div>
+          </button>
+        </div>
+      </div>
+    }
   </div>
-} @else {
-  <div class="rs-page pad">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</mat-card>
+
+      <mat-card class="premium-card-clean">
+        <div class="card-header-minimal">
+          <span class="label-caps">INFORME DE REVISIÓN</span>
+          <button mat-stroked-button class="rs-btn-head-premiun" (click)="toggleRevisionTecnicaEdit()">
+            <mat-icon class="material-symbols-outlined">analytics</mat-icon> Editar
+          </button>
+        </div>
+
+        @if (!editRevisionTecnica()) {
+          <div class="revision-editorial-stack">
+            <div class="rev-item"><span class="l">FALLA DETECTADA</span><div class="box">{{ data.fallaDetectada || 'Pendiente' }}</div></div>
+            <div class="rev-item"><span class="l">DIAGNÓSTICO TÉCNICO</span><div class="box mono">{{ data.diagnosticoTecnico || 'Pendiente' }}</div></div>
+            <div class="rev-item"><span class="l">TRABAJO A REALIZAR</span><div class="box highlight">{{ data.trabajoARealizar || 'Pendiente' }}</div></div>
+          </div>
+        } @else {
+          <div class="rs-grid-form rs-fade-up">
+            <mat-form-field appearance="outline" class="rs-span-12"><mat-label>Diagnóstico</mat-label><textarea matInput rows="4" [formControl]="formRevisionTecnica.controls.diagnosticoTecnico"></textarea></mat-form-field>
+            <button mat-flat-button class="rs-btn--primary rs-span-12" (click)="guardarRevisionTecnica()">Guardar Informe</button>
+          </div>
+        }
+      </mat-card>
+    </main>
+
+    <aside class="col-side-mgmt">
+      <mat-card class="premium-card-clean budget-highlight">
+        <div class="card-header-minimal">
+          <span class="label-caps">PRESUPUESTO</span>
+          <span class="state-pill" [attr.data-state]="presupuestoEstado()">{{ presupuestoSummary() }}</span>
+        </div>
+        <div class="price-display">
+          <span class="sym">€</span>
+          <span class="num">{{ (presupuestoImporte() || 0) | number:'1.0-2' }}</span>
+        </div>
+        
+        @if (!editBudget()) {
+          <p class="budget-detail">{{ data.presupuesto?.detalle || 'Sin detalles' }}</p>
+          <button mat-flat-button class="rs-btn--primary full-w" (click)="toggleBudgetEdit()" [disabled]="presupuestoAceptado()">Gestionar Cobro</button>
+        } @else {
+          <div class="budget-edit-mini rs-fade-up">
+            <input type="number" class="rs-input-minimal" [formControl]="formPresupuesto.controls.importe" placeholder="0.00">
+            <textarea class="rs-input-minimal" [formControl]="formPresupuesto.controls.detalle" placeholder="Detalles..."></textarea>
+            <div class="btn-group-mini">
+              <button class="rs-btn-secondary" (click)="guardarPresupuesto()">Guardar</button>
+              <button class="rs-btn--primary" (click)="enviarPresupuesto()">Enviar</button>
+            </div>
+          </div>
+        }
+      </mat-card>
+
+      <mat-card class="premium-card-clean">
+        <span class="label-caps">BALANCE DE PAGO</span>
+        <div class="payment-row">
+          <div class="p-amount">{{ (totalPresupuesto() || 0) | number:'1.0-2' }} €</div>
+          <span class="p-status" [class.paid]="pagoConfirmado()">{{ pagoLabel() }}</span>
+        </div>
+        @if (data.pago?.comprobanteUrl; as url) {
+          <button mat-stroked-button class="rs-btn-secondary full-w" (click)="verComprobante(url)"><mat-icon>receipt_long</mat-icon> Ver Recibo</button>
+        }
+        @if (!pagoConfirmado()) {
+          <button mat-flat-button class="rs-btn--primary full-w" (click)="marcarTransferencia()" style="margin-top: 12px;">Marcar Pagado</button>
+        }
+      </mat-card>
+
+      <mat-card class="premium-card-clean">
+        <div class="card-header-minimal">
+          <span class="label-caps">PRÓXIMA CITA</span>
+          <button mat-icon-button (click)="toggleCitaEdit()"><mat-icon class="material-symbols-outlined">calendar_today</mat-icon></button>
+        </div>
+        @if (!editCita()) {
+          @if (proximaCita(); as c) {
+            <div class="appointment-pill">
+              <span class="d">{{ c.inicio | date:"EEEE, d MMM":undefined:'es-ES' | titlecase }}</span>
+              <span class="t"><mat-icon>schedule</mat-icon> {{ c.inicio | date:'HH:mm a' }}</span>
+            </div>
+          } @else {
+            <div class="empty-state-text">Sin cita programada</div>
+          }
+        } @else {
+          <div class="edit-appointment-box rs-fade-up">
+            <input type="text" class="rs-input-minimal" [formControl]="formCita.controls.horaInicio" placeholder="00:00">
+            <button mat-flat-button class="rs-btn--primary full-w" (click)="crearCita()">Confirmar</button>
+          </div>
+        }
+      </mat-card>
+
+      <mat-card class="premium-card-clean chat-card-saas">
+        <span class="label-caps"><mat-icon>forum</mat-icon> MENSAJES</span>
+        <div class="chat-viewport-enterprise" #chatScroll>
+          @for (m of data.mensajes; track $index) {
+            <div class="bubble-row" [class.me]="m.remitenteTipo !== 'CLIENTE'">
+              <div class="bubble">
+                <p>{{ m.contenido }}</p>
+                <span class="time">{{ m.createdAt | date:'HH:mm' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="chat-footer-minimal">
+          <input type="text" [formControl]="formMsg.controls.contenido" (keydown.enter)="enviarMensaje()" placeholder="Escribe..." />
+          <button (click)="enviarMensaje()"><mat-icon>send</mat-icon></button>
+        </div>
+      </mat-card>
+    </aside>
+
   </div>
+</div>
+
+<ng-template #imageModal><div class="rs-modal-editorial"><header><span>Evidencia del Servicio</span><button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button></header><div class="img-container"><img [src]="selectedImageUrl()" /></div></div></ng-template>
+<ng-template #comprobanteModal><div class="rs-modal-editorial"><header><span>Comprobante de Pago</span><button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button></header><div class="img-container"><img [src]="selectedComprobanteUrl()" /></div></div></ng-template>
 }
