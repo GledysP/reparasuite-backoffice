@@ -133,6 +133,14 @@
 
       <span class="rs-spacer"></span>
 
+      <label class="rs-theme-switch">
+        <input type="checkbox" (change)="toggleTheme()" [checked]="isDarkMode">
+        <span class="rs-slider">
+          <mat-icon class="icon-sun">light_mode</mat-icon>
+          <mat-icon class="icon-moon">dark_mode</mat-icon>
+        </span>
+      </label>
+
       <button
         mat-icon-button
         class="rs-icon-btn rs-notif-btn"

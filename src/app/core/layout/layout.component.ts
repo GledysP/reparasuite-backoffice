@@ -64,6 +64,7 @@ export class LayoutComponent {
   isCollapsed = false;
   mobileOpened = false;
   mobileSearchOpen = false;
+  isDarkMode = false;
 
   sessionState: 'active' | 'idle' = 'active';
 
@@ -138,6 +139,18 @@ export class LayoutComponent {
       maxWidth: '92vw',
       data: { navItems: this.navItems },
     });
+  }
+
+  toggleTheme() {
+    // Invertimos el valor (de true a false, o de false a true)
+    this.isDarkMode = !this.isDarkMode;
+    
+    // Le decimos al body que ponga o quite la clase oscura
+    if (this.isDarkMode) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
   }
 
   refreshNotifications(): void {

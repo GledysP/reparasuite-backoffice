@@ -904,6 +904,78 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(14px);
 }
 
+
+
+/* botno de theme ligth/dark*/ 
+/* --- Botón Switch Light/Dark Premium --- */
+.rs-theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 32px;
+  margin-right: 2px; 
+}
+
+.rs-theme-switch input { 
+  opacity: 0; 
+  width: 0; 
+  height: 0; 
+}
+
+.rs-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #e2e8f0; 
+  border-radius: 34px;
+  transition: background-color 0.4s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    z-index: 1;
+    transition: color 0.4s;
+  }
+  .icon-sun { color: #ffffff; } 
+  .icon-moon { color: #94a3b8; } 
+}
+
+.rs-slider:before {
+  position: absolute;
+  content: "";
+  height: 24px;
+  width: 24px;
+  left: 4px;
+  bottom: 4px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  z-index: 2;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s, background-color 0.4s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Estado Oscuro */
+input:checked + .rs-slider {
+  background-color: #1e293b; 
+}
+
+input:checked + .rs-slider:before {
+  transform: translateX(32px); 
+  background-color: #00d1ff; 
+  box-shadow: 0 0 10px rgba(0, 209, 255, 0.6); 
+}
+
+input:checked + .rs-slider .icon-sun { color: #475569; } 
+input:checked + .rs-slider .icon-moon { color: #ffffff; }
+
+
+/*////////////////////////////////////*/
 @keyframes rsAvatarPulse {
   0%, 100% {
     box-shadow:
