@@ -121,24 +121,7 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* ✅ Ajuste de tamaños Material (global) */
-.mat-mdc-button,
-.mat-mdc-outlined-button,
-.mat-mdc-raised-button,
-.mat-mdc-unelevated-button {
-  font-size: 13px !important;
-  min-height: var(--rs-density-btn-h) !important;
-  border-radius: var(--rs-density-radius) !important;
-}
 
-.mat-mdc-icon-button {
-  --mdc-icon-button-state-layer-size: 40px;
-}
-
-.mat-mdc-input-element,
-.mat-mdc-select-value-text {
-  font-size: 13px !important;
-}
 
 /* ✅ UNIFICACIÓN GLOBAL: Inputs y Dropdowns (Material MDC) */
 .mat-mdc-form-field {
@@ -528,27 +511,42 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox { display: none !import
   animation: rsFadeUpGlobal 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+
 /* =========================================================
-   SISTEMA DE BOTONES GLOBALES (SaaS Pro)
+   SISTEMA DE BOTONES GLOBALES (SaaS Pro - 12px Estricto Unificado)
    ========================================================= */
 @keyframes rsShimmerGlobal {
   0% { transform: translateX(-160%) skewX(-24deg); }
   100% { transform: translateX(220%) skewX(-24deg); }
 }
 
-/* Base de todos mis botones principales */
-.rs-btn { 
+/* 1. CLASE BASE: Somete a Angular Material y fuerza los 12px en toda la app */
+body .rs-btn,
+body .mat-mdc-button,
+body .mat-mdc-outlined-button,
+body .mat-mdc-raised-button,
+body .mat-mdc-unelevated-button { 
   height: var(--rs-density-btn-h) !important; 
-  border-radius: var(--rs-density-radius) !important; 
+  border-radius: 12px !important; 
+  
+  /* MDC Tokens para anular el diseño por defecto de Material */
+  --mdc-filled-button-container-shape: 12px !important;
+  --mdc-protected-button-container-shape: 12px !important;
+  --mdc-outlined-button-container-shape: 12px !important;
+  --mdc-text-button-container-shape: 12px !important;
+
   font-weight: 700 !important; 
   letter-spacing: -0.01em; 
   padding: 0 32px !important; 
-  display: inline-flex; align-items: center; justify-content: center;
+  display: inline-flex !important; 
+  align-items: center !important; 
+  justify-content: center !important;
+  font-size: 13px !important;
 }
 
-/* Mi botón primario */
+/* 2. Mi botón primario (Con el Shimmer atrapado) */
 .rs-btn--primary {
-  position: relative; overflow: hidden; isolation: isolate; color: #ffffff !important;
+  position: relative; overflow: hidden !important; isolation: isolate; color: #ffffff !important;
   background: linear-gradient(135deg, var(--rs-primary-dark) 0%, var(--rs-primary) 100%) !important;
   box-shadow: 0 14px 30px rgba(0, 122, 255, 0.16), 0 0 28px rgba(0, 209, 255, 0.14) !important;
   transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
@@ -569,15 +567,12 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox { display: none !import
   }
 }
 
-/* Mis botones secundarios */
+/* 3. Mis botones secundarios */
 .rs-btn-secondary { 
-  height: var(--rs-density-btn-h) !important;
-  border-radius: var(--rs-density-radius) !important; 
   font-weight: 600 !important; 
   border: 1px solid var(--rs-border) !important;
   color: var(--rs-text-main) !important; 
   background-color: var(--rs-card) !important; 
-  padding: 0 24px !important; display: inline-flex; align-items: center; gap: 8px;
   transition: all 0.2s ease !important;
 
   &:hover:not(:disabled) {
@@ -587,6 +582,11 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox { display: none !import
     transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
   }
 }
+
+.mat-mdc-icon-button {
+  --mdc-icon-button-state-layer-size: 40px;
+}
+
 
 /* =========================================================
    MATERIAL OVERRIDES (Fix Calendario por encima de todo)
