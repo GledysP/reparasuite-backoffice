@@ -1,34 +1,34 @@
-/* ==========================================================================
-   NUEVA ORDEN DE TRABAJO - SCSS DEFINITIVO (PWA RESPONSIVE + DASHBOARD SYNC)
-   ========================================================================== */
+/* --- 1. VARIABLES DINÁMICAS (Conectadas a tu root) --- */
+$rs-bg: var(--rs-bg); 
+$rs-white: var(--rs-card); 
+$rs-text-strong: var(--rs-text-navy); 
+$rs-text: var(--rs-text-main); 
+$rs-muted: var(--rs-text-muted); 
+$rs-label: var(--rs-text-muted);
+$rs-tech-navy: var(--rs-navy-box); 
+$rs-tech-cyan: var(--rs-navy-text);
 
-/* --- 1. VARIABLES GLOBALES --- */
-$rs-bg: #f8f9fa; 
-$rs-white: #ffffff; 
-$rs-text-strong: #0f172a; 
-$rs-text: #334155; 
-$rs-muted: #64748b; 
-$rs-label: #94a3b8;
-$rs-tech-navy: #081a4b; 
+/* Variables estáticas */
 $rs-tech-blue: #0891b2; 
-$rs-tech-cyan: #00d1ff; 
 $rs-active-color: #0d276d; 
 
-$rs-shadow-card: 0 16px 40px -8px rgba(15, 23, 42, 0.12), 0 6px 16px -6px rgba(15, 23, 42, 0.08);
+$rs-shadow-card: var(--rs-shadow-md);
 $rs-shadow-modal: 0 28px 80px rgba(15, 23, 42, 0.28);
 $rs-shadow-cta: 0 14px 30px rgba(0, 122, 255, 0.16), 0 0 28px rgba(0, 209, 255, 0.14);
-$rs-radius-card: 22px; 
+$rs-radius-card: var(--rs-radius);
 $rs-radius-field: 12px;
 $rs-danger: #ef4444; 
 $rs-danger-soft: rgba(239, 68, 68, 0.1);
 
-/* --- ANIMACIÓN IDÉNTICA AL DASHBOARD (620ms) --- */
+/* ¡NO HAY :host! 
+   ¡NO HAY .rs-page-container! 
+   Dejamos que el styles.scss GLOBAL se encargue del fondo y la luz. 
+*/
+
+/* --- ANIMACIÓN --- */
 @keyframes rsFadeUp { 
   to { opacity: 1; transform: translateY(0); } 
 }
-
-:host { display: block; min-height: 100%; color: $rs-text; background: $rs-bg; font-family: 'Inter', sans-serif; }
-:host * { box-sizing: border-box; }
 
 /* Aplicamos estado inicial y la animación suave global */
 .rs-enter { 
@@ -36,6 +36,7 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
   transform: translateY(14px);
   animation: rsFadeUp 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards; 
 }
+
 
 /* Espaciado exterior idéntico al Dashboard */
 .rs-shell { 
@@ -49,6 +50,13 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
   justify-content: space-between; 
   align-items: flex-start;
   margin: 0 0 30px 0; /* Los 30px exactos de distancia que tiene tu Dashboard */
+}
+
+.rs-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
 .rs-page-title { 
@@ -81,23 +89,54 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
 .rs-col-6 { grid-column: span 6; } 
 .rs-col-4 { grid-column: span 4; }
 
-/* --- 3. TARJETAS FLOTANTES Y ACENTOS UNIFICADOS --- */
-.rs-card {
-  position: relative; overflow: hidden; border-radius: $rs-radius-card !important;
-  border: 1px solid rgba(15, 23, 42, 0.04) !important; background: $rs-white !important;
-  box-shadow: $rs-shadow-card !important; padding: 24px !important; display: flex; flex-direction: column;
-}
 
-.rs-card-accent { 
-  position: absolute; top: 24px; bottom: 24px; left: 0; width: 4px; 
-  border-radius: 0 4px 4px 0; 
-  background: linear-gradient(180deg, #0891b2, #00d1ff); 
+/* --- 3. TARJETAS FLOTANTES Y ACENTOS UNIFICADOS (Estilo Purista) --- */
+.rs-card {
+  position: relative; 
+  overflow: hidden; 
+  border-radius: var(--rs-radius) !important;
+  
+  /* CRÍTICO: Usamos el token de card para que funcione en Dark Mode */
+  background: var(--rs-card) !important; 
+  
+  /* Borde más definido, igual al de Detalles de Orden */
+  border: 1px solid var(--rs-border) !important; 
+  
+  /* Sombra sutil pero firme */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important; 
+  padding: 24px !important; 
+  display: flex; 
+  flex-direction: column;
+  transition: all 0.2s ease;
+
+  /* Efecto Hover Premium */
+  &:hover { 
+    border-color: #cbd5e1 !important; 
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04) !important; 
+  }
 }
 
 .rs-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
 .rs-section-title-group { display: flex; align-items: center; gap: 12px; }
-.rs-section-kicker { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: $rs-label; margin-bottom: 4px; }
-.rs-section-title { margin: 0; font-size: 16px; font-weight: 600; color: $rs-text-strong; }
+.rs-section-kicker { 
+  /* Estilo Editorial idéntico a Detalles de Orden */
+  font-size: 9.5px !important; 
+  font-weight: 800 !important; 
+  color: var(--rs-text-muted) !important; /* Mapeado al token */
+  letter-spacing: 0.08em !important; 
+  text-transform: uppercase !important; 
+  margin-bottom: 0px; 
+  display: block;
+}
+
+/* Y el título principal de la card */
+.rs-section-title { 
+  margin: 0; 
+  font-size: 15px; /* Un poco más refinado */
+  font-weight: 700; /* Coincide con tu diseño */
+  color: var(--rs-text-navy); /* Mapeado al token */
+  letter-spacing: -0.01em;
+}
 .rs-head-actions { display: flex; gap: 8px; }
 
 .rs-field { display: flex; flex-direction: column; gap: 6px; }
@@ -268,6 +307,55 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
   .cdk-overlay-pane { z-index: 1000 !important; }
 }
 
+
+/* Estilo Premium para la Falla reportada */
+/* --- Alineación del Header --- */
+.rs-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+/* --- Contenedor Navy para Falla --- */
+.rs-fault-box {
+background: #081a4b;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid transparent;
+
+  /* AJUSTE DE ALINEACIÓN: 
+     Añadimos 19px para compensar la altura del label del campo de al lado */
+  margin-top: 19px; 
+  
+  /* Aseguramos una altura mínima similar a un textarea de 2 filas */
+  min-height: 84px; 
+
+  &:focus-within { border-color: #00bff5; }
+
+  .rs-fault-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #00d1ff;
+    margin-bottom: 4px;
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    span { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; }
+  }
+
+  /* Reset de Material para el input interno */
+  ::ng-deep .mat-mdc-form-field {
+    .mdc-notched-outline { display: none !important; } 
+    .mat-mdc-text-field-wrapper { background: transparent !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
+    .mat-mdc-form-field-infix { padding: 4px 0 !important; min-height: auto !important; }
+    input { color: white !important; font-size: 14px !important; &::placeholder { color: rgba(255,255,255,0.4) !important; } }
+  }
+}
+
+
+
 /* --- 10. VALIDACIONES UX --- */
 .rs-field-error .rs-field-label { color: $rs-danger !important; }
 .rs-chips-error { border-left: 3px solid $rs-danger; padding-left: 10px; border-radius: 4px; }
@@ -307,3 +395,4 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
     margin: 0;
   }
 }
+

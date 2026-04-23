@@ -22,23 +22,38 @@
     'opsz' 24;
 }
 
-/* =========================
-   RS DESIGN TOKENS (Responsive)
-========================= */
+/* =========================================================
+   RS DESIGN TOKENS (Variables Globales)
+   ========================================================= */
 :root {
-  /* Layout */
+  /* 🎨 COLORES (Base para modo claro y futuro modo oscuro) */
+  --rs-bg: #f6f8fb;
+  --rs-card: #ffffff;
+  --rs-text-main: #1e293b;
+  --rs-text-navy: #081a4b;
+  --rs-text-muted: #64748b;
+  --rs-border: #e2e8f0;
+  --rs-primary: #00bff5; 
+  --rs-primary-dark: #081a4b;
+
+  /* 💎 ESTADOS DE ALERTA */
+  --rs-success: #2ecc71;
+  --rs-error: #fb5867;
+  --rs-warning: #f3b15b;
+  --rs-info: #4a8df8;
+
+  /* 📐 LAYOUT & SPACING */
   --rs-page-pad: 32px;
   --rs-page-gap: 16px;
 
-  /* Typography scale */
-  /* Ajusto mi título a 26px y le quito peso (700) para que se vea más elegante en todo el sistema */
+  /* ✍️ TYPOGRAPHY SCALE */
   --rs-title: 26px; 
   --rs-title-weight: 700; 
   --rs-subtitle: 15px;
   --rs-body: 13px;
   --rs-small: 12px;
 
-  /* Table */
+  /* 📊 TABLE SYSTEM (¡Se mantienen!) */
   --rs-th-size: 11px;
   --rs-td-size: 13px;
   --rs-th-pad-y: 16px;
@@ -46,31 +61,29 @@
   --rs-td-pad-y: 12px;
   --rs-td-pad-x: 20px;
 
-  /* Density */
-  /* Subo la altura de mis botones a 48px para ese look SaaS Premium */
+  /* 📐 TOKENS DE DISEÑO */
+  --rs-radius: 12px;
+
+  /* ⚡ DENSITY */
   --rs-density-btn-h: 48px; 
-  --rs-density-field-h: 44px;
+  --rs-density-field-h: 40px;
   --rs-density-radius: 12px;
+
+  /* 🎨 TOKENS DE CONTENEDORES ESPECIALES */
+  --rs-navy-box: #081a4b;      /* Fondo del contenedor de falla */
+  --rs-navy-text: #00d1ff;     /* Color del título cian dentro del box */
+
+  --rs-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
+/* Responsivo (Se mantienen tus media queries inteligentes) */
 @media (max-width: 1024px) {
-  :root {
-    --rs-page-pad: 24px;
-    --rs-page-gap: 14px;
-    --rs-title: 24px;
-  }
+  :root { --rs-page-pad: 24px; --rs-page-gap: 14px; --rs-title: 24px; }
 }
-
 @media (max-width: 640px) {
   :root {
-    --rs-page-pad: 16px;
-    --rs-page-gap: 12px;
-    --rs-title: 22px;
-
-    --rs-th-pad-y: 14px;
-    --rs-th-pad-x: 16px;
-    --rs-td-pad-y: 10px;
-    --rs-td-pad-x: 16px;
+    --rs-page-pad: 16px; --rs-page-gap: 12px; --rs-title: 22px;
+    --rs-th-pad-y: 14px; --rs-th-pad-x: 16px; --rs-td-pad-y: 10px; --rs-td-pad-x: 16px;
   }
 }
 
@@ -80,8 +93,8 @@ body {
   height: 100%;
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #f6f8fb;
-  color: #1e293b;
+  background-color: var(--rs-bg) !important; /* CORREGIDO: Usa variable */
+  color: var(--rs-text-main) !important; /* CORREGIDO: Usa variable */
   font-size: 16px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
@@ -118,18 +131,50 @@ body {
   --mdc-icon-button-state-layer-size: 40px;
 }
 
-.mat-mdc-form-field {
-  --mat-form-field-container-height: var(--rs-density-field-h);
-}
-
-.mat-mdc-form-field .mdc-floating-label {
-  font-size: 12px !important;
-  font-weight: 600 !important;
-}
-
 .mat-mdc-input-element,
 .mat-mdc-select-value-text {
   font-size: 13px !important;
+}
+
+/* ✅ UNIFICACIÓN GLOBAL: Inputs y Dropdowns (Material MDC) */
+.mat-mdc-form-field {
+  width: 100%;
+  font-family: 'Inter', sans-serif !important;
+
+  /* 1. CONFIGURACIÓN DE BORDES Y FOCUS (Consistencia total) */
+  --mdc-outlined-text-field-outline-color: var(--rs-border);
+  --mdc-outlined-text-field-hover-outline-color: var(--rs-primary);
+  --mdc-outlined-text-field-focus-outline-color: var(--rs-primary);
+  --mdc-outlined-text-field-focus-outline-width: 1px;
+  --mdc-outlined-text-field-container-shape: 8px;
+
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--rs-card) !important;
+    transition: all 0.2s ease-in-out !important;
+
+    /* Efecto Hover coherente en todo el sistema */
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04) !important;
+    }
+  }
+
+  /* 2. ELIMINAR RIPPLES Y LÍNEAS FANTASMAS */
+  .mdc-text-field__ripple, .mdc-line-ripple, 
+  .mdc-text-field__ripple::before, .mdc-line-ripple::after {
+    display: none !important;
+  }
+
+  /* 3. MATA EL ESPACIO DE ERROR (Para que los cards no crezcan) */
+  .mat-mdc-form-field-subscript-wrapper { 
+    display: none !important; 
+  }
+
+  /* 4. AJUSTE DE LABELS */
+  .mdc-floating-label {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+  }
 }
 
 /* =========================
@@ -152,14 +197,13 @@ body {
 .rs-dashboard-head,
 .rs-topbar,
 .rs-header-section,
-.rs-page-head { /* Agrego rs-page-head aquí para controlarlo globalmente */
+.rs-page-head { 
   display: flex !important;
   justify-content: space-between !important;
-  align-items: flex-start !important; /* Cambio center por flex-start para alineación perfecta */
+  align-items: center !important; /* CORREGIDO: center para alinear título y botón */
   flex-wrap: wrap;
   gap: 16px;
-  /* Unifico mi margen inferior a 32px para que todas las páginas respiren igual */
-  margin: 0 0 32px 0 !important; 
+  margin: 0 0 24px 0 !important; /* CORREGIDO: Reducido a 24px para no verse grueso */
   padding: 0 !important;
   width: 100%;
 }
@@ -171,10 +215,10 @@ body {
 .rs-title {
   margin: 0 !important;
   font-size: var(--rs-title) !important;
-  font-weight: var(--rs-title-weight) !important; /* Uso mi variable de peso 700 */
+  font-weight: var(--rs-title-weight) !important; 
   letter-spacing: -0.03em !important;
   line-height: 1.1 !important;
-  color: #081a4b !important; /* Unifico el azul oscuro corporativo en todos los títulos */
+  color: var(--rs-text-navy) !important; /* CORREGIDO: Usa variable */
 }
 
 .rs-page-subtitle,
@@ -185,10 +229,10 @@ body {
 .card-label {
   font-size: var(--rs-subtitle) !important;
   font-weight: 500 !important;
-  color: #64748b !important;
+  color: var(--rs-text-muted) !important; /* CORREGIDO: Usa variable */
   letter-spacing: -0.01em !important;
   line-height: 1.4 !important;
-  margin: 8px 0 0 0 !important; /* Ajusto la distancia fija con el título */
+  margin: 8px 0 0 0 !important; 
   display: block !important;
 }
 
@@ -238,70 +282,26 @@ body {
 }
 
 /* 5. ESTRUCTURA Y CONTENEDORES (Utilidades RS) */
-.rs-container {
-  height: 100vh;
-}
-
-.rs-page {
-  padding: var(--rs-page-pad);
-}
-
-.rs-spacer {
-  flex: 1 1 auto;
-}
-
-.rs-full {
-  width: 100%;
-}
+.rs-container { height: 100vh; }
+.rs-page { padding: var(--rs-page-pad); }
+.rs-spacer { flex: 1 1 auto; }
+.rs-full { width: 100%; }
 
 /* 6. SISTEMA DE REJILLA (Grid) */
-.rs-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 16px;
-}
+.rs-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+.rs-span-2 { grid-column: span 2; }
+.rs-span-4 { grid-column: span 4; }
+.rs-span-6 { grid-column: span 6; }
+.rs-span-12 { grid-column: span 12; }
 
-.rs-span-2 {
-  grid-column: span 2;
-}
-.rs-span-4 {
-  grid-column: span 4;
-}
-.rs-span-6 {
-  grid-column: span 6;
-}
-.rs-span-12 {
-  grid-column: span 12;
-}
-
-@media (max-width: 1024px) {
-  .rs-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .rs-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
+@media (max-width: 1024px) { .rs-grid { grid-template-columns: repeat(6, 1fr); } }
+@media (max-width: 640px) { .rs-grid { grid-template-columns: repeat(4, 1fr); } }
 
 /* 7. SISTEMA DE FORMULARIOS */
-.rs-form-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 12px;
-}
-
-.rs-col-12 {
-  grid-column: span 12;
-}
-.rs-col-8 {
-  grid-column: span 8;
-}
-.rs-col-6 {
-  grid-column: span 6;
-}
+.rs-form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+.rs-col-12 { grid-column: span 12; }
+.rs-col-8 { grid-column: span 8; }
+.rs-col-6 { grid-column: span 6; }
 
 /* 8. AJUSTES DE ICONOS MATERIAL */
 .material-icons {
@@ -320,33 +320,24 @@ body {
 /* 9. ADAPTACIÓN VISUAL FIGMA (Work Orders) */
 $rs-primary-petroleo: #1a4b5d;
 
-.rs-form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding-bottom: 40px;
-}
+.rs-form-container { display: flex; flex-direction: column; gap: 24px; padding-bottom: 40px; }
 
 .rs-form-section {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
+  background: var(--rs-card) !important;
+  border: 1px solid var(--rs-border) !important;
   border-radius: 8px !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 
   mat-card-header {
     padding: 16px 20px 0;
-
     mat-card-title {
       font-size: 16px !important;
       font-weight: 700 !important;
-      color: #0f172a;
+      color: var(--rs-text-main);
       letter-spacing: -0.02em;
     }
   }
-
-  mat-card-content {
-    padding: 20px !important;
-  }
+  mat-card-content { padding: 20px !important; }
 }
 
 .rs-btn-petroleo {
@@ -358,36 +349,14 @@ $rs-primary-petroleo: #1a4b5d;
   height: 40px !important;
 }
 
-.mat-mdc-dialog-container .mdc-dialog__surface {
-  border-radius: 12px !important;
-}
-
-/* =========================
-   FIX GLOBAL: eliminar “línea” en mat-form-field outlined (MDC)
-========================= */
-.mat-mdc-form-field {
-  .mdc-text-field__ripple,
-  .mdc-line-ripple {
-    display: none !important;
-    opacity: 0 !important;
-    height: 0 !important;
-  }
-
-  .mdc-text-field__ripple::before,
-  .mdc-text-field__ripple::after,
-  .mdc-line-ripple::before,
-  .mdc-line-ripple::after {
-    display: none !important;
-    opacity: 0 !important;
-  }
-}
+.mat-mdc-dialog-container .mdc-dialog__surface { border-radius: 12px !important; }
 
 /* =========================
    FIGMA DROPDOWN (mat-select overlay)
 ========================= */
 .cdk-overlay-container .rs-figma-select-panel.mat-mdc-select-panel {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
+  background: var(--rs-card) !important;
+  border: 1px solid var(--rs-border) !important;
   border-radius: 12px !important;
   padding: 8px !important;
   min-width: 320px !important;
@@ -407,38 +376,28 @@ $rs-primary-petroleo: #1a4b5d;
   text-overflow: initial !important;
   line-height: 18px !important;
   font-size: 13px !important;
-  color: #0f172a !important;
+  color: var(--rs-text-main) !important;
 }
 
 .cdk-overlay-container .rs-figma-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
-  background: rgba(15, 23, 42, 0.04) !important;
+  background: rgba(0, 191, 245, 0.05) !important;
 }
 
 .cdk-overlay-container .rs-figma-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-  background: rgba(18, 78, 89, 0.10) !important;
+  background: rgba(0, 191, 245, 0.10) !important;
 }
 
-.cdk-overlay-container .rs-figma-select-panel .mat-pseudo-checkbox {
-  border-color: #94a3b8 !important;
-}
-
-.cdk-overlay-container .rs-figma-select-panel .mdc-list-item {
-  padding-left: 12px !important;
-  padding-right: 12px !important;
-}
+.cdk-overlay-container .rs-figma-select-panel .mat-pseudo-checkbox { border-color: #94a3b8 !important; }
+.cdk-overlay-container .rs-figma-select-panel .mdc-list-item { padding-left: 12px !important; padding-right: 12px !important; }
 
 /* =========================
    RS TECH PANEL (GLOBAL OVERLAY FIX)
-   ✅ BLANCO
-   ✅ Hover gris
-   ✅ Seleccionado gris
 ========================= */
 .cdk-overlay-container .rs-tech-panel.mat-mdc-select-panel,
 .cdk-overlay-container .mat-mdc-select-panel.rs-tech-panel,
 div.cdk-overlay-pane .rs-tech-panel.mat-mdc-select-panel {
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
+  background: var(--rs-card) !important;
+  border: 1px solid var(--rs-border) !important;
   border-radius: 12px !important;
   padding: 6px !important;
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16) !important;
@@ -447,9 +406,8 @@ div.cdk-overlay-pane .rs-tech-panel.mat-mdc-select-panel {
 .cdk-overlay-container .rs-tech-panel .mat-mdc-option,
 .cdk-overlay-container .mat-mdc-select-panel.rs-tech-panel .mat-mdc-option,
 div.cdk-overlay-pane .rs-tech-panel .mat-mdc-option {
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  color: #0f172a !important;
+  background: transparent !important;
+  color: var(--rs-text-main) !important;
   border-radius: 10px !important;
   margin: 3px 0 !important;
   min-height: 42px !important;
@@ -458,7 +416,7 @@ div.cdk-overlay-pane .rs-tech-panel .mat-mdc-option {
 .cdk-overlay-container .rs-tech-panel .mat-mdc-option:hover,
 .cdk-overlay-container .mat-mdc-select-panel.rs-tech-panel .mat-mdc-option:hover,
 div.cdk-overlay-pane .rs-tech-panel .mat-mdc-option:hover {
-  background: #f1f5f9 !important;
+  background: rgba(0, 191, 245, 0.05) !important;
 }
 
 .cdk-overlay-container .rs-tech-panel .mat-mdc-option.mdc-list-item--selected,
@@ -467,112 +425,45 @@ div.cdk-overlay-pane .rs-tech-panel .mat-mdc-option:hover {
 .cdk-overlay-container .mat-mdc-select-panel.rs-tech-panel .mat-mdc-option.mat-mdc-option-active,
 div.cdk-overlay-pane .rs-tech-panel .mat-mdc-option.mdc-list-item--selected,
 div.cdk-overlay-pane .rs-tech-panel .mat-mdc-option.mat-mdc-option-active {
-  background: #e2e8f0 !important;
-  color: #0f172a !important;
+  background: var(--rs-border) !important;
+  color: var(--rs-text-main) !important;
 }
 
 .cdk-overlay-container .rs-tech-panel .mdc-list-item__primary-text,
 .cdk-overlay-container .mat-mdc-select-panel.rs-tech-panel .mdc-list-item__primary-text,
 div.cdk-overlay-pane .rs-tech-panel .mdc-list-item__primary-text {
-  color: #0f172a !important;
+  color: var(--rs-text-main) !important;
   font-size: 13px !important;
   font-weight: 600 !important;
 }
 
 .cdk-overlay-container .rs-tech-panel .mat-pseudo-checkbox,
 .cdk-overlay-container .mat-mdc-select-panel.rs-tech-panel .mat-pseudo-checkbox,
-div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
-  display: none !important;
-}
-
-/* respaldo extra por si el theme pisa el fondo */
-.cdk-overlay-pane .mat-mdc-select-panel {
-  background-color: #ffffff;
-}
-
-/* Animación de Inputs Global */
-.mat-mdc-form-field {
-  .mat-mdc-text-field-wrapper {
-    transition: all 0.2s ease-in-out !important;
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05) !important;
-      border-color: #94a3b8 !important;
-    }
-  }
-
-  &.mat-focused .mat-mdc-text-field-wrapper {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(18, 78, 89, 0.15) !important;
-  }
-}
-
-/* =========================================================
-   SNACKBAR PROFESIONAL Mensajes de error (Estilo Premium)
-   ========================================================= */
-.rs-snack--error .mdc-snackbar__surface {
-  background-color: #C62828 !important; /* Rojo profundo, elegante y no chillón */
-  border-radius: 6px !important; /* Bordes ligeramente redondeados, como en la imagen */
-  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.25) !important;
-  min-height: 48px !important;
-  padding-left: 12px !important;
-}
-
-.rs-snack--error .mdc-snackbar__label {
-  color: #ffffff !important;
-  font-weight: 500 !important;
-  font-size: 14px !important;
-  display: flex;
-  align-items: center;
-  padding: 0 !important;
-}
-
-/* El ícono de la "x" en un círculo */
-.rs-snack--error .mdc-snackbar__label::before {
-  content: 'cancel'; /* Ícono de Material Design que parece una X en un círculo */
-  font-family: 'Material Icons';
-  margin-right: 12px;
-  font-size: 20px;
-  color: #ffffff;
-}
-
-/* El botón de la derecha (Entendido/OK) */
-.rs-snack--error .mat-mdc-button .mdc-button__label {
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.5px;
-}
+div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox { display: none !important; }
+.cdk-overlay-pane .mat-mdc-select-panel { background-color: var(--rs-card); }
 
 /* =========================================================
    NUEVA VARIANTE DE BOTÓN: rs-btn-head-premiun
    ========================================================= */
 .mat-mdc-button, .mat-mdc-stroked-button {
-  /* Botón Premiun específico para el Header de Cliente */
   &.rs-btn-head-premiun {
-    border-radius: 999px !important; /* Totalmente redondeado (Pill) */
-    border: 1px solid rgba(0, 191, 245, 0.2) !important; /* Borde cian muy suave */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(0, 191, 245, 0.03) 100%) !important; /* Fondo degradado blanco-cian */
-    color: #081a4b !important; /* Texto Navy corporativo */
+    border-radius: 999px !important; 
+    border: 1px solid rgba(0, 191, 245, 0.2) !important; 
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(0, 191, 245, 0.03) 100%) !important; 
+    color: var(--rs-text-navy) !important; 
     font-weight: 700 !important;
     font-size: 11.5px !important;
     transition: all 0.2s ease;
     
-    .mat-icon {
-      color: #00d1ff !important; /* Ícono cian brillante */
-      transition: color 0.2s ease;
-    }
+    .mat-icon { color: #00d1ff !important; transition: color 0.2s ease; }
     
-    /* Hover Premiun */
     &:hover:not(:disabled) {
       background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(0, 191, 245, 0.08) 100%) !important;
       border-color: rgba(0, 191, 245, 0.4) !important;
-      box-shadow: 0 6px 20px rgba(0, 191, 245, 0.12), 0 1px 2px rgba(15, 23, 42, 0.02) !important; /* Sombra corporativa */
-      
+      box-shadow: 0 6px 20px rgba(0, 191, 245, 0.12), 0 1px 2px rgba(15, 23, 42, 0.02) !important; 
       .mat-icon { color: #00bff5 !important; }
     }
     
-    /* Active/Pressed */
     &:active:not(:disabled) {
       transform: translateY(0);
       box-shadow: 0 4px 10px rgba(0, 191, 245, 0.1), 0 1px 1px rgba(15, 23, 42, 0.01) !important;
@@ -581,13 +472,13 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
 }
 
 /* =========================================================
-   ALERTAS GLOBALES (TOASTS) - PAMBYTE
+   ALERTAS GLOBALES (TOASTS) - PAMBYTE (CORREGIDO ICONOS DINAMICOS)
    ========================================================= */
 .mat-mdc-snack-bar-container {
-  &.rs-toast-info .mdc-snackbar__surface { background-color: #4a8df8 !important; }
-  &.rs-toast-success .mdc-snackbar__surface { background-color: #2ecc71 !important; }
-  &.rs-toast-warning .mdc-snackbar__surface { background-color: #f3b15b !important; }
-  &.rs-toast-error .mdc-snackbar__surface { background-color: #fb5867 !important; }
+  &.rs-toast-info .mdc-snackbar__surface { background-color: var(--rs-info) !important; }
+  &.rs-toast-success .mdc-snackbar__surface { background-color: var(--rs-success) !important; }
+  &.rs-toast-warning .mdc-snackbar__surface { background-color: var(--rs-warning) !important; }
+  &.rs-toast-error .mdc-snackbar__surface { background-color: var(--rs-error) !important; }
 
   .mdc-snackbar__surface {
     border-radius: 6px !important;
@@ -606,7 +497,6 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
     padding: 0 !important;
     
     &::before {
-      content: '\e5cd'; /* Código Material Icon para 'close' / cruz */
       font-family: 'Material Icons';
       margin-right: 12px;
       font-size: 18px;
@@ -614,10 +504,16 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
       font-weight: bold;
     }
   }
+
+  /* Asignamos el icono correcto según el tipo de alerta */
+  &.rs-toast-success .mdc-snackbar__label::before { content: 'check_circle'; } 
+  &.rs-toast-error .mdc-snackbar__label::before { content: 'cancel'; } 
+  &.rs-toast-warning .mdc-snackbar__label::before { content: 'warning'; }
+  &.rs-toast-info .mdc-snackbar__label::before { content: 'info'; }
 }
 
 /* =========================================================
-   SISTEMA DE ANIMACIONES GLOBALES (Para que mis páginas entren suave)
+   SISTEMA DE ANIMACIONES GLOBALES
    ========================================================= */
 @keyframes rsFadeUpGlobal {
   from { opacity: 0; transform: translateY(14px); }
@@ -647,7 +543,7 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
   display: inline-flex; align-items: center; justify-content: center;
 }
 
-/* Mi botón primario (El que llama a la acción, con gradiente y shimmer) */
+/* Mi botón primario */
 .rs-btn--primary {
   position: relative; overflow: hidden; isolation: isolate; color: #ffffff !important;
   background: linear-gradient(135deg, #081a4b 0%, #00bff5 100%) !important;
@@ -670,14 +566,14 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
   }
 }
 
-/* Mis botones secundarios (Blancos, pero al pasar el mouse se iluminan en azul corporativo) */
+/* Mis botones secundarios */
 .rs-btn-secondary { 
   height: var(--rs-density-btn-h) !important;
   border-radius: var(--rs-density-radius) !important; 
   font-weight: 600 !important; 
-  border: 1px solid #e2e8f0 !important;
-  color: #0f172a !important; 
-  background-color: #ffffff !important; 
+  border: 1px solid var(--rs-border) !important;
+  color: var(--rs-text-main) !important; 
+  background-color: var(--rs-card) !important; 
   padding: 0 24px !important; display: inline-flex; align-items: center; gap: 8px;
   transition: all 0.2s ease !important;
 
@@ -688,3 +584,51 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox {
     transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13, 39, 109, 0.08) !important;
   }
 }
+
+/* =========================================================
+   MATERIAL OVERRIDES (Fix Calendario por encima de todo)
+========================================================= */
+.cdk-overlay-container {
+  z-index: 9999 !important; 
+}
+
+.mat-datepicker-content {
+  background-color: var(--rs-card) !important;
+  border: 1px solid var(--rs-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
+  
+  .mat-calendar-table-header, .mat-calendar-body-cell-content {
+    color: var(--rs-text-main) !important;
+  }
+  .mat-calendar-arrow { fill: var(--rs-text-main) !important; }
+}
+
+/* 🌙 DARK MODE SKELETON (Midnight Blue / SaaS Enterprise) */
+
+.dark-theme {
+
+  /* Fondos Profundos que combinan con tu Sidebar */
+  --rs-bg: #0f1523;       /* Fondo de la página (Más oscuro) */
+  --rs-card: #151f32;     /* Fondo de las tarjetas (Ligeramente más claro para que resalten) */
+
+  /* Textos */
+  --rs-text-main: #94a3b8; /* Texto base (Gris azulado claro, no blanco puro para no cansar la vista) */
+  --rs-text-navy: #ffffff; /* Títulos (Blanco puro para contraste) */
+
+  /* Bordes y Cajas */
+  --rs-border: #1e293b;    /* Bordes sutiles para separar tarjetas */
+  --rs-navy-box: #1e293b;  /* Cajas como la de "Falla Reportada" */
+ 
+  /* Colores de Acento (El cian brilla más en la oscuridad) */
+  --rs-primary: #00d1ff; 
+  --rs-navy-text: #00d1ff; 
+
+  /* Sombras adaptadas a fondos oscuros */
+  --rs-shadow-md: 0 10px 20px rgba(0, 0, 0, 0.4);
+  --rs-shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+}
+
+
+

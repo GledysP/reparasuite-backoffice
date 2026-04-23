@@ -7,7 +7,7 @@
       </p>
     </div>
 
-    <button mat-stroked-button type="button" class="rs-btn-secondary rs-btn-secondary--top" (click)="cancelar()" [disabled]="guardando">
+    <button mat-stroked-button type="button" class="rs-btn-secondary" (click)="cancelar()">
       <mat-icon>arrow_back</mat-icon>
       <span>Volver</span>
     </button>
@@ -19,7 +19,6 @@
       <div class="rs-row-aligned rs-col-12">
         
         <mat-card class="rs-card rs-col-8">
-          <div class="rs-card-accent"></div>
           <div class="rs-card-head">
             <div class="rs-section-title-group">
               <div class="rs-icon-square rs-icon-square--small"><mat-icon>person</mat-icon></div>
@@ -60,7 +59,7 @@
         </mat-card>
 
         <mat-card class="rs-card rs-col-4">
-          <div class="rs-card-accent"></div>
+          
           <div class="rs-card-head">
             <div class="rs-section-title-group">
               <div class="rs-icon-square rs-icon-square--small"><mat-icon>local_shipping</mat-icon></div>
@@ -122,7 +121,7 @@
       <div class="rs-row-aligned rs-col-12">
         
         <mat-card class="rs-card rs-col-8">
-          <div class="rs-card-accent"></div>
+          
           <div class="rs-card-head">
             <div class="rs-section-title-group">
               <div class="rs-icon-square rs-icon-square--small"><mat-icon>build</mat-icon></div>
@@ -176,12 +175,18 @@
               </mat-form-field>
             </div>
 
-            <div class="rs-field rs-col-6">
-              <label class="rs-field-label">Falla reportada</label>
-              <mat-form-field appearance="outline">
-                <input matInput formControlName="fallaReportada" placeholder="Ej.: no enciende" />
-              </mat-form-field>
+<div class="rs-field rs-col-6">
+              <div class="rs-fault-box">
+                <div class="rs-fault-header">
+                  <mat-icon>report_problem</mat-icon>
+                  <span>FALLA REPORTADA</span>
+                </div>
+                <mat-form-field appearance="outline">
+                  <input matInput formControlName="fallaReportada" placeholder="Ej.: no enciende" />
+                </mat-form-field>
+              </div>
             </div>
+
             <div class="rs-field rs-col-6">
               <label class="rs-field-label">Observaciones del cliente</label>
               <mat-form-field appearance="outline" class="rs-textarea-field">
@@ -192,7 +197,7 @@
         </mat-card>
 
         <mat-card class="rs-card rs-col-4">
-          <div class="rs-card-accent"></div>
+          
           <div class="rs-card-head rs-card-head--tight">
              <div class="rs-section-title-group">
               <div class="rs-icon-square rs-icon-square--small"><mat-icon>assignment_ind</mat-icon></div>
@@ -230,7 +235,7 @@
       </div>
 
       <mat-card class="rs-card rs-col-12">
-        <div class="rs-card-accent"></div>
+       
         <div class="rs-card-head" style="margin-bottom: 12px;">
           <div class="rs-section-title-group">
             <div class="rs-icon-square rs-icon-square--small"><mat-icon>cloud_upload</mat-icon></div>

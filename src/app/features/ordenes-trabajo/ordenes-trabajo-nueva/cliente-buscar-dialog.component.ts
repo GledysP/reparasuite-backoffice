@@ -17,37 +17,62 @@ import { ClienteResumen } from '../../../core/models/tipos';
     NgFor, ReactiveFormsModule, MatDialogModule, 
     MatFormFieldModule, MatInputModule, MatButtonModule, MatListModule, MatIconModule
   ],
-  template: `
-    <h2 mat-dialog-title style="font-weight: 700; font-size: 18px;">Find Existing Customer</h2>
-    <mat-dialog-content>
-      <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
-        Search by name, phone, or email
-      </p>
-      
-      <mat-form-field appearance="outline" class="rs-full" style="width: 100%;">
-        <input matInput [formControl]="searchControl" placeholder="Type here..." autofocus>
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
+template: `
+    <div class="rs-modal-frame">
+      <div class="rs-modal-header">
+        <h2 class="rs-modal-title">Buscar Cliente Existente</h2>
+        <p class="rs-modal-subtitle">Filtra por nombre, teléfono o correo electrónico</p>
+      </div>
 
-      <mat-selection-list [multiple]="false" (selectionChange)="seleccionar($event.options[0].value)" 
-                          style="max-height: 250px; overflow-y: auto;">
-        <mat-list-option *ngFor="let c of resultados" [value]="c">
-          <div style="display:flex; flex-direction:column; padding: 4px 0;">
-            <span style="font-weight: 600; color: #1e293b;">{{ c.nombre }}</span>
-            <span style="font-size: 12px; color: #64748b;">{{ c.telefono }} • {{ c.email }}</span>
+      <mat-dialog-content class="rs-modal-body">
+        <mat-form-field appearance="outline" class="rs-search-input">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput [formControl]="searchControl" placeholder="Escribe para buscar..." autofocus>
+        </mat-form-field>
+
+        @if (resultados.length > 0) {
+          <div class="rs-results-list">
+            <mat-selection-list [multiple]="false" (selectionChange)="seleccionar($event.options[0].value)">
+              <mat-list-option *ngFor="let c of resultados" [value]="c">
+                <div class="rs-client-row">
+                  <span class="name">{{ c.nombre }}</span>
+                  <span class="meta">{{ c.telefono }} • {{ c.email }}</span>
+                </div>
+              </mat-list-option>
+            </mat-selection-list>
           </div>
-        </mat-list-option>
-      </mat-selection-list>
-    </mat-dialog-content>
-    
-    <mat-dialog-actions align="end" style="padding: 16px 24px;">
-      <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-raised-button class="rs-btn-petroleo" [disabled]="!clienteSeleccionado" (click)="confirmar()">
-        Select
-      </button>
-    </mat-dialog-actions>
-  `
+        }
+      </mat-dialog-content>
+      
+      <mat-dialog-actions class="rs-modal-actions">
+        <button mat-stroked-button mat-dialog-close class="rs-btn-secondary">
+          Cancelar
+        </button>
+        <button mat-flat-button class="rs-btn--primary" (click)="confirmar()">
+          <span class="rs-btn__label">Seleccionar Cliente</span>
+        </button>
+      </mat-dialog-actions>
+    </div>
+  `,
+  styles: [`
+    .rs-modal-frame { background: var(--rs-card); border-radius: 16px; overflow: hidden; }
+    .rs-modal-header { padding: 32px 32px 8px; } /* Alineación exacta con el input */
+    .rs-modal-title { margin: 0; font-weight: 700; font-size: 22px; color: var(--rs-text-navy); }
+    .rs-modal-subtitle { margin: 6px 0 0; font-size: 14px; color: var(--rs-text-muted); }
+    .rs-modal-body { padding: 16px 32px 24px !important; }
+    .rs-search-input { width: 100%; }
+    .rs-results-list { 
+      margin-top: 12px; max-height: 200px; overflow-y: auto; 
+      border: 1px solid var(--rs-border); border-radius: 12px;
+    }
+    .rs-client-row { display: flex; flex-direction: column; padding: 4px 0; }
+    .rs-client-row .name { font-weight: 600; color: var(--rs-text-navy); }
+    .rs-client-row .meta { font-size: 12px; color: var(--rs-text-muted); }
+    .rs-modal-actions { padding: 16px 32px 24px !important; gap: 12px; justify-content: flex-end; }
+  `]
 })
+
+
 export class ClienteBuscarDialogComponent {
   private dialogRef = inject(MatDialogRef<ClienteBuscarDialogComponent>);
   private clientesService = inject(ClientesService);

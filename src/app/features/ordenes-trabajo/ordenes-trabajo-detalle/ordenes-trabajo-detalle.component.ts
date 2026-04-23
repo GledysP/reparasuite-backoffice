@@ -633,6 +633,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.toast('Cita programada', 'success');
+          this.editCita.set(false);
           this.cargar();
         },
         error: () => this.toast('Error al programar cita', 'error'),
@@ -660,6 +661,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.toast('Cita reprogramada', 'success');
+          this.editCita.set(false);
           this.cargar();
         },
         error: () => this.toast('Error al reprogramar cita', 'error'),
