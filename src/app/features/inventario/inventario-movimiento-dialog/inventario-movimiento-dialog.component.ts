@@ -148,7 +148,8 @@ type TipoMovimiento =
     :host {
       display: block;
       font-family: Inter, Roboto, 'Helvetica Neue', sans-serif;
-      color: #0f172a;
+      background: transparent !important;
+      color: var(--rs-text-main);
     }
 
     @keyframes rsShimmer {
@@ -163,7 +164,7 @@ type TipoMovimiento =
     .rs-movement-dialog {
       display: block;
       padding: 12px 12px 10px;
-      background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+      background: var(--rs-card) !important;
       border-radius: 22px;
     }
 
@@ -178,14 +179,14 @@ type TipoMovimiento =
       line-height: 1.08;
       font-weight: 650;
       letter-spacing: -0.03em;
-      color: #0f172a;
+      color: var(--rs-text-navy);
     }
 
     .rs-movement-dialog__subtitle {
       margin: 8px 0 0;
       font-size: 13px;
       line-height: 1.5;
-      color: #64748b;
+      color: var(--rs-text-muted);
     }
 
     .rs-movement-dialog__form {
@@ -239,9 +240,9 @@ type TipoMovimiento =
     }
 
     .rs-btn--ghost {
-      border: 1px solid rgba(15, 23, 42, 0.08) !important;
-      background: rgba(255, 255, 255, 0.98) !important;
-      color: #081a4b !important;
+      border: 1px solid var(--rs-border) !important;
+      background: var(--rs-card) !important;
+      color: var(--rs-text-navy) !important;
       box-shadow: none !important;
       transition:
         transform 160ms ease,
@@ -251,8 +252,8 @@ type TipoMovimiento =
 
     .rs-btn--ghost:hover:not(:disabled) {
       transform: translateY(-1px);
-      border-color: rgba(0, 209, 255, 0.18) !important;
-      background: #fff !important;
+      border-color: var(--rs-border) !important;
+      background: rgba(0, 191, 245, 0.05) !important;
     }
 
     .rs-btn--primary {
@@ -260,7 +261,7 @@ type TipoMovimiento =
       overflow: hidden;
       isolation: isolate;
       color: #ffffff !important;
-      background: linear-gradient(135deg, #081a4b 0%, #00bff5 100%) !important;
+      background: linear-gradient(135deg, var(--rs-primary-dark) 0%, var(--rs-primary) 100%) !important;
       box-shadow:
         0 14px 30px rgba(0, 122, 255, 0.16),
         0 0 28px rgba(0, 209, 255, 0.14) !important;
@@ -327,7 +328,7 @@ type TipoMovimiento =
     }
 
     :host ::ng-deep .mdc-text-field--outlined {
-      background: #fbfcff;
+      background: var(--rs-card) !important;
       border-radius: 18px !important;
     }
 
@@ -339,19 +340,19 @@ type TipoMovimiento =
     :host ::ng-deep .mdc-notched-outline__leading,
     :host ::ng-deep .mdc-notched-outline__notch,
     :host ::ng-deep .mdc-notched-outline__trailing {
-      border-color: rgba(15, 23, 42, 0.10) !important;
+      border-color: var(--rs-border) !important;
     }
 
     :host ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__leading,
     :host ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__notch,
     :host ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
-      border-color: rgba(15, 23, 42, 0.16) !important;
+      border-color: var(--rs-border) !important;
     }
 
     :host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
     :host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
     :host ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-      border-color: rgba(0, 191, 245, 0.72) !important;
+      border-color: var(--rs-primary) !important;
       border-width: 1.5px !important;
     }
 
@@ -370,18 +371,18 @@ type TipoMovimiento =
     :host ::ng-deep .mat-mdc-input-element,
     :host ::ng-deep .mat-mdc-select-value {
       font-size: 14px !important;
-      color: #0f172a !important;
+      color: var(--rs-text-main) !important;
       font-weight: 500 !important;
       opacity: 1 !important;
-      caret-color: #081a4b !important;
+      caret-color: var(--rs-primary) !important;
     }
 
     :host ::ng-deep .mat-mdc-select-arrow {
-      color: #64748b;
+      color: var(--rs-text-muted);
     }
 
     :host ::ng-deep .mdc-floating-label {
-      color: #64748b !important;
+      color: var(--rs-text-muted) !important;
       font-size: 12.5px !important;
       font-weight: 500 !important;
     }

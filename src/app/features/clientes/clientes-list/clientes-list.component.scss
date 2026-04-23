@@ -19,7 +19,6 @@ $rs-shadow-cta:
 
 :host {
   display: block;
-  background: #ffffff;
 }
 
 .rs-page-container.rs-clientes-page {
@@ -85,7 +84,7 @@ $rs-shadow-cta:
 
 .rs-page-title {
   margin: 0;
-  color: #081a4b;
+  color: var(--rs-text-navy);
   font-size: clamp(1.85rem, 2vw, 2.35rem);
   font-weight: 700;
   line-height: 1;
@@ -148,7 +147,7 @@ $rs-shadow-cta:
   overflow: hidden;
   isolation: isolate;
   color: #ffffff !important;
-  background: linear-gradient(135deg, #081a4b 0%, #00bff5 100%) !important;
+  background: linear-gradient(135deg, var(--rs-primary-dark) 0%, var(--rs-primary) 100%) !important;
   box-shadow: $rs-shadow-cta !important;
   transition:
     transform 160ms ease,
@@ -251,7 +250,7 @@ $rs-shadow-cta:
   height: 40px !important;
   padding: 0 14px !important;
   border-radius: 15px !important;
-  background: #ffffff !important;
+  background: var(--rs-card) !important;
   color: $rs-whatsapp !important;
   border: 1px solid rgba(37, 211, 102, 0.18) !important;
   font-weight: 800 !important;
@@ -311,8 +310,8 @@ $rs-shadow-cta:
 .rs-client-card,
 .rs-mobile-paginator-card,
 .rs-empty-mobile-card {
-  background: $rs-glass !important;
-  border: 1px solid $rs-border-soft !important;
+  background: var(--rs-card) !important;
+  border: 1px solid var(--rs-border) !important;
   border-radius: 24px !important;
   box-shadow: $rs-shadow !important;
   backdrop-filter: blur(10px);
@@ -370,8 +369,8 @@ $rs-shadow-cta:
   height: 38px !important;
   padding: 0 14px !important;
   border-radius: 13px !important;
-  border: 1px solid $rs-border !important;
-  background: #fff !important;
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
   color: #0891b2 !important;
   font-weight: 800 !important;
   min-width: 110px;
@@ -414,8 +413,8 @@ $rs-shadow-cta:
   .mat-mdc-form-field .mat-mdc-text-field-wrapper {
     min-height: 38px !important;
     border-radius: 13px !important;
-    border: 1px solid rgba(15, 23, 42, 0.10) !important;
-    background-color: rgba(255, 255, 255, 0.90) !important;
+    border: 1px solid var(--rs-border) !important;
+    background-color: var(--rs-card) !important;
     box-shadow: none !important;
     transition:
       border-color 160ms ease,
@@ -508,20 +507,20 @@ $rs-shadow-cta:
   th.mat-mdc-header-cell {
     height: 44px;
     padding: 0 14px !important;
-    border-bottom: 1px solid $rs-border-soft !important;
+    border-bottom: 1px solid var(--rs-border) !important;
     font-size: 10px;
     font-weight: 800 !important;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: $rs-label;
-    background: rgba(255, 255, 255, 0.82);
+    background: var(--rs-card);
   }
 
   td.mat-mdc-cell {
     padding: 0 14px !important;
     height: 48px;
-    border-bottom: 1px solid $rs-border-soft !important;
-    color: $rs-text;
+    border-bottom: 1px solid var(--rs-border) !important;
+    color: var(--rs-text-navy);
     font-size: 13px;
     background: transparent;
     transition: background-color 180ms ease;
@@ -561,8 +560,8 @@ $rs-shadow-cta:
   display: grid;
   place-items: center;
   border: 0.5px solid rgba(0, 209, 255, 0.16);
-  background: rgba(255, 255, 255, 0.72);
-  color: $rs-primary-dark;
+  background: var(--rs-card);
+  color: var(--rs-text-navy);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -585,7 +584,7 @@ $rs-shadow-cta:
 
   &[data-tone='navy'] {
     background: rgba(8, 26, 75, 0.08);
-    color: $rs-primary-dark;
+    color: var(--rs-text-navy);
   }
 }
 
@@ -595,7 +594,7 @@ $rs-shadow-cta:
 
 .rs-client-name {
   font-weight: 700;
-  color: $rs-text;
+  color: var(--rs-text-navy);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -617,9 +616,9 @@ $rs-shadow-cta:
   height: 28px;
   padding: 0 10px;
   border-radius: 999px;
-  border: 0.5px solid rgba(8, 26, 75, 0.10);
+  border: 0.5px solid var(--rs-border);
   background: rgba(8, 26, 75, 0.06);
-  color: #081a4b;
+  color: var(--rs-text-navy);
   font-size: 12px;
   font-weight: 800;
 }
@@ -677,11 +676,11 @@ $rs-shadow-cta:
 }
 
 .rs-btn-action--edit:hover {
-  border-color: rgba(8, 26, 75, 0.14) !important;
+  border-color: var(--rs-border) !important;
   box-shadow: 0 10px 18px rgba(8, 26, 75, 0.05);
 
   mat-icon {
-    color: $rs-primary-dark !important;
+    color: var(--rs-text-navy) !important;
   }
 }
 
@@ -696,7 +695,7 @@ $rs-shadow-cta:
 }
 
 .rs-paginator {
-  border-top: 1px solid $rs-border-soft;
+  border-top: 1px solid var(--rs-border);
   background: transparent;
 }
 
@@ -712,7 +711,7 @@ $rs-shadow-cta:
 :host ::ng-deep .rs-paginator .mat-mdc-paginator-page-size-label,
 :host ::ng-deep .rs-paginator .mat-mdc-paginator-range-label {
   font-size: 12px !important;
-  color: $rs-text !important;
+  color: var(--rs-text-navy) !important;
 }
 
 :host ::ng-deep .rs-paginator .mat-mdc-form-field {
@@ -722,8 +721,8 @@ $rs-shadow-cta:
 :host ::ng-deep .rs-paginator .mat-mdc-form-field .mat-mdc-text-field-wrapper {
   min-height: 34px !important;
   border-radius: 12px !important;
-  background: rgba(255, 255, 255, 0.92) !important;
-  border: 1px solid rgba(15, 23, 42, 0.10) !important;
+  background: var(--rs-card) !important;
+  border: 1px solid var(--rs-border) !important;
   box-shadow: none !important;
 }
 
@@ -754,7 +753,7 @@ $rs-shadow-cta:
 
   h3 {
     margin: 0 0 6px;
-    color: $rs-text;
+    color: var(--rs-text-navy);
     font-size: 16px;
     font-weight: 800;
   }
@@ -812,8 +811,8 @@ $rs-shadow-cta:
   padding: 5px 10px;
   border-radius: 999px;
   background: rgba(8, 26, 75, 0.06);
-  color: #081a4b;
-  border: 0.5px solid rgba(8, 26, 75, 0.10);
+  color: var(--rs-text-navy);
+  border: 0.5px solid var(--rs-border);
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;

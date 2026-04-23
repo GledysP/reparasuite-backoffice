@@ -1,47 +1,3 @@
-$blue-deep-1: #081a4b;
-$blue-deep-2: #0a1f5c;
-$blue-deep-3: #0d276d;
-$blue-neon: #00d1ff;
-$blue-neon-soft: #67e8f9;
-$blue-action: #0891b2;
-
-$text-primary: #0f172a;
-$text-secondary: #64748b;
-$text-label: #94a3b8;
-
-$bg-page: #ffffff;
-$bg-card: #ffffff;
-$bg-subtle: #f8fbff;
-$bg-soft: #f8fafc;
-
-$border-soft: rgba(15, 23, 42, 0.06);
-$border-medium: rgba(15, 23, 42, 0.10);
-$divider: rgba(15, 23, 42, 0.05);
-
-$focus-gray: #9ca3af;
-$hover-border: rgba(15, 23, 42, 0.14);
-
-$shadow-card:
-  0 20px 60px rgba(8, 26, 75, 0.035),
-  0 8px 24px rgba(0, 209, 255, 0.03);
-
-$shadow-soft:
-  0 16px 38px rgba(15, 23, 42, 0.06);
-
-$shadow-focus:
-  0 0 0 3px rgba(103, 232, 249, 0.12);
-
-$shadow-panel:
-  0 0 0 1px rgba(0, 209, 255, 0.10),
-  0 18px 42px rgba(8, 26, 75, 0.10),
-  0 4px 18px rgba(0, 209, 255, 0.06);
-
-$radius-card: 24px;
-$radius-field: 18px;
-$radius-panel: 10px;
-$radius-btn: 12px;
-$radius-pill: 999px;
-
 @keyframes rsFadeUp {
   from {
     opacity: 0;
@@ -56,14 +12,14 @@ $radius-pill: 999px;
 
 :host {
   display: block;
-  background: $bg-page;
+  background: transparent !important;
 }
 
 .rs-main-container {
   width: 100%;
   min-height: 100%;
   padding: 28px 28px 100px;
-  background: $bg-page;
+  background: transparent !important;
 }
 
 .rs-shell {
@@ -85,7 +41,7 @@ $radius-pill: 999px;
 
 .rs-page-title {
   margin: 0;
-  color: $text-primary;
+  color: var(--rs-text-navy);
   font-size: clamp(28px, 2.2vw, 36px);
   line-height: 1.02;
   font-weight: 800;
@@ -94,7 +50,7 @@ $radius-pill: 999px;
 
 .rs-page-subtitle {
   margin: 8px 0 0;
-  color: $text-secondary;
+  color: var(--rs-text-muted);
   font-size: 13.5px;
   line-height: 1.5;
   max-width: 720px;
@@ -124,10 +80,10 @@ $radius-pill: 999px;
 
 .rs-form-card,
 .rs-side-card {
-  background: $bg-card !important;
-  border: 1px solid $border-soft !important;
-  border-radius: $radius-card !important;
-  box-shadow: $shadow-card !important;
+  background: var(--rs-card) !important;
+  border: 1px solid var(--rs-border) !important;
+  border-radius: 24px !important;
+  box-shadow: var(--rs-shadow-md) !important;
   opacity: 0;
   animation: rsFadeUp 0.3s ease forwards;
 }
@@ -173,7 +129,7 @@ $radius-pill: 999px;
 }
 
 .rs-group-eyebrow {
-  color: $text-label;
+  color: var(--rs-text-muted);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -182,7 +138,7 @@ $radius-pill: 999px;
 
 .rs-group-title {
   margin: 0;
-  color: $text-primary;
+  color: var(--rs-text-navy);
   font-size: 14px;
   line-height: 1.2;
   font-weight: 700;
@@ -192,7 +148,7 @@ $radius-pill: 999px;
 .rs-group-line {
   flex: 1;
   height: 0;
-  border-bottom: 0.5px solid $divider;
+  border-bottom: 1px solid var(--rs-border) !important;
 }
 
 .rs-grid {
@@ -214,7 +170,7 @@ $radius-pill: 999px;
 .rs-field-label {
   display: inline-block;
   margin: 0 0 7px 8px;
-  color: $text-label;
+  color: var(--rs-text-muted);
   font-size: 11px;
   line-height: 1.1;
   font-weight: 600;
@@ -222,14 +178,14 @@ $radius-pill: 999px;
 }
 
 .rs-option-main {
-  color: $text-primary;
+  color: var(--rs-text-main);
   font-size: 12.5px;
   font-weight: 600;
 }
 
 .rs-option-sub {
   margin-top: 2px;
-  color: $text-secondary;
+  color: var(--rs-text-muted);
   font-size: 10.5px;
 }
 
@@ -239,9 +195,9 @@ $radius-pill: 999px;
   justify-content: space-between;
   gap: 16px;
   padding: 16px 18px;
-  border: 1px dashed rgba(15, 23, 42, 0.16);
+  border: 1px dashed var(--rs-border) !important;
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--rs-card) !important;
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease,
@@ -255,11 +211,9 @@ $radius-pill: 999px;
 }
 
 .rs-upload-dropzone.is-dragging {
-  border-color: rgba(0, 209, 255, 0.8);
-  background: linear-gradient(180deg, rgba(0, 209, 255, 0.03), rgba(103, 232, 249, 0.04));
-  box-shadow:
-    0 0 0 3px rgba(103, 232, 249, 0.12),
-    0 16px 36px rgba(8, 26, 75, 0.05);
+  border-color: rgba(0, 191, 245, 0.5) !important;
+  background: rgba(0, 191, 245, 0.05) !important;
+  box-shadow: none !important;
 }
 
 .rs-upload-left {
@@ -275,15 +229,14 @@ $radius-pill: 999px;
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(0, 209, 255, 0.05));
-  border: 1px solid rgba(0, 209, 255, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: var(--rs-card) !important;
+  border: 1px solid var(--rs-border) !important;
 
   .mat-icon {
     width: 18px;
     height: 18px;
     font-size: 18px;
-    color: rgba(8, 145, 178, 0.80);
+    color: var(--rs-primary);
   }
 }
 
@@ -292,7 +245,7 @@ $radius-pill: 999px;
 }
 
 .rs-upload-title {
-  color: $text-primary;
+  color: var(--rs-text-main);
   font-size: 13px;
   line-height: 1.2;
   font-weight: 700;
@@ -300,14 +253,14 @@ $radius-pill: 999px;
 
 .rs-upload-subtitle {
   margin-top: 3px;
-  color: $text-secondary;
+  color: var(--rs-text-muted);
   font-size: 11.5px;
   line-height: 1.45;
 }
 
 .rs-upload-meta {
   margin-top: 4px;
-  color: $text-label;
+  color: var(--rs-text-muted);
   font-size: 10.5px;
   line-height: 1.3;
 }
@@ -323,9 +276,9 @@ $radius-pill: 999px;
   min-height: 38px;
   padding: 0 16px;
   border-radius: 12px;
-  border: 1px solid $border-medium;
-  background: #ffffff;
-  color: $text-primary;
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
+  color: var(--rs-text-main);
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
@@ -342,8 +295,8 @@ $radius-pill: 999px;
 .rs-files-wrap {
   margin-top: 14px;
   border-radius: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.05);
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
   padding: 14px;
 }
 
@@ -356,7 +309,7 @@ $radius-pill: 999px;
 }
 
 .rs-files-title {
-  color: $text-primary;
+  color: var(--rs-text-main);
   font-size: 12px;
   font-weight: 700;
 }
@@ -364,7 +317,7 @@ $radius-pill: 999px;
 .rs-files-clear {
   min-width: auto !important;
   padding: 0 8px !important;
-  color: $text-secondary !important;
+  color: var(--rs-text-muted) !important;
   font-weight: 700 !important;
 }
 
@@ -381,8 +334,8 @@ $radius-pill: 999px;
   min-width: 0;
   padding: 10px 10px 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.05);
-  background: #ffffff;
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
   transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
@@ -397,8 +350,8 @@ $radius-pill: 999px;
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: rgba(0, 209, 255, 0.06);
-  color: $blue-action;
+  background: rgba(0, 191, 245, 0.05);
+  color: var(--rs-primary);
   flex-shrink: 0;
 
   .mat-icon {
@@ -414,7 +367,7 @@ $radius-pill: 999px;
 }
 
 .rs-file-name {
-  color: $text-primary;
+  color: var(--rs-text-main);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.2;
@@ -425,14 +378,14 @@ $radius-pill: 999px;
 
 .rs-file-meta {
   margin-top: 3px;
-  color: $text-secondary;
+  color: var(--rs-text-muted);
   font-size: 10.5px;
 }
 
 .rs-file-remove {
   width: 32px !important;
   height: 32px !important;
-  color: $text-secondary !important;
+  color: var(--rs-text-muted) !important;
   flex-shrink: 0;
 }
 
@@ -453,22 +406,22 @@ $radius-pill: 999px;
   min-width: 112px;
   height: 42px;
   border-radius: 12px !important;
-  border-color: rgba(15, 23, 42, 0.10) !important;
-  background: #ffffff !important;
-  color: $text-secondary !important;
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
+  color: var(--rs-text-muted) !important;
   font-weight: 700 !important;
 }
 
 .btn-cancel:hover {
-  background: rgba(15, 23, 42, 0.02) !important;
-  border-color: rgba(15, 23, 42, 0.14) !important;
+  background: rgba(0, 191, 245, 0.05) !important;
+  border-color: var(--rs-border) !important;
 }
 
 .rs-btn-primary {
   min-width: 164px;
   height: 44px;
   border-radius: 12px !important;
-  background: linear-gradient(135deg, #081a4b 0%, #0d276d 55%, #0891b2 100%) !important;
+  background: linear-gradient(135deg, var(--rs-primary-dark) 0%, var(--rs-primary) 100%) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
   letter-spacing: -0.01em;
@@ -487,7 +440,7 @@ $radius-pill: 999px;
 }
 
 .rs-side-eyebrow {
-  color: $blue-action;
+  color: var(--rs-primary);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -496,7 +449,7 @@ $radius-pill: 999px;
 
 .rs-side-title {
   margin: 8px 0 8px;
-  color: $text-primary;
+  color: var(--rs-text-navy);
   font-size: 20px;
   line-height: 1.08;
   font-weight: 700;
@@ -505,7 +458,7 @@ $radius-pill: 999px;
 
 .rs-side-text {
   margin: 0 0 14px;
-  color: $text-secondary;
+  color: var(--rs-text-muted);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -517,9 +470,9 @@ $radius-pill: 999px;
   min-height: 28px;
   padding: 0 12px;
   margin-bottom: 14px;
-  border-radius: $radius-pill;
+  border-radius: 999px;
   background: rgba(0, 209, 255, 0.08);
-  color: $blue-action;
+  color: var(--rs-primary);
   font-size: 11px;
   font-weight: 700;
 }
@@ -545,7 +498,7 @@ $radius-pill: 999px;
   flex: 1;
   height: 40px;
   border-radius: 12px !important;
-  background: linear-gradient(135deg, #081a4b 0%, #0d276d 100%) !important;
+  background: linear-gradient(135deg, var(--rs-primary-dark) 0%, var(--rs-primary) 100%) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
 
@@ -561,9 +514,9 @@ $radius-pill: 999px;
   width: 40px !important;
   height: 40px !important;
   border-radius: 12px !important;
-  border: 1px solid $border-medium !important;
-  background: #ffffff !important;
-  color: $text-secondary !important;
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
+  color: var(--rs-text-muted) !important;
 
   .mat-icon {
     width: 18px;
@@ -574,7 +527,7 @@ $radius-pill: 999px;
 
 .rs-side-note {
   margin-top: 12px;
-  color: $text-secondary;
+  color: var(--rs-text-muted);
   font-size: 11px;
   line-height: 1.45;
 }
@@ -592,7 +545,7 @@ $radius-pill: 999px;
 }
 
 .rs-summary-label {
-  color: $text-label;
+  color: var(--rs-text-muted);
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -600,7 +553,7 @@ $radius-pill: 999px;
 }
 
 .rs-summary-value {
-  color: $text-primary;
+  color: var(--rs-text-main);
   font-size: 12.5px;
   line-height: 1.35;
   font-weight: 600;
@@ -609,12 +562,12 @@ $radius-pill: 999px;
 
 .rs-summary-divider {
   height: 1px;
-  background: $divider;
+  background: var(--rs-border) !important;
   margin: 14px 0;
 }
 
 .rs-summary-tip {
-  color: $text-secondary;
+  color: var(--rs-text-muted);
   font-size: 11.5px;
   line-height: 1.5;
 }
@@ -629,9 +582,9 @@ $radius-pill: 999px;
   gap: 10px;
   padding: 10px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--rs-card) !important;
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--rs-border) !important;
   box-shadow: 0 20px 40px rgba(8, 26, 75, 0.10);
   z-index: 40;
 
@@ -654,7 +607,7 @@ $radius-pill: 999px;
 
   .mat-mdc-text-field-wrapper,
   .mdc-text-field--outlined {
-    background: #ffffff !important;
+    background: var(--rs-card) !important;
     border-radius: 18px !important;
     box-shadow: none !important;
   }
@@ -669,7 +622,7 @@ $radius-pill: 999px;
   .mdc-notched-outline__notch,
   .mdc-notched-outline__trailing {
     border-width: 1px !important;
-    border-color: rgba(15, 23, 42, 0.10) !important;
+    border-color: var(--rs-border) !important;
     transition: border-color 160ms ease, border-width 160ms ease;
   }
 
@@ -684,19 +637,19 @@ $radius-pill: 999px;
   .mat-mdc-form-field:hover .mdc-notched-outline__leading,
   .mat-mdc-form-field:hover .mdc-notched-outline__notch,
   .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
-    border-color: rgba(15, 23, 42, 0.16) !important;
+    border-color: var(--rs-border) !important;
   }
 
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-    border-color: #9ca3af !important;
+    border-color: var(--rs-primary) !important;
     border-width: 1.5px !important;
   }
 
   .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper,
   .mat-mdc-text-field-wrapper.mdc-text-field--focused {
-    box-shadow: $shadow-focus !important;
+    box-shadow: 0 0 0 3px rgba(103, 232, 249, 0.12) !important;
   }
 
   .mat-mdc-form-field-focus-overlay {
@@ -715,14 +668,14 @@ $radius-pill: 999px;
   .mat-mdc-select-value,
   .mat-mdc-input-element,
   .mat-mdc-select-min-line {
-    color: $text-primary !important;
+    color: var(--rs-text-main) !important;
     font-size: 13px !important;
     line-height: 1.2 !important;
   }
 
   .mat-mdc-input-element::placeholder,
   textarea.mat-mdc-input-element::placeholder {
-    color: $text-label !important;
+    color: var(--rs-text-muted) !important;
     opacity: 1;
   }
 
@@ -772,7 +725,7 @@ $radius-pill: 999px;
   }
 
   .mat-mdc-slide-toggle .mdc-label {
-    color: $text-secondary;
+    color: var(--rs-text-main);
     font-size: 12px;
     font-weight: 600;
   }
@@ -788,10 +741,10 @@ $radius-pill: 999px;
 
   .mat-mdc-autocomplete-panel,
   .mat-mdc-select-panel {
-    background: #ffffff !important;
+    background: var(--rs-card) !important;
     border-radius: 10px !important;
-    border: 1px solid rgba(0, 209, 255, 0.14) !important;
-    box-shadow: $shadow-panel !important;
+    border: 1px solid var(--rs-border) !important;
+    box-shadow: 0 18px 42px rgba(8, 26, 75, 0.10) !important;
     padding: 6px !important;
   }
 
@@ -799,17 +752,17 @@ $radius-pill: 999px;
     min-height: 40px !important;
     border-radius: 8px !important;
     font-size: 13px !important;
-    color: $text-primary !important;
+    color: var(--rs-text-main) !important;
   }
 
   .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
-    background: #f8fbff !important;
+    background: rgba(0, 191, 245, 0.05) !important;
   }
 
   .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled),
   .mat-mdc-option.mat-mdc-option-active,
   .mat-mdc-option.mdc-list-item--selected.mat-mdc-option-active {
-    background: #f3f4f6 !important;
+    background: rgba(0, 191, 245, 0.10) !important;
   }
 
   .mat-pseudo-checkbox {

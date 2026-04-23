@@ -18,7 +18,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .rs-shell {
   height: 100vh;
-  background: #ffffff;
+  background: transparent !important;
   --rs-sidebar-w: #{$rs-sidebar-full};
 }
 
@@ -28,7 +28,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 :host ::ng-deep {
   .mat-drawer-container {
-    background: #ffffff !important;
+    background: transparent !important;
   }
 
   .mat-drawer.rs-sidebar {
@@ -48,7 +48,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   .mat-drawer-content.rs-content {
     margin-left: var(--rs-sidebar-w) !important;
     transition: margin-left $rs-dur $rs-ease !important;
-    background: #ffffff !important;
+    background: transparent !important;
     min-width: 0;
   }
 
@@ -397,9 +397,9 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   align-items: center;
   gap: 10px;
   padding: 0 18px 0 12px;
-  background: rgba(255, 255, 255, 0.94) !important;
+  background: var(--rs-card) !important;
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.92);
+  border-bottom: 1px solid var(--rs-border) !important;
   overflow: visible;
 }
 
@@ -407,8 +407,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   width: 40px;
   height: 40px;
   border-radius: 14px !important;
-  border: 1px solid rgba(226, 232, 240, 0.92);
-  background: #ffffff !important;
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
   color: $rs-text !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -439,7 +439,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   content: '';
   width: 1px;
   height: 22px;
-  background: rgba(226, 232, 240, 0.92);
+  background: var(--rs-border) !important;
   position: absolute;
   right: -8px;
   top: 50%;
@@ -456,13 +456,13 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
   margin: 0 !important;
   min-width: 0;
   --mdc-outlined-text-field-container-shape: 14px;
-  --mdc-outlined-text-field-outline-color: rgba(226, 232, 240, 1);
+  --mdc-outlined-text-field-outline-color: var(--rs-border) !important;
   --mdc-outlined-text-field-hover-outline-color: rgba(0, 209, 255, 0.24);
   --mdc-outlined-text-field-focus-outline-color: #00d1ff;
   --mat-form-field-container-height: 38px;
 
   .mat-mdc-text-field-wrapper {
-    background: #ffffff;
+    background: var(--rs-card) !important;
     border-radius: 14px;
     transition: box-shadow 160ms ease, border-color 160ms ease;
   }
@@ -507,8 +507,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-cmdk-hint.mat-mdc-button {
   height: 40px;
   border-radius: 14px;
-  border: 1px solid rgba(226, 232, 240, 0.95);
-  background: #ffffff !important;
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
   padding: 0 12px;
   min-width: unset;
   --mdc-text-button-state-layer-color: transparent;
@@ -535,7 +535,7 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .rs-cmdk-hint:hover {
-  background: #ffffff !important;
+  background: var(--rs-card) !important;
   border-color: rgba(0, 209, 255, 0.16) !important;
   box-shadow:
     0 10px 18px rgba(15, 23, 42, 0.04),
@@ -623,8 +623,8 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-profile-chip {
   height: 40px;
   border-radius: 14px;
-  border: 1px solid rgba(226, 232, 240, 0.95);
-  background: #ffffff;
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
   padding: 0 10px;
   display: inline-flex;
   align-items: center;
@@ -696,18 +696,17 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .rs-main {
   min-height: calc(100vh - #{$rs-topbar-h});
-  background: #ffffff;
+  background: transparent !important;
 }
 
 :host ::ng-deep .rs-notif-menu .mat-mdc-menu-panel,
 :host ::ng-deep .rs-user-menu .mat-mdc-menu-panel {
   min-width: 360px !important;
   border-radius: 20px !important;
-  border: 1px solid rgba(15, 23, 42, 0.08) !important;
-  background: rgba(255, 255, 255, 0.97) !important;
+  border: 1px solid var(--rs-border) !important;
+  background: var(--rs-card) !important;
   box-shadow:
-    0 18px 34px rgba(15, 23, 42, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.66) inset !important;
+    0 18px 34px rgba(15, 23, 42, 0.08) !important;
   backdrop-filter: blur(14px);
   overflow: hidden;
 }
@@ -896,11 +895,9 @@ $rs-ease: cubic-bezier(0.4, 0, 0.2, 1);
 :host ::ng-deep .rs-cmdk-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 22px !important;
   overflow: hidden !important;
-  border: 1px solid rgba(15, 23, 42, 0.08) !important;
-  box-shadow:
-    0 24px 52px rgba(15, 23, 42, 0.12),
-    0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
-  background: rgba(255, 255, 255, 0.97) !important;
+  border: 1px solid var(--rs-border) !important;
+  box-shadow: 0 24px 52px rgba(15, 23, 42, 0.12) !important;
+  background: var(--rs-card) !important;
   backdrop-filter: blur(14px);
 }
 

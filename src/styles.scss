@@ -651,4 +651,9 @@ body.dark-theme, .dark-theme {
   .rs-title {
     color: var(--rs-text-navy) !important;
   }
+
+  /* FONDOS DE MODALES (Cajas maestras de Angular Material) */
+  .mat-mdc-dialog-container .mdc-dialog__surface {
+    background-color: var(--rs-card) !important;
+  }
 }

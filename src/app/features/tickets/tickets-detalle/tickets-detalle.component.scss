@@ -5,6 +5,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-ticket-page {
   width: 100%;
   padding: var(--rs-page-pad) !important;
+  background: transparent !important;
   padding-bottom: 40px !important;
   overflow-x: hidden;
   box-sizing: border-box;
@@ -73,8 +74,8 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-card {
   width: 100%;
   border-radius: 16px !important;
-  background: rgba(255, 255, 255, .96) !important;
-  border: 1px solid rgba(226, 232, 240, .95) !important;
+  background: var(--rs-card) !important;
+  border: 1px solid var(--rs-border) !important;
   box-shadow: 0 10px 26px rgba(15, 23, 42, .07) !important;
   overflow: hidden;
   transition: box-shadow 180ms $ease, border-color 180ms $ease;
@@ -204,10 +205,10 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .info-item {
-  border: 1px solid rgba(226, 232, 240, .95);
+  border: 1px solid var(--rs-border) !important;
   border-radius: 12px;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, .98);
+  background: var(--rs-card) !important;
   transition: border-color 180ms $ease, box-shadow 180ms $ease;
 
   &:hover {
@@ -238,7 +239,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   grid-template-columns: 34px 1fr;
   gap: 10px;
   border-radius: 14px;
-  border: 1px solid rgba(226, 232, 240, .95);
+  border: 1px solid var(--rs-border) !important;
   background: rgba(15, 23, 42, .015);
   padding: 10px;
   position: relative;
@@ -291,10 +292,10 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .photo-card {
   display: block;
-  border: 1px solid rgba(226, 232, 240, .95);
+  border: 1px solid var(--rs-border) !important;
   border-radius: 14px;
   overflow: hidden;
-  background: #fff;
+  background: var(--rs-card) !important;
   text-decoration: none;
   color: inherit;
 
@@ -303,7 +304,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
     height: 160px;
     object-fit: cover;
-    background: #f6f8fb;
+    background: var(--rs-card) !important;
   }
 
   .photo-name {
@@ -354,7 +355,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   width: min(920px, 100%);
   max-height: 90vh;
-  background: #fff;
+  background: var(--rs-card) !important;
   border-radius: 18px;
   padding: 16px;
   box-shadow: 0 18px 50px rgba(15, 23, 42, 0.22);
@@ -379,7 +380,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   height: 38px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--rs-card) !important;
   color: $rs-text;
   display: grid;
   place-items: center;
@@ -400,9 +401,9 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 750 !important;
   padding: 0 14px !important;
   height: 40px !important;
-  border-color: rgba(226, 232, 240, .95) !important;
+  border-color: var(--rs-border) !important;
   color: rgba(15, 23, 42, .86) !important;
-  background: rgba(255, 255, 255, .65) !important;
+  background: var(--rs-card) !important;
 }
 
 /* Acciones rápidas (compacto) */
