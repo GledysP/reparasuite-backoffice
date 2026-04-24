@@ -19,19 +19,6 @@
   color: var(--rs-text-main);
 }
 
-.rs-page-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.rs-page-header-copy {
-  display: flex;
-  flex-direction: column;
-}
-
 .rs-page-title {
   margin: 0;
   font-size: 1.8rem;
@@ -52,24 +39,6 @@
   align-items: center;
 }
 
-.btn-primary {
-  height: 42px;
-  padding: 0 16px !important;
-  border-radius: 14px !important;
-  border: 0 !important;
-  color: #fff !important;
-  font-weight: 800 !important;
-  background: linear-gradient(135deg, #0b2a6f 0%, #10348a 100%) !important;
-  box-shadow: 0 10px 24px rgba(11, 42, 111, 0.18) !important;
-
-  mat-icon {
-    margin-right: 6px;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-}
-
 /* KPIs */
 .kpis {
   display: grid;
@@ -81,17 +50,9 @@
 .kpi-card {
   position: relative;
   padding: 14px 16px !important;
-  border-radius: 18px !important;
   border: 1px solid var(--rs-border) !important;
   background: var(--rs-card) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: var(--rs-shadow-blue) !important;
   overflow: hidden;
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
 }
 
 .kpi-card::after {
@@ -106,11 +67,6 @@
   transition: background 180ms ease;
 }
 
-.kpi-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 34px rgba(0, 74, 173, 0.08) !important;
-}
-
 .kpi-card:hover .kpi-mini-icon {
   transform: scale(1.08);
 }
@@ -121,7 +77,7 @@
   font-weight: 800;
   letter-spacing: 0.17em;
   text-transform: uppercase;
-  color: #777777;
+  color: var(--rs-text-muted);
 }
 
 .kpi-value-row {
@@ -220,10 +176,8 @@
 
 /* Panels */
 .panel {
-  border-radius: 20px !important;
   border: 1px solid var(--rs-border) !important;
   background: var(--rs-card) !important;
-  box-shadow: none !important;
   overflow: hidden;
 }
 
@@ -338,7 +292,6 @@
 .table-wrap {
   overflow: auto;
   border: 1px solid var(--rs-border) !important;
-  border-radius: 16px;
   background: var(--rs-card) !important;
 }
 
@@ -388,13 +341,7 @@
 }
 
 .icon-action {
-  width: 32px !important;
-  height: 32px !important;
   min-width: 32px !important;
-  min-height: 32px !important;
-  padding: 0 !important;
-  border-radius: 10px !important;
-  background: var(--rs-card) !important;
   border: 1px solid var(--rs-border) !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -474,7 +421,6 @@
   gap: 10px;
   padding: 20px 18px;
   border: 1px dashed var(--rs-border) !important;
-  border-radius: 16px;
   background: var(--rs-card) !important;
   text-align: center;
 }
@@ -516,14 +462,9 @@
 }
 
 .btn-empty-light {
-  height: 40px;
-  padding: 0 16px !important;
-  border-radius: 12px !important;
-  background: var(--rs-card) !important;
   color: var(--rs-text-main) !important;
   border: 1px solid var(--rs-border) !important;
   font-weight: 700 !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 
   mat-icon {
     margin-right: 4px;
@@ -531,17 +472,11 @@
     height: 17px;
     font-size: 17px;
   }
-
-  &:hover {
-    background: rgba(0, 191, 245, 0.05) !important;
-    border-color: var(--rs-border) !important;
-  }
 }
 
 /* Mobile history cards */
 .history-card {
   border: 1px solid var(--rs-border) !important;
-  border-radius: 16px;
   background: var(--rs-card) !important;
   padding: 12px;
 }
@@ -582,7 +517,6 @@
 
 .history-meta-item {
   padding: 10px 12px;
-  border-radius: 14px;
   background: var(--rs-card) !important;
   border: 1px solid var(--rs-border) !important;
 }
@@ -666,17 +600,13 @@
     padding: 16px 14px 18px;
   }
 
-  .rs-page-header {
+  .rs-header-row {
     flex-direction: column;
     align-items: stretch;
   }
 
   .kpis {
     grid-template-columns: 1fr;
-  }
-
-  .btn-primary {
-    width: 100%;
   }
 }
 
@@ -720,19 +650,8 @@
     line-height: 1.4;
   }
 
-  .rs-page-header {
-    margin-bottom: 24px;
-  }
-
-  .btn-primary {
-    width: 100%;
-    height: 38px;
-    font-size: 12.5px !important;
-  }
-
   .kpi-card {
     padding: 11px 13px !important;
-    border-radius: 16px !important;
   }
 
   .kpi-label {
@@ -825,7 +744,6 @@
 
   .history-card {
     padding: 10px;
-    border-radius: 14px;
   }
 
   .history-card-label,
@@ -839,7 +757,6 @@
 
   .history-meta-item {
     padding: 9px 10px;
-    border-radius: 12px;
   }
 
   .history-meta-value {

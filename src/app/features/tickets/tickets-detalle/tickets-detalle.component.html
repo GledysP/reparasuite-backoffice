@@ -1,24 +1,31 @@
 <div class="rs-ticket-page">
-  <header class="rs-ticket-head">
-    <div class="rs-head-left">
-      <h1 class="rs-head-title">Solicitud de soporte</h1>
-      <div class="rs-head-sub">Tickets / Detalle</div>
+  <header class="rs-header-row">
+    <div class="rs-header-copy">
+      <h1 class="rs-page-title">Solicitud de soporte</h1>
+      <p class="rs-page-subtitle">Tickets / Detalle</p>
     </div>
 
-    <div class="rs-head-actions">
-      <button mat-stroked-button class="btn-back" routerLink="/tickets">
+    <div class="rs-header-actions">
+      <button mat-stroked-button class="rs-btn rs-btn-secondary" routerLink="/tickets">
+        <mat-icon>arrow_back</mat-icon>
         Volver
       </button>
 
       @if (yaTieneOt) {
-        <button mat-flat-button class="btn-petroleo" (click)="verOt()" [disabled]="busy">
-          <mat-icon>open_in_new</mat-icon>
-          Ver OT
+        <button mat-flat-button class="rs-btn rs-btn--primary" (click)="verOt()" [disabled]="busy">
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">
+            <mat-icon>open_in_new</mat-icon>
+            Ver OT
+          </span>
         </button>
       } @else {
-        <button mat-flat-button class="btn-petroleo" (click)="crearOt()" [disabled]="busy || loading">
-          <mat-icon>add</mat-icon>
-          Crear OT
+        <button mat-flat-button class="rs-btn rs-btn--primary" (click)="crearOt()" [disabled]="busy || loading">
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">
+            <mat-icon>add</mat-icon>
+            Crear OT
+          </span>
         </button>
       }
     </div>

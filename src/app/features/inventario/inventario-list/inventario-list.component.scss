@@ -52,7 +52,6 @@
 
 .rs-header-row {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
 }
@@ -143,7 +142,6 @@
   overflow: hidden;
   border: 1px solid var(--rs-border) !important;
   background: var(--rs-card) !important;
-  border-radius: var(--rs-radius) !important;
   opacity: 0;
   animation: rsFadeUp 0.42s ease forwards;
 }
@@ -214,7 +212,6 @@
   place-items: center;
   background: var(--rs-card) !important;
   border: 1px solid var(--rs-border) !important;
-  border-radius: var(--rs-radius) !important;
 
   mat-icon {
     color: var(--rs-text-navy);

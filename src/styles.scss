@@ -184,13 +184,14 @@ body {
 .rs-dashboard-head,
 .rs-topbar,
 .rs-header-section,
+.rs-page-header,
 .rs-page-head { 
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important; /* CORREGIDO: center para alinear título y botón */
   flex-wrap: wrap;
   gap: 16px;
-  margin: 0 0 24px 0 !important; /* CORREGIDO: Reducido a 24px para no verse grueso */
+  margin: 0 0 24px 0 !important;
   padding: 0 !important;
   width: 100%;
 }

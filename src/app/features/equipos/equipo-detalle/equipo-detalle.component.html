@@ -1,16 +1,21 @@
 @if (item(); as e) {
   <div class="rs-page-wrap">
-    <div class="rs-topbar">
-      <div>
-        <h1 class="rs-title">{{ e.codigoEquipo }}</h1>
-        <p class="rs-subtitle">{{ e.categoria?.nombre || 'Sin categoría' }} · {{ e.clienteNombre }}</p>
+    <header class="rs-header-row">
+      <div class="rs-header-copy">
+        <h1 class="rs-page-title">{{ e.codigoEquipo }}</h1>
+        <p class="rs-page-subtitle">{{ e.categoria?.nombre || 'Sin categoría' }} · {{ e.clienteNombre }}</p>
       </div>
 
-      <div class="rs-actions">
-        <a mat-stroked-button [routerLink]="['/equipos', e.id, 'editar']">Editar</a>
-        <button mat-flat-button class="rs-primary-btn" (click)="desactivar()">Desactivar</button>
+      <div class="rs-header-actions">
+        <a mat-stroked-button class="rs-btn rs-btn-secondary" [routerLink]="['/equipos', e.id, 'editar']">
+          Editar
+        </a>
+        <button mat-flat-button class="rs-btn rs-btn--primary" (click)="desactivar()">
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">Desactivar</span>
+        </button>
       </div>
-    </div>
+    </header>
 
     <mat-card class="rs-card">
       <div class="rs-grid">

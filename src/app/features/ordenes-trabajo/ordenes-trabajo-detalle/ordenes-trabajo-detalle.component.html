@@ -8,11 +8,11 @@
     </div>
 
     <div class="hdr-actions">
-      <button mat-stroked-button class="rs-btn-secondary" routerLink="/ordenes-trabajo">
+      <button mat-stroked-button class="rs-btn rs-btn-secondary" routerLink="/ordenes-trabajo">
         <mat-icon class="material-symbols-outlined">arrow_back</mat-icon> Volver
       </button>
 
-      <button mat-flat-button class="rs-btn--primary" (click)="cerrarOt()" [disabled]="busy() || data.estado === 'CERRADA'">
+      <button mat-flat-button class="rs-btn rs-btn--danger" (click)="cerrarOt()" [disabled]="busy() || data.estado === 'CERRADA'">
         <div class="rs-btn__label">
           <mat-icon class="material-symbols-outlined">{{ data.estado === 'CERRADA' ? 'check_circle' : 'task_alt' }}</mat-icon>
           {{ closeButtonLabel() }}

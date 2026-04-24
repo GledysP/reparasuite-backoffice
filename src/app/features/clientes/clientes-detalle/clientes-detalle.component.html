@@ -1,7 +1,7 @@
 @if (cliente; as c) {
   <div class="rs-page">
-    <header class="rs-page-header">
-      <div class="rs-page-header-copy">
+    <header class="rs-header-row">
+      <div class="rs-header-copy">
         <h1 class="rs-page-title">Detalle del cliente</h1>
         <p class="rs-page-subtitle">
           Consulta el historial, actividad y datos principales del cliente.
@@ -9,9 +9,12 @@
       </div>
 
       <div class="rs-page-actions">
-        <button mat-flat-button class="btn-primary" [routerLink]="['/ordenes-trabajo/nueva']">
-          <mat-icon>add</mat-icon>
-          Nueva orden de trabajo
+        <button mat-flat-button class="rs-btn rs-btn--primary" [routerLink]="['/ordenes-trabajo/nueva']">
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">
+            <mat-icon>add</mat-icon>
+            Nueva orden de trabajo
+          </span>
         </button>
       </div>
     </header>

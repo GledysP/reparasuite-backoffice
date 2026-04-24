@@ -1,5 +1,3 @@
-$rs-primary: #124E59;
-$rs-text: #0f172a;
 $ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .rs-ticket-page {
@@ -11,37 +9,13 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
 }
 
-.rs-ticket-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-
-  .rs-head-left { display: grid; gap: 2px; }
-
-  .rs-head-title {
-    margin: 0;
-    font-size: 21px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: $rs-text;
-  }
-
-  .rs-head-sub {
-    font-size: 12px;
-    color: rgba(100, 116, 139, .88);
-    font-weight: 650;
-  }
-
-  .rs-head-actions {
+.rs-header-actions {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     align-items: center;
   }
-}
+
 
 .rs-ticket-grid {
   display: grid;
@@ -73,17 +47,9 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .rs-card {
   width: 100%;
-  border-radius: 16px !important;
   background: var(--rs-card) !important;
   border: 1px solid var(--rs-border) !important;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, .07) !important;
   overflow: hidden;
-  transition: box-shadow 180ms $ease, border-color 180ms $ease;
-
-  &:hover {
-    border-color: rgba(18, 78, 89, .18) !important;
-    box-shadow: 0 14px 34px rgba(15, 23, 42, .09) !important;
-  }
 }
 
 .rs-card-pad { padding: 16px !important; }
@@ -103,13 +69,13 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  background: rgba(18, 78, 89, 0.10);
-  color: $rs-primary;
-  border: 1px solid rgba(18, 78, 89, 0.18);
+  background: rgba(0, 191, 245, 0.08);
+  color: var(--rs-primary);
+  border: 1px solid rgba(0, 191, 245, 0.14);
 }
 
 .muted {
-  color: rgba(100, 116, 139, .9);
+  color: var(--rs-text-muted);
   font-size: 12px;
 }
 
@@ -127,7 +93,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-meta-k {
   font-size: 11px;
   font-weight: 700;
-  color: rgba(100, 116, 139, .82);
+  color: var(--rs-text-muted);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   flex: 0 0 auto;
@@ -136,7 +102,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-meta-v {
   font-size: 14px;
   font-weight: 650;
-  color: rgba(15, 23, 42, .86);
+  color: var(--rs-text-main);
   line-height: 1.35;
   min-width: 0;
   overflow-wrap: anywhere;
@@ -151,17 +117,6 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
-.rs-link-btn {
-  margin-left: 6px !important;
-  padding: 0 8px !important;
-  min-width: auto !important;
-  height: 26px !important;
-  line-height: 26px !important;
-  border-radius: 999px !important;
-  font-weight: 750 !important;
-  color: $rs-primary !important;
-}
-
 .section-head {
   display: flex;
   align-items: baseline;
@@ -172,25 +127,8 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
     margin: 0;
     font-size: 14px;
     font-weight: 750;
-    color: $rs-text;
+    color: var(--rs-text-navy);
   }
-}
-
-.rs-card-data {
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    pointer-events: none;
-    opacity: 0;
-    background: radial-gradient(1200px 300px at 20% -20%, rgba(18,78,89,.08), transparent 55%);
-    transition: opacity 200ms $ease;
-  }
-
-  &:hover::before { opacity: 1; }
 }
 
 .info-grid {
@@ -206,28 +144,21 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 
 .info-item {
   border: 1px solid var(--rs-border) !important;
-  border-radius: 12px;
   padding: 10px 12px;
   background: var(--rs-card) !important;
-  transition: border-color 180ms $ease, box-shadow 180ms $ease;
-
-  &:hover {
-    border-color: rgba(18, 78, 89, .18);
-    box-shadow: 0 10px 18px rgba(15, 23, 42, .06);
-  }
 
   &.full { grid-column: 1 / -1; }
 
   .label {
     font-size: 11px;
-    color: rgba(100, 116, 139, .95);
+    color: var(--rs-text-muted);
     margin-bottom: 4px;
     font-weight: 650;
   }
 
   .value {
     font-size: 13px;
-    color: $rs-text;
+    color: var(--rs-text-main);
     font-weight: 560;
     white-space: pre-wrap;
   }
@@ -238,9 +169,8 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   display: grid;
   grid-template-columns: 34px 1fr;
   gap: 10px;
-  border-radius: 14px;
   border: 1px solid var(--rs-border) !important;
-  background: rgba(15, 23, 42, .015);
+  background: var(--rs-card) !important;
   padding: 10px;
   position: relative;
 
@@ -252,31 +182,29 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
     bottom: 10px;
     width: 4px;
     border-radius: 999px;
-    background: rgba(18, 78, 89, .65);
+    background: var(--rs-primary);
   }
 
   .obs-ic {
     width: 34px;
     height: 34px;
-    border-radius: 10px;
     display: grid;
     place-items: center;
-    background: rgba(18, 78, 89, .08);
-    border: 1px solid rgba(18, 78, 89, .12);
+    border: 1px solid rgba(0, 191, 245, 0.12);
 
-    mat-icon { color: $rs-primary; }
+    mat-icon { color: var(--rs-primary); }
   }
 
   .obs-title {
     font-weight: 750;
-    color: $rs-text;
+    color: var(--rs-text-navy);
     font-size: 12.5px;
     margin-bottom: 2px;
   }
 
   .obs-text {
     font-size: 12.5px;
-    color: rgba(15, 23, 42, .92);
+    color: var(--rs-text-main);
     white-space: pre-wrap;
     line-height: 1.5;
   }
@@ -293,7 +221,6 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 .photo-card {
   display: block;
   border: 1px solid var(--rs-border) !important;
-  border-radius: 14px;
   overflow: hidden;
   background: var(--rs-card) !important;
   text-decoration: none;
@@ -310,7 +237,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   .photo-name {
     padding: 8px 10px;
     font-size: 12px;
-    color: $rs-text;
+    color: var(--rs-text-main);
     font-weight: 650;
     white-space: nowrap;
     overflow: hidden;
@@ -328,15 +255,14 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 .photos-empty {
   margin-top: 12px;
   border: 1px dashed rgba(100, 116, 139, .28);
-  background: rgba(15, 23, 42, .02);
-  border-radius: 14px;
+  background: var(--rs-card) !important;
   padding: 14px;
   display: grid;
   gap: 4px;
 
-  mat-icon { color: rgba(18, 78, 89, .75); }
-  .photos-empty-title { font-weight: 750; color: $rs-text; }
-  .photos-empty-sub { font-size: 12px; color: rgba(100, 116, 139, .92); }
+  mat-icon { color: rgba(0, 191, 245, 0.6); }
+  .photos-empty-title { font-weight: 750; color: var(--rs-text-navy); }
+  .photos-empty-sub { font-size: 12px; color: var(--rs-text-muted); }
 }
 
 /* modal foto */
@@ -356,9 +282,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   width: min(920px, 100%);
   max-height: 90vh;
   background: var(--rs-card) !important;
-  border-radius: 18px;
   padding: 16px;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.22);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -367,7 +291,6 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 .rs-photo-modal-img {
   max-width: 100%;
   max-height: calc(90vh - 32px);
-  border-radius: 12px;
   object-fit: contain;
   display: block;
 }
@@ -377,42 +300,18 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   top: 10px;
   right: 10px;
   width: 38px;
-  height: 38px;
   border: 0;
-  border-radius: 999px;
-  background: var(--rs-card) !important;
-  color: $rs-text;
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
 }
 
-/* Buttons */
-.btn-petroleo {
-  border-radius: 12px !important;
-  background: $rs-primary !important;
-  color: #fff !important;
-  font-weight: 750 !important;
-}
-
-.btn-back {
-  border-radius: 999px !important;
-  font-weight: 750 !important;
-  padding: 0 14px !important;
-  height: 40px !important;
-  border-color: var(--rs-border) !important;
-  color: rgba(15, 23, 42, .86) !important;
-  background: var(--rs-card) !important;
-}
 
 /* Acciones rápidas (compacto) */
 .rs-actions-card {
-  border-radius: 16px !important;
-  background: #124E59 !important;
-  color: #fff !important;
-  border: 1px solid rgba(255, 255, 255, .14) !important;
-  box-shadow: 0 10px 24px rgba(18, 78, 89, .18) !important;
+  background: var(--rs-card) !important;
+  color: var(--rs-text-main) !important;
+  border: 1px solid var(--rs-border) !important;
 }
 
 .rs-actions-pad { padding: 10px 10px !important; }

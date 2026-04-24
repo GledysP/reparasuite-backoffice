@@ -48,6 +48,7 @@
   <mat-dialog-actions align="end">
     <button
       mat-stroked-button
+      class="rs-btn rs-btn-secondary"
       type="button"
       (click)="cancelar()"
       [disabled]="loading">
@@ -56,11 +57,14 @@
   
     <button
       mat-flat-button
-      color="primary"
+      class="rs-btn rs-btn--primary"
       type="button"
       (click)="guardar()"
       [disabled]="loading">
-      <mat-spinner *ngIf="loading" diameter="18"></mat-spinner>
-      <span *ngIf="!loading">{{ textoBoton }}</span>
+      <span class="rs-btn__shimmer"></span>
+      <span class="rs-btn__label">
+        <mat-spinner *ngIf="loading" diameter="18"></mat-spinner>
+        <span *ngIf="!loading">{{ textoBoton }}</span>
+      </span>
     </button>
   </mat-dialog-actions>
