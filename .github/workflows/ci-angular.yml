@@ -1,0 +1,30 @@
+name: Integracion Continua Backoffice
+
+on:
+  push:
+    branches: [ "main" ] # Cada vez que empuje código a main
+
+jobs:
+  build-and-test:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+    # 3. Traer el código de mi repositorio
+    - name: 📥 Checkout del código
+      uses: actions/checkout@v4
+
+    # 4. Instalar Node.js para Angular
+    - name: ⚙️ Configurar Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    # 5. Instalar las dependencias (el node_modules fantasma)
+    - name: 📦 Instalar dependencias
+      run: npm ci
+
+    # 6. Intentar compilar la aplicación
+    - name: 🚀 Compilar Angular (Build)
+      run: npm run build
