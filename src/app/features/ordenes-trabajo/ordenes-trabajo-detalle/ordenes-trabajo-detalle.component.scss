@@ -60,13 +60,6 @@ align-items: start;
   margin-bottom: 20px;
 }
 
-/* MEJORA 1: Reducido a 8px para subir el contenido */
-.card-header-minimal {
-  display: flex; justify-content: space-between; align-items: center; 
-  margin-bottom: 8px !important; 
-  padding: 0 !important;
-  .label-caps { font-size: 10px; font-weight: 800; color: var(--rs-text-muted); letter-spacing: 0.1em; }
-}
 
 /* Columna Izquierda (Contexto) */
 .profile-inline {
@@ -163,13 +156,57 @@ align-items: start;
   }
 }
 
+
+/* =========================================================
+   EVIDENCIA DEL EQUIPO 
+========================================================= */
+
+/* MEJORA 1: Reducido a 8px para subir el contenido */
+.card-header-minimal {
+  display: flex; justify-content: space-between; align-items: center; 
+  margin-bottom: 8px !important; 
+  padding: 0 !important;
+  
+  .label-caps { font-size: 10px; font-weight: 800; color: var(--rs-text-muted); letter-spacing: 0.1em; }
+
+  /* ESTO FUERZA LA CÁMARA A VERSE SIEMPRE AZUL */
+  .upload-icon-btn mat-icon {
+      color: var(--rs-primary) !important;
+  }
+}
+/* Caja "Sin imágenes de respaldo" (Mismo estilo que Próxima Cita) */
+.empty-evidence-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 32px 16px; 
+  text-align: center; margin-top: 0; grid-column: span 2;
+  
+  /* ESTOS 3 VALORES SON LA MAGIA DEL ESTILO CITA */
+  background: rgba(0, 191, 245, 0.08) !important; 
+  border: 1px solid rgba(0, 191, 245, 0.14) !important; 
+  border-radius: 12px;
+
+  mat-icon { 
+    font-size: 32px; width: 32px; height: 32px; 
+    color: var(--rs-primary); /* Icono de cámara tachada en azul brillante */
+    margin-bottom: 8px; 
+  }
+  p { 
+    font-size: 13px; font-weight: 800; /* Letras gruesas como en Cita */
+    color: var(--rs-primary); /* Letras en azul brillante */
+    margin: 0; 
+  }
+}
+
+
+
 /* =========================================================
    NOTAS INTERNAS (Rediseño Premium)
 ========================================================= */
-
 .notes-composer-mini {
   display: flex; gap: 8px; background: var(--rs-bg); padding: 6px 6px 6px 16px; 
   border: 1px solid var(--rs-border); align-items: center;
+  border-radius: 12px; /* Redondeo de 12px para el input */
+  margin-bottom: 16px; /* Separación con la lista de notas de abajo */
 
   textarea { border: none; background: transparent; font-size: 13px; flex: 1; outline: none; resize: none; height: 20px; color: var(--rs-text-main); margin-top: 6px; }
 
@@ -179,28 +216,43 @@ align-items: start;
   }
 }
 
-.notes-history-list .mini-note { 
-  padding: 12px 16px; border-radius: 0 12px 12px 12px; background: var(--rs-bg); 
-  border-left: 3px solid var(--rs-tech-navy) !important; /* Línea Navy */
-  p { font-size: 12.5px; margin: 0; line-height: 1.5; color: var(--rs-text-main); } 
-  .date { font-size: 9.5px; font-weight: 800; color: var(--rs-text-muted); display: block; margin-top: 6px; text-transform: uppercase; } 
+.notes-history-list {
+  max-height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden; /* Evita que salga barra horizontal */
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; /* AQUÍ ESTÁ EL ESPACIO DE 12px ENTRE CADA NOTA */
+
+  /* Magia directa para ocultar la barra de scroll */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
+
+  .mini-note { 
+    padding: 12px 16px; 
+    border-radius: 0 12px 12px 12px; /* Redondeo que querías */
+    background: var(--rs-bg); 
+    border-left: 3px solid var(--rs-primary) !important; /* Azul de tus botones principales */
+    
+    p { font-size: 12.5px; margin: 0; line-height: 1.5; color: var(--rs-text-main); } 
+    .date { font-size: 9.5px; font-weight: 800; color: var(--rs-text-muted); display: block; margin-top: 6px; text-transform: uppercase; } 
+  }
 }
 
-/* Empty State para Notas (Agregamos esto igual que en Evidencia) */
-.empty-evidence-state {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 32px 16px; border: 1px dashed var(--rs-border);
-  background: var(--rs-card) !important; text-align: center; margin-top: 0; grid-column: span 2;
-  
-  mat-icon { font-size: 32px; width: 32px; height: 32px; color: var(--rs-text-muted); opacity: 0.4; margin-bottom: 8px; }
-  p { font-size: 13px; font-weight: 500; color: var(--rs-text-muted); margin: 0; }
-}
+
 
 /* HISTORIAL DE ACTIVIDAD (Timeline) */
 .activity-timeline {
   display: flex; flex-direction: column; padding-left: 8px;
-  max-height: 280px; /* Límite de altura */
-  overflow-y: auto; /* Scroll si hay muchos items */
+  max-height: 280px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+
+  /* Magia directa para ocultar la barra de scroll */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
 
   .timeline-item {
     display: flex; gap: 16px; position: relative; padding-bottom: 20px;
@@ -212,7 +264,7 @@ align-items: start;
 
     .timeline-marker {
       width: 12px; height: 12px; border-radius: 50%;
-      background: var(--rs-tech-navy); /* Punto Navy */
+      background: var(--rs-primary); /* Azul de tus botones principales */
       border: 3px solid var(--rs-card); position: relative; z-index: 1; margin-top: 2px;
     }
 
@@ -223,6 +275,7 @@ align-items: start;
     }
   }
 }
+/* ///////////////// Columna Central (Eje Técnico) ///////////////////////// */
 
 
 
@@ -492,6 +545,17 @@ align-items: start;
 }
 
 /* PRESUPUESTO ACTUALIZADO Y DARK MODE READY */
+
+/* CORRECCIÓN: Títulos huérfanos (Como Balance de Pago) */
+mat-card.premium-card-clean > span.label-caps {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--rs-text-muted) !important; /* Esto garantiza que sea gris claro en dark mode */
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
 .budget-highlight {
   background: var(--rs-card) !important; 
   border: 1px solid var(--rs-border) !important;
@@ -533,23 +597,73 @@ align-items: start;
 
 /* CARD DE CHAT */ 
 
-.chat-card-saas .chat-header {
-  padding: 12px 16px !important; /* Reducimos el padding para hacerlo delgado */
-  display: flex;
-  align-items: baseline; /* Alinea los textos */
-  gap: 8px; /* Separa el título del subtítulo horizontalmente */
-  border-bottom: 1px solid var(--rs-border) !important;
-  
-  .label-caps { display: inline-block; font-size: 11px; font-weight: 400; color: var(--rs-text-navy); letter-spacing: 0.05em; margin: 0; }
-  .sub { display: inline-block; font-size: 11px; color: var(--rs-text-muted); margin: 0; }
+/* Viewport con mensajes */
+.chat-viewport-enterprise { 
+  height: 260px; padding: 20px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 16px; 
+
+  /* Magia para matar la barra de scroll fea del chat */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
+
+  .chat-date-divider {
+    text-align: center; margin: 8px 0;
+    span { background: var(--rs-bg); padding: 4px 12px; border-radius: 12px; font-size: 9px; font-weight: 800; color: var(--rs-text-muted); }
+  }
 }
 
-.chat-viewport-enterprise { height: 240px; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-.bubble-row { display: flex; &.me { justify-content: flex-end; .bubble { background: var(--rs-navy-box); color: white; border-radius: 12px 12px 4px 12px; } } }
-.bubble { max-width: 80%; padding: 10px 14px; background: var(--rs-bg); border-radius: 12px 12px 12px 4px; p { margin: 0; font-size: 12.5px; color: var(--rs-text-main); } .time { font-size: 9px; opacity: 0.5; display: block; text-align: right; margin-top: 4px; } }
-.chat-footer-minimal { border-top: 1px solid var(--rs-border); padding: 12px; display: flex; gap: 10px; input { flex: 1; border: none; background: transparent; color: var(--rs-text-main); font-size: 13px; outline: none; } button { color: var(--rs-text-navy); } }
+.bubble-row { 
+  display: flex; 
+  &.me { 
+    justify-content: flex-end; 
+    .bubble { 
+      background: var(--rs-primary); /* Burbujas propias en Cyan brillante */
+      border: none;
+      border-radius: 16px 16px 4px 16px; 
+      box-shadow: 0 4px 12px rgba(0, 191, 245, 0.15); /* Resplandor sutil */
+      
+      p { color: #081a4b !important; font-weight: 500; } /* Texto oscuro para leerse perfecto sobre el cyan */
+      .time { color: rgba(8, 26, 75, 0.6); }
+    } 
+  } 
+}
 
-.full-w { width: 100%; }
+.bubble { 
+  max-width: 85%; padding: 12px 16px; 
+  background: var(--rs-bg); /* Color de fondo base para que no flote */
+  border: 1px solid var(--rs-border); /* Borde para separarlo del fondo del card */
+  border-radius: 16px 16px 16px 4px; 
+  
+  p { margin: 0; font-size: 13px; color: var(--rs-text-main); line-height: 1.4; } 
+  .time { font-size: 9px; font-weight: 600; color: var(--rs-text-muted); display: block; text-align: right; margin-top: 6px; } 
+}
+
+/* Footer (Input y botón de enviar) */
+.chat-footer-minimal { 
+  padding: 16px 20px; 
+  display: flex; gap: 12px; align-items: center;
+  border-top: 1px solid var(--rs-border);
+  
+  input { 
+    flex: 1; border: 1px solid var(--rs-border); background: var(--rs-bg); 
+    color: var(--rs-text-main); font-size: 13px; outline: none; 
+    padding: 10px 16px; border-radius: 20px;
+    transition: border-color 0.2s ease;
+    &:focus { border-color: var(--rs-primary); box-shadow: 0 0 0 3px rgba(0, 191, 245, 0.1); }
+  } 
+  
+  .btn-send {
+    min-width: auto; padding: 0; width: 40px; height: 40px;
+    border-radius: 50% !important; /* Botón redondo perfecto */
+    background: var(--rs-primary) !important;
+    box-shadow: 0 4px 10px rgba(0, 191, 245, 0.2) !important;
+    
+    mat-icon { 
+      margin: 0; font-size: 20px; width: 20px; height: 20px; 
+      color: #081a4b !important; /* Icono oscuro sobre botón cyan */
+    }
+  }
+}
 
 
 /* CARD DE CITA*/ 
