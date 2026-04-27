@@ -33,16 +33,7 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
   gap: 12px;
 }
 
-.rs-btn--danger {
-  position: relative; overflow: hidden !important; isolation: isolate; color: #ffffff !important;
-  background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%) !important;
-  box-shadow: 0 14px 30px rgba(239, 68, 68, 0.16), 0 0 28px rgba(239, 68, 68, 0.14) !important;
-  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
 
-  &:hover:not(:disabled) { filter: brightness(1.05); transform: translateY(-1px); }
-  &:active:not(:disabled) { transform: translateY(0); }
-  &:disabled { opacity: 0.7; box-shadow: none !important; }
-}
 
 .ot-id-badge { color: $rs-muted; font-weight: 400; margin-left: 10px; font-size: 0.8em; }
 
@@ -123,38 +114,9 @@ align-items: start;
   }
 }
 
-.rs-btn-whatsapp-dynamic {
-  width: 100%;
-  height: 48px !important; 
-  border-radius: 12px !important; 
-  border: none !important;
-  background-color: #e8f7ef !important; 
-  color: #0d5c4e !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  /* --- CARD CLIENTE: whatsapp esta en archivos globales --- */
 
-  .btn-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-weight: 700;
-    font-size: 14px;
-    .wa-icon-svg { width: 22px; height: 22px; }
-  }
 
-  &:hover:not(:disabled) {
-    background-color: #25d366 !important; 
-    color: #ffffff !important;
-    transform: translateY(-1.5px);
-    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25) !important;
-  }
-
-  &:disabled {
-    background: var(--rs-card) !important;
-    color: var(--rs-text-muted) !important;
-    opacity: 0.8;
-  }
-}
 
 
 /* =========================================================
@@ -412,68 +374,60 @@ align-items: start;
 
 
 /* =========================================================
-  2.CARD EXPEDIENTE TÉCNICO (MEJORA 3)
-   ========================================================= */
+   2. CARD EXPEDIENTE TÉCNICO (ARQUITECTURA LIMPIA)
+========================================================= */
 
 .rs-expediente-final-tuned {
   padding: 24px !important;
+  /* ¡Cero parches de altura! La tarjeta respira naturalmente */
 }
 
-/* Nuevo diseño con líneas divisorias y highlight cyan */
+.rs-expediente-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- VISTA DE LECTURA (Read-only) --- */
 .expediente-stack {
   display: flex;
   flex-direction: column;
-  gap: 0; 
-  padding-top: 8px;
+  padding-top: 16px;
 
   .info-block {
     display: flex;
     flex-direction: column; 
-    gap: 4px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--rs-border); 
+    gap: 6px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rs-border);
 
-    .label-with-icon {
-      display: flex; align-items: center; gap: 6px;
-      mat-icon { font-size: 16px; width: 16px; height: 16px; color: var(--rs-primary); }
-    }
+    &:first-child { padding-top: 0; }
+    &:last-child { border-bottom: none; padding-bottom: 0; }
 
     .tiny {
-      font-size: 9.5px !important; font-weight: 800 !important;
-      color: var(--rs-text-muted) !important; letter-spacing: 0.08em !important;
+      font-size: 10px !important; font-weight: 800 !important;
+      color: var(--rs-text-muted) !important; letter-spacing: 0.05em !important;
       text-transform: uppercase !important; margin: 0;
     }
-  }
-
-  .highlight-plan {
-    border-bottom: none;
-    border-left: 3px solid var(--rs-primary);
-    padding-left: 12px; 
-    margin-left: -4px;
-    margin-top: 12px;
-    background: linear-gradient(90deg, rgba(0, 191, 245, 0.04) 0%, transparent 100%);
-    padding-top: 12px; padding-bottom: 12px; 
-    border-radius: 0 8px 8px 0;
   }
 }
 
 .technical-value {
-  margin: 0; font-size: 14px;
-  color: var(--rs-text-navy); font-weight: 500; line-height: 1.5;
-  padding-left: 22px; 
+  margin: 0; font-size: 13.5px;
+  color: var(--rs-text-main); font-weight: 500; line-height: 1.5;
 }
 
+/* --- VISTA DE EDICIÓN --- */
 .rs-grid-edit {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  .rs-col-12 { grid-column: span 12; }
+  padding-top: 16px;
 }
 
 .action-row-pro {
   display: flex;
   justify-content: flex-end;
-  margin-top: 12px;
+  padding-top: 12px;
 }
 
 
@@ -559,10 +513,10 @@ mat-card.premium-card-clean > span.label-caps {
 .budget-highlight {
   background: var(--rs-card) !important; 
   border: 1px solid var(--rs-border) !important;
-  .price-display { 
+.price-display { 
     margin: 12px 0; color: var(--rs-text-navy); display: flex; align-items: flex-start;
-    .sym { font-size: 18px; font-weight: 800; margin-right: 4px; margin-top: 4px; } 
-    .num { font-size: 42px; font-weight: 900; letter-spacing: -0.04em; line-height: 1; } 
+    .sym { font-size: 16px; font-weight: 800; margin-right: 4px; margin-top: 4px; } 
+    .num { font-size: 30px !important; font-weight: 800; letter-spacing: -0.02em; line-height: 1; } 
   }
   .budget-detail { font-size: 13px; color: var(--rs-text-muted); margin-bottom: 16px; line-height: 1.4; }
 }
@@ -720,94 +674,152 @@ mat-card.premium-card-clean > span.label-caps {
 
 
 /* =========================================================
-   CARD DE MENSAJES (SaaS Enterprise Design)
+   CARD DE MENSAJES (SaaS Enterprise Design - V3 Final)
 ========================================================= */
 
+/* Estructura Base de la Tarjeta */
 .chat-card-saas { 
   padding: 0 !important; 
   overflow: hidden; 
   display: flex;
   flex-direction: column;
+  background: var(--rs-card) !important; 
 
   .chat-header {
-    padding: 20px;
+    padding: 16px 20px;
     border-bottom: 1px solid var(--rs-border);
+    background: var(--rs-bg); 
     .label-caps { display: block; font-size: 10px; font-weight: 800; color: var(--rs-text-muted); letter-spacing: 0.1em; }
     .sub { display: block; font-size: 12px; color: var(--rs-text-main); margin-top: 4px; }
   }
 }
 
-/* Empty State (Sin mensajes) */
-.empty-chat-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 20px;
-  background: var(--rs-card) !important;
-  margin: 20px;
-  border: 1px dashed var(--rs-border) !important;
-
-  .icon-wrap {
-    width: 48px; height: 48px;
-    background: rgba(0, 191, 245, 0.1);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 16px;
-    mat-icon { color: var(--rs-primary); }
-  }
-
-  h4 { margin: 0 0 4px 0; font-size: 15px; font-weight: 700; color: var(--rs-text-navy); }
-  p { margin: 0; font-size: 12.5px; color: var(--rs-text-muted); line-height: 1.4; }
-}
-
-/* Viewport con mensajes */
+/* Viewport con mensajes y barra de scroll oculta */
 .chat-viewport-enterprise { 
-  height: 260px; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; 
+  height: 280px; 
+  padding: 20px; 
+  overflow-y: auto; 
+  overflow-x: hidden; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
+  background: var(--rs-card); 
+
+  /* Magia directa para ocultar la barra de scroll */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
 
   .chat-date-divider {
     text-align: center; margin: 8px 0;
-    span { background: var(--rs-bg); padding: 4px 12px; border-radius: 12px; font-size: 9px; font-weight: 800; color: var(--rs-text-muted); }
+    span { 
+      background: var(--rs-bg); 
+      padding: 4px 12px; 
+      border-radius: 12px; 
+      font-size: 9px; 
+      font-weight: 800; 
+      color: var(--rs-text-muted); 
+      border: 1px solid var(--rs-border);
+    }
   }
 }
 
+/* Burbujas de Chat - Alineación y Estructura */
 .bubble-row { 
   display: flex; 
+  
+  /* MIS MENSAJES (Derecha) */
   &.me { 
     justify-content: flex-end; 
+    
     .bubble { 
-      background: var(--rs-navy-box); 
-      color: white; 
+      background: var(--rs-primary) !important; /* Cyan corporativo */
+      border: none !important;
       border-radius: 16px 16px 4px 16px; 
-      p { color: white; }
+      box-shadow: 0 4px 12px rgba(0, 191, 245, 0.15); 
+      
+      p { color: #081a4b !important; font-weight: 600; } /* Letras oscuras sobre fondo cyan */
+      .time { color: rgba(8, 26, 75, 0.7) !important; }
     } 
   } 
 }
 
+/* Burbuja base (Mensajes del Técnico - Izquierda) */
 .bubble { 
-  max-width: 85%; padding: 12px 16px; 
-  background: rgba(0, 191, 245, 0.15); /* Color cyan claro para los recibidos */
+  max-width: 85%; 
+  padding: 12px 16px; 
+  background: var(--rs-bg) !important; /* Fondo del sistema */
+  border: 1px solid var(--rs-border) !important; 
   border-radius: 16px 16px 16px 4px; 
   
-  p { margin: 0; font-size: 13px; color: var(--rs-text-navy); line-height: 1.4; } 
-  .time { font-size: 9px; opacity: 0.6; display: block; text-align: right; margin-top: 6px; } 
+  p { margin: 0; font-size: 13px; color: var(--rs-text-main) !important; line-height: 1.4; } 
+  .time { font-size: 9px; font-weight: 600; color: var(--rs-text-muted) !important; display: block; text-align: right; margin-top: 6px; } 
 }
 
 /* Footer (Input y botón de enviar) */
 .chat-footer-minimal { 
   padding: 16px 20px; 
   display: flex; gap: 12px; align-items: center;
+  border-top: 1px solid var(--rs-border);
+  background: var(--rs-bg);
   
   input { 
-    flex: 1; border: 1px solid var(--rs-border); background: var(--rs-bg); 
+    flex: 1; border: 1px solid var(--rs-border); background: var(--rs-card); 
     color: var(--rs-text-main); font-size: 13px; outline: none; 
     padding: 10px 16px; border-radius: 20px;
-    &:focus { border-color: var(--rs-primary); }
+    transition: all 0.2s ease;
+    
+    &:focus { 
+      border-color: var(--rs-primary); 
+      box-shadow: 0 0 0 3px rgba(0, 191, 245, 0.1); 
+    }
   } 
   
-  .btn-send {
-    min-width: auto; padding: 0; width: 40px;
-    mat-icon { margin: 0; font-size: 20px; width: 20px; height: 20px; }
+/*.chat-footer-minimal, boton enviar */
+.btn-send {
+    min-width: 40px !important;
+    max-width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    background: var(--rs-primary) !important; /* Fondo Cyan inyectado a la fuerza */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 10px rgba(0, 191, 245, 0.2) !important;
+    
+    mat-icon { 
+      color: #ffffff !important; /* Blanco puro para que resalte siempre sobre el Cyan */
+      font-size: 20px !important; 
+      width: 20px !important; 
+      height: 20px !important; 
+      margin: 0 !important; 
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
   }
+}
+
+/* =========================================================
+   ESTADO VACÍO DEL CHAT (Recuperación)
+========================================================= */
+.empty-chat-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 32px 20px; 
+  margin: 16px; 
+  border: 1px dashed var(--rs-border) !important; 
+  border-radius: 12px;
+  background: var(--rs-bg) !important;
+
+  .icon-wrap {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(0, 191, 245, 0.1); 
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    mat-icon { color: var(--rs-primary); font-size: 24px; width: 24px; height: 24px; }
+  }
+
+ h4 { margin: 0 0 6px 0 !important; font-size: 14px !important; font-weight: 700; color: var(--rs-text-navy); }
+  p { margin: 0; font-size: 12px !important; color: var(--rs-text-muted); line-height: 1.4; }
 }

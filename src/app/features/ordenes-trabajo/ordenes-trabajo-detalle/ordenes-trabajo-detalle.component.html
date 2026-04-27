@@ -12,7 +12,7 @@
         <mat-icon class="material-symbols-outlined">arrow_back</mat-icon> Volver
       </button>
 
-      <button mat-flat-button class="rs-btn rs-btn--danger" (click)="cerrarOt()" [disabled]="busy() || data.estado === 'CERRADA'">
+      <button mat-flat-button class="rs-btn rs-btn--success" (click)="cerrarOt()" [disabled]="busy() || data.estado === 'CERRADA'">
         <div class="rs-btn__label">
           <mat-icon class="material-symbols-outlined">{{ data.estado === 'CERRADA' ? 'check_circle' : 'task_alt' }}</mat-icon>
           {{ closeButtonLabel() }}
@@ -422,7 +422,7 @@
         <mat-icon class="material-symbols-outlined">chat</mat-icon>
       </div>
       <h4>Sin mensajes todavía</h4>
-      <p>Cuando el taller envíe una actualización, la verás aquí.</p>
+      <p>Inicia la conversación. Lo que escribas aquí lo verá el cliente.</p>
     </div>
   }
 
