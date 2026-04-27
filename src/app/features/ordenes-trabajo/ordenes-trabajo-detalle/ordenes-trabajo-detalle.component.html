@@ -80,7 +80,7 @@
         </div>
         <div class="evidence-gallery">
           @for (f of data.fotos; track $index) {
-            <div class="gallery-item" (click)="verFoto(f)"><img [src]="fileUrl(f.url)" /></div>
+            <div class="gallery-item" (click)="verFoto(f)"><img [src]="fileUrl(f) | authImage | async" alt="Evidencia" /></div>
           } @empty {
             <div class="empty-evidence-state">
               <mat-icon class="material-symbols-outlined">hide_image</mat-icon>
@@ -438,6 +438,6 @@
   </div>
 </div>
 
-<ng-template #imageModal><div class="rs-modal-editorial"><header><span>Evidencia del Servicio</span><button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button></header><div class="img-container"><img [src]="selectedImageUrl()" /></div></div></ng-template>
-<ng-template #comprobanteModal><div class="rs-modal-editorial"><header><span>Comprobante de Pago</span><button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button></header><div class="img-container"><img [src]="selectedComprobanteUrl()" /></div></div></ng-template>
+<ng-template #imageModal><div class="rs-modal-editorial"><header><span>Evidencia del Servicio</span><button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button></header><div class="img-container"><img [src]="selectedImageUrl() | authImage | async" /></div></div></ng-template>
+<ng-template #comprobanteModal><div class="rs-modal-editorial"><header><span>Comprobante de Pago</span><button mat-icon-button (click)="closeModal()"><mat-icon>close</mat-icon></button></header><div class="img-container"><img [src]="selectedComprobanteUrl() | authImage | async" /></div></div></ng-template>
 }

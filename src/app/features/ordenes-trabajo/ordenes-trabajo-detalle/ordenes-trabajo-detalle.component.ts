@@ -41,6 +41,8 @@ import { UsuariosService } from '../../usuarios/usuarios.service';
 import { EstadoOt } from '../../../core/models/enums';
 import { OtDetalle, UsuarioResumen } from '../../../core/models/tipos';
 import { WhatsappService } from '../../../core/services/whatsapp.service';
+import { environment } from '../../../../environments/environment';
+import { AuthImagePipe } from './auth-image.pipe';
 
 type UiAction =
   | 'estado'
@@ -88,6 +90,7 @@ type PeriodoHora = 'AM' | 'PM';
     MatTooltipModule,
     MatMenuModule,
     MatButtonToggleModule,
+    AuthImagePipe,
   ],
   templateUrl: './ordenes-trabajo-detalle.component.html',
   styleUrl: './ordenes-trabajo-detalle.component.scss',
@@ -859,15 +862,35 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
       });
   }
 
-  fileUrl(url?: string | null): string {
-    if (!url) return '';
-    if (/^https?:\/\//i.test(url)) return url;
-    const path = url.startsWith('/') ? url : `/${url}`;
-    return `${window.location.origin}${path}`;
+  fileUrl(source?: any): string {
+    if (!source) return '';
+    
+    // Extrae la URL de forma segura sin importar si llega como objeto o como string puro
+    const urlStr = typeof source === 'string' ? source : source.url;
+    if (!urlStr) return '';
+
+    if (/^https?:\/\//i.test(urlStr)) return urlStr;
+    
+    let path = urlStr.startsWith('/') ? urlStr : `/${urlStr}`;
+    
+    // Limpiamos el prefijo /api/v1 si el backend ya lo incluye para evitar duplicación
+    if (path.startsWith('/api/v1')) {
+      path = path.replace('/api/v1', '');
+    }
+
+    // Aseguramos que el path resultante siga empezando de forma segura con "/"
+    if (!path.startsWith('/')) {
+      path = `/${path}`;
+    }
+    
+    // Usamos el host del backend en lugar del frontend
+    const baseUrl = environment?.apiBaseUrl ? environment.apiBaseUrl.replace(/\/$/, '') : window.location.origin;
+    
+    return `${baseUrl}${path}`;
   }
 
   verFoto(foto: any): void {
-    const url = this.fileUrl(foto?.url || foto);
+    const url = this.fileUrl(foto);
     this.selectedImageUrl.set(url ?? '');
     this.dialog.open(this.imageModal, { width: 'auto', maxWidth: '92vw' });
   }

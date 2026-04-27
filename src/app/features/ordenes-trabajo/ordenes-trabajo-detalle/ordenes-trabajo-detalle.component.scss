@@ -39,8 +39,16 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
 
 /* Grid de 3 Columnas Estilo Editorial */
 .rs-main-grid-layout {
-display: grid; grid-template-columns: 280px 1fr 340px; gap: 24px;
-align-items: start;
+  display: grid !important; 
+  grid-template-columns: 280px 1fr 340px !important; 
+  gap: 24px !important;
+  align-items: stretch !important; /* 1. ESTO MATA EL HUECO GENERAL */
+  
+  /* Todo hijo directo del grid se vuelve un riel vertical elástico */
+  > * {
+    display: flex !important;
+    flex-direction: column !important;
+  }
 }
 
 /* Tarjetas Blancas Puristas */
@@ -123,6 +131,37 @@ align-items: start;
    EVIDENCIA DEL EQUIPO 
 ========================================================= */
 
+.evidence-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  
+  .gallery-item {
+    width: 100%;
+    aspect-ratio: 1; /* Crea un cuadrado perfecto automáticamente */
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid var(--rs-border);
+    transition: all 0.2s ease-in-out;
+    background: var(--rs-bg);
+    
+    &:hover {
+      transform: scale(1.05); /* Efecto hover elegante */
+      border-color: var(--rs-primary);
+      box-shadow: var(--rs-shadow-md);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Evita que la imagen se deforme/aplaste */
+      display: block;
+    }
+  }
+}
+
 /* MEJORA 1: Reducido a 8px para subir el contenido */
 .card-header-minimal {
   display: flex; justify-content: space-between; align-items: center; 
@@ -142,7 +181,7 @@ align-items: start;
   padding: 32px 16px; 
   text-align: center; margin-top: 0; grid-column: span 2;
   
-  /* ESTOS 3 VALORES SON LA MAGIA DEL ESTILO CITA */
+ 
   background: rgba(0, 191, 245, 0.08) !important; 
   border: 1px solid rgba(0, 191, 245, 0.14) !important; 
   border-radius: 12px;
@@ -254,10 +293,17 @@ align-items: start;
   1.  CARD NÚCLEO DEL SERVICIO 
    ========================================================= */
 
-/* MEJORA 2: align-self: start quita el salto de 24px */
-.col-main-work {
+/* WRAPPER COLUMNA CENTRAL (FLEXBOX STRICT) */
+.col-middle-flex {
   padding-top: 0 !important;
-  align-self: start; 
+  display: flex;
+  flex-direction: column;
+  
+  /* Anulamos agresivamente el margin-bottom heredado del último elemento para evitar desbordamiento */
+  > mat-card:last-child,
+  > .premium-card-clean:last-child {
+    margin-bottom: 0 !important;
+  }
 }
 
 .rs-core-card-final {
@@ -372,19 +418,22 @@ align-items: start;
 
 .edit-footer { display: flex; justify-content: flex-end; margin-top: 12px; }
 
-
 /* =========================================================
    2. CARD EXPEDIENTE TÉCNICO (ARQUITECTURA LIMPIA)
 ========================================================= */
 
 .rs-expediente-final-tuned {
   padding: 24px !important;
-  /* ¡Cero parches de altura! La tarjeta respira naturalmente */
+  margin-bottom: 0 !important; 
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important; /* 🔥 ESTO MATA EL HUECO: Obliga a la tarjeta a estirarse */
 }
 
 .rs-expediente-body {
   display: flex;
   flex-direction: column;
+  flex: 1; /* Transmite el estiramiento hacia adentro */
 }
 
 /* --- VISTA DE LECTURA (Read-only) --- */
@@ -416,23 +465,49 @@ align-items: start;
   color: var(--rs-text-main); font-weight: 500; line-height: 1.5;
 }
 
-/* --- VISTA DE EDICIÓN --- */
+/* --- VISTA DE EDICIÓN (Global / Núcleo del Servicio) --- */
 .rs-grid-edit {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 32px;
   padding-top: 16px;
+
+  /* Regla estricta: Forzamos a los inputs a ocupar 1 sola celda y no heredar anchos externos */
+  mat-form-field {
+    grid-column: span 1 !important;
+  }
+}
+
+/* --- VISTA DE EDICIÓN (Específica para Expediente Técnico) --- */
+.rs-expediente-final-tuned .rs-grid-edit {
+  display: flex !important;
+  flex-direction: column !important; /* 🔥 MANTIENE LA EDICIÓN PERFECTA (vertical) */
+  gap: 16px !important;
+  width: 100% !important;
+  padding-top: 16px !important;
+}
+
+/* Forzamos a los inputs a obedecer la columna y ocupar el 100% */
+.rs-expediente-final-tuned .rs-grid-edit mat-form-field {
+  width: 100% !important;
+  max-width: 100% !important;
+  grid-column: unset !important; /* Mata la regla del span 1 anterior */
 }
 
 .action-row-pro {
   display: flex;
   justify-content: flex-end;
   padding-top: 12px;
+  margin-top: auto !important; /* Empuja el botón de guardar hacia abajo si sobra espacio */
 }
 
 
+
+
 /* //////////////////Columna Derecha (Management) //////////////////////////////////////////// */
-/* 1. CARD ESTADO DE ORDEN */ 
+/* =========================================================
+    1. CARD ESTADO DE ORDEN 
+========================================================= */
 .rs-status-mgmt-card {
   margin-bottom: 20px !important;
   padding: 16px 20px !important;
@@ -516,7 +591,7 @@ mat-card.premium-card-clean > span.label-caps {
 .price-display { 
     margin: 12px 0; color: var(--rs-text-navy); display: flex; align-items: flex-start;
     .sym { font-size: 16px; font-weight: 800; margin-right: 4px; margin-top: 4px; } 
-    .num { font-size: 30px !important; font-weight: 800; letter-spacing: -0.02em; line-height: 1; } 
+    .num { font-size: 24px !important; font-weight: 800; letter-spacing: -0.02em; line-height: 1; } 
   }
   .budget-detail { font-size: 13px; color: var(--rs-text-muted); margin-bottom: 16px; line-height: 1.4; }
 }
@@ -822,4 +897,64 @@ mat-card.premium-card-clean > span.label-caps {
 
  h4 { margin: 0 0 6px 0 !important; font-size: 14px !important; font-weight: 700; color: var(--rs-text-navy); }
   p { margin: 0; font-size: 12px !important; color: var(--rs-text-muted); line-height: 1.4; }
+}
+
+
+/* =========================================================
+   PWA RESPONSIVE DESIGN (ADAPTACIÓN MÓVIL Y TABLET)
+========================================================= */
+
+/* 💻 Pantallas Medianas / Laptops pequeñas (Menos de 1200px) */
+@media (max-width: 1200px) {
+  .rs-main-grid-layout {
+    /* Pasamos de 3 a 2 columnas. La columna de Management/Chat baja a una nueva fila */
+    grid-template-columns: 280px 1fr !important;
+  }
+  
+  /* Hacemos que la columna derecha ocupe el ancho completo abajo */
+  .col-right, .rs-main-grid-layout > *:nth-child(3) {
+    grid-column: 1 / -1 !important; 
+  }
+}
+
+/* 📱 Teléfonos / Mobile First (Menos de 768px) */
+@media (max-width: 768px) {
+  .rs-page-container {
+    padding-top: 16px !important; /* Menos espacio inútil arriba en móviles */
+  }
+
+  .rs-main-grid-layout {
+    /* Rompemos la grilla y apilamos TODO verticalmente */
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* Desactivamos el estiramiento forzado porque en vertical ya no hay "huecos" que llenar */
+  .col-middle-flex {
+    height: auto !important;
+  }
+  
+  .rs-expediente-final-tuned {
+    flex: none !important;
+    min-height: auto !important; 
+  }
+
+  /* Los inputs de edición a 1 sola columna para que se puedan teclear cómodamente */
+  .rs-grid-edit,
+  .rs-core-card-final .rs-grid-edit,
+  .rs-expediente-final-tuned .rs-grid-edit {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  mat-form-field {
+    width: 100% !important;
+  }
+
+  /* Ajustes para el Chat en móvil */
+  .chat-viewport-enterprise {
+    height: 350px !important; /* Le damos más espacio vertical en móviles */
+  }
 }
