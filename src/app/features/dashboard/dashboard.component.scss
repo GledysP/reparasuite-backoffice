@@ -156,6 +156,20 @@
   --kpi-glow: rgba(8, 26, 75, 0.2);
 }
 
+/* Ajuste de visibilidad de alto contraste para el Dark Mode en el Card de Cotizaciones */
+:host-context([data-theme='dark']) .kpi-quotation,
+:host-context(.dark-theme) .kpi-quotation {
+  --kpi-accent: var(--rs-primary, #00d1ff); /* Tono cyan brillante principal */
+  --kpi-glow: rgba(0, 209, 255, 0.35); /* Glow incrementado para mejor lectura sobre oscuro */
+}
+
+@media (prefers-color-scheme: dark) {
+  .kpi-quotation {
+    --kpi-accent: var(--rs-primary, #00d1ff);
+    --kpi-glow: rgba(0, 209, 255, 0.35);
+  }
+}
+
 .kpi-progress {
   --kpi-accent: #38bdf8;
   --kpi-glow: rgba(56, 189, 248, 0.2);
@@ -332,7 +346,7 @@
 .rs-panel-title {
   margin: 0;
   color: var(--rs-text-navy);
-  font-size: 1.08rem;
+  font-size: 1rem; /* 16px exactos para mantener la jerarquía bajo el h1 */
   font-weight: 600;
   letter-spacing: -0.025em;
 }
@@ -644,7 +658,7 @@
   }
 
   th.mat-mdc-header-cell {
-    padding: 14px 10px;
+    padding: 22px 14px; /* Mayor espacio vertical para aligerar la vista */
     border-bottom: 1px solid var(--rs-border) !important;
     color: var(--rs-text-muted);
     font-size: 0.75rem;
@@ -654,7 +668,7 @@
   }
 
   td.mat-mdc-cell {
-    padding: 16px 10px;
+    padding: 26px 14px; /* Las filas ahora respiran mucho mejor (SaaS look) */
     border-bottom: 1px solid var(--rs-border) !important;
     color: var(--rs-text-main);
     font-size: 0.94rem;
