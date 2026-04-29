@@ -240,6 +240,18 @@
                     </td>
                   </ng-container>
 
+                  <ng-container matColumnDef="servicio">
+                    <th mat-header-cell *matHeaderCellDef>Servicio</th>
+                    <td mat-cell *matCellDef="let row">
+                      <!-- Si tiene servicio, muestra el badge -->
+                      <span class="badge-servicio" *ngIf="getServicio(row)">
+                        {{ getServicio(row) }}
+                      </span>
+                      <!-- Si no tiene, muestra la rayita -->
+                      <span *ngIf="!getServicio(row)">—</span>
+                    </td>
+                  </ng-container>
+
                   <ng-container matColumnDef="tecnico">
                     <th mat-header-cell *matHeaderCellDef>Técnico</th>
                     <td mat-cell *matCellDef="let row">
@@ -309,6 +321,11 @@
                     <span class="rs-badge rs-priority-badge" [attr.data-priority]="getPriorityTone(row)">
                       {{ getPriorityLabel(row) }}
                     </span>
+                    <ng-container *ngIf="getServicio(row)">
+                      <span class="badge-servicio">
+                        {{ getServicio(row) }}
+                      </span>
+                    </ng-container>
                   </div>
 
                   <div class="rs-order-card-meta">

@@ -75,6 +75,7 @@ export class DashboardComponent implements OnInit {
     'estado',
     'prioridad',
     'tipo',
+    'servicio',
     'tecnico',
     'fecha',
     'accion',
@@ -192,6 +193,14 @@ export class DashboardComponent implements OnInit {
       .split('_')
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(' ');
+  }
+
+  getServicio(row: OtListaItem): string | null {
+    // Verificamos de forma segura que el arreglo exista y tenga al menos 1 elemento
+    if (row.categoriasTrabajo && row.categoriasTrabajo.length > 0) {
+      return row.categoriasTrabajo[0];
+    }
+    return null;
   }
 
   toDateSafe(value: string | null | undefined): string {

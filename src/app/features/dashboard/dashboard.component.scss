@@ -346,8 +346,8 @@
 .rs-panel-title {
   margin: 0;
   color: var(--rs-text-navy);
-  font-size: 1rem; /* 16px exactos para mantener la jerarquía bajo el h1 */
-  font-weight: 600;
+  font-size: 15px !important;
+  font-weight: 700;
   letter-spacing: -0.025em;
 }
 
@@ -436,10 +436,19 @@
 }
 
 .rs-btn-outline {
+  border-color: var(--rs-border) !important;
+  color: var(--rs-primary) !important;
   justify-content: flex-start !important;
 
+  ::ng-deep .mdc-button__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+  }
+
   .mat-icon {
-    color: #9ca3af;
+    color: var(--rs-primary) !important;
   }
 }
 
@@ -825,6 +834,16 @@
   .mat-icon {
     color: #9ca3af !important;
   }
+}
+
+.badge-servicio {
+  font-size: 10.5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: rgba(0, 191, 245, 0.1);
+  color: var(--rs-primary);
 }
 
 .rs-stock-list {

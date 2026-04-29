@@ -70,6 +70,7 @@ export class OrdenesTrabajoListComponent implements OnInit {
     'cliente',
     'estado',
     'tipo',
+    'servicio',
     'tecnico',
     'actualizado',
     'accion',
@@ -199,6 +200,13 @@ export class OrdenesTrabajoListComponent implements OnInit {
       default:
         return value ? value.replaceAll('_', ' ') : '—';
     }
+  }
+
+  getServicio(row: OtListaItem): string | null {
+    if (row.categoriasTrabajo && row.categoriasTrabajo.length > 0) {
+      return row.categoriasTrabajo[0];
+    }
+    return null;
   }
 
   getClientInitials(name: string | null | undefined): string {

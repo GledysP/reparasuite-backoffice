@@ -129,6 +129,25 @@
               </td>
             </ng-container>
 
+            <ng-container matColumnDef="servicio">
+              <th mat-header-cell *matHeaderCellDef>Servicio</th>
+              <td mat-cell *matCellDef="let row">
+                <!-- Contenedor flex para agrupar múltiples servicios -->
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;" *ngIf="row.categoriasTrabajo?.length; else sinServicio">
+                  
+                  <!-- Hacemos un ciclo (for) para imprimir un badge por cada servicio -->
+                  <span class="badge-servicio" *ngFor="let s of row.categoriasTrabajo">
+                    {{ s }}
+                  </span>
+
+                </div>
+                <!-- Qué mostrar si está vacío -->
+                <ng-template #sinServicio>
+                  <span style="color: var(--rs-text-muted);">—</span>
+                </ng-template>
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="tecnico">
               <th mat-header-cell *matHeaderCellDef>Técnico</th>
               <td mat-cell *matCellDef="let row">
