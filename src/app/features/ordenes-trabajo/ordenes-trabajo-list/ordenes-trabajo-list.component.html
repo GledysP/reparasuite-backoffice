@@ -9,85 +9,91 @@
 
     <button
       mat-flat-button
-      type="button"
-      class="rs-btn rs-btn--primary btn-new-ot"
-      routerLink="/ordenes-trabajo/nueva"
+      class="rs-btn--primary btn-new-ot"
+      routerLink="/ordenes/nueva"
     >
-      <span class="rs-btn__shimmer"></span>
+      <!-- Capa de animación del brillo -->
+      <div class="rs-btn__shimmer"></div>
+
+      <!-- Contenedor del ícono y texto -->
       <span class="rs-btn__label">
-        <span class="rs-btn__icon-slot">
-          <mat-icon>add</mat-icon>
-        </span>
-        <span class="rs-btn__text">Nueva orden de trabajo</span>
+        <mat-icon>add</mat-icon>
+        Nueva orden de trabajo
       </span>
     </button>
   </div>
 
-  <mat-card class="rs-filter-card rs-fade-up" [style.animationDelay]="'60ms'">
-    <mat-card-content>
-      <form class="rs-filtros-grid" [formGroup]="filtros">
-        <div class="rs-field">
-          <div class="rs-field-label">Estado</div>
-          <mat-form-field appearance="outline" class="filter-field">
-            <mat-select formControlName="estado" panelClass="rs-figma-select-panel">
-              <mat-option value="">Todos</mat-option>
-              <mat-option *ngFor="let e of estadosDisponibles" [value]="e">
-                {{ estadoTexto(e) }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+  <form
+    class="rs-floating-tools rs-fade-up"
+    [style.animationDelay]="'60ms'"
+    [formGroup]="filtros"
+  >
+    <div class="rs-field">
+      <div class="rs-field-label">Estado</div>
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-select formControlName="estado" panelClass="rs-figma-select-panel">
+          <mat-option value="">Todos</mat-option>
+          <mat-option *ngFor="let e of estadosDisponibles" [value]="e">
+            {{ estadoTexto(e) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
 
-        <div class="rs-field">
-          <div class="rs-field-label">Tipo</div>
-          <mat-form-field appearance="outline" class="filter-field">
-            <mat-select formControlName="tipo" panelClass="rs-figma-select-panel">
-              <mat-option value="">Todo</mat-option>
-              <mat-option value="TIENDA">Tienda</mat-option>
-              <mat-option value="DOMICILIO">A domicilio</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+    <div class="rs-field">
+      <div class="rs-field-label">Tipo</div>
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-select formControlName="tipo" panelClass="rs-figma-select-panel">
+          <mat-option value="">Todo</mat-option>
+          <mat-option value="TIENDA">Taller</mat-option>
+          <mat-option value="DOMICILIO">Domicilio</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
 
-        <div class="rs-field">
-          <div class="rs-field-label">Técnico</div>
-          <mat-form-field appearance="outline" class="filter-field">
-            <mat-select formControlName="tecnicoId" panelClass="rs-figma-select-panel">
-              <mat-option value="">Todos</mat-option>
-              <mat-option *ngFor="let t of tecnicos" [value]="t.id">
-                {{ t.nombre }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <div class="rs-field rs-field-search">
-          <div class="rs-field-label">Buscar cliente / OT #</div>
-          <mat-form-field appearance="outline" class="search-field">
-            <mat-icon matPrefix>search</mat-icon>
-            <input
-              matInput
-              formControlName="query"
-              placeholder="Ej.: OT-0002, María López..."
-              autocomplete="off"
-            />
-          </mat-form-field>
-        </div>
-
-        <button
-          mat-button
-          type="button"
-          (click)="limpiar()"
-          class="btn-clear"
+    <div class="rs-field">
+      <div class="rs-field-label">Técnico</div>
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-select
+          formControlName="tecnicoId"
+          panelClass="rs-figma-select-panel"
         >
-          <mat-icon>refresh</mat-icon>
-          <span>Limpiar</span>
-        </button>
-      </form>
-    </mat-card-content>
-  </mat-card>
+          <mat-option value="">Todos</mat-option>
+          <mat-option *ngFor="let t of tecnicos" [value]="t.id">
+            {{ t.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
 
-  <mat-card class="rs-table-card rs-desktop-table-card rs-fade-up" [style.animationDelay]="'120ms'">
+    <div class="rs-field rs-field-search">
+      <div class="rs-field-label">Buscar cliente / OT #</div>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          formControlName="query"
+          placeholder="Ej.: OT-0002, María López..."
+          autocomplete="off"
+        />
+      </mat-form-field>
+    </div>
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="limpiar()"
+      class="rs-btn-secondary"
+    >
+      <mat-icon>filter_alt_off</mat-icon>
+      <span>Limpiar</span>
+    </button>
+  </form>
+
+  <mat-card
+    class="rs-table-card rs-desktop-table-card rs-fade-up"
+    [style.animationDelay]="'120ms'"
+  >
     <mat-card-content>
       <ng-container *ngIf="items.length; else emptyDesktop">
         <div class="rs-table-responsive">
@@ -103,11 +109,14 @@
               <th mat-header-cell *matHeaderCellDef>Cliente</th>
               <td mat-cell *matCellDef="let row">
                 <div class="rs-client-cell">
-                  <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.clienteNombre)">
+                  <span
+                    class="rs-client-avatar"
+                    [attr.data-tone]="getAvatarTone(row.clienteNombre)"
+                  >
                     {{ getClientInitials(row.clienteNombre) }}
                   </span>
                   <div class="customer-info">
-                    <span class="name">{{ row.clienteNombre || 'N/A' }}</span>
+                    <span class="name">{{ row.clienteNombre || "N/A" }}</span>
                   </div>
                 </div>
               </td>
@@ -116,8 +125,9 @@
             <ng-container matColumnDef="estado">
               <th mat-header-cell *matHeaderCellDef>Estado</th>
               <td mat-cell *matCellDef="let row">
-                <span class="status-badge" [attr.data-status]="row.estado">
-                  {{ estadoTexto(row.estado) }}
+                <span class="rs-status-badge" [attr.data-status]="row.estado">
+                  <span class="rs-status-dot"></span>
+                  <span>{{ estadoTexto(row.estado) }}</span>
                 </span>
               </td>
             </ng-container>
@@ -132,18 +142,23 @@
             <ng-container matColumnDef="servicio">
               <th mat-header-cell *matHeaderCellDef>Servicio</th>
               <td mat-cell *matCellDef="let row">
-                <!-- Contenedor flex para agrupar múltiples servicios -->
-                <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;" *ngIf="row.categoriasTrabajo?.length; else sinServicio">
-                  
-                  <!-- Hacemos un ciclo (for) para imprimir un badge por cada servicio -->
-                  <span class="badge-servicio" *ngFor="let s of row.categoriasTrabajo">
-                    {{ s }}
+                <div
+                  class="rs-services-cell"
+                  *ngIf="row.categoriasTrabajo?.length; else sinServicio"
+                >
+                  <span class="rs-pill">{{ row.categoriasTrabajo[0] }}</span>
+                  <span
+                    class="rs-pill rs-pill--count"
+                    *ngIf="row.categoriasTrabajo.length > 1"
+                    [matTooltip]="getTodosLosServicios(row)"
+                    matTooltipPosition="above"
+                    matTooltipClass="rs-tooltip-premium"
+                  >
+                    +{{ row.categoriasTrabajo.length - 1 }}
                   </span>
-
                 </div>
-                <!-- Qué mostrar si está vacío -->
                 <ng-template #sinServicio>
-                  <span style="color: var(--rs-text-muted);">—</span>
+                  <span style="color: var(--rs-text-muted)">—</span>
                 </ng-template>
               </td>
             </ng-container>
@@ -151,7 +166,7 @@
             <ng-container matColumnDef="tecnico">
               <th mat-header-cell *matHeaderCellDef>Técnico</th>
               <td mat-cell *matCellDef="let row">
-                {{ row.tecnicoNombre || '—' }}
+                {{ row.tecnicoNombre || "—" }}
               </td>
             </ng-container>
 
@@ -163,7 +178,9 @@
             </ng-container>
 
             <ng-container matColumnDef="accion">
-              <th mat-header-cell *matHeaderCellDef class="rs-action-head">Acciones</th>
+              <th mat-header-cell *matHeaderCellDef class="rs-action-head">
+                Acciones
+              </th>
               <td mat-cell *matCellDef="let row" class="rs-action-cell">
                 <div class="rs-actions-container">
                   <button
@@ -186,7 +203,7 @@
                     [disabled]="eliminando(row)"
                   >
                     <mat-icon>
-                      {{ eliminando(row) ? 'hourglass_top' : 'delete_outline' }}
+                      {{ eliminando(row) ? "hourglass_top" : "delete_outline" }}
                     </mat-icon>
                   </button>
                 </div>
@@ -216,8 +233,8 @@
       *ngIf="items.length"
       [length]="total"
       [pageIndex]="page"
-      [pageSize]="size"
-      [pageSizeOptions]="[10, 20, 50]"
+      [pageSize]="10"
+      [pageSizeOptions]="[10, 15, 20]"
       (page)="paginar($event)"
       class="rs-paginator"
     >
@@ -234,15 +251,21 @@
           <div class="rs-mobile-ot-code">{{ row.codigo }}</div>
 
           <div class="rs-client-cell rs-client-cell--mobile">
-            <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.clienteNombre)">
+            <span
+              class="rs-client-avatar"
+              [attr.data-tone]="getAvatarTone(row.clienteNombre)"
+            >
               {{ getClientInitials(row.clienteNombre) }}
             </span>
-            <span class="rs-mobile-ot-client">{{ row.clienteNombre || 'N/A' }}</span>
+            <span class="rs-mobile-ot-client">{{
+              row.clienteNombre || "N/A"
+            }}</span>
           </div>
         </div>
 
-        <span class="status-badge" [attr.data-status]="row.estado">
-          {{ estadoTexto(row.estado) }}
+        <span class="rs-status-badge" [attr.data-status]="row.estado">
+          <span class="rs-status-dot"></span>
+          <span>{{ estadoTexto(row.estado) }}</span>
         </span>
       </div>
 
@@ -254,7 +277,7 @@
 
         <div class="meta-item">
           <mat-icon>engineering</mat-icon>
-          <span>{{ row.tecnicoNombre || 'Sin asignar' }}</span>
+          <span>{{ row.tecnicoNombre || "Sin asignar" }}</span>
         </div>
 
         <div class="meta-item">
@@ -284,7 +307,7 @@
           [disabled]="eliminando(row)"
         >
           <mat-icon>
-            {{ eliminando(row) ? 'hourglass_top' : 'delete_outline' }}
+            {{ eliminando(row) ? "hourglass_top" : "delete_outline" }}
           </mat-icon>
         </button>
       </div>
@@ -294,8 +317,8 @@
       <mat-paginator
         [length]="total"
         [pageIndex]="page"
-        [pageSize]="size"
-        [pageSizeOptions]="[10, 20, 50]"
+        [pageSize]="10"
+        [pageSizeOptions]="[10, 15, 20]"
         (page)="paginar($event)"
         class="rs-paginator"
       >

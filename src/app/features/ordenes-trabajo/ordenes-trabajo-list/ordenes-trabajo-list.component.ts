@@ -15,6 +15,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDeleteDialogComponent } from '../../../shared/confirm-delete-dialog/confirm-delete-dialog.component';// Ajusta esta ruta a la de tu componente real
 
 import { UsuariosService } from '../../usuarios/usuarios.service';
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
@@ -37,6 +40,8 @@ import { OtListaItem, UsuarioResumen } from '../../../core/models/tipos';
     MatPaginatorModule,
     MatIconModule,
     MatSnackBarModule,
+    MatTooltipModule,
+    MatDialogModule,
   ],
   templateUrl: './ordenes-trabajo-list.component.html',
   styleUrl: './ordenes-trabajo-list.component.scss',
@@ -47,6 +52,7 @@ export class OrdenesTrabajoListComponent implements OnInit {
   private readonly usuarios = inject(UsuariosService);
   private readonly ordenes = inject(OrdenesTrabajoService);
   private readonly snack = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
 
   estadosDisponibles: EstadoOt[] = [
     'RECIBIDA',
@@ -61,7 +67,7 @@ export class OrdenesTrabajoListComponent implements OnInit {
   items: OtListaItem[] = [];
   total = 0;
   page = 0;
-  size = 20;
+  size = 10;
 
   deletingId: string | null = null;
 
@@ -159,6 +165,11 @@ export class OrdenesTrabajoListComponent implements OnInit {
     return row.id;
   }
 
+  getTodosLosServicios(row: OtListaItem): string {
+    if (!row.categoriasTrabajo || row.categoriasTrabajo.length === 0) return '';
+    return row.categoriasTrabajo.join(', ');
+  }
+
   formatoFecha(fecha?: string | null): string {
     if (!fecha) return '—';
 
@@ -175,8 +186,8 @@ export class OrdenesTrabajoListComponent implements OnInit {
   tipoTexto(tipo?: string | null): string {
     const value = String(tipo ?? '').toUpperCase();
 
-    if (value === 'DOMICILIO') return 'A domicilio';
-    if (value === 'TIENDA') return 'Tienda';
+    if (value === 'DOMICILIO') return 'Domicilio';
+    if (value === 'TIENDA') return 'Taller';
 
     return '—';
   }
@@ -237,40 +248,45 @@ export class OrdenesTrabajoListComponent implements OnInit {
   }
 
   eliminarOrden(row: OtListaItem): void {
-    if (!row?.id || this.deletingId) return;
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '400px',
+      panelClass: 'rs-figma-select-panel', // Para heredar los bordes redondeados y estilo de la app
+      autoFocus: false,
+      data: {
+        title: 'Eliminar orden de trabajo',
+        message: `¿Estás seguro de que deseas eliminar la orden "${row.codigo}"? Esta acción no se puede deshacer.`,
+        confirmText: 'Sí, eliminar'
+      }
+    });
 
-    const ok = window.confirm(
-      `¿Seguro que deseas eliminar la orden ${row.codigo || ''}? Esta acción no se puede deshacer.`
-    );
-
-    if (!ok) return;
-
-    this.deletingId = row.id;
-
-    this.ordenes
-      .eliminar(row.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.snack.open('Orden eliminada correctamente', 'OK', { duration: 2200 });
-          this.deletingId = null;
-
-          this.items = this.items.filter((x) => x.id !== row.id);
-          this.total = Math.max(0, this.total - 1);
-
-          this.cargar();
-        },
-        error: (err) => {
-          console.error('Error eliminando OT:', err);
-          this.deletingId = null;
-
-          const msg =
-            err?.error?.message ||
-            err?.error?.error ||
-            'No se pudo eliminar la orden de trabajo';
-
-          this.snack.open(msg, 'OK', { duration: 3200 });
-        },
-      });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deletingId = row.id;
+        
+        this.ordenes.eliminar(row.id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              this.deletingId = null;
+              // Actualizar la tabla localmente
+              this.items = this.items.filter(item => item.id !== row.id);
+              this.total--;
+              
+              // Alerta premium global
+              this.snack.open('Orden eliminada correctamente', 'Cerrar', {
+                duration: 3000,
+                panelClass: ['rs-toast-success']
+              });
+            },
+            error: (err) => {
+              this.deletingId = null;
+              this.snack.open('Error al eliminar la orden', 'Cerrar', {
+                duration: 4000,
+                panelClass: ['rs-toast-error']
+              });
+            }
+          });
+      }
+    });
   }
 }

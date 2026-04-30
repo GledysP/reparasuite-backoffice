@@ -17,6 +17,7 @@ export interface ConfirmDeleteDialogData {
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   template: `
     <div class="rs-delete-dialog">
+      <!-- Icono bajado y centrado -->
       <div class="rs-delete-dialog__icon">
         <mat-icon>delete_forever</mat-icon>
       </div>
@@ -30,80 +31,83 @@ export interface ConfirmDeleteDialogData {
       </mat-dialog-content>
 
       <mat-dialog-actions align="end" class="rs-delete-dialog__actions">
-        <button mat-stroked-button type="button" class="btn-cancel" (click)="close(false)">
+        <!-- Botón secundario global -->
+        <button mat-stroked-button type="button" class="rs-btn-secondary btn-layout" (click)="close(false)">
           {{ data.cancelText || 'Cancelar' }}
         </button>
 
         <button mat-flat-button type="button" class="btn-delete" (click)="close(true)">
-          {{ data.confirmText || 'Eliminar' }}
+          {{ data.confirmText || 'Sí, eliminar' }}
         </button>
       </mat-dialog-actions>
     </div>
   `,
   styles: [`
     .rs-delete-dialog {
-      padding: 8px 6px 2px;
-      min-width: 320px;
-      max-width: 460px;
+      padding: 32px 24px 16px !important; /* Más aire arriba para que el logo baje */
+      min-width: 350px;
+      max-width: 420px;
     }
 
     .rs-delete-dialog__icon {
-      width: 54px;
-      height: 54px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      margin: 0 auto 12px;
-      background: rgba(239, 68, 68, 0.08);
-      border: 1px solid rgba(239, 68, 68, 0.16);
+      width: 48px; 
+      height: 48px; 
+      border-radius: 50%;
+      display: grid; 
+      place-items: center; 
+      /* Bajamos el logo dándole margen arriba y pegándolo al título abajo */
+      margin: 0 auto 12px; 
+      background: rgba(239, 68, 68, 0.1); 
+      border: 1px solid rgba(239, 68, 68, 0.2);
     }
-
-    .rs-delete-dialog__icon mat-icon {
-      color: #dc2626;
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
+    
+    .rs-delete-dialog__icon mat-icon { 
+      color: #ef4444; 
+      font-size: 24px; 
+      width: 24px; 
+      height: 24px; 
     }
-
+    
     .rs-delete-dialog__title {
-      margin: 0;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -0.02em;
+      margin: 0 0 12px 0 !important; 
+      padding: 0 !important;
+      text-align: center; 
+      font-size: 1.2rem; 
+      font-weight: 800; 
+      color: var(--rs-text-navy); 
     }
-
+    
     .rs-delete-dialog__content {
-      margin-top: 8px;
-      text-align: center;
-      color: #475569;
-      font-size: 14px;
-      line-height: 1.55;
-      padding: 0 6px 8px !important;
+      margin: 0; 
+      text-align: center; 
+      font-size: 0.95rem; 
+      line-height: 1.5;
+      color: var(--rs-text-muted); 
+      padding: 0 10px 24px !important;
     }
-
-    .rs-delete-dialog__actions {
-      display: flex;
-      gap: 10px;
-      padding: 8px 0 0 !important;
+    
+    .rs-delete-dialog__actions { 
+      display: flex; 
+      justify-content: flex-end; 
+      gap: 12px; 
+      padding: 0 !important; 
     }
-
-    .btn-cancel {
-      border-radius: 12px !important;
-      font-weight: 700 !important;
-      padding: 0 16px !important;
-      height: 40px !important;
+    
+    .btn-layout {
+      border-radius: 12px !important; 
+      padding: 0 20px !important; 
+      height: 42px !important;
+      min-width: 100px;
     }
 
     .btn-delete {
-      border-radius: 12px !important;
-      background: #dc2626 !important;
-      color: #fff !important;
-      font-weight: 800 !important;
-      padding: 0 18px !important;
-      height: 40px !important;
-      box-shadow: 0 10px 22px rgba(220, 38, 38, 0.18) !important;
+      border-radius: 12px !important; 
+      color: #fff !important; 
+      font-weight: 800; 
+      padding: 0 24px !important; 
+      height: 42px !important;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+      box-shadow: 0 6px 16px rgba(220, 38, 38, 0.25) !important;
     }
   `]
 })
@@ -113,7 +117,7 @@ export class ConfirmDeleteDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: ConfirmDeleteDialogData
   ) {}
 
-  close(value: boolean): void {
-    this.dialogRef.close(value);
+  close(value: boolean): void { 
+    this.dialogRef.close(value); 
   }
 }

@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { OrdenesTrabajoService } from '../ordenes-trabajo/ordenes-trabajo.service';
 import { EquiposService } from '../equipos/equipos.service';
@@ -16,6 +17,7 @@ import {
   InventarioItemResumenDto,
 } from '../../core/models/tipos';
 import { WhatsappService } from '../../core/services/whatsapp.service';
+
 
 interface CalendarDay {
   label: number;
@@ -43,6 +45,7 @@ interface ChartSegment {
     MatButtonModule,
     RouterLink,
     MatSnackBarModule,
+    MatTooltipModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',

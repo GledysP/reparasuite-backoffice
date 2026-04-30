@@ -73,7 +73,7 @@
   --rs-navy-box: #081a4b;      /* Fondo del contenedor de falla */
   --rs-navy-text: #00d1ff;     /* Color del título cian dentro del box */
 
-  ---rs-shadow-md: 0 4px 20px rgba(15, 23, 42, 0.05);
+  --rs-shadow-md: 0 4px 20px rgba(15, 23, 42, 0.05);
 }
 
 /* Responsivo (Se mantienen tus media queries inteligentes) */
@@ -97,8 +97,8 @@ body {
   height: 100%;
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--rs-bg) !important; /* CORREGIDO: Usa variable */
-  color: var(--rs-text-main) !important; /* CORREGIDO: Usa variable */
+  background-color: var(--rs-bg) !important;
+  color: var(--rs-text-main) !important;
   font-size: 16px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
@@ -121,14 +121,12 @@ body {
   letter-spacing: -0.01em;
 }
 
-
-
 /* ✅ UNIFICACIÓN GLOBAL: Inputs y Dropdowns (Material MDC) */
 .mat-mdc-form-field {
   width: 100%;
   font-family: 'Inter', sans-serif !important;
 
-  /* 1. CONFIGURACIÓN DE BORDES Y FOCUS (Consistencia total) */
+  /* 1. CONFIGURACIÓN DE BORDES Y FOCUS */
   --mdc-outlined-text-field-outline-color: var(--rs-border);
   --mdc-outlined-text-field-hover-outline-color: var(--rs-primary);
   --mdc-outlined-text-field-focus-outline-color: var(--rs-primary);
@@ -139,7 +137,6 @@ body {
     background-color: var(--rs-card) !important;
     transition: all 0.2s ease-in-out !important;
 
-    /* Efecto Hover coherente en todo el sistema */
     &:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04) !important;
@@ -152,7 +149,7 @@ body {
     display: none !important;
   }
 
-  /* 3. MATA EL ESPACIO DE ERROR (Para que los cards no crezcan) */
+  /* 3. MATA EL ESPACIO DE ERROR */
   .mat-mdc-form-field-subscript-wrapper { 
     display: none !important; 
   }
@@ -164,13 +161,11 @@ body {
   }
 }
 
-
 /* =========================================================
    CORRECCIÓN DEFINITIVA ANGULAR MATERIAL (DARK MODE)
 ========================================================= */
 body.dark-theme, .dark-theme {
   
-  /* Dropdowns texto seleccionado */
   .mat-mdc-select-value-text, .mat-select-value-text {
     color: #ffffff !important;
     font-weight: 500 !important;
@@ -180,9 +175,7 @@ body.dark-theme, .dark-theme {
     color: var(--rs-primary) !important;
   }
 
-  /* 🏆 FORZADO ABSOLUTO DE INPUTS MDC EN DARK MODE */
   .mat-mdc-form-field {
-    /* 1. Forzar el color del texto escrito */
     .mdc-text-field__input,
     .mat-mdc-input-element,
     input, textarea {
@@ -191,21 +184,17 @@ body.dark-theme, .dark-theme {
       caret-color: #ffffff !important;
     }
     
-    /* 2. Forzar el color del placeholder (texto de fondo) */
     .mdc-text-field__input::placeholder,
     input::placeholder, textarea::placeholder {
       color: rgba(255, 255, 255, 0.6) !important;
       -webkit-text-fill-color: rgba(255, 255, 255, 0.6) !important;
     }
     
-    /* 3. Asegurar que las etiquetas flotantes (Labels) sean legibles */
     .mdc-floating-label {
       color: rgba(255, 255, 255, 0.8) !important;
     }
   }
 }
-
-
 
 /* =========================
    RS PAGE LAYOUT (Uniform)
@@ -231,7 +220,7 @@ body.dark-theme, .dark-theme {
 .rs-page-head { 
   display: flex !important;
   justify-content: space-between !important;
-  align-items: center !important; /* CORREGIDO: center para alinear título y botón */
+  align-items: center !important; 
   flex-wrap: wrap;
   gap: 16px;
   margin: 0 0 24px 0 !important;
@@ -242,7 +231,6 @@ body.dark-theme, .dark-theme {
 /* =========================
    RS TYPOGRAPHY (Uniform)
 ========================= */
-/* TODOS LOS TÍTULOS AUTOMÁTICOS (Navy en claro, Blanco en oscuro) */
 h1, h2, h3, h4, h5, h6, 
 .mat-mdc-card-title,
 .rs-page-title,
@@ -252,10 +240,9 @@ h1, h2, h3, h4, h5, h6,
   font-weight: var(--rs-title-weight) !important; 
   letter-spacing: -0.03em !important;
   line-height: 1.1 !important;
-  color: var(--rs-text-navy) !important; /* Esta variable hace toda la magia sola */
+  color: var(--rs-text-navy) !important; 
 }
 
-/* TODOS LOS SUBTÍTULOS AUTOMÁTICOS */
 .rs-page-subtitle,
 .rs-subtitle,
 .section-subtitle,
@@ -270,8 +257,6 @@ h1, h2, h3, h4, h5, h6,
   margin: 8px 0 0 0 !important; 
   display: block !important;
 }
-
-
 
 /* =========================
    RS TABLE SYSTEM (Global)
@@ -297,17 +282,10 @@ h1, h2, h3, h4, h5, h6,
     line-height: 1.35;
   }
 
-  .fw-bold,
-  .bold-text,
-  .col-code {
-    font-weight: 700;
-  }
+  .fw-bold, .bold-text, .col-code { font-weight: 700; }
 }
 
-.rs-table-responsive {
-  width: 100%;
-  overflow-x: auto;
-}
+.rs-table-responsive { width: 100%; overflow-x: auto; }
 
 /* 5. ESTRUCTURA Y CONTENEDORES (Utilidades RS) */
 .rs-container { height: 100vh; }
@@ -500,7 +478,7 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox { display: none !import
 }
 
 /* =========================================================
-   ALERTAS GLOBALES (TOASTS) - PAMBYTE (CORREGIDO ICONOS DINAMICOS)
+   ALERTAS GLOBALES (TOASTS)
    ========================================================= */
 .mat-mdc-snack-bar-container {
   &.rs-toast-info .mdc-snackbar__surface { background-color: var(--rs-info) !important; }
@@ -533,7 +511,6 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox { display: none !import
     }
   }
 
-  /* Asignamos el icono correcto según el tipo de alerta */
   &.rs-toast-success .mdc-snackbar__label::before { content: 'check_circle'; } 
   &.rs-toast-error .mdc-snackbar__label::before { content: 'cancel'; } 
   &.rs-toast-warning .mdc-snackbar__label::before { content: 'warning'; }
@@ -553,7 +530,6 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox { display: none !import
   animation: rsFadeUpGlobal 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-
 /* =========================================================
    SISTEMA DE BOTONES GLOBALES (SaaS Pro - 12px Estricto Unificado)
    ========================================================= */
@@ -562,7 +538,7 @@ div.cdk-overlay-pane .rs-tech-panel .mat-pseudo-checkbox { display: none !import
   100% { transform: translateX(220%) skewX(-24deg); }
 }
 
-/* 1. CLASE BASE: Somete a Angular Material y fuerza los 12px en toda la app */
+/* 1. CLASE BASE */
 body .rs-btn,
 body .mat-mdc-button,
 body .mat-mdc-outlined-button,
@@ -571,7 +547,6 @@ body .mat-mdc-unelevated-button {
   height: var(--rs-density-btn-h) !important; 
   border-radius: 12px !important; 
   
-  /* MDC Tokens para anular el diseño por defecto de Material */
   --mdc-filled-button-container-shape: 12px !important;
   --mdc-protected-button-container-shape: 12px !important;
   --mdc-outlined-button-container-shape: 12px !important;
@@ -586,7 +561,7 @@ body .mat-mdc-unelevated-button {
   font-size: 13px !important;
 }
 
-/* 2. Mi botón primario (Con el Shimmer atrapado) */
+/* 2. BOTONES PRIMARIOS GLOBALES */
 .rs-btn--primary {
   position: relative; overflow: hidden !important; isolation: isolate; color: #ffffff !important;
   background: linear-gradient(135deg, var(--rs-primary-dark) 0%, var(--rs-primary) 100%) !important;
@@ -609,19 +584,44 @@ body .mat-mdc-unelevated-button {
   }
 }
 
-/* 3. Mis botones secundarios */
-.rs-btn-secondary { 
+/* ==============================================================
+   3. BOTONES SECUNDARIOS Y OUTLINE GLOBALES (PLANOS Y BLINDADOS)
+   ============================================================== */
+.rs-btn-secondary,
+.rs-btn-outline,
+button[mat-stroked-button].rs-btn-outline { 
   font-weight: 600 !important; 
+  
+  /* ☀️ MODO CLARO (NORMAL): Borde clarito, letra e ícono oscuros */
   border: 1px solid var(--rs-border) !important;
+  --mdc-outlined-button-outline-color: var(--rs-border) !important; 
+  
   color: var(--rs-text-main) !important; 
-  background-color: var(--rs-card) !important; 
-  transition: all 0.2s ease !important;
+  background-color: transparent !important; 
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: none !important;
 
-  &:hover:not(:disabled) {
-    border-color: var(--rs-primary-dark) !important;
-    color: var(--rs-primary-dark) !important;
-    background-color: rgba(0, 191, 245, 0.05) !important;
-    transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  .mat-icon, mat-icon, .rs-outline-icon, .material-symbols-outlined, svg {
+    color: var(--rs-text-main) !important;
+    fill: var(--rs-text-main) !important;
+    transition: color 0.2s ease, fill 0.2s ease;
+  }
+
+  /* ☀️ MODO CLARO (HOVER): Borde e ícono Cyan brillante (cero ruido negro) */
+  &:hover:not(:disabled),
+  &:focus:not(:disabled) {
+    border-color: var(--rs-primary) !important; 
+    --mdc-outlined-button-outline-color: var(--rs-primary) !important;
+    
+    background-color: transparent !important; 
+    color: var(--rs-primary) !important; 
+    box-shadow: none !important; 
+    transform: none !important; 
+
+    .mat-icon, mat-icon, .rs-outline-icon, .material-symbols-outlined, svg {
+      color: var(--rs-primary) !important; 
+      fill: var(--rs-primary) !important;
+    }
   }
 }
 
@@ -629,13 +629,123 @@ body .mat-mdc-unelevated-button {
   --mdc-icon-button-state-layer-size: 40px;
 }
 
-/* Corrección Hover para botones secundarios en Modo Oscuro */
-body.dark-theme .rs-btn--secondary:hover,
-.dark-theme button[mat-stroked-button]:hover {
-  color: #ffffff !important;
+/* ==============================================================
+   🌙 COMPORTAMIENTO ESTRICTO MODO OSCURO (Gana especificidad)
+   ============================================================== */
+html.dark-theme, body.dark-theme, .dark-theme, [data-theme='dark'] {
+  
+  .rs-btn-secondary,
+  .rs-btn-outline,
+  button[mat-stroked-button].rs-btn-outline,
+  button[mat-stroked-button].rs-btn-secondary {
+    
+    /* 🌙 MODO OSCURO (NORMAL): Borde blanco translúcido, letras e íconos BLANCOS */
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    --mdc-outlined-button-outline-color: rgba(255, 255, 255, 0.15) !important;
+    
+    color: #ffffff !important; 
+    background-color: transparent !important; 
+    
+    .mat-icon, mat-icon, .rs-outline-icon, .material-symbols-outlined, svg { 
+      color: #ffffff !important; 
+      fill: #ffffff !important;
+    }
+
+    /* 🌙 MODO OSCURO (HOVER): Borde Cyan brillante, letras e íconos SIGUEN BLANCOS */
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
+      border-color: var(--rs-primary) !important; /* Mismo azul cyan del modo claro */
+      --mdc-outlined-button-outline-color: var(--rs-primary) !important;
+      
+      background-color: transparent !important; 
+      color: #ffffff !important; /* SIEMPRE BLANCO */
+      box-shadow: none !important;
+      transform: none !important;
+      
+      .mat-icon, mat-icon, .rs-outline-icon, .material-symbols-outlined, svg { 
+        color: #ffffff !important; /* SIEMPRE BLANCO */
+        fill: #ffffff !important;
+      }
+    }
+  }
 }
 
-/* Botón de Acción Exitosa (Verde Esmeralda) */
+/* ==============================================================
+   COMPORTAMIENTO MODO OSCURO
+   ============================================================== */
+body.dark-theme .rs-btn-secondary,
+body.dark-theme .rs-btn-outline,
+.dark-theme button[mat-stroked-button] {
+  
+  /* 3. MODO OSCURO (NORMAL): Borde claro, letra e ícono BLANCOS */
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  --mdc-outlined-button-outline-color: rgba(255, 255, 255, 0.15) !important;
+  
+  color: #ffffff !important; 
+  background-color: transparent !important; 
+  
+  /* Selector de fuerza bruta para asegurar que TODO ícono sea blanco */
+  .mat-icon, .rs-outline-icon, .material-symbols-outlined, svg { 
+    color: #ffffff !important; 
+    fill: #ffffff !important;
+  }
+
+  /* 4. MODO OSCURO (HOVER): Borde Cyan brillante, letra/ícono siguen blancos */
+  &:hover:not(:disabled),
+  &:focus:not(:disabled) {
+    border-color: var(--rs-primary) !important; /* Cambiado a Cyan para que no parezca negro */
+    --mdc-outlined-button-outline-color: var(--rs-primary) !important;
+    
+    background-color: transparent !important; 
+    color: #ffffff !important; 
+    box-shadow: none !important;
+    transform: none !important;
+    
+    .mat-icon, .rs-outline-icon, .material-symbols-outlined, svg { 
+      color: #ffffff !important; 
+      fill: #ffffff !important;
+    }
+  }
+}
+
+/* ==============================================================
+   COMPORTAMIENTO MODO OSCURO (ÍCONOS Y LETRAS 100% BLANCOS)
+   ============================================================== */
+body.dark-theme .rs-btn-secondary,
+body.dark-theme .rs-btn-outline,
+.dark-theme button[mat-stroked-button] {
+  
+  /* 3. MODO OSCURO (NORMAL): Borde claro, letra e ícono BLANCOS SIEMPRE */
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  --mdc-outlined-button-outline-color: rgba(255, 255, 255, 0.15) !important;
+  
+  color: #ffffff !important; /* BLANCO FIJO */
+  background-color: transparent !important; 
+  
+  .mat-icon, .rs-outline-icon { 
+    color: #ffffff !important; /* BLANCO FIJO */
+  }
+
+  /* 4. MODO OSCURO (HOVER): Borde Azul Navy, fondo transparente, letra/ícono siguen blancos */
+  &:hover:not(:disabled),
+  &:focus:not(:disabled) {
+    border-color: var(--rs-primary-dark) !important; /* Borde Navy */
+    --mdc-outlined-button-outline-color: var(--rs-primary-dark) !important;
+    
+    background-color: transparent !important; 
+    color: #ffffff !important; /* SIGUEN BLANCOS */
+    box-shadow: none !important;
+    transform: none !important;
+    
+    .mat-icon, .rs-outline-icon { 
+      color: #ffffff !important; /* SIGUEN BLANCOS */
+    }
+  }
+}
+
+/* =========================================================
+ 4. Botón de Acción Exitosa (Verde Esmeralda) cerrar orden
+========================================================= */
 .rs-btn--success {
   position: relative; overflow: hidden !important; isolation: isolate; color: #ffffff !important;
   background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important; 
@@ -647,10 +757,8 @@ body.dark-theme .rs-btn--secondary:hover,
   &:disabled { opacity: 0.7; box-shadow: none !important; }
 }
 
-
-
 /* =========================================================
-   BOTONES ESPECIALES (Globales)
+   5. BOTONES ESPECIALES (WhatsApp Protegido)
 ========================================================= */
 .rs-btn-whatsapp-dynamic {
   width: 100%;
@@ -659,16 +767,19 @@ body.dark-theme .rs-btn--secondary:hover,
   font-family: inherit !important;
   font-size: 14px !important;
   letter-spacing: 0.25px !important;
-  /* Estilo elegante con transparencia y borde (Similar al Dark Mode) */
   background-color: rgba(37, 211, 102, 0.08) !important; 
   border: 1px solid rgba(37, 211, 102, 0.25) !important;
-  color: #0f763c !important; /* Verde oscuro para contraste en fondo blanco */
+  color: #0f763c !important; 
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 
+  /* TU ESTRUCTURA ORIGINAL INTACTA */
   .btn-content {
     display: flex; align-items: center; justify-content: center;
-    gap: 8px; font-weight: 700; font-size: 14px;
-    .wa-icon-svg { width: 20px; height: 20px; }
+    gap: 8px !important; font-weight: 700; font-size: 14px;
+    margin: 0 !important;
+    padding: 0 !important;
+    .wa-icon-svg, .rs-outline-icon-slot { width: 20px !important; height: 20px !important; margin: 0 !important; display: flex; align-items: center; justify-content: center; }
+    .rs-outline-text { margin: 0 !important; }
   }
 
   &:hover:not(:disabled) {
@@ -684,7 +795,6 @@ body.dark-theme .rs-btn--secondary:hover,
   }
 }
 
-/* El modo oscuro ahora fluye naturalmente por cascada CSS */
 body.dark-theme .rs-btn-whatsapp-dynamic, 
 .dark-theme .rs-btn-whatsapp-dynamic {
   background-color: rgba(37, 211, 102, 0.08) !important; 
@@ -697,13 +807,10 @@ body.dark-theme .rs-btn-whatsapp-dynamic,
   }
 }
 
-
 /* =========================================================
-   MATERIAL OVERRIDES (Fix Calendario por encima de todo)
+   MATERIAL OVERRIDES
 ========================================================= */
-.cdk-overlay-container {
-  z-index: 9999 !important; 
-}
+.cdk-overlay-container { z-index: 9999 !important; }
 
 .mat-datepicker-content {
   background-color: var(--rs-card) !important;
@@ -717,35 +824,19 @@ body.dark-theme .rs-btn-whatsapp-dynamic,
   .mat-calendar-arrow { fill: var(--rs-text-main) !important; }
 }
 
-/* 🌙 DARK MODE SKELETON (Midnight Blue / SaaS Enterprise) */
-
+/* 🌙 DARK MODE SKELETON */
 body.dark-theme, .dark-theme {
-
-  /* Fondos Profundos que combinan con tu Sidebar */
-  --rs-bg: #0f1523;       /* Fondo de la página (Más oscuro) */
-  --rs-card: #151f32;     /* Fondo de las tarjetas (Ligeramente más claro para que resalten) */
-
-  /* Textos */
-  --rs-text-main: #94a3b8; /* Texto base (Gris azulado claro, no blanco puro para no cansar la vista) */
-  --rs-text-navy: #ffffff; /* Títulos (Blanco puro para contraste) */
-
-  /* Bordes y Cajas */
-  --rs-border: #1e293b;    /* Bordes sutiles para separar tarjetas */
-  --rs-navy-box: #1e293b;  /* Cajas como la de "Falla Reportada" */
- 
-  /* Colores de Acento (El cian brilla más en la oscuridad) */
+  --rs-bg: #0f1523;      
+  --rs-card: #151f32;    
+  --rs-text-main: #94a3b8; 
+  --rs-text-navy: #ffffff; 
+  --rs-border: #1e293b;    
+  --rs-navy-box: #1e293b;  
   --rs-primary: #00d1ff; 
   --rs-navy-text: #00d1ff; 
-
-  /* Sombras adaptadas a fondos oscuros */
   --rs-shadow-md: 0 10px 20px rgba(0, 0, 0, 0.4);
   --rs-shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
 
-/* =======================================================
-     AQUÍ ESTÁ LA MAGIA QUE FALTABA PARA EL FONDO Y TÍTULOS 
-     ======================================================= */
-     
-  /* 1. Volvemos transparentes las "sábanas" de Angular Material */
   .mat-drawer-container, 
   .mat-sidenav-container, 
   .mat-sidenav-content, 
@@ -754,7 +845,6 @@ body.dark-theme, .dark-theme {
     background-color: var(--rs-bg) !important;
   }
 
-  /* 2. Forzamos a que TODOS los títulos sean blancos */
   h1, h2, h3, h4, h5, h6, 
   .mat-mdc-card-title,
   .rs-page-title,
@@ -762,8 +852,33 @@ body.dark-theme, .dark-theme {
     color: var(--rs-text-navy) !important;
   }
 
-  /* FONDOS DE MODALES (Cajas maestras de Angular Material) */
   .mat-mdc-dialog-container .mdc-dialog__surface {
     background-color: var(--rs-card) !important;
+  }
+}
+
+/* =========================================
+   TOOLTIPS PREMIUM (Adaptable Claro/Oscuro)
+   ========================================= */
+.rs-tooltip-premium {
+  .mdc-tooltip__surface {
+    /* Usamos las variables de tu tema para que cambie automáticamente */
+    background-color: var(--rs-card) !important;
+    color: var(--rs-text-navy) !important;
+    
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.03em !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    
+    /* Mantenemos un toque sutil cyan para el borde en ambos modos */
+    border: 1px solid rgba(0, 209, 255, 0.3) !important; 
+    
+    /* Sombra más suave para que en modo claro no se vea tan pesada */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    max-width: 250px !important;
+    text-align: center !important;
+    line-height: 1.4 !important;
   }
 }

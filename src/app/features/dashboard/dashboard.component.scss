@@ -1,12 +1,20 @@
+/* ==========================================================================
+   REPARASUITE - DASHBOARD STYLES (ENTERPRISE EDITION)
+   ========================================================================== */
+
 :host {
   display: block;
   color: var(--rs-text-main);
 }
 
+/* ==========================================================================
+   1. LAYOUT PRINCIPAL Y FONDOS
+   ========================================================================== */
 .rs-dashboard-page {
   position: relative;
   overflow: hidden;
 
+  /* Efectos de luces (Glow) de fondo */
   &::before,
   &::after {
     content: '';
@@ -52,6 +60,7 @@
   min-width: 0;
 }
 
+/* Gráfico de nodos superior derecho */
 .rs-tech-hero {
   position: absolute;
   inset: 0 0 auto auto;
@@ -100,6 +109,10 @@
   }
 }
 
+
+/* ==========================================================================
+   2. TARJETAS DE INDICADORES (KPIs)
+   ========================================================================== */
 .rs-kpi-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -129,6 +142,7 @@
   overflow: hidden;
   will-change: transform;
 
+  /* Línea inferior animada del KPI */
   &::after {
     content: '';
     position: absolute;
@@ -146,21 +160,19 @@
   }
 }
 
-.kpi-received {
-  --kpi-accent: #94a3b8;
-  --kpi-glow: rgba(148, 163, 184, 0.22);
-}
+/* Colores específicos de KPIs */
+.kpi-received  { --kpi-accent: #94a3b8; --kpi-glow: rgba(148, 163, 184, 0.22); }
+.kpi-quotation { --kpi-accent: var(--rs-primary-dark); --kpi-glow: rgba(8, 26, 75, 0.2); }
+.kpi-progress  { --kpi-accent: #38bdf8; --kpi-glow: rgba(56, 189, 248, 0.2); }
+.kpi-completed { --kpi-accent: #00d1ff; --kpi-glow: rgba(0, 209, 255, 0.22); }
+.kpi-today     { --kpi-accent: #67e8f9; --kpi-glow: rgba(103, 232, 249, 0.22); }
+.kpi-overdue   { --kpi-accent: #cbd5e1; --kpi-glow: rgba(203, 213, 225, 0.18); }
 
-.kpi-quotation {
-  --kpi-accent: var(--rs-primary-dark);
-  --kpi-glow: rgba(8, 26, 75, 0.2);
-}
-
-/* Ajuste de visibilidad de alto contraste para el Dark Mode en el Card de Cotizaciones */
+/* Ajuste de alto contraste para Dark Mode */
 :host-context([data-theme='dark']) .kpi-quotation,
 :host-context(.dark-theme) .kpi-quotation {
-  --kpi-accent: var(--rs-primary, #00d1ff); /* Tono cyan brillante principal */
-  --kpi-glow: rgba(0, 209, 255, 0.35); /* Glow incrementado para mejor lectura sobre oscuro */
+  --kpi-accent: var(--rs-primary, #00d1ff); 
+  --kpi-glow: rgba(0, 209, 255, 0.35); 
 }
 
 @media (prefers-color-scheme: dark) {
@@ -170,26 +182,7 @@
   }
 }
 
-.kpi-progress {
-  --kpi-accent: #38bdf8;
-  --kpi-glow: rgba(56, 189, 248, 0.2);
-}
-
-.kpi-completed {
-  --kpi-accent: #00d1ff;
-  --kpi-glow: rgba(0, 209, 255, 0.22);
-}
-
-.kpi-today {
-  --kpi-accent: #67e8f9;
-  --kpi-glow: rgba(103, 232, 249, 0.22);
-}
-
-.kpi-overdue {
-  --kpi-accent: #cbd5e1;
-  --kpi-glow: rgba(203, 213, 225, 0.18);
-}
-
+/* Estructura interna de los KPIs */
 .rs-kpi-top {
   display: flex;
   align-items: center;
@@ -210,15 +203,11 @@
     font-size: 18px;
     color: var(--kpi-accent);
     filter: drop-shadow(0 0 8px var(--kpi-glow));
-    transition:
-      filter 220ms ease,
-      transform 220ms ease;
+    transition: filter 220ms ease, transform 220ms ease;
   }
 }
 
-.rs-kpi-copy {
-  min-width: 0;
-}
+.rs-kpi-copy { min-width: 0; }
 
 .rs-kpi-label {
   color: var(--rs-text-main);
@@ -273,9 +262,7 @@
     stroke-dashoffset: 180;
     animation: rsLineIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     filter: drop-shadow(0 0 7px var(--kpi-glow));
-    transition:
-      filter 220ms ease,
-      opacity 220ms ease;
+    transition: filter 220ms ease, opacity 220ms ease;
   }
 
   .spark-line.glow {
@@ -285,6 +272,10 @@
   }
 }
 
+
+/* ==========================================================================
+   3. ÁREA DE TRABAJO (GRID PRINCIPAL Y PANELES)
+   ========================================================================== */
 .rs-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 330px;
@@ -309,17 +300,31 @@
   align-content: start;
 }
 
+/* FIX: Alineación perfecta de las dos tarjetas inferiores (Línea roja) */
 .rs-bottom-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
-  align-items: start;
+  align-items: stretch; /* Esto obliga a ambas tarjetas a medir lo mismo */
+
+  .rs-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .rs-panel-body {
+      flex: 1; /* Estira el contenido interior para llenar la tarjeta */
+      display: flex;
+      flex-direction: column;
+    }
+  }
 
   @media (max-width: 960px) {
     grid-template-columns: 1fr;
   }
 }
 
+/* Tarjetas base */
 .rs-panel {
   background: var(--rs-card) !important;
   border: 1px solid var(--rs-border) !important;
@@ -383,101 +388,88 @@
   font-weight: 600;
 }
 
+
+/* ==========================================================================
+   4. BOTONES DE ACCIONES RÁPIDAS (SISTEMA UNIFICADO SAAS)
+   ========================================================================== */
 .rs-quick-actions {
   display: grid;
   gap: 10px;
   padding: 14px 20px 18px;
 }
 
-.rs-btn {
+/* Base maestra para alinear íconos y textos perfectamente en todos los botones */
+.rs-quick-actions button {
   width: 100%;
-  font-weight: 800 !important;
+  height: 44px; /* Altura unificada premium */
+  border-radius: 8px;
+  font-family: inherit;
+  transition: all 0.2s ease;
   letter-spacing: -0.01em;
-}
 
-@keyframes rsShimmer {
-  0% {
-    transform: translateX(-160%) skewX(-24deg);
-  }
-  100% {
-    transform: translateX(220%) skewX(-24deg);
-  }
-}
-
-.rs-btn__label {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-}
-
-.rs-btn__icon-slot {
-  width: 26px;
-  min-width: 26px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-}
-
-.rs-btn__text {
-  display: inline-flex;
-  align-items: center;
-  line-height: 1;
-  text-align: left;
-}
-
-.rs-btn-outline {
-  border-color: var(--rs-border) !important;
-  color: var(--rs-primary) !important;
-  justify-content: flex-start !important;
-
-  ::ng-deep .mdc-button__label {
+  /* Forzamos a Angular Material a usar Flexbox con Gap para centrar contenido */
+  ::ng-deep .mdc-button__label, 
+  .rs-btn__label, 
+  .btn-content {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 8px !important; /* Espaciado estricto entre el ícono y el texto */
+    width: 100%;
+  }
+
+  /* Normalización de todos los íconos (+, WhatsApp, Outline) */
+  mat-icon, 
+  .wa-svg, 
+  .rs-btn__icon-slot, 
+  .rs-outline-icon-slot {
+    width: 18px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    font-size: 18px !important;
+    margin: 0 !important; /* Elimina cualquier margen que despegue el ícono */
+    display: flex;
+    align-items: center;
     justify-content: center;
   }
 
-  .mat-icon {
-    color: var(--rs-primary) !important;
+  /* Normalización de todos los textos */
+  .rs-btn__text, 
+  .rs-outline-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
   }
 }
 
-.rs-outline-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #9ca3af;
+/* Botón Principal (Nueva Orden) */
+.rs-btn--primary {
+  background-color: var(--rs-primary) !important;
+  color: white !important;
+  font-weight: 700 !important;
 }
 
-.rs-outline-icon-slot {
-  width: 26px;
-  min-width: 26px;
-  margin-right: 8px;
+/* Botón WhatsApp */
+.rs-btn-whatsapp-dynamic {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  border: 1px solid rgba(16, 185, 129, 0.2) !important;
+  color: #10b981 !important;
+  
+  &:hover {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+  }
 }
 
-.rs-outline-text {
-  display: inline-flex;
-  align-items: center;
-  line-height: 1;
-  text-align: left;
+/* Animación brillante del botón principal */
+@keyframes rsShimmer {
+  0% { transform: translateX(-160%) skewX(-24deg); }
+  100% { transform: translateX(220%) skewX(-24deg); }
 }
 
-.wa-svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
 
+/* ==========================================================================
+   5. GRÁFICOS (DONUT Y CALENDARIO)
+   ========================================================================== */
 .rs-chart-body {
   padding-top: 10px;
 }
@@ -495,9 +487,7 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.84),
-    0 16px 34px rgba(0, 209, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.84), 0 16px 34px rgba(0, 209, 255, 0.07);
 
   &::after {
     content: '';
@@ -506,14 +496,20 @@
     height: 104px;
     border-radius: 50%;
     background: var(--rs-card);
-  border: 1px solid var(--rs-border) !important;
+    border: 1px solid var(--rs-border) !important;
   }
 }
 
+/* FIX: Centrado del número interior del Donut */
 .rs-donut-core {
   position: relative;
   z-index: 1;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .rs-donut-total {
@@ -584,6 +580,7 @@
   }
 }
 
+/* Calendario */
 .rs-calendar {
   display: grid;
   gap: 12px;
@@ -632,10 +629,7 @@
   font-weight: 600;
 }
 
-.rs-calendar-day.is-empty .rs-calendar-day-number {
-  color: #cbd5e1;
-}
-
+.rs-calendar-day.is-empty .rs-calendar-day-number { color: #cbd5e1; }
 .rs-calendar-day.is-today .rs-calendar-day-number {
   background: var(--rs-primary);
   color: #ffffff;
@@ -652,6 +646,10 @@
   background: var(--rs-primary);
 }
 
+
+/* ==========================================================================
+   6. TABLAS, BADGES Y HOVER EFFECTS
+   ========================================================================== */
 .rs-table-shell {
   width: 100%;
   overflow-x: auto;
@@ -666,18 +664,19 @@
     background: transparent !important;
   }
 
+  /* FIX: Encabezados más limpios y menos pesados */
   th.mat-mdc-header-cell {
-    padding: 22px 14px; /* Mayor espacio vertical para aligerar la vista */
+    padding: 22px 14px; 
     border-bottom: 1px solid var(--rs-border) !important;
     color: var(--rs-text-muted);
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 500; /* Reducido de 600 a 500 para mayor elegancia */
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   td.mat-mdc-cell {
-    padding: 26px 14px; /* Las filas ahora respiran mucho mejor (SaaS look) */
+    padding: 26px 14px; 
     border-bottom: 1px solid var(--rs-border) !important;
     color: var(--rs-text-main);
     font-size: 0.94rem;
@@ -696,12 +695,32 @@
   }
 }
 
+/* FIX: Efecto Hover Premium en las filas de Angular Material */
+.rs-row {
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    /* Le damos color a la fila entera (cyan súper claro) */
+    background-color: rgba(0, 209, 255, 0.04) !important;
+    cursor: pointer;
+    
+    /* Forzamos a que las celdas sean transparentes para dejar ver el fondo de la fila */
+    td.mat-mdc-cell {
+      background-color: transparent !important;
+    }
+
+    /* Barra indicadora lateral izquierda mediante shadow interno en la primera celda */
+    td.mat-mdc-cell:first-child {
+      box-shadow: inset 3px 0 0 0 var(--rs-primary);
+    }
+  }
+}
+
 .rs-code-cell {
   color: var(--rs-text-navy);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
-
 
 .rs-client-cell {
   display: inline-flex;
@@ -710,9 +729,7 @@
   min-width: 0;
 }
 
-.rs-client-cell--compact {
-  margin-top: 10px;
-}
+.rs-client-cell--compact { margin-top: 10px; }
 
 .rs-client-avatar {
   width: 30px;
@@ -726,25 +743,10 @@
   font-weight: 700;
   letter-spacing: -0.02em;
 
-  &[data-tone='neon'] {
-    background: rgba(0, 209, 255, 0.11);
-    color: #0891b2;
-  }
-
-  &[data-tone='ice'] {
-    background: rgba(103, 232, 249, 0.12);
-    color: #0f766e;
-  }
-
-  &[data-tone='slate'] {
-    background: rgba(148, 163, 184, 0.1);
-    color: #475569;
-  }
-
-  &[data-tone='navy'] {
-    background: rgba(8, 26, 75, 0.08);
-    color: var(--rs-text-navy);
-  }
+  &[data-tone='neon']  { background: rgba(0, 209, 255, 0.11); color: #0891b2; }
+  &[data-tone='ice']   { background: rgba(103, 232, 249, 0.12); color: #0f766e; }
+  &[data-tone='slate'] { background: rgba(148, 163, 184, 0.1); color: #475569; }
+  &[data-tone='navy']  { background: rgba(8, 26, 75, 0.08); color: var(--rs-text-navy); }
 }
 
 .rs-client-name {
@@ -771,81 +773,82 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
-.rs-status-badge[data-status='RECIBIDA'] {
-  color: #64748b;
-  background: rgba(148, 163, 184, 0.1);
-  border-color: rgba(148, 163, 184, 0.16);
-}
-
-.rs-status-badge[data-status='PRESUPUESTO'] {
-  color: var(--rs-text-navy);
-  background: rgba(8, 26, 75, 0.08);
-  border-color: rgba(8, 26, 75, 0.14);
-}
-
-.rs-status-badge[data-status='EN_CURSO'] {
-  color: #0284c7;
-  background: rgba(56, 189, 248, 0.1);
-  border-color: rgba(56, 189, 248, 0.18);
-}
-
+.rs-status-badge[data-status='RECIBIDA'] { color: #64748b; background: rgba(148, 163, 184, 0.1); border-color: rgba(148, 163, 184, 0.16); }
+.rs-status-badge[data-status='PRESUPUESTO'] { color: var(--rs-text-navy); background: rgba(8, 26, 75, 0.08); border-color: rgba(8, 26, 75, 0.14); }
+.rs-status-badge[data-status='EN_CURSO'] { color: #0284c7; background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.18); }
 .rs-status-badge[data-status='APROBADA'],
 .rs-status-badge[data-status='FINALIZADA'],
-.rs-status-badge[data-status='CERRADA'] {
-  color: #0891b2;
-  background: rgba(0, 209, 255, 0.1);
-  border-color: rgba(0, 209, 255, 0.18);
-}
+.rs-status-badge[data-status='CERRADA'] { color: #0891b2; background: rgba(0, 209, 255, 0.1); border-color: rgba(0, 209, 255, 0.18); }
 
-.rs-priority-badge[data-priority='alta'] {
-  color: #0c4a6e;
-  background: rgba(0, 209, 255, 0.12);
-  border-color: rgba(0, 209, 255, 0.18);
-}
+.rs-priority-badge[data-priority='alta'] { color: #0c4a6e; background: rgba(0, 209, 255, 0.12); border-color: rgba(0, 209, 255, 0.18); }
+.rs-priority-badge[data-priority='media'] { color: var(--rs-text-navy); background: rgba(8, 26, 75, 0.08); border-color: rgba(8, 26, 75, 0.14); }
+.rs-priority-badge[data-priority='baja'] { color: #64748b; background: rgba(148, 163, 184, 0.1); border-color: rgba(148, 163, 184, 0.16); }
 
-.rs-priority-badge[data-priority='media'] {
-  color: var(--rs-text-navy);
-  background: rgba(8, 26, 75, 0.08);
-  border-color: rgba(8, 26, 75, 0.14);
-}
-
-.rs-priority-badge[data-priority='baja'] {
-  color: #64748b;
-  background: rgba(148, 163, 184, 0.1);
-  border-color: rgba(148, 163, 184, 0.16);
-}
-
-.rs-action-head {
+.rs-action-head, .rs-action-cell {
   width: 78px;
   text-align: center !important;
 }
 
-.rs-action-cell {
-  width: 78px;
-  text-align: center !important;
+.rs-icon-action .mat-icon {
+  color: #9ca3af !important;
+}
 
-  .mat-mdc-icon-button {
-    margin: 0 auto;
+
+/* ==========================================================================
+   7. COLUMNA SERVICIO (MÚLTIPLES BADGES)
+   ========================================================================== */
+/* Fijamos el ancho de la columna Servicio para evitar espacios muertos */
+.mat-column-servicio {
+  width: 200px;
+  padding-right: 24px !important; 
+}
+
+.rs-service-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alineación perfecta a la izquierda */
+  gap: 6px;
+
+  .badge-servicio {
+    white-space: nowrap;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10.5px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: rgba(0, 191, 245, 0.1);
+    color: var(--rs-primary);
+  }
+
+  .service-counter {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--rs-primary);
+    background: rgba(0, 209, 255, 0.15);
+    padding: 2px 6px;
+    border-radius: 6px;
+    cursor: help;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--rs-primary);
+      color: white;
+    }
   }
 }
 
-.rs-icon-action {
-
-  .mat-icon {
-    color: #9ca3af !important;
-  }
+.rs-empty-dash {
+  color: #94a3b8;
+  font-weight: 300;
 }
 
-.badge-servicio {
-  font-size: 10.5px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: 800;
-  text-transform: uppercase;
-  background: rgba(0, 191, 245, 0.1);
-  color: var(--rs-primary);
-}
 
+/* ==========================================================================
+   8. STOCK DE PIEZAS E INVENTARIO
+   ========================================================================== */
 .rs-stock-list {
   display: grid;
   gap: 12px;
@@ -859,6 +862,12 @@
   border: 1px solid var(--rs-border) !important;
   text-decoration: none;
   color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
 }
 
 .rs-stock-top {
@@ -868,9 +877,7 @@
   gap: 12px;
 }
 
-.rs-stock-copy {
-  min-width: 0;
-}
+.rs-stock-copy { min-width: 0; }
 
 .rs-stock-name {
   color: var(--rs-text-main);
@@ -892,9 +899,10 @@
   white-space: nowrap;
 }
 
+/* FIX: Barra de progreso delgada minimalista */
 .rs-stock-bar {
   width: 100%;
-  height: 7px;
+  height: 4px; /* Reducido de 7px a 4px para diseño SaaS limpio */
   border-radius: 999px;
   overflow: hidden;
   background: rgba(148, 163, 184, 0.14);
@@ -907,15 +915,14 @@
   background: linear-gradient(90deg, var(--rs-primary-dark) 0%, var(--rs-primary) 100%);
   box-shadow: 0 0 16px rgba(0, 209, 255, 0.18);
 
-  &[data-level='mid'] {
-    opacity: 0.86;
-  }
-
-  &[data-level='low'] {
-    opacity: 0.74;
-  }
+  &[data-level='mid'] { opacity: 0.86; }
+  &[data-level='low'] { opacity: 0.74; }
 }
 
+
+/* ==========================================================================
+   9. EMPTY STATES Y MOBILE VIEW
+   ========================================================================== */
 .rs-empty-state {
   min-height: 160px;
   display: flex;
@@ -933,31 +940,10 @@
   }
 }
 
-.rs-empty-state--compact {
-  min-height: 120px;
-}
-
-.rs-empty-title {
-  color: var(--rs-text-navy);
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.rs-empty-subtitle {
-  margin-top: 4px;
-  color: var(--rs-text-muted);
-  font-size: 0.9rem;
-  font-weight: 400;
-}
-
-.rs-empty-mini {
-  min-height: 90px;
-  display: grid;
-  place-items: center;
-  color: var(--rs-text-muted);
-  font-size: 0.92rem;
-  font-weight: 500;
-}
+.rs-empty-state--compact { min-height: 120px; }
+.rs-empty-title { color: var(--rs-text-navy); font-size: 1rem; font-weight: 600; }
+.rs-empty-subtitle { margin-top: 4px; color: var(--rs-text-muted); font-size: 0.9rem; font-weight: 400; }
+.rs-empty-mini { min-height: 90px; display: grid; place-items: center; color: var(--rs-text-muted); font-size: 0.92rem; font-weight: 500; }
 
 .rs-mobile-cards {
   display: none;
@@ -995,35 +981,26 @@
   font-size: 0.86rem;
 }
 
+
+/* ==========================================================================
+   10. ANIMACIONES Y MEDIA QUERIES
+   ========================================================================== */
 .rs-fade-up {
   animation: rsFadeUp 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes rsFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes rsLineIn {
-  to {
-    stroke-dashoffset: 0;
-  }
+  to { stroke-dashoffset: 0; }
 }
 
 @media (max-width: 980px) {
-  .rs-desktop-only {
-    display: none;
-  }
-
-  .rs-mobile-cards {
-    display: grid;
-  }
+  .rs-desktop-only { display: none; }
+  .rs-mobile-cards { display: grid; }
 }
 
 @media (max-width: 768px) {
@@ -1044,18 +1021,60 @@
     }
   }
 
-  .rs-dashboard-head {
-    padding-top: 2px;
-  }
-
-  .rs-kpi-grid {
-    margin-top: 8px;
-  }
+  .rs-dashboard-head { padding-top: 2px; }
+  .rs-kpi-grid { margin-top: 8px; }
 }
 
 @media (hover: none) {
-
   .rs-table .mat-mdc-row:hover .mat-mdc-cell {
     background: transparent !important;
+  }
+}
+
+/* ==========================================================================
+   11. TABLA COMPACTA PREMIUM (DASHBOARD ESPECÍFICO)
+   ========================================================================== */
+.dashboard-table {
+  width: 100%;
+  background: transparent !important;
+
+  .mat-mdc-header-row {
+    height: 38px !important; /* Cabecera muy delgada y limpia */
+    background: transparent !important;
+  }
+
+  .mat-mdc-row {
+    height: 48px !important; /* Altura compacta premium */
+    transition: all 0.2s ease-in-out !important;
+    border-bottom: 1px solid var(--rs-border, rgba(255,255,255,0.05)) !important;
+
+    &:hover {
+      background: rgba(0, 209, 255, 0.03) !important; /* Brillo cyan muy sutil */
+      cursor: pointer;
+    }
+  }
+
+  .mat-mdc-cell {
+    font-size: 13px !important; /* Un punto más pequeña para el Dashboard */
+    color: var(--rs-text-main) !important;
+  }
+
+  /* Ajuste de avatar para vista compacta */
+  .rs-client-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 10px !important;
+  }
+
+  /* Badge de prioridad (NUEVO) */
+  .priority-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    &.alta { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    &.media { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+    &.baja { background: rgba(16, 185, 129, 0.1); color: #10b981; }
   }
 }

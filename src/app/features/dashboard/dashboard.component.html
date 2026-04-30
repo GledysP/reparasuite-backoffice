@@ -195,7 +195,7 @@
           <div class="rs-panel-body">
             <ng-container *ngIf="recentOrders.length > 0; else emptyOrdersState">
               <div class="rs-table-shell rs-desktop-only">
-                <table mat-table [dataSource]="recentOrders" class="rs-table rs-table-main">
+                <table mat-table [dataSource]="recentOrders" class="rs-table dashboard-table">
                   <ng-container matColumnDef="codigo">
                     <th mat-header-cell *matHeaderCellDef>OT</th>
                     <td mat-cell *matCellDef="let row" class="rs-code-cell">
@@ -210,7 +210,7 @@
                         <span class="rs-client-avatar" [attr.data-tone]="getAvatarTone(row.clienteNombre)">
                           {{ getClientInitials(row.clienteNombre) }}
                         </span>
-                        <span class="rs-client-name">{{ row.clienteNombre || 'Sin cliente' }}</span>
+                        <span>{{ row.clienteNombre || 'N/A' }}</span>
                       </div>
                     </td>
                   </ng-container>
@@ -218,8 +218,9 @@
                   <ng-container matColumnDef="estado">
                     <th mat-header-cell *matHeaderCellDef>Estado</th>
                     <td mat-cell *matCellDef="let row">
-                      <span class="rs-badge rs-status-badge" [attr.data-status]="row.estado">
-                        {{ statusLabel(row.estado) }}
+                      <span class="rs-status-badge" [attr.data-status]="row.estado">
+                        <span class="rs-status-dot"></span>
+                        {{ row.estado | uppercase }}
                       </span>
                     </td>
                   </ng-container>
@@ -243,12 +244,19 @@
                   <ng-container matColumnDef="servicio">
                     <th mat-header-cell *matHeaderCellDef>Servicio</th>
                     <td mat-cell *matCellDef="let row">
-                      <!-- Si tiene servicio, muestra el badge -->
-                      <span class="badge-servicio" *ngIf="getServicio(row)">
-                        {{ getServicio(row) }}
-                      </span>
-                      <!-- Si no tiene, muestra la rayita -->
-                      <span *ngIf="!getServicio(row)">—</span>
+                      <div class="rs-services-cell" *ngIf="row.categoriasTrabajo?.length; else sinServicio">
+                        <span class="rs-pill">{{ row.categoriasTrabajo[0] }}</span>
+                        <span class="rs-pill rs-pill--count" 
+                              *ngIf="row.categoriasTrabajo.length > 1"
+                              [matTooltip]="row.categoriasTrabajo.join(', ')"
+                              matTooltipClass="rs-tooltip-premium">
+                          +{{ row.categoriasTrabajo.length - 1 }}
+                        </span>
+                      </div>
+                      
+                      <ng-template #sinServicio>
+                        <span class="rs-empty-dash">—</span>
+                      </ng-template>
                     </td>
                   </ng-container>
 
@@ -260,9 +268,9 @@
                   </ng-container>
 
                   <ng-container matColumnDef="fecha">
-                    <th mat-header-cell *matHeaderCellDef>Actualizado</th>
+                    <th mat-header-cell *matHeaderCellDef>Fecha</th>
                     <td mat-cell *matCellDef="let row">
-                      {{ toDateSafe(row.updatedAt) }}
+                      {{ row.updatedAt | date:'dd/MM/yyyy' }}
                     </td>
                   </ng-container>
 
@@ -315,23 +323,25 @@
                   </div>
 
                   <div class="rs-order-card-badges">
-                    <span class="rs-badge rs-status-badge" [attr.data-status]="row.estado">
-                      {{ statusLabel(row.estado) }}
+                    <span class="rs-status-badge" [attr.data-status]="row.estado">
+                      <span class="rs-status-dot"></span>
+                      {{ row.estado | uppercase }}
                     </span>
                     <span class="rs-badge rs-priority-badge" [attr.data-priority]="getPriorityTone(row)">
                       {{ getPriorityLabel(row) }}
                     </span>
-                    <ng-container *ngIf="getServicio(row)">
-                      <span class="badge-servicio">
-                        {{ getServicio(row) }}
+                    <!-- Ahora el celular también muestra todos los servicios -->
+                    <ng-container *ngIf="row.categoriasTrabajo?.length">
+                      <span class="rs-pill" *ngFor="let s of row.categoriasTrabajo">
+                        {{ s }}
                       </span>
                     </ng-container>
                   </div>
 
                   <div class="rs-order-card-meta">
                     <span>{{ textLabel(row.tipo) }}</span>
-                    <span>{{ row.tecnicoNombre || 'Sin técnico' }}</span>
-                    <span>{{ toDateSafe(row.updatedAt) }}</span>
+                    <span>{{ row.tecnicoNombre || '—' }}</span>
+                    <span>{{ row.updatedAt | date:'dd/MM/yyyy' }}</span>
                   </div>
                 </a>
               </div>
