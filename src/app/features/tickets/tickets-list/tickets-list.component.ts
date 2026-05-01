@@ -1,13 +1,17 @@
 import { Component, OnInit, DestroyRef, inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, SlicePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+// Material Modules
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 import { TicketsService } from '../tickets.service';
 import { TicketBackofficeListaItem } from '../../../core/models/tipos';
@@ -18,12 +22,15 @@ import { TicketBackofficeListaItem } from '../../../core/models/tipos';
   imports: [
     CommonModule,
     DatePipe,
+    SlicePipe,
     RouterLink,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatPaginatorModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   templateUrl: './tickets-list.component.html',
   styleUrl: './tickets-list.component.scss'

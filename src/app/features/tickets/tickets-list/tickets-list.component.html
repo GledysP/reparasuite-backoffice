@@ -1,130 +1,84 @@
-<div class="rs-page-container rs-tickets-page">
-  <div class="rs-page-shell">
-    <header class="rs-header-row rs-fade-up">
-      <div class="rs-header-copy">
-        <div class="rs-heading">
-          <div>
-            <h1 class="rs-page-title">Tickets</h1>
-            <p class="rs-page-subtitle">
-              Solicitudes de clientes y seguimiento hacia OT
-            </p>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    @if (loading) {
-      <div class="loading-wrap rs-fade-up">
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-      </div>
-    }
-
-    <div class="cards-wrap">
-      @if (!loading && items.length === 0) {
-        <mat-card class="ticket-card empty-card" appearance="outlined">
-          <mat-card-content class="ticket-card-content">
-            <div class="empty-state">
-              <div class="empty-icon">
-                <mat-icon>inbox</mat-icon>
-              </div>
-
-              <div class="empty-title">No hay tickets</div>
-              <div class="empty-sub">
-                Cuando lleguen solicitudes del portal cliente aparecerán aquí.
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      }
-
-      @for (t of items; track t.id) {
-        <mat-card class="ticket-card" appearance="outlined">
-          <mat-card-content class="ticket-card-content">
-            <div class="ticket-card-topline"></div>
-
-            <div class="ticket-card-inner">
-              <div class="ticket-card-head">
-                <div class="ticket-main">
-                  <div class="ticket-icon">
-                    <mat-icon>confirmation_number</mat-icon>
-                  </div>
-
-                  <div class="ticket-copy">
-                    <div class="ticket-title">
-                      <span class="ticket-prefix">Equipo:</span>
-                      <span class="ticket-name">
-                        {{ asuntoUi(t).replace('Equipo:', '').trim() || 'Sin asunto' }}
-                      </span>
-                    </div>
-
-                    <div class="ticket-subline">
-                      <span class="meta-item">
-                        <mat-icon>person</mat-icon>
-                        <span>{{ t.clienteNombre || 'Cliente sin nombre' }}</span>
-                      </span>
-
-                      <span class="meta-dot">•</span>
-
-                      <span class="meta-item">
-                        <mat-icon>mail</mat-icon>
-                        <span>{{ t.clienteEmail || 'sin correo' }}</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="ticket-side">
-                  <span class="status-pill" [ngClass]="estadoClass(t.estado)">
-                    <span class="status-dot"></span>
-                    {{ t.estado }}
-                  </span>
-
-                  <div class="ticket-time">
-                    <mat-icon>schedule</mat-icon>
-                    <span>{{ t.updatedAt | date:'yyyy-MM-dd HH:mm' }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="ticket-card-footer">
-                <div class="ticket-foot-meta">
-                  @if (t.ordenTrabajoId) {
-                    <span class="soft-pill linked-ot">
-                      <mat-icon>link</mat-icon>
-                      OT vinculada
-                    </span>
-                  } @else {
-                    <span class="soft-pill pending-ot">
-                      <mat-icon>schedule</mat-icon>
-                      Pendiente de crear OT
-                    </span>
-                  }
-                </div>
-
-                <a
-                  mat-button
-                  class="ghost-view-btn"
-                  [routerLink]="['/tickets', t.id]">
-                  <mat-icon>visibility</mat-icon>
-                  Ver
-                </a>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      }
+<div class="rs-page-container rs-fade-up">
+  
+  <!-- HEADER -->
+  <header class="rs-header-row">
+    <div class="rs-header-copy">
+      <h1 class="rs-page-title">Tickets</h1>
+      <p class="rs-page-subtitle">Solicitudes de clientes y seguimiento hacia OT.</p>
     </div>
+  </header>
 
-    @if (total > size) {
-      <div class="paginator-shell">
-        <mat-paginator
-          [length]="total"
-          [pageIndex]="page"
-          [pageSize]="size"
-          [pageSizeOptions]="[5, 10, 20]"
-          (page)="paginar($event)">
-        </mat-paginator>
-      </div>
+
+  <!-- BARRA DE FILTROS (Limpia y estructurada) -->
+  <div class="rs-filter-bar">
+    <!-- El wrapper controla el ancho para que Material no se desborde -->
+    <div class="search-wrapper">
+      <mat-form-field appearance="outline" class="rs-custom-search">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Ej.: Televisor, Juan Pérez o TK-123...">
+      </mat-form-field>
+    </div>
+    
+    <button mat-stroked-button class="rs-btn-outline">
+      <mat-icon>filter_list_off</mat-icon> Limpiar
+    </button>
+  </div>
+
+  <!-- GRID DE TARJETAS (4 Columnas) -->
+  <div class="rs-ticket-grid">
+    @for (t of items; track t.id) {
+      <mat-card class="rs-compact-card" [routerLink]="['/tickets', t.id]">
+        <mat-card-content>
+          
+          <div class="card-header">
+            <span class="ticket-id">TK-{{ (t.id | slice:0:4).toUpperCase() }}</span>
+            <span class="rs-status-badge" [attr.data-status]="t.estado">
+              <span class="rs-status-dot"></span>
+              {{ t.estado.replace('_', ' ') }}
+            </span>
+          </div>
+
+          <div class="ticket-subject">
+            {{ asuntoUi(t).replace('Equipo:', '').trim() || 'Sin asunto' }}
+          </div>
+
+          <div class="ticket-info">
+            <div class="info-item">
+              <mat-icon>person_outline</mat-icon>
+              <span>{{ t.clienteNombre || 'Cliente sin nombre' }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>mail_outline</mat-icon>
+              <span>{{ t.clienteEmail || 'Sin correo' }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>schedule</mat-icon>
+              <span>Actualizado: {{ t.updatedAt | date:'dd MMM, HH:mm' }}</span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="ot-indicator">
+              @if (t.ordenTrabajoId) {
+                <span class="rs-pill rs-pill-linked">
+                  <mat-icon>link</mat-icon> OT vinculada
+                </span>
+              } @else {
+                <span class="rs-pill rs-pill-pending">
+                  <mat-icon>history</mat-icon> Sin OT
+                </span>
+              }
+            </div>
+            
+            <div class="action-link">
+              <span>Ver detalle</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </div>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
     }
   </div>
+
 </div>
