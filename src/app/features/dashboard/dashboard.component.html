@@ -203,6 +203,7 @@
                     </td>
                   </ng-container>
 
+                  <!-- ================= COLUMNA CLIENTE ================= -->
                   <ng-container matColumnDef="cliente">
                     <th mat-header-cell *matHeaderCellDef>Cliente</th>
                     <td mat-cell *matCellDef="let row">
@@ -215,16 +216,20 @@
                     </td>
                   </ng-container>
 
+                  <!-- ================= COLUMNA ESTADO ================= -->
                   <ng-container matColumnDef="estado">
                     <th mat-header-cell *matHeaderCellDef>Estado</th>
                     <td mat-cell *matCellDef="let row">
+                      <!-- El attr.data-status es la llave que activa tus colores globales (RECIBIDA, CERRADA, etc.) -->
                       <span class="rs-status-badge" [attr.data-status]="row.estado">
                         <span class="rs-status-dot"></span>
-                        {{ row.estado | uppercase }}
+                        <!-- Nota: Si en tu TS del dashboard tienes la función estadoTexto(), úsala aquí -->
+                        <span>{{ row.estado | uppercase }}</span>
                       </span>
                     </td>
                   </ng-container>
 
+                  <!-- ================= COLUMNA PRIORIDAD ================= -->
                   <ng-container matColumnDef="prioridad">
                     <th mat-header-cell *matHeaderCellDef>Prioridad</th>
                     <td mat-cell *matCellDef="let row">
@@ -234,21 +239,28 @@
                     </td>
                   </ng-container>
 
+                  <!-- ================= COLUMNA TIPO ================= -->
                   <ng-container matColumnDef="tipo">
                     <th mat-header-cell *matHeaderCellDef>Tipo</th>
                     <td mat-cell *matCellDef="let row">
-                      {{ textLabel(row.tipo) }}
+                      <!-- Nota: Igual aquí, si tienes tipoTexto() en el TS, úsalo -->
+                      {{ row.tipo }}
                     </td>
                   </ng-container>
 
+                  <!-- ================= COLUMNA SERVICIO ================= -->
                   <ng-container matColumnDef="servicio">
                     <th mat-header-cell *matHeaderCellDef>Servicio</th>
                     <td mat-cell *matCellDef="let row">
-                      <div class="rs-services-cell" *ngIf="row.categoriasTrabajo?.length; else sinServicio">
-                        <span class="rs-pill">{{ row.categoriasTrabajo[0] }}</span>
-                        <span class="rs-pill rs-pill--count" 
+                      <!-- Usamos tu cluster del Dashboard y la lógica de validación de la lista principal -->
+                      <div class="rs-service-cluster" *ngIf="row.categoriasTrabajo?.length; else sinServicio">
+                        <span class="badge-servicio">{{ row.categoriasTrabajo[0] }}</span>
+                        
+                        <!-- Contador con tu Tooltip Premium Global -->
+                        <span class="service-counter" 
                               *ngIf="row.categoriasTrabajo.length > 1"
                               [matTooltip]="row.categoriasTrabajo.join(', ')"
+                              matTooltipPosition="above"
                               matTooltipClass="rs-tooltip-premium">
                           +{{ row.categoriasTrabajo.length - 1 }}
                         </span>
