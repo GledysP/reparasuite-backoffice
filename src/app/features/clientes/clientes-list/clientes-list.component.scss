@@ -84,36 +84,42 @@
 .rs-header-actions {
   display: flex;
   flex-direction: row; 
-  align-items: center;
+  align-items: center; /* Esto asegura que se centren sobre el mismo eje horizontal */
   justify-content: flex-end;
   gap: 12px;
   flex-wrap: nowrap;
   
+
   button {
     width: auto !important; 
-  }
-
-  @media (max-width: 640px) {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    button { width: 100% !important; }
+    height: 42px !important;
+    box-sizing: border-box !important;
   }
 }
 
-/* --- OVERRIDE SOLO DE TAMAÑO PARA WHATSAPP (RESPETA EL GLOBAL) --- */
+/* --- OVERRIDE DE WHATSAPP --- */
 :host ::ng-deep .rs-btn-whatsapp-dynamic {
-  width: auto !important; /* Anula el 100% del global para que no empuje */
-  height: 40px !important; /* Altura estándar para que alinee con Nuevo Cliente */
+  width: auto !important; 
+  height: 40px !important; 
   padding: 0 16px !important;
-  
+  box-sizing: border-box !important; /* Evita que los bordes lo hagan más gordo */
+  display: inline-flex !important;
+  align-items: center !important; /* Centra verticalmente */
+  justify-content: center !important;
+
   .btn-content {
     gap: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    margin: 0 !important; /* Resetea márgenes internos */
   }
 }
 
+/* botón Cliente*/
 .btn-new-ot {
   height: 40px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
 }
 
 /* =========================================
@@ -160,11 +166,12 @@
   line-height: 1.2;
 }
 
-/* El botón medir exacto 40px para encajar con el mat-form-field */
+
 .rs-btn-secondary {
   height: 40px !important; 
   margin: 0 !important; 
   box-sizing: border-box;
+  align-self: flex-end; 
 }
 
 /* --- ESTILOS MODERNOS DEL INPUT --- */
@@ -174,7 +181,7 @@
   .mat-mdc-form-field-subscript-wrapper { display: none !important; }
 
   .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-    height: 40px !important; /* Altura estricta para alinear con el botón */
+    height: 40px !important; 
     min-height: 40px !important;
     border-radius: 12px !important;
     border: 1px solid var(--rs-border) !important;
@@ -365,7 +372,7 @@
 }
 
 /* =========================================
-   7. VISTA MÓVIL
+   7. VISTA MÓVIL (Clases Base)
    ========================================= */
 .rs-mobile-list, .rs-empty-mobile-card { display: none; }
 
@@ -377,8 +384,68 @@
 .rs-mobile-ot-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .rs-mobile-link { color: #0891b2 !important; font-weight: 800 !important; display: inline-flex; align-items: center; gap: 6px; }
 
+/* =========================================
+   8. MEDIA QUERIES (OPTIMIZACIÓN MÓVIL)
+   ========================================= */
+@media (max-width: 640px) {
+  .rs-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px !important;
+  }
+  
+  /* Botones del header mitad y mitad */
+  .rs-header-actions {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px !important;
+    
+    button { 
+      width: 100% !important; 
+      padding: 0 4px !important;
+    }
+  }
+
+  /* Reducimos un poco la fuente de WhatsApp para que no se corte */
+  :host ::ng-deep .rs-btn-whatsapp-dynamic .btn-content {
+    font-size: 11.5px !important;
+    gap: 4px !important;
+  }
+}
+
 @media (max-width: 768px) {
   .rs-desktop-table { display: none; }
-  .rs-mobile-list { display: flex; flex-direction: column; gap: 10px; }
+  
+  /* 1. ELIMINAR LA CAJA DOBLE */
+  .rs-table-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .rs-table-card mat-card-content {
+    padding: 0 !important;
+  }
+
+  .rs-mobile-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+  }
   .rs-empty-mobile-card { display: block; }
+
+  /* 2. FILTRO Y LIMPIAR EN LA MISMA LÍNEA */
+  .rs-floating-tools { 
+    flex-direction: row !important; 
+    align-items: flex-end !important;
+    flex-wrap: nowrap !important;
+  }
+  .rs-field-search { 
+    flex: 1; /* Toma todo el espacio sobrante */
+    max-width: none !important; 
+  }
+  .rs-btn-secondary { 
+    width: auto !important; 
+    min-width: 0 !important; /* Evita que el botón ocupe mucho espacio */
+  }
 }
