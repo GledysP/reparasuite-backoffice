@@ -1,40 +1,51 @@
+/* ==========================================================================
+   REPARASUITE - DETALLE DE TICKET (COMPACTO Y CONSISTENTE)
+   ========================================================================== */
+
 $ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+:host {
+  display: block;
+}
 
 .rs-ticket-page {
   width: 100%;
   padding: var(--rs-page-pad) !important;
   background: transparent !important;
   padding-bottom: 40px !important;
-  overflow-x: hidden;
   box-sizing: border-box;
 }
 
+/* =========================================
+   1. HEADER Y NAVEGACIÓN
+   ========================================= */
+.rs-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; /* Reducido */
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .rs-page-title { margin: 0; font-size: 24px; font-weight: 800; color: var(--rs-primary-dark); }
+  .rs-page-subtitle { margin: 0; font-size: 13px; color: var(--rs-text-muted); }
+}
+
 .rs-header-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
+  display: flex;
+  gap: 12px;
+}
 
-
+/* =========================================
+   2. LAYOUT A 2 COLUMNAS
+   ========================================= */
 .rs-ticket-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 16px;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  gap: 20px; /* Reducido de 24 a 20 */
   align-items: start;
-  width: 100%;
-}
 
-@media (max-width: 980px) {
-  .rs-ticket-grid { grid-template-columns: 1fr; }
-}
-
-.rs-col-main,
-.rs-col-side {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  @media (max-width: 992px) { grid-template-columns: 1fr; }
 }
 
 @media (min-width: 981px) {
@@ -45,298 +56,305 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-.rs-card {
-  width: 100%;
+/* =========================================
+   3. TARJETAS BASE (MÁS COMPACTAS)
+   ========================================= */
+.rs-clean-card {
   background: var(--rs-card) !important;
   border: 1px solid var(--rs-border) !important;
-  overflow: hidden;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  margin-bottom: 20px; /* Reducido */
+
+  /* CORRECCIÓN: Padding reducido para que respire pero no ocupe toda la pantalla */
+  .rs-card-pad { padding: 18px 20px !important; } 
 }
 
-.rs-card-pad { padding: 16px !important; }
+.card-section-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--rs-primary-dark);
+  margin: 0;
+  &.dark-title { color: #ffffff; }
+}
 
+.header-with-count {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  
+  &.rs-compact-header {
+    /* Borramos el border-bottom y el padding-bottom */
+    margin-bottom: 12px;
+  }
+}
+
+.rs-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--rs-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px; /* Reducido */
+}
+
+.rs-value { 
+  display: block; 
+  font-size: 14px; 
+  font-weight: 700; 
+  color: var(--rs-text-main); 
+}
+.muted { color: var(--rs-text-muted); font-size: 12px; font-weight: 600; }
+
+/* =========================================
+   4. RESUMEN: TÍTULO Y PASTILLAS
+   ========================================= */
 .rs-summary-top {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.equipo-title {
+  font-size: 18px !important; /* Claramente más pequeño que los 24px del título principal */
+  font-weight: 700 !important; /* Bold, pero sin llegar al extra-bold (800) de arriba */
+  color: var(--rs-text-main) !important; /* Color de texto base, no el Navy de los títulos */
+  margin: 0 0 16px 0 !important; 
+  line-height: 1.2;
+}
+
+/* CORRECCIÓN: Etiquetas de servicios compactas */
+.rs-services-list {
+  display: flex;
+  gap: 8px; /* Menos espacio entre pastillas */
   flex-wrap: wrap;
-  margin-bottom: 10px;
-}
+  margin-bottom: 16px;
 
-.pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  background: rgba(0, 191, 245, 0.08);
-  color: var(--rs-primary);
-  border: 1px solid rgba(0, 191, 245, 0.14);
-}
+  .rs-service-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px; /* Drásticamente reducido */
+    border-radius: 6px;
+    font-size: 11px; /* Fuente más pequeña, como una etiqueta real */
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: rgba(0, 191, 245, 0.08); 
+    color: #0369a1;
 
-.muted {
-  color: var(--rs-text-muted);
-  font-size: 12px;
-}
+    mat-icon { font-size: 14px; width: 14px; height: 14px; } /* Ícono mini */
 
-.rs-meta-rows { display: grid; gap: 6px; }
-
-.rs-meta-row {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
-}
-
-.rs-meta-row--falla { align-items: flex-start; }
-
-.rs-meta-k {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--rs-text-muted);
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  flex: 0 0 auto;
-}
-
-.rs-meta-v {
-  font-size: 14px;
-  font-weight: 650;
-  color: var(--rs-text-main);
-  line-height: 1.35;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.rs-falla.is-collapsed {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-}
-
-.section-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-
-  h3 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 750;
-    color: var(--rs-text-navy);
+    &.is-primary {
+      background: var(--rs-primary-dark) !important; 
+      color: #ffffff !important;
+      box-shadow: 0 2px 6px rgba(8, 26, 75, 0.15);
+      mat-icon { color: #ffffff !important; }
+    }
   }
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+.rs-dark-falla-box {
+  background: var(--rs-primary-dark); 
+  border-radius: 10px; /* Un poco menos redondo */
+  padding: 14px 16px; /* Padding reducido */
   margin-top: 10px;
-}
 
-@media (max-width: 700px) {
-  .info-grid { grid-template-columns: 1fr; }
-}
-
-.info-item {
-  border: 1px solid var(--rs-border) !important;
-  padding: 10px 12px;
-  background: var(--rs-card) !important;
-
-  &.full { grid-column: 1 / -1; }
-
-  .label {
-    font-size: 11px;
-    color: var(--rs-text-muted);
-    margin-bottom: 4px;
-    font-weight: 650;
+  .falla-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    
+    mat-icon { color: var(--rs-primary); font-size: 16px; width: 16px; height: 16px; }
+    span { color: var(--rs-primary); font-size: 11px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
   }
 
-  .value {
-    font-size: 13px;
-    color: var(--rs-text-main);
-    font-weight: 560;
-    white-space: pre-wrap;
-  }
-}
-
-.obs-box {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: 34px 1fr;
-  gap: 10px;
-  border: 1px solid var(--rs-border) !important;
-  background: var(--rs-card) !important;
-  padding: 10px;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 10px;
-    bottom: 10px;
-    width: 4px;
-    border-radius: 999px;
-    background: var(--rs-primary);
-  }
-
-  .obs-ic {
-    width: 34px;
-    height: 34px;
-    display: grid;
-    place-items: center;
-    border: 1px solid rgba(0, 191, 245, 0.12);
-
-    mat-icon { color: var(--rs-primary); }
-  }
-
-  .obs-title {
-    font-weight: 750;
-    color: var(--rs-text-navy);
-    font-size: 12.5px;
-    margin-bottom: 2px;
-  }
-
-  .obs-text {
-    font-size: 12.5px;
-    color: var(--rs-text-main);
-    white-space: pre-wrap;
+  .falla-body {
+    font-size: 13.5px; /* Un pelín más pequeño */
+    font-weight: 500;
+    color: #f8fafc;
     line-height: 1.5;
-  }
-}
 
-/* side */
-.photos-grid {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.photo-card {
-  display: block;
-  border: 1px solid var(--rs-border) !important;
-  overflow: hidden;
-  background: var(--rs-card) !important;
-  text-decoration: none;
-  color: inherit;
-
-  img {
-    display: block;
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    background: var(--rs-card) !important;
+    &.is-collapsed {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+    }
   }
 
-  .photo-name {
-    padding: 8px 10px;
+  .rs-link-btn {
+    color: var(--rs-primary);
+    font-weight: 700;
+    margin-top: 4px;
+    padding: 0;
+    min-width: auto;
     font-size: 12px;
-    color: var(--rs-text-main);
-    font-weight: 650;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
 
-.photo-card-btn {
-  width: 100%;
-  padding: 0;
-  text-align: left;
-  cursor: pointer;
-}
-
-.photos-empty {
-  margin-top: 12px;
-  border: 1px dashed rgba(100, 116, 139, .28);
-  background: var(--rs-card) !important;
-  padding: 14px;
+/* =========================================
+   5. GRID DATOS DE SOLICITUD (COMPACTO)
+   ========================================= */
+.rs-data-grid {
   display: grid;
-  gap: 4px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Columnas más estrechas permitidas */
+  gap: 16px; /* Reducido de 24 a 16 */
+  margin-top: 16px; /* Reducido */
+  margin-bottom: 16px; /* Reducido */
 
-  mat-icon { color: rgba(0, 191, 245, 0.6); }
-  .photos-empty-title { font-weight: 750; color: var(--rs-text-navy); }
-  .photos-empty-sub { font-size: 12px; color: var(--rs-text-muted); }
+  .full-width { grid-column: 1 / -1; }
 }
 
-/* modal foto */
-.rs-photo-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.58);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 22px;
-  z-index: 1200;
+.observaciones-box {
+  padding-top: 16px; /* Reducido */
+  border-top: 1px dashed var(--rs-border);
+  .obs-text { margin: 0; font-size: 13px; color: var(--rs-text-muted); line-height: 1.4; font-style: italic; }
 }
 
-.rs-photo-modal {
-  position: relative;
-  width: min(920px, 100%);
-  max-height: 90vh;
-  background: var(--rs-card) !important;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* =========================================
+   6. BITÁCORA DE INFORMACIÓN
+   ========================================= */
+.rs-log-list { display: flex; flex-direction: column; }
+
+.rs-log-item {
+  padding: 12px 0; /* Reducido */
+  border-bottom: 1px solid var(--rs-border);
+
+  &:last-child { border-bottom: none; padding-bottom: 0; }
+  &:first-child { padding-top: 0; }
+
+  .log-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+
+    .log-who {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .log-author { font-size: 13px; font-weight: 800; color: var(--rs-text-main); }
+      .log-tag {
+        font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px;
+        background: rgba(100, 116, 139, 0.1); color: var(--rs-text-muted);
+        text-transform: uppercase;
+        &.is-client { background: rgba(0, 191, 245, 0.1); color: var(--rs-primary); }
+      }
+    }
+
+    .log-time { font-size: 11px; font-weight: 600; color: var(--rs-text-muted); }
+  }
+
+  .log-text { font-size: 13px; color: var(--rs-text-main); line-height: 1.4; }
 }
 
-.rs-photo-modal-img {
-  max-width: 100%;
-  max-height: calc(90vh - 32px);
-  object-fit: contain;
-  display: block;
-}
-
-.rs-photo-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 38px;
-  border: 0;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-
-
-/* Acciones rápidas (compacto) */
-.rs-actions-card {
-  background: var(--rs-card) !important;
-  color: var(--rs-text-main) !important;
-  border: 1px solid var(--rs-border) !important;
-}
-
-.rs-actions-pad { padding: 10px 10px !important; }
-
-.rs-actions-title {
-  font-weight: 800;
-  font-size: 13px;
-  margin-bottom: 8px;
-}
-
-.rs-actions-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
-.rs-act-btn {
-  background: rgba(255, 255, 255, .10) !important;
-  border: 1px solid rgba(255, 255, 255, .18) !important;
+/* =========================================
+   7. ACCIONES OPERATIVAS
+   ========================================= */
+.rs-actions-dark-card {
+  background: var(--rs-primary-dark) !important; 
   border-radius: 12px !important;
-  width: 34px !important;
-  height: 34px !important;
-  padding: 0 !important;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 20px rgba(8, 26, 75, 0.12) !important;
 
-  mat-icon {
-    color: #fff !important;
-    font-size: 18px !important;
-    width: 18px !important;
-    height: 18px !important;
-    line-height: 18px !important;
+  mat-card-content { padding: 18px !important; } /* Reducido */
+
+  .action-grid { 
+    display: flex; 
+    gap: 10px; 
+    margin-top: 14px; 
   }
+
+  .rs-action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: center;
+    gap: 8px; 
+    flex: 1; 
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s $ease;
+    text-decoration: none;
+
+    mat-icon { 
+      font-size: 18px; 
+      width: 18px; 
+      height: 18px; 
+      color: var(--rs-primary); 
+    }
+    
+    span { 
+      font-size: 11px; 
+      font-weight: 700; 
+      letter-spacing: 0.03em; 
+      text-transform: uppercase; 
+    }
+
+    &:hover { background: rgba(255, 255, 255, 0.12); transform: translateY(-2px); }
+  }
+}
+
+/* =========================================
+   8. FOTOS DE TERRENO Y EMPTY STATE
+   ========================================= */
+.photos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.photo-card {
+  border: 1px solid var(--rs-border); border-radius: 10px; overflow: hidden; padding: 0;
+  cursor: pointer; background: var(--rs-card); transition: transform 0.2s;
+  img { display: block; width: 100%; height: 120px; object-fit: cover; } /* Altura reducida */
+  &:hover { transform: scale(1.02); }
+}
+
+.empty-state-dashed {
+  border: 2px dashed var(--rs-border); border-radius: 10px; padding: 24px 16px;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  background: rgba(100, 116, 139, 0.02);
+  
+  mat-icon { font-size: 28px; width: 28px; height: 28px; color: var(--rs-text-muted); margin-bottom: 8px; opacity: 0.5; }
+  h4 { font-size: 13px; font-weight: 800; color: var(--rs-primary-dark); margin: 0 0 4px 0; }
+  p { font-size: 11.5px; color: var(--rs-text-muted); margin: 0; max-width: 200px; }
+}
+
+/* =========================================
+   9. MISC Y BADGES
+   ========================================= */
+.rs-status-badge {
+  font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px;
+  &[data-status='ABIERTO'] { background: rgba(0, 191, 245, 0.12); color: var(--rs-primary); }
+  &[data-status='EN_REVISION'] { background: rgba(245, 158, 11, 0.12); color: var(--rs-warning); }
+  &[data-status='CERRADA'] { background: rgba(16, 185, 129, 0.12); color: var(--rs-success); }
+}
+
+.rs-pill-cyan {
+  font-size: 10px; font-weight: 800; background: rgba(0, 191, 245, 0.1); color: var(--rs-primary);
+  padding: 4px 10px; border-radius: 6px;
+}
+
+/* =========================================
+   10. MODAL DE FOTO
+   ========================================= */
+.rs-photo-modal-backdrop {
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8);
+  display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 1200;
+}
+.rs-photo-modal {
+  position: relative; width: min(920px, 100%); max-height: 90vh;
+  background: var(--rs-card) !important; padding: 16px; border-radius: 12px;
+}
+.rs-photo-modal-img { max-width: 100%; max-height: calc(90vh - 32px); object-fit: contain; display: block; border-radius: 8px; }
+.rs-photo-close {
+  position: absolute; top: 16px; right: 16px; width: 36px; height: 36px;
+  border: none; border-radius: 50%; background: rgba(0,0,0,0.5); color: white;
+  display: grid; place-items: center; cursor: pointer;
 }
