@@ -1,4 +1,9 @@
-/* --- 1. VARIABLES DINÁMICAS (Conectadas a tu root) --- */
+/* ==========================================================================
+   REPARASUITE - NUEVA ORDEN DE TRABAJO (SCSS)
+   ========================================================================== */
+
+/* --- 1. VARIABLES DINÁMICAS Y ESTÁTICAS --- */
+/* Variables conectadas al root (CSS Variables) para soportar Modo Claro/Oscuro */
 $rs-bg: var(--rs-bg); 
 $rs-white: var(--rs-card); 
 $rs-text-strong: var(--rs-text-navy); 
@@ -8,194 +13,241 @@ $rs-label: var(--rs-text-muted);
 $rs-tech-navy: var(--rs-navy-box); 
 $rs-tech-cyan: var(--rs-navy-text);
 
-/* Variables estáticas */
+/* Variables estáticas (Colores de marca y validaciones) */
 $rs-tech-blue: #0891b2; 
-$rs-active-color: #0d276d; 
+$rs-active-color: #0d276d; /* Azul Navy corporativo para elementos activos */
+$rs-danger: #ef4444; 
+$rs-danger-soft: rgba(239, 68, 68, 0.1);
 
+/* Variables de estructura y sombras */
 $rs-shadow-card: var(--rs-shadow-md);
 $rs-shadow-modal: 0 28px 80px rgba(15, 23, 42, 0.28);
 $rs-shadow-cta: 0 14px 30px rgba(0, 122, 255, 0.16), 0 0 28px rgba(0, 209, 255, 0.14);
 $rs-radius-card: var(--rs-radius);
 $rs-radius-field: 12px;
-$rs-danger: #ef4444; 
-$rs-danger-soft: rgba(239, 68, 68, 0.1);
 
-/* ¡NO HAY :host! 
-   ¡NO HAY .rs-page-container! 
-   Dejamos que el styles.scss GLOBAL se encargue del fondo y la luz. 
-*/
 
-/* --- CONTENEDOR PADRE --- */
-:host { display: block; background: transparent !important; }
+/* --- 2. CONFIGURACIÓN GLOBAL Y ANIMACIONES --- */
+/* Contenedor principal de la vista */
+:host { 
+  display: block; 
+  background: transparent !important; 
+}
 
-/* --- ANIMACIÓN --- */
+/* Animación de entrada suave (Fade Up) para dar una sensación premium al cargar */
 @keyframes rsFadeUp { 
   to { opacity: 1; transform: translateY(0); } 
 }
 
-/* Aplicamos estado inicial y la animación suave global */
 .rs-enter { 
   opacity: 0;
   transform: translateY(14px);
   animation: rsFadeUp 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards; 
 }
 
-
-/* Espaciado exterior idéntico al Dashboard */
+/* Padding general de la página para que coincida con el Dashboard principal */
 .rs-shell { 
   width: 100%; 
   padding: 18px 24px 26px 24px; 
   background: transparent !important;
 }
 
-/* --- HEADERS ALINEADOS EXACTAMENTE AL DASHBOARD --- */
+
+/* --- 3. ENCABEZADOS (HEADERS) --- */
 .rs-page-head { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: flex-start;
-  margin: 0 0 30px 0; /* Los 30px exactos de distancia que tiene tu Dashboard */
+  display: flex; justify-content: space-between; align-items: flex-start; margin: 0 0 30px 0; 
 }
 
 .rs-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
 }
 
 .rs-page-title { 
-  margin: 0; 
-  color: $rs-tech-navy; 
-  font-size: clamp(1.85rem, 2vw, 2.35rem); 
-  font-weight: 700; 
-  line-height: 1; 
-  letter-spacing: -0.045em; 
+  margin: 0; color: $rs-tech-navy; font-size: clamp(1.85rem, 2vw, 2.35rem); font-weight: 700; line-height: 1; letter-spacing: -0.045em; 
 }
 
 .rs-page-subtitle { 
-  margin: 12px 0 0; 
-  color: $rs-muted; 
-  font-size: 0.97rem; 
-  font-weight: 400; 
-  letter-spacing: -0.01em; 
+  margin: 12px 0 0; color: $rs-muted; font-size: 0.97rem; font-weight: 400; letter-spacing: -0.01em; 
 }
 
 
-/* --- 2. LAYOUT GRID SAAS --- */
+/* --- 4. SISTEMA DE REJILLA (GRID LAYOUT SAAS) --- */
+/* Sistema de 12 columnas para organizar los formularios uniformemente */
 .rs-form-grid-layout { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; align-items: start; }
 .rs-row-aligned { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; align-items: stretch; grid-column: span 12;}
 .rs-card--stretch { height: 100%; }
 
 .rs-grid { display: grid; gap: 12px; }
 .rs-grid--12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+
+/* Clases utilitarias de columnas */
 .rs-col-12 { grid-column: span 12; } 
 .rs-col-8 { grid-column: span 8; } 
 .rs-col-6 { grid-column: span 6; } 
 .rs-col-4 { grid-column: span 4; }
 
 
-/* --- 3. TARJETAS FLOTANTES Y ACENTOS UNIFICADOS (Estilo Purista) --- */
+/* --- 5. TARJETAS PRINCIPALES (CARDS) --- */
 .rs-card {
   position: relative; 
   overflow: hidden; 
   border-radius: var(--rs-radius) !important;
-  
-  /* CRÍTICO: Usamos el token de card para que funcione en Dark Mode */
   background: var(--rs-card) !important; 
-  
-  /* Borde más definido, igual al de Detalles de Orden */
   border: 1px solid var(--rs-border) !important; 
-  
-  /* Sombra sutil pero firme */
   box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important; 
   padding: 24px !important; 
   display: flex; 
   flex-direction: column;
   transition: all 0.2s ease;
 
-  /* Efecto Hover Premium */
+  /* Hover sutil adaptado para Modo Claro y Oscuro */
   &:hover { 
-    border-color: #cbd5e1 !important; 
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04) !important; 
+    border-color: rgba(0, 191, 245, 0.2) !important; 
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04) !important;
   }
 }
 
 .rs-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
 .rs-section-title-group { display: flex; align-items: center; gap: 12px; }
+
+/* Kicker: El texto pequeño arriba del título de la sección (Ej: IDENTIFICACIÓN) */
 .rs-section-kicker { 
-  /* Estilo Editorial idéntico a Detalles de Orden */
-  font-size: 9.5px !important; 
-  font-weight: 800 !important; 
-  color: var(--rs-text-muted) !important; /* Mapeado al token */
-  letter-spacing: 0.08em !important; 
-  text-transform: uppercase !important; 
-  margin-bottom: 0px; 
-  display: block;
+  font-size: 9.5px !important; font-weight: 800 !important; color: var(--rs-text-muted) !important; 
+  letter-spacing: 0.08em !important; text-transform: uppercase !important; margin-bottom: 0px; display: block;
 }
 
-/* Y el título principal de la card */
 .rs-section-title { 
-  margin: 0; 
-  font-size: 15px; /* Un poco más refinado */
-  font-weight: 700; /* Coincide con tu diseño */
-  color: var(--rs-text-navy); /* Mapeado al token */
-  letter-spacing: -0.01em;
+  margin: 0; font-size: 15px; font-weight: 700; color: var(--rs-text-navy); letter-spacing: -0.01em;
 }
 .rs-head-actions { display: flex; gap: 8px; }
 
+/* Estilos base de los campos de formulario */
 .rs-field { display: flex; flex-direction: column; gap: 6px; }
 .rs-field-label { font-size: 11.5px; font-weight: 700; color: $rs-label; padding-left: 4px; margin-bottom: -2px; }
 
-/* Íconos de Sección */
+/* Íconos cuadrados de las cabeceras de sección */
 .rs-icon-square { width: 36px; height: 36px; border-radius: 10px; background: rgba(0, 209, 255, 0.15); color: #0891b2; display: grid; place-items: center; .mat-icon { font-size: 20px; width: 20px; height: 20px; } }
 .rs-icon-square--small { width: 32px; height: 32px; border-radius: 8px; .mat-icon { font-size: 18px; width: 18px; height: 18px; }}
 
-/* --- 4. TOGGLES (MODALIDAD Y PRIORIDAD) --- */
-.rs-priority-group { display: flex !important; gap: 8px !important; border: none !important; width: 100%; background: transparent !important; }
-:host ::ng-deep .rs-priority-group .mat-button-toggle-appearance-standard { border: none !important; &::after { display: none !important; } }
 
-.rs-priority-segment {
-  border: none !important; border-radius: 10px !important; background: var(--rs-card) !important; min-height: 44px !important; flex: 1; transition: all 0.2s ease;
-  ::ng-deep .mat-button-toggle-label-content { padding: 0 !important; display: flex; align-items: center; justify-content: center; gap: 8px; height: 100%; }
-  ::ng-deep .rs-priority-text { font-size: 13px !important; font-weight: 700 !important; color: #475569 !important; }
+/* ==========================================================================
+   6. GRUPOS DE BOTONES DE SELECCIÓN (MODALIDAD Y PRIORIDAD)
+   ========================================================================== */
+
+/* Contenedor principal que agrupa los botones */
+.rs-priority-group { 
+  display: flex !important; 
+  gap: 8px !important; 
+  border: none !important; 
+  width: 100%; 
+  background: transparent !important; 
+}
+
+/* Limpieza de líneas grises feas que trae Angular Material por defecto */
+:host ::ng-deep .rs-priority-group .mat-button-toggle-appearance-standard { 
+  border: none !important; 
+  &::after { display: none !important; } 
+}
+
+/* --- A. CAJA DEL BOTÓN Y TEXTOS --- */
+/* Envolvemos todo en ng-deep para dominar completamente al componente hijo */
+:host ::ng-deep .rs-priority-segment {
+  /* ESTADO INACTIVO: Borde sutil semitransparente a prueba de fallos (funciona en claro/oscuro) */
+  border: 1px solid rgba(100, 116, 139, 0.3) !important; 
+  border-radius: 10px !important; 
+  background: transparent !important; 
+  min-height: 44px !important; 
+  flex: 1; 
+  transition: all 0.2s ease;
+  overflow: hidden; /* Evita que los clics de Material se salgan del borde redondeado */
+
+  /* CRÍTICO: Matamos el fondo gris que Angular Material le pone a los botones inactivos */
+  .mat-button-toggle-button {
+    background-color: transparent !important;
+  }
+
+  /* Textos e íconos inactivos (Gris corporativo original) */
+  .mat-button-toggle-label-content, 
+  .rs-priority-text { 
+    padding: 0 !important; 
+    display: flex !important; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px; 
+    height: 100%; 
+    font-size: 13px !important; 
+    font-weight: 700 !important; 
+    color: #475569 !important; 
+  }
   
+  mat-icon { 
+    color: #475569 !important; 
+  }
+  
+  /* ESTADO ACTIVO: Forzamos el fondo azul Navy y el texto blanco */
   &.mat-button-toggle-checked { 
-    background-color: $rs-active-color !important; 
-    color: #fff !important; 
-    box-shadow: 0 4px 12px rgba(13, 39, 109, 0.25); 
-    ::ng-deep .mat-button-toggle-label-content, ::ng-deep mat-icon { color: #fff !important; } 
+    background-color: #0d276d !important; 
+    border-color: #0d276d !important; 
+    box-shadow: 0 4px 12px rgba(13, 39, 109, 0.25) !important; 
+    
+    .mat-button-toggle-label-content, 
+    mat-icon, 
+    .rs-priority-text { 
+      color: #ffffff !important; 
+      font-weight: 800 !important; 
+    } 
   }
 }
 
-.rs-priority-segment--low .rs-priority-dot { background-color: #10b981 !important; width: 8px; height: 8px; border-radius: 50%; }
-.rs-priority-segment--med .rs-priority-dot { background-color: #f59e0b !important; width: 8px; height: 8px; border-radius: 50%; }
-.rs-priority-segment--high .rs-priority-dot { background-color: #ef4444 !important; width: 8px; height: 8px; border-radius: 50%; }
-
+/* --- B. PUNTOS DE COLOR (Dots) PARA LA PRIORIDAD --- */
 :host ::ng-deep {
-  .rs-priority-segment--low.mat-button-toggle-checked { background-color: #10b981 !important; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important; transform: translateY(-1px); }
-  .rs-priority-segment--med.mat-button-toggle-checked { background-color: #f59e0b !important; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important; transform: translateY(-1px); }
-  .rs-priority-segment--high.mat-button-toggle-checked { background-color: #ef4444 !important; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important; transform: translateY(-1px); }
-  .mat-button-toggle-checked .rs-priority-text { color: #fff !important; }
+  /* Dibujamos los circulitos inactivos */
+  .rs-priority-segment--low .rs-priority-dot { background-color: #10b981 !important; width: 8px; height: 8px; border-radius: 50%; }
+  .rs-priority-segment--med .rs-priority-dot { background-color: #f59e0b !important; width: 8px; height: 8px; border-radius: 50%; }
+  .rs-priority-segment--high .rs-priority-dot { background-color: #ef4444 !important; width: 8px; height: 8px; border-radius: 50%; }
+
+  /* Ajustes de fondo específicos cuando los botones de prioridad se activan */
+  .rs-priority-segment--low.mat-button-toggle-checked { background-color: #10b981 !important; border-color: #10b981 !important; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important; transform: translateY(-1px); }
+  .rs-priority-segment--med.mat-button-toggle-checked { background-color: #f59e0b !important; border-color: #f59e0b !important; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important; transform: translateY(-1px); }
+  .rs-priority-segment--high.mat-button-toggle-checked { background-color: #ef4444 !important; border-color: #ef4444 !important; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important; transform: translateY(-1px); }
+  
+  /* El punto de color se vuelve blanco al seleccionar la prioridad */
   .mat-button-toggle-checked .rs-priority-dot { background-color: #fff !important; }
 }
 
-/* --- 5. SELECTOR DE TIEMPO --- */
+
+/* --- 7. SELECTOR DE TIEMPO (AM/PM Y HORA) --- */
 .rs-time-wrapper-white {
   display: flex; align-items: center; justify-content: space-between; background: var(--rs-card) !important; border-radius: 10px; padding: 4px 8px; height: 44px; border: 1px solid var(--rs-border) !important; transition: all 0.2s ease;
   &:focus-within { border-color: #00d1ff; box-shadow: 0 0 0 3px rgba(0, 209, 255, 0.1); }
   &.rs-field-error { border-color: $rs-danger !important; box-shadow: 0 0 0 2px $rs-danger-soft !important; }
 
-  .rs-time-input-white { width: 60px; border: none; background: transparent; font-size: 15px; font-weight: 700; color: #0f172a; text-align: center; outline: none; &::placeholder { color: #cbd5e1; } }
+  .rs-time-input-white { 
+    width: 60px; border: none; background: transparent; font-size: 15px; font-weight: 700; 
+    color: var(--rs-text-main) !important; 
+    text-align: center; outline: none; 
+    &::placeholder { color: var(--rs-text-muted) !important; } 
+  }
 
   .rs-period-group-white {
     height: 34px !important; display: flex !important; border-radius: 8px !important; background: var(--rs-card) !important; border: none !important; margin-left: auto;
     .mat-button-toggle { border: none !important; width: 36px; border-radius: 6px !important; }
-    ::ng-deep .mat-button-toggle-label-content { font-size: 11px !important; font-weight: 800 !important; padding: 0 !important; color: #64748b !important; line-height: 34px !important; display: flex; justify-content: center; }
-    .mat-button-toggle-checked { background: $rs-active-color !important; ::ng-deep .mat-button-toggle-label-content { color: #ffffff !important; } }
+    
+    ::ng-deep .mat-button-toggle-label-content { 
+      font-size: 11px !important; font-weight: 800 !important; padding: 0 !important; 
+      color: var(--rs-text-main) !important; 
+      line-height: 34px !important; display: flex; justify-content: center; 
+    }
+    
+    .mat-button-toggle-checked { 
+      background: $rs-active-color !important; 
+      ::ng-deep .mat-button-toggle-label-content { color: #ffffff !important; } 
+    }
   }
 }
 
-/* --- 6. CHIPS DE SERVICIOS --- */
+
+/* --- 8. CHIPS DE SERVICIOS (Reparación, Mantenimiento, Instalación) --- */
 :host ::ng-deep .rs-custom-chips {
   .mdc-evolution-chip-set__chips { gap: 10px !important; }
   .mat-mdc-chip, .mdc-evolution-chip__action--primary { border: none !important; box-shadow: none !important; --mdc-chip-outline-width: 0px !important; background: transparent !important;}
@@ -211,8 +263,11 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
   .mdc-evolution-chip__graphic { display: none !important; }
 }
 
-/* --- 7. ADJUNTOS VISUALES --- */
+
+/* --- 9. ZONA DE ADJUNTOS VISUALES Y GALERÍA --- */
 .rs-attachments-container { margin-top: 16px; }
+
+/* Dropzone Premium (Área para arrastrar archivos) */
 .rs-premium-dropzone {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex: 1;
   min-height: 180px; border: 1px solid var(--rs-border) !important; border-radius: 16px; background: var(--rs-card) !important; cursor: pointer; transition: all 0.2s ease;
@@ -222,6 +277,7 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
 .rs-premium-dropzone__title { font-weight: 700; color: #0f172a; font-size: 14px; margin-top: 4px; }
 .rs-premium-dropzone__subtitle { font-size: 12px; color: #94a3b8; }
 
+/* Galería de fotos subidas */
 .rs-photo-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
 .rs-photo-card { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--rs-border) !important; aspect-ratio: 1; }
 .rs-photo-viewer { width: 100%; height: 100%; padding: 0; border: none; background: transparent; cursor: zoom-in; img { width: 100%; height: 100%; object-fit: cover; } }
@@ -229,7 +285,7 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
 .rs-photo-badge.is-local { background: #00bff5; color: #081a4b; }
 .rs-photo-remove { position: absolute; top: 4px; right: 4px; z-index: 2; background: var(--rs-card) !important; width: 24px !important; height: 24px !important; }
 
-/* Lightbox */
+/* Modal de Lightbox para ver fotos en grande */
 .rs-lightbox { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 28px; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(10px); }
 .rs-lightbox__dialog { width: min(92vw, 1100px); max-height: 88vh; display: flex; flex-direction: column; border-radius: 26px; background: var(--rs-card) !important; border: 1px solid var(--rs-border) !important; box-shadow: $rs-shadow-modal; overflow: hidden; }
 .rs-lightbox__bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 16px 18px 12px; border-bottom: 1px solid var(--rs-border) !important; }
@@ -237,7 +293,8 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
 .rs-lightbox__close { flex: 0 0 auto; background: var(--rs-card) !important; }
 .rs-lightbox__stage { flex: 1 1 auto; min-height: 0; display: grid; place-items: center; padding: 18px; background: var(--rs-card) !important; img { max-width: 100%; max-height: calc(88vh - 96px); object-fit: contain; border-radius: 18px; box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08); background: var(--rs-card) !important; } }
 
-/* --- 8. BOTONES DE ACCIÓN --- */
+
+/* --- 10. BOTONES DE ACCIÓN (FOOTER) --- */
 .rs-actions-footer { display: flex; justify-content: flex-end; width: 100%; padding-top: 16px; margin-top: 8px; gap: 16px; } 
 
 .rs-btn-secondary { 
@@ -259,6 +316,7 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
   }
 }
 
+/* Efecto visual de brillo que corre por el botón principal */
 @keyframes rsShimmer {
   0% { transform: translateX(-160%) skewX(-24deg); }
   100% { transform: translateX(220%) skewX(-24deg); }
@@ -287,19 +345,22 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
   }
 }
 
-/* --- 9. MATERIAL OVERRIDES (Fix del Ícono y Calendario) --- */
+
+/* --- 11. OVERRIDES DE ANGULAR MATERIAL (Corrección de inputs nativos) --- */
+/* Forzamos a que Material adopte nuestro diseño UI sin romper la estructura HTML */
 :host ::ng-deep {
   .mat-mdc-form-field { --mdc-outlined-text-field-container-shape: 10px; width: 100%; }
-  .mat-mdc-form-field-subscript-wrapper { display: none !important; }
+  .mat-mdc-form-field-subscript-wrapper { display: none !important; } /* Ocultamos el espacio inferior nativo de error */
   
   .mat-mdc-text-field-wrapper { min-height: 44px !important; border-radius: 10px !important; background: var(--rs-card) !important; border: 1px solid var(--rs-border) !important; box-shadow: none !important; transition: all 0.2s ease; }
   .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper { border-color: #00d1ff !important; box-shadow: 0 0 0 3px rgba(0, 209, 255, 0.1) !important; }
-  .mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing { border: none !important; }
+  .mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing { border: none !important; } /* Eliminamos la línea nativa de Material */
   
   .mat-mdc-form-field-infix { min-height: 44px !important; padding: 6px 14px !important; display: flex; align-items: center; }
   input.mat-mdc-input-element, .mat-mdc-select-value-text { font-size: 13px !important; font-weight: 500 !important; color: $rs-text-strong !important; }
   input.mat-mdc-input-element::placeholder { color: $rs-label !important; font-weight: 500 !important; }
   
+  /* Textarea para observaciones */
   .rs-textarea-field .mat-mdc-form-field-infix { min-height: 80px !important; align-items: flex-start !important; padding: 10px 14px !important; }
   .rs-textarea-field textarea.mat-mdc-input-element { min-height: 60px !important; resize: vertical; }
   
@@ -307,49 +368,34 @@ $rs-danger-soft: rgba(239, 68, 68, 0.1);
   .mat-mdc-form-field-icon-suffix { margin-left: 10px !important; display: flex; align-items: center; overflow: visible !important; }
   .mat-icon { font-family: 'Material Icons', 'Material Symbols Outlined' !important; }
   
+  /* Calendario */
   .mat-datepicker-content-container, .mat-calendar { background: var(--rs-card) !important; border-radius: 16px !important;}
   .cdk-overlay-pane { z-index: 1000 !important; }
 }
 
 
-/* Estilo Premium para la Falla reportada */
-/* --- Alineación del Header --- */
-.rs-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-/* --- Contenedor Navy para Falla --- */
+/* --- 12. ESTILO PREMIUM: FALLA REPORTADA --- */
 .rs-fault-box {
-background: #081a4b;
+  background: #081a4b;
   border-radius: 12px;
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
   border: 1px solid transparent;
 
-  /* AJUSTE DE ALINEACIÓN: 
-     Añadimos 19px para compensar la altura del label del campo de al lado */
+  /* Compensamos la alineación vertical con el label del elemento adyacente */
   margin-top: 19px; 
-  
-  /* Aseguramos una altura mínima similar a un textarea de 2 filas */
   min-height: 84px; 
 
   &:focus-within { border-color: #00bff5; }
 
   .rs-fault-header {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #00d1ff;
-    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px; color: #00d1ff; margin-bottom: 4px;
     mat-icon { font-size: 16px; width: 16px; height: 16px; }
     span { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; }
   }
 
-  /* Reset de Material para el input interno */
+  /* Reset nativo interno para que el input parezca parte del contenedor oscuro */
   ::ng-deep .mat-mdc-form-field {
     .mdc-notched-outline { display: none !important; } 
     .mat-mdc-text-field-wrapper { background: transparent !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
@@ -359,36 +405,35 @@ background: #081a4b;
 }
 
 
-
-/* --- 10. VALIDACIONES UX --- */
+/* --- 13. VALIDACIONES DE ERRORES (UX) --- */
 .rs-field-error .rs-field-label { color: $rs-danger !important; }
 .rs-chips-error { border-left: 3px solid $rs-danger; padding-left: 10px; border-radius: 4px; }
 .rs-chips-error-msg { display: flex; align-items: center; gap: 4px; color: $rs-danger; font-size: 11px; font-weight: 600; margin-top: 8px; &::before { content: 'error_outline'; font-family: 'Material Icons'; font-size: 14px; } }
 :host ::ng-deep { .rs-field-error .mat-mdc-text-field-wrapper { box-shadow: 0 0 0 2px $rs-danger-soft !important; border-color: $rs-danger !important; } }
 
-/* --- 11. MEDIA QUERIES (PWA RESPONSIVE FIX) --- */
-/* Tablets horizontales / Laptops pequeñas */
+
+/* --- 14. RESPONSIVE DESIGN (MEDIA QUERIES PARA PWA) --- */
+/* Dispositivos Medianos (Laptops pequeñas / Tablets en Horizontal) */
 @media (max-width: 1024px) {
   .rs-form-grid-layout { grid-template-columns: 1fr; }
   .rs-row-aligned { grid-template-columns: 1fr; gap: 20px; }
-  /* Ocupan todo el ancho, uno debajo del otro */
+  /* Las columnas pasan a ocupar el 100% del ancho */
   .rs-col-8, .rs-col-4 { grid-column: 1 / -1; }
 }
 
-/* Tablets verticales / Celulares grandes */
+/* Tablets en Vertical */
 @media (max-width: 860px) {
   .rs-grid--12 { grid-template-columns: 1fr; gap: 16px; }
-  /* Todos los campos del formulario ocupan el ancho completo */
   .rs-col-12, .rs-col-8, .rs-col-6, .rs-col-4 { grid-column: 1 / -1; }
 }
 
-/* Celulares (PWA) */
+/* Teléfonos (Experiencia PWA) */
 @media (max-width: 640px) {
   .rs-shell { padding: 20px 16px; }
   .rs-page-head { flex-direction: column; gap: 16px; margin-bottom: 24px; }
   .rs-btn-secondary--top { width: 100%; }
   
-  /* Invertimos el orden de los botones finales: Guardar arriba, Cancelar abajo */
+  /* Invertimos el orden del Footer: Botón de Guardar queda arriba para fácil acceso con el pulgar */
   .rs-actions-footer { 
     flex-direction: column-reverse; 
     gap: 12px; 
