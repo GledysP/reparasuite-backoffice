@@ -1,18 +1,14 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-
-import { CategoriaEquipoDto } from '../../../core/models/tipos';
-import { EquiposService } from '../equipos.service';
-
-type DialogData = {
-  categoria: CategoriaEquipoDto | null;
-};
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'rs-categoria-equipo-dialog',
@@ -22,75 +18,96 @@ type DialogData = {
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
-    MatCheckboxModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatSelectModule,
+    MatIconModule,
+    MatSlideToggleModule,
+    MatTooltipModule
   ],
   templateUrl: './categoria-equipo-dialog.component.html',
   styleUrl: './categoria-equipo-dialog.component.scss'
 })
-export class CategoriaEquipoDialogComponent {
-  private fb = inject(FormBuilder);
-  private service = inject(EquiposService);
-  private dialogRef = inject(MatDialogRef<CategoriaEquipoDialogComponent>);
+export class CategoriaEquipoDialogComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly dialogRef = inject(MatDialogRef<CategoriaEquipoDialogComponent>);
+  public readonly data = inject(MAT_DIALOG_DATA);
 
   saving = false;
 
+  readonly iconosDisponibles = [
+    { valor: 'memory', nombre: 'Tarjeta Electrónica' },
+    { valor: 'local_laundry_service', nombre: 'Lavadora / Secadora' },
+    { valor: 'air_freshener', nombre: 'Aire Acondicionado' },
+    { valor: 'laptop_mac', nombre: 'Laptops / Computadoras' },
+    { valor: 'tv', nombre: 'Televisores / Monitores' },
+    { valor: 'smartphone', nombre: 'Teléfonos / Tablets' },
+    { valor: 'videogame_asset', nombre: 'Consolas de Videojuego' },
+    { valor: 'kitchen', nombre: 'Electrodomésticos / Cocina' },
+    { valor: 'devices_other', nombre: 'Dispositivos (General)' },
+    { valor: 'router', nombre: 'Redes y Routers' },
+    { valor: 'print', nombre: 'Impresoras / Copiadoras' },
+  ];
+
   form = this.fb.group({
-    codigo: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(50)]),
-    nombre: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(120)]),
-    descripcion: this.fb.nonNullable.control(''),
-    icono: this.fb.nonNullable.control(''),
-    ordenVisual: this.fb.nonNullable.control(0),
-    activa: this.fb.nonNullable.control(true)
+    codigo: [''],
+    nombre: ['', Validators.required],
+    descripcion: [''],
+    icono: ['devices_other'], 
+    ordenVisual: [1],
+    activa: [true]
   });
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) {
-    const categoria = data.categoria;
-    if (categoria) {
+  ngOnInit(): void {
+    if (this.data && this.data.categoria) {
       this.form.patchValue({
-        codigo: categoria.codigo ?? '',
-        nombre: categoria.nombre ?? '',
-        descripcion: categoria.descripcion ?? '',
-        icono: categoria.icono ?? '',
-        ordenVisual: 0,
-        activa: true
+        codigo: this.data.categoria.codigo,
+        nombre: this.data.categoria.nombre,
+        descripcion: this.data.categoria.descripcion,
+        icono: this.data.categoria.icono || 'devices_other',
+        ordenVisual: this.data.categoria.ordenVisual || 1,
+        activa: this.data.categoria.activa !== false
       });
     }
+
+    this.form.get('nombre')?.valueChanges.subscribe(nombre => {
+      if (!this.data?.categoria && nombre) {
+        const codigoGenerado = nombre
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-zA-Z0-9\s]/g, '')
+          .trim()
+          .replace(/\s+/g, '_')
+          .toUpperCase()
+          .substring(0, 20); 
+
+        this.form.patchValue({ codigo: codigoGenerado }, { emitEvent: false });
+      }
+    });
+  }
+
+  // Función para mostrar el nombre limpio en el input
+  obtenerNombreIcono(valor: string | null | undefined): string {
+    if (!valor) return 'Seleccionar...';
+    const icon = this.iconosDisponibles.find(i => i.valor === valor);
+    return icon ? icon.nombre : 'Seleccionar...';
+  }
+
+  cerrar(): void {
+    this.dialogRef.close();
   }
 
   guardar(): void {
-    if (this.form.invalid || this.saving) {
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.saving = true;
-    const raw = this.form.getRawValue();
-
-    const body = {
-      codigo: raw.codigo.trim().toUpperCase(),
-      nombre: raw.nombre.trim(),
-      descripcion: raw.descripcion.trim() || null,
-      icono: raw.icono.trim() || null,
-      ordenVisual: Number(raw.ordenVisual ?? 0),
-      activa: !!raw.activa
-    };
-
-    const obs = this.data.categoria?.id
-      ? this.service.actualizarCategoria(this.data.categoria.id, body)
-      : this.service.crearCategoria(body);
-
-    obs.subscribe({
-      next: (res) => this.dialogRef.close(res),
-      error: () => {
-        this.saving = false;
-      }
-    });
-  }
-
-  cerrar(): void {
-    if (this.saving) return;
-    this.dialogRef.close();
+    const formData = this.form.getRawValue();
+    
+    setTimeout(() => {
+      this.dialogRef.close(formData);
+      this.saving = false;
+    }, 800);
   }
 }

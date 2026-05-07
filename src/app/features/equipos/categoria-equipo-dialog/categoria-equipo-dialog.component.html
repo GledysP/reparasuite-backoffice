@@ -1,41 +1,89 @@
-<h2 mat-dialog-title>{{ data.categoria ? 'Editar categoría' : 'Nueva categoría' }}</h2>
+<div class="rs-modal-header">
+  <h2 mat-dialog-title class="rs-modal-title">
+    {{ data.categoria ? 'Editar categoría' : 'Nueva categoría' }}
+  </h2>
+  <button mat-icon-button type="button" class="rs-btn-close" (click)="cerrar()" matTooltip="Cerrar">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 
-<mat-dialog-content>
+<mat-dialog-content class="rs-modal-content rs-custom-scrollbar">
   <form [formGroup]="form" class="rs-dialog-form">
-    <mat-form-field appearance="outline">
-      <mat-label>Código *</mat-label>
+    
+    <div [hidden]="true">
       <input matInput formControlName="codigo" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Nombre *</mat-label>
-      <input matInput formControlName="nombre" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="span-2">
-      <mat-label>Descripción</mat-label>
-      <textarea matInput rows="3" formControlName="descripcion"></textarea>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Icono</mat-label>
-      <input matInput formControlName="icono" placeholder="tv / laptop_mac / router" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Orden visual</mat-label>
-      <input matInput type="number" formControlName="ordenVisual" />
-    </mat-form-field>
-
-    <div class="span-2">
-      <mat-checkbox formControlName="activa">Categoría activa</mat-checkbox>
     </div>
+
+    <div class="rs-field-shell span-2">
+      <label class="rs-field-label">Nombre de la categoría</label>
+      <mat-form-field appearance="outline" class="rs-premium-field">
+        <mat-icon matPrefix>label_outline</mat-icon>
+        <input matInput formControlName="nombre" placeholder="Ej.: Laptops, Televisores, Consolas..." />
+        <mat-error>@if (form.get('nombre')?.hasError('required')) { El nombre es obligatorio }</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="rs-field-shell span-2">
+      <label class="rs-field-label">Icono visual de categoría</label>
+      <mat-form-field appearance="outline" class="rs-premium-field rs-side-field">
+        <mat-icon matPrefix>{{ form.get('icono')?.value || 'devices_other' }}</mat-icon>
+        <mat-select formControlName="icono" panelClass="rs-select-panel rs-select-panel-icons">
+          <mat-select-trigger class="rs-icon-trigger">
+            <span>{{ obtenerNombreIcono(form.get('icono')?.value) }}</span>
+          </mat-select-trigger>
+          
+          @for (icon of iconosDisponibles; track icon.valor) {
+            <mat-option [value]="icon.valor">
+              <div class="rs-icon-option">
+                <mat-icon>{{ icon.valor }}</mat-icon>
+                <span>{{ icon.nombre }}</span>
+              </div>
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="rs-field-shell span-2">
+      <label class="rs-field-label">Descripción interna (Opcional)</label>
+      <mat-form-field appearance="outline" class="rs-premium-field rs-textarea-field">
+        <textarea 
+          matInput 
+          rows="2" 
+          formControlName="descripcion" 
+          placeholder="Ej.: Equipos portátiles de cualquier marca..."></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="span-2 rs-row-alignment">
+      
+      <div class="rs-field-shell rs-flex-half">
+        <label class="rs-field-label">Orden (Prioridad)</label>
+        <mat-form-field appearance="outline" class="rs-premium-field">
+          <mat-icon matPrefix>sort</mat-icon>
+          <input matInput type="number" formControlName="ordenVisual" placeholder="Ej.: 1" />
+        </mat-form-field>
+      </div>
+
+      <div class="rs-status-toggle rs-flex-half">
+        <mat-slide-toggle formControlName="activa" color="primary">
+          Categoría activa
+        </mat-slide-toggle>
+      </div>
+
+    </div>
+
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-stroked-button type="button" (click)="cerrar()">Cancelar</button>
-  <button mat-flat-button class="rs-primary-btn" type="button" (click)="guardar()" [disabled]="saving">
-    {{ saving ? 'Guardando...' : 'Guardar' }}
+<mat-dialog-actions align="end" class="rs-modal-footer">
+  <button mat-stroked-button type="button" class="rs-btn-secondary rs-topbar-btn" (click)="cerrar()">
+    Cancelar
+  </button>
+  <button mat-flat-button type="button" class="rs-btn rs-btn--primary rs-topbar-btn" (click)="guardar()">
+    <span class="rs-btn__shimmer"></span>
+    <span class="rs-btn__label">
+      {{ saving ? 'Guardando...' : 'Guardar categoría' }}
+    </span>
   </button>
 </mat-dialog-actions>

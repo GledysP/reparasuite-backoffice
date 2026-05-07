@@ -5,9 +5,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // <-- 1. Importamos el Dialog
 
 import { EquiposService } from '../equipos.service';
 import { EquipoResumenDto } from '../../../core/models/tipos';
+// <-- 2. Importa tu componente del modal (Ajusta la ruta si es necesario)
+import { CategoriaEquipoDialogComponent } from '../categoria-equipo-dialog/categoria-equipo-dialog.component'; 
 
 @Component({
   selector: 'rs-equipos-list',
@@ -18,7 +21,8 @@ import { EquipoResumenDto } from '../../../core/models/tipos';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatDialogModule 
   ],
   templateUrl: './equipos-list.component.html',
   styleUrl: './equipos-list.component.scss'
@@ -26,6 +30,7 @@ import { EquipoResumenDto } from '../../../core/models/tipos';
 export class EquiposListComponent implements OnInit {
   private readonly service = inject(EquiposService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog); 
 
   loading = signal(false);
   items = signal<EquipoResumenDto[]>([]);
@@ -53,8 +58,19 @@ export class EquiposListComponent implements OnInit {
   }
 
   irCategorias(): void {
-    // TODO: Construiremos esta pantalla más adelante. 
-    // Por ahora, solo evitamos el error de compilación.
-    console.log('Navegar a la gestión de categorías...');
+    // <--  Abrimos tu modal de categorías
+    const dialogRef = this.dialog.open(CategoriaEquipoDialogComponent, {
+      width: '520px',
+      panelClass: 'rs-dialog-custom',
+      disableClose: true, // Evita que se cierre si hace clic afuera por error
+      data: { categoria: null } // Pasamos null porque es una creación nueva
+    });
+
+    // Opcional:  recargar algo cuando el modal se cierre
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Categoría guardada. Refrescando datos si es necesario...');
+      }
+    });
   }
 }
