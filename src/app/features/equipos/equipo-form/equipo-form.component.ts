@@ -20,7 +20,6 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 import { ClientesService } from '../../clientes/clientes.service';
 import { EquiposService } from '../equipos.service';
 import { CategoriaEquipoDto, ClienteResumen } from '../../../core/models/tipos';
-import { CategoriaEquipoDialogComponent } from '../categoria-equipo-dialog/categoria-equipo-dialog.component';
 
 @Component({
   selector: 'rs-equipo-form',
@@ -64,49 +63,20 @@ export class EquipoFormComponent implements OnInit {
   categorias = signal<CategoriaEquipoDto[]>([]);
   clientesItems = signal<ClienteResumen[]>([]);
   filteredClientes = signal<ClienteResumen[]>([]);
-  selectedFiles = signal<File[]>([]);
+  
+  // AHORA ES UN SOLO ARCHIVO EN LUGAR DE UN ARREGLO
+  selectedFile = signal<{file: File, url: string} | null>(null);
 
-  clienteSearchCtrl = new FormControl<ClienteResumen | string>('');
-
-  readonly tiposEquipoSugeridos: string[] = [
-    'Portátil',
-    'Laptop',
-    'Desktop',
-    'Smartphone',
-    'Tablet',
-    'Televisor',
-    'Monitor',
-    'Impresora',
-    'Router',
-    'Microondas',
-    'Lavadora',
-    'Aire acondicionado'
-  ];
-
-  readonly marcasSugeridas: string[] = [
-    'Dell',
-    'Lenovo',
-    'HP',
-    'Asus',
-    'Acer',
-    'Apple',
-    'Samsung',
-    'LG',
-    'Sony',
-    'TP-Link',
-    'Xiaomi',
-    'Canon',
-    'Epson'
-  ];
+  clienteSearchCtrl = new FormControl<ClienteResumen | string>('', [Validators.required]);
 
   form = this.fb.group({
     clienteId: ['', Validators.required],
-    categoriaEquipoId: [''],
+    categoriaEquipoId: ['', Validators.required],
     codigoInterno: [''],
-    tipoEquipo: [''],
-    marca: [''],
-    modelo: [''],
-    numeroSerie: [''],
+    tipoEquipo: ['', Validators.required], 
+    marca: ['', Validators.required],
+    modelo: ['', Validators.required],
+    numeroSerie: [''], 
     descripcionGeneral: [''],
     fechaCompra: [''],
     garantiaHasta: [''],
@@ -195,72 +165,6 @@ export class EquipoFormComponent implements OnInit {
     this.form.patchValue({ clienteId: cliente.id });
   }
 
-  filteredTiposEquipo(): string[] {
-    const term = (this.form.controls.tipoEquipo.value || '').toLowerCase().trim();
-    if (!term) return this.tiposEquipoSugeridos.slice(0, 8);
-    return this.tiposEquipoSugeridos
-      .filter(item => item.toLowerCase().includes(term))
-      .slice(0, 8);
-  }
-
-  filteredMarcas(): string[] {
-    const term = (this.form.controls.marca.value || '').toLowerCase().trim();
-    if (!term) return this.marcasSugeridas.slice(0, 8);
-    return this.marcasSugeridas
-      .filter(item => item.toLowerCase().includes(term))
-      .slice(0, 8);
-  }
-
-  abrirNuevaCategoria(): void {
-    const ref = this.dialog.open(CategoriaEquipoDialogComponent, {
-      width: '620px',
-      maxWidth: '94vw',
-      data: {}
-    });
-
-    ref.afterClosed().subscribe((created?: CategoriaEquipoDto) => {
-      if (!created) return;
-
-      this.equipos.categorias().subscribe(list => {
-        this.categorias.set(list);
-        this.form.patchValue({ categoriaEquipoId: created.id });
-        this.snack.open('Categoría creada correctamente.', 'OK', { duration: 2200 });
-      });
-    });
-  }
-
-  editarCategoriaActual(): void {
-    const categoriaId = this.form.controls.categoriaEquipoId.value;
-
-    if (!categoriaId) {
-      this.snack.open('Por favor, selecciona una categoría primero.', 'OK', { duration: 2200 });
-      return;
-    }
-
-    const categoria = this.categorias().find(item => item.id === categoriaId);
-
-    if (!categoria) {
-      this.snack.open('No se encontró la categoría seleccionada.', 'OK', { duration: 2200 });
-      return;
-    }
-
-    const ref = this.dialog.open(CategoriaEquipoDialogComponent, {
-      width: '620px',
-      maxWidth: '94vw',
-      data: { categoria }
-    });
-
-    ref.afterClosed().subscribe((updated?: CategoriaEquipoDto) => {
-      if (!updated) return;
-
-      this.equipos.categorias().subscribe(list => {
-        this.categorias.set(list);
-        this.form.patchValue({ categoriaEquipoId: updated.id });
-        this.snack.open('Categoría actualizada correctamente.', 'OK', { duration: 2200 });
-      });
-    });
-  }
-
   onDragOver(event: DragEvent): void {
     event.preventDefault();
     this.isDragOver.set(true);
@@ -278,103 +182,78 @@ export class EquipoFormComponent implements OnInit {
     const files = event.dataTransfer?.files;
     if (!files?.length) return;
 
-    this.addFiles(files);
+    this.handleFile(files);
   }
 
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
 
-    this.addFiles(input.files);
+    this.handleFile(input.files);
     input.value = '';
   }
 
-  private addFiles(fileList: FileList): void {
-    const current = this.selectedFiles();
-    const incoming = Array.from(fileList);
-
-    const merged = [...current];
-
-    for (const file of incoming) {
-      const alreadyExists = merged.some(
-        item =>
-          item.name === file.name &&
-          item.size === file.size &&
-          item.lastModified === file.lastModified
-      );
-
-      if (!alreadyExists) {
-        merged.push(file);
-      }
+  // LÓGICA PARA UNA SOLA IMAGEN
+  private handleFile(fileList: FileList): void {
+    if (fileList.length === 0) return;
+    
+    const file = fileList[0]; // Toma solo el primer archivo
+    
+    if (!file.type.startsWith('image/')) {
+      this.snack.open('Por favor, selecciona un archivo de imagen (JPG, PNG).', 'OK', { duration: 2500 });
+      return;
     }
 
-    this.selectedFiles.set(merged);
+    const current = this.selectedFile();
+    if (current && current.url) {
+      URL.revokeObjectURL(current.url); // Limpia la memoria de la anterior
+    }
+
+    const url = URL.createObjectURL(file);
+    this.selectedFile.set({ file, url });
   }
 
-  removeFile(index: number): void {
-    const next = [...this.selectedFiles()];
-    next.splice(index, 1);
-    this.selectedFiles.set(next);
-  }
-
-  clearFiles(): void {
-    this.selectedFiles.set([]);
-
+  clearFile(event?: Event): void {
+    if (event) {
+      event.stopPropagation(); // Evita que se abra el diálogo de archivos al hacer clic en borrar
+    }
+    
+    const current = this.selectedFile();
+    if (current?.url) {
+      URL.revokeObjectURL(current.url);
+    }
+    
+    this.selectedFile.set(null);
     if (this.fileInput?.nativeElement) {
       this.fileInput.nativeElement.value = '';
     }
   }
 
-  getFileIcon(file: File): string {
-    const name = file.name.toLowerCase();
-
-    if (name.endsWith('.pdf')) return 'picture_as_pdf';
-    if (name.endsWith('.doc') || name.endsWith('.docx')) return 'description';
-    if (name.endsWith('.xls') || name.endsWith('.xlsx') || name.endsWith('.csv')) return 'table_chart';
-    if (
-      name.endsWith('.png') ||
-      name.endsWith('.jpg') ||
-      name.endsWith('.jpeg') ||
-      name.endsWith('.webp') ||
-      name.endsWith('.gif')
-    ) return 'image';
-
-    return 'attach_file';
-  }
-
-  formatFileSize(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  }
-
   getClienteResumen(): string {
     const value = this.clienteSearchCtrl.value;
     if (!value) return '';
-
-    if (typeof value === 'string') return value;
-    return value.nombre || '';
+    return typeof value === 'string' ? value : value.nombre;
   }
 
   getEquipoResumen(): string {
     const tipo = this.form.controls.tipoEquipo.value?.trim() || '';
     const marca = this.form.controls.marca.value?.trim() || '';
     const modelo = this.form.controls.modelo.value?.trim() || '';
-
     return [tipo, marca, modelo].filter(Boolean).join(' · ');
   }
 
   guardar(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.clienteSearchCtrl.invalid) {
       this.form.markAllAsTouched();
+      this.clienteSearchCtrl.markAsTouched();
       this.snack.open('Por favor, completa los campos requeridos antes de guardar.', 'OK', {
-        duration: 2200
+        duration: 3500,
+        panelClass: 'rs-toast-error'
       });
       return;
     }
 
     this.loading.set(true);
-
     const body = this.form.getRawValue();
 
     const req = {
@@ -400,12 +279,12 @@ export class EquipoFormComponent implements OnInit {
     request$.subscribe({
       next: (res) => {
         this.loading.set(false);
-        this.snack.open('Equipo guardado correctamente.', 'OK', { duration: 2200 });
+        this.snack.open('Equipo guardado correctamente.', 'OK', { duration: 2200, panelClass: 'rs-toast-success' });
         this.router.navigate(['/equipos', res.id]);
       },
       error: () => {
         this.loading.set(false);
-        this.snack.open('No se pudo guardar el equipo.', 'OK', { duration: 2600 });
+        this.snack.open('No se pudo guardar el equipo.', 'OK', { duration: 3000, panelClass: 'rs-toast-error' });
       }
     });
   }
@@ -415,7 +294,6 @@ export class EquipoFormComponent implements OnInit {
       this.router.navigate(['/equipos', this.id]);
       return;
     }
-
     this.router.navigateByUrl('/equipos');
   }
 }

@@ -6,19 +6,33 @@
         <p class="rs-subtitle">Gestiona los equipos registrados de tus clientes.</p>
       </div>
 
-      <button
-        mat-flat-button
-        type="button"
-        class="rs-btn rs-btn--primary rs-topbar-btn"
-        (click)="irNuevo()"
-      >
-        <span class="rs-btn__shimmer"></span>
+      <div class="rs-topbar-actions">
+        <button
+          mat-stroked-button
+          type="button"
+          class="rs-btn rs-btn--secondary rs-topbar-btn"
+          (click)="irCategorias()"
+        >
+          <span class="rs-btn__label">
+            <mat-icon>category</mat-icon>
+            Categorías
+          </span>
+        </button>
 
-        <span class="rs-btn__label">
-          <mat-icon>add</mat-icon>
-          Nuevo equipo
-        </span>
-      </button>
+        <button
+          mat-flat-button
+          type="button"
+          class="rs-btn rs-btn--primary rs-topbar-btn"
+          (click)="irNuevo()"
+        >
+          <span class="rs-btn__shimmer"></span>
+
+          <span class="rs-btn__label">
+            <mat-icon>add</mat-icon>
+            Nuevo equipo
+          </span>
+        </button>
+      </div>
     </header>
 
     @if (loading()) {
@@ -27,7 +41,30 @@
       </div>
     }
 
-    @if (!loading()) {
+    @if (!loading() && items().length === 0) {
+      <div class="rs-empty-state rs-fade-up">
+        <div class="rs-empty-icon">
+          <mat-icon>devices_other</mat-icon>
+        </div>
+        <h3 class="rs-empty-title">No hay equipos registrados</h3>
+        <p class="rs-empty-subtitle">Comienza registrando el primer dispositivo para llevar el control del taller.</p>
+        
+        <button
+          mat-flat-button
+          type="button"
+          class="rs-btn rs-btn--primary"
+          (click)="irNuevo()"
+        >
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">
+            <mat-icon>add</mat-icon>
+            Nuevo equipo
+          </span>
+        </button>
+      </div>
+    }
+
+    @if (!loading() && items().length > 0) {
       <section class="rs-grid-cards rs-fade-up">
         @for (e of items(); track e.id) {
           <mat-card class="rs-card" appearance="outlined">

@@ -1,52 +1,35 @@
-<div class="rs-main-container">
-  <div class="rs-shell">
-    <div class="rs-header-section">
-      <div class="rs-header-copy">
-        <h1 class="rs-page-title">
-          @if (id) { Editar equipo } @else { Nuevo equipo }
-        </h1>
-        <p class="rs-page-subtitle">
-          @if (id) {
-            Actualiza la información técnica y administrativa del dispositivo
-          } @else {
-            Registra un nuevo dispositivo con una experiencia rápida, clara y profesional
-          }
-        </p>
-      </div>
-
-      <div class="rs-header-actions rs-header-actions--desktop">
-        <button mat-stroked-button type="button" class="btn-cancel" (click)="cancelar()">
-          Cancelar
-        </button>
-
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          form="equipoForm"
-          class="rs-btn-primary"
-          [disabled]="loading()">
-          @if (loading()) { Guardando... } @else { Guardar equipo }
-        </button>
-      </div>
+<main class="rs-page-container rs-fade-up">
+  <header class="rs-header-row">
+    <div class="rs-header-copy">
+      <h1 class="rs-page-title">
+        @if (id) { Editar equipo } @else { Nuevo equipo }
+      </h1>
+      <p class="rs-page-subtitle">
+        @if (id) {
+          Actualiza la información técnica y administrativa del dispositivo.
+        } @else {
+          Registra un nuevo dispositivo con una experiencia rápida, clara y profesional.
+        }
+      </p>
     </div>
+  </header>
 
-    <form
-      id="equipoForm"
-      [formGroup]="form"
-      (ngSubmit)="guardar()"
-      class="rs-layout-shell">
+  <form
+    id="equipoForm"
+    [formGroup]="form"
+    (ngSubmit)="guardar()"
+    class="rs-form-layout">
 
+    <div class="rs-columns-wrapper">
+      
       <mat-card class="rs-form-card">
         <mat-card-content class="rs-form-content">
           <div class="rs-form-stack">
+            
             <section class="rs-form-group">
-              <div class="rs-section-divider">
-                <div class="rs-group-head">
-                  <div class="rs-group-eyebrow">Principal</div>
-                  <h2 class="rs-group-title">Datos principales</h2>
-                </div>
-                <div class="rs-group-line"></div>
+              <div class="rs-group-head">
+                <div class="rs-group-eyebrow">Principal</div>
+                <div class="rs-group-title">Datos principales</div>
               </div>
 
               <div class="rs-grid">
@@ -54,14 +37,12 @@
                   <label class="rs-field-label">Cliente propietario *</label>
                   <mat-form-field appearance="outline" class="rs-premium-field">
                     <mat-icon matPrefix>person_outline</mat-icon>
-
                     <input
                       type="text"
                       matInput
                       [formControl]="clienteSearchCtrl"
                       [matAutocomplete]="clienteAuto"
                       placeholder="Ej.: Carlos Pérez" />
-
                     <mat-autocomplete
                       #clienteAuto="matAutocomplete"
                       class="rs-overlay-panel"
@@ -74,27 +55,19 @@
                         </mat-option>
                       }
                     </mat-autocomplete>
-
-                    <mat-error>El cliente es requerido</mat-error>
+                    <mat-error>@if (clienteSearchCtrl.invalid && clienteSearchCtrl.touched) { El cliente es obligatorio }</mat-error>
                   </mat-form-field>
                 </div>
 
                 <div class="rs-field-shell rs-span-4">
-                  <label class="rs-field-label">Tipo de equipo</label>
+                  <label class="rs-field-label">Equipo *</label>
                   <mat-form-field appearance="outline" class="rs-premium-field">
-                    <mat-icon matPrefix>memory</mat-icon>
-
+                    <mat-icon matPrefix>devices_other</mat-icon>
                     <input
                       matInput
                       formControlName="tipoEquipo"
-                      [matAutocomplete]="tipoAuto"
-                      placeholder="Ej.: Portátil, Smartphone, TV" />
-
-                    <mat-autocomplete #tipoAuto="matAutocomplete" class="rs-overlay-panel">
-                      @for (tipo of filteredTiposEquipo(); track tipo) {
-                        <mat-option [value]="tipo">{{ tipo }}</mat-option>
-                      }
-                    </mat-autocomplete>
+                      placeholder="Ej.: Laptop, Televisor, Consola..." />
+                    <mat-error>@if (form.get('tipoEquipo')?.hasError('required')) { El equipo es obligatorio }</mat-error>
                   </mat-form-field>
                 </div>
 
@@ -102,7 +75,6 @@
                   <label class="rs-field-label">Número de serie</label>
                   <mat-form-field appearance="outline" class="rs-premium-field">
                     <mat-icon matPrefix>qr_code_2</mat-icon>
-
                     <input
                       matInput
                       formControlName="numeroSerie"
@@ -113,43 +85,33 @@
             </section>
 
             <section class="rs-form-group">
-              <div class="rs-section-divider">
-                <div class="rs-group-head">
-                  <div class="rs-group-eyebrow">Equipo</div>
-                  <h2 class="rs-group-title">Detalles del equipo</h2>
-                </div>
-                <div class="rs-group-line"></div>
+              <div class="rs-group-head">
+                <div class="rs-group-eyebrow">Equipo</div>
+                <div class="rs-group-title">Detalles del equipo</div>
               </div>
 
               <div class="rs-grid">
                 <div class="rs-field-shell rs-span-4">
-                  <label class="rs-field-label">Marca</label>
+                  <label class="rs-field-label">Marca *</label>
                   <mat-form-field appearance="outline" class="rs-premium-field">
                     <mat-icon matPrefix>branding_watermark</mat-icon>
-
                     <input
                       matInput
                       formControlName="marca"
-                      [matAutocomplete]="marcaAuto"
-                      placeholder="Ej.: Dell, Samsung, Lenovo" />
-
-                    <mat-autocomplete #marcaAuto="matAutocomplete" class="rs-overlay-panel">
-                      @for (marca of filteredMarcas(); track marca) {
-                        <mat-option [value]="marca">{{ marca }}</mat-option>
-                      }
-                    </mat-autocomplete>
+                      placeholder="Ej.: Dell, Samsung" />
+                    <mat-error>@if (form.get('marca')?.hasError('required')) { La marca es obligatoria }</mat-error>
                   </mat-form-field>
                 </div>
 
                 <div class="rs-field-shell rs-span-5">
-                  <label class="rs-field-label">Modelo</label>
+                  <label class="rs-field-label">Modelo *</label>
                   <mat-form-field appearance="outline" class="rs-premium-field">
                     <mat-icon matPrefix>devices</mat-icon>
-
                     <input
                       matInput
                       formControlName="modelo"
-                      placeholder="Ej.: XPS 13, Galaxy S24, ThinkPad E14" />
+                      placeholder="Ej.: XPS 13, Galaxy S24" />
+                    <mat-error>@if (form.get('modelo')?.hasError('required')) { El modelo es obligatorio }</mat-error>
                   </mat-form-field>
                 </div>
 
@@ -157,7 +119,6 @@
                   <label class="rs-field-label">Código interno</label>
                   <mat-form-field appearance="outline" class="rs-premium-field">
                     <mat-icon matPrefix>badge</mat-icon>
-
                     <input
                       matInput
                       formControlName="codigoInterno"
@@ -168,12 +129,9 @@
             </section>
 
             <section class="rs-form-group">
-              <div class="rs-section-divider">
-                <div class="rs-group-head">
-                  <div class="rs-group-eyebrow">Control</div>
-                  <h2 class="rs-group-title">Ubicación y seguimiento</h2>
-                </div>
-                <div class="rs-group-line"></div>
+              <div class="rs-group-head">
+                <div class="rs-group-eyebrow">Control</div>
+                <div class="rs-group-title">Ubicación y seguimiento</div>
               </div>
 
               <div class="rs-grid">
@@ -181,11 +139,10 @@
                   <label class="rs-field-label">Ubicación habitual</label>
                   <mat-form-field appearance="outline" class="rs-premium-field">
                     <mat-icon matPrefix>place</mat-icon>
-
                     <input
                       matInput
                       formControlName="ubicacionHabitual"
-                      placeholder="Ej.: Oficina principal, Recepción, Casa cliente" />
+                      placeholder="Ej.: Oficina principal, Recepción" />
                   </mat-form-field>
                 </div>
 
@@ -193,7 +150,6 @@
                   <label class="rs-field-label">Fecha de compra</label>
                   <mat-form-field appearance="outline" class="rs-premium-field">
                     <mat-icon matPrefix>event</mat-icon>
-
                     <input
                       matInput
                       [matDatepicker]="pickerCompra"
@@ -208,7 +164,6 @@
                   <label class="rs-field-label">Garantía hasta</label>
                   <mat-form-field appearance="outline" class="rs-premium-field">
                     <mat-icon matPrefix>verified_user</mat-icon>
-
                     <input
                       matInput
                       [matDatepicker]="pickerGarantia"
@@ -221,13 +176,10 @@
               </div>
             </section>
 
-            <section class="rs-form-group">
-              <div class="rs-section-divider">
-                <div class="rs-group-head">
-                  <div class="rs-group-eyebrow">Contexto</div>
-                  <h2 class="rs-group-title">Descripción y notas</h2>
-                </div>
-                <div class="rs-group-line"></div>
+            <section class="rs-form-group" style="margin-bottom: 0;">
+              <div class="rs-group-head">
+                <div class="rs-group-eyebrow">Contexto</div>
+                <div class="rs-group-title">Descripción y notas</div>
               </div>
 
               <div class="rs-grid">
@@ -235,14 +187,13 @@
                   <label class="rs-field-label">Descripción general</label>
                   <mat-form-field appearance="outline" class="rs-premium-field rs-textarea-field">
                     <mat-icon matPrefix>description</mat-icon>
-
                     <textarea
                       matInput
                       cdkTextareaAutosize
                       cdkAutosizeMinRows="2"
                       cdkAutosizeMaxRows="3"
                       formControlName="descripcionGeneral"
-                      placeholder="Ej.: Portátil con desgaste leve en tapa, cargador original incluido..."></textarea>
+                      placeholder="Ej.: Portátil con desgaste leve en tapa..."></textarea>
                   </mat-form-field>
                 </div>
 
@@ -250,254 +201,127 @@
                   <label class="rs-field-label">Notas técnicas</label>
                   <mat-form-field appearance="outline" class="rs-premium-field rs-textarea-field">
                     <mat-icon matPrefix>construction</mat-icon>
-
                     <textarea
                       matInput
                       cdkTextareaAutosize
                       cdkAutosizeMinRows="2"
                       cdkAutosizeMaxRows="3"
                       formControlName="notasTecnicas"
-                      placeholder="Ej.: BIOS protegida, clave entregada por cliente, revisar batería..."></textarea>
+                      placeholder="Ej.: BIOS protegida, clave entregada por cliente..."></textarea>
                   </mat-form-field>
                 </div>
               </div>
             </section>
-
-            <section class="rs-form-group rs-form-group--attachments">
-              <div class="rs-section-divider">
-                <div class="rs-group-head">
-                  <div class="rs-group-eyebrow">Adjuntos</div>
-                  <h2 class="rs-group-title">Adjuntos y evidencia visual</h2>
-                </div>
-                <div class="rs-group-line"></div>
-              </div>
-
-              <div
-                class="rs-upload-dropzone"
-                [class.is-dragging]="isDragOver()"
-                (dragover)="onDragOver($event)"
-                (dragleave)="onDragLeave($event)"
-                (drop)="onDrop($event)">
-
-                <div class="rs-upload-left">
-                  <div class="rs-upload-icon">
-                    <mat-icon>cloud_upload</mat-icon>
-                  </div>
-
-                  <div class="rs-upload-copy">
-                    <div class="rs-upload-title">Subir archivos del equipo</div>
-                    <div class="rs-upload-subtitle">
-                      Arrastra imágenes o documentos aquí, o selecciónalos manualmente.
-                    </div>
-                    <div class="rs-upload-meta">
-                      PNG, JPG, PDF, DOCX · múltiple selección
-                    </div>
-                  </div>
-                </div>
-
-                <input
-                  #fileInput
-                  id="equipoAdjuntos"
-                  type="file"
-                  multiple
-                  hidden
-                  (change)="onFilesSelected($event)" />
-
-                <div class="rs-upload-actions">
-                  <label for="equipoAdjuntos" class="rs-upload-btn">
-                    Seleccionar archivos
-                  </label>
-                </div>
-              </div>
-
-              @if (selectedFiles().length > 0) {
-                <div class="rs-files-wrap">
-                  <div class="rs-files-head">
-                    <div class="rs-files-title">
-                      {{ selectedFiles().length }} archivo(s) listo(s)
-                    </div>
-                    <button
-                      mat-button
-                      type="button"
-                      class="rs-files-clear"
-                      (click)="clearFiles()">
-                      Limpiar
-                    </button>
-                  </div>
-
-                  <div class="rs-files-grid">
-                    @for (file of selectedFiles(); track file.name + '_' + file.size + '_' + file.lastModified; let i = $index) {
-                      <div class="rs-file-item">
-                        <div class="rs-file-icon">
-                          <mat-icon>{{ getFileIcon(file) }}</mat-icon>
-                        </div>
-
-                        <div class="rs-file-copy">
-                          <div class="rs-file-name" [title]="file.name">
-                            {{ file.name }}
-                          </div>
-                          <div class="rs-file-meta">
-                            {{ formatFileSize(file.size) }}
-                          </div>
-                        </div>
-
-                        <button
-                          mat-icon-button
-                          type="button"
-                          class="rs-file-remove"
-                          (click)="removeFile(i)"
-                          aria-label="Eliminar archivo">
-                          <mat-icon>close</mat-icon>
-                        </button>
-                      </div>
-                    }
-                  </div>
-                </div>
-              }
-            </section>
-
-            <div class="rs-status-row">
-              <mat-slide-toggle formControlName="estadoActivo" color="primary">
-                Equipo activo en el sistema
-              </mat-slide-toggle>
-            </div>
-
-            <div class="form-footer">
-              <button mat-stroked-button type="button" class="btn-cancel" (click)="cancelar()">
-                Cancelar
-              </button>
-
-              <button
-                mat-flat-button
-                color="primary"
-                type="submit"
-                class="rs-btn-primary"
-                [disabled]="loading()">
-                @if (loading()) { Guardando... } @else { Guardar equipo }
-              </button>
-            </div>
+            
           </div>
         </mat-card-content>
       </mat-card>
 
       <aside class="rs-side-rail">
-        <mat-card class="rs-side-card">
+        
+        <mat-card class="rs-side-card rs-card-navy">
           <mat-card-content class="rs-side-content">
             <div class="rs-side-eyebrow">Clasificación</div>
-            <h3 class="rs-side-title">Categoría del equipo</h3>
-            <p class="rs-side-text">
-              Mantén este activo ordenado y listo para búsqueda, filtros y reportes.
-            </p>
-
-            <div class="rs-side-badge">
-              <span class="rs-side-badge-dot"></span>
-              Configuración rápida
-            </div>
+            <div class="rs-side-title">Categoría del equipo *</div>
 
             <div class="rs-field-shell rs-side-field-wrap">
-              <label class="rs-field-label">Categoría</label>
               <mat-form-field appearance="outline" class="rs-premium-field rs-side-field">
-                <mat-select formControlName="categoriaEquipoId" panelClass="rs-select-panel">
-                  <mat-option value="">Sin categoría</mat-option>
+                <mat-select formControlName="categoriaEquipoId" panelClass="rs-select-panel" placeholder="Selecciona una categoría">
                   @for (cat of categorias(); track cat.id) {
                     <mat-option [value]="cat.id">{{ cat.nombre }}</mat-option>
                   }
                 </mat-select>
+                <mat-error>@if (form.get('categoriaEquipoId')?.hasError('required')) { Obligatorio }</mat-error>
               </mat-form-field>
             </div>
+          </mat-card-content>
+        </mat-card>
 
-            <div class="rs-side-actions">
-              <button
-                mat-flat-button
-                type="button"
-                class="rs-btn-inline-primary"
-                (click)="abrirNuevaCategoria()">
-                <mat-icon>add</mat-icon>
-                Nueva
-              </button>
-
-              <button
-                mat-icon-button
-                type="button"
-                class="btn-icon-action"
-                (click)="editarCategoriaActual()"
-                matTooltip="Editar categoría">
-                <mat-icon>edit</mat-icon>
-              </button>
+        <mat-card class="rs-side-card">
+          <mat-card-content class="rs-side-content">
+            <div class="rs-side-eyebrow">Adjuntos</div>
+            <div class="rs-side-title">Evidencia visual</div>
+            
+            <div
+              class="rs-upload-dropzone rs-upload-dropzone--compact"
+              [class.is-dragging]="isDragOver()"
+              [class.has-file]="!!selectedFile()"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onDrop($event)"
+              (click)="!selectedFile() ? fileInput.click() : null">
+              
+              @if (selectedFile()) {
+                <img [src]="selectedFile()?.url" class="rs-dropzone-preview" alt="Preview" />
+                <div class="rs-dropzone-overlay">
+                  <button mat-fab class="rs-btn-remove-img" type="button" (click)="clearFile($event)" matTooltip="Quitar imagen">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              } @else {
+                <div class="rs-upload-icon">
+                  <mat-icon>add_photo_alternate</mat-icon>
+                </div>
+                <div class="rs-upload-title">Subir foto del equipo</div>
+                <div class="rs-upload-subtitle">Clic o arrastra aquí</div>
+              }
+              
+              <input
+                #fileInput
+                id="equipoAdjuntos"
+                type="file"
+                accept="image/*"
+                hidden
+                (change)="onFilesSelected($event)" />
             </div>
 
-            <div class="rs-side-note">
-              Puedes crear o editar categorías sin salir del formulario.
-            </div>
           </mat-card-content>
         </mat-card>
 
         <mat-card class="rs-side-card rs-side-card--summary">
           <mat-card-content class="rs-side-content">
             <div class="rs-side-eyebrow">Resumen</div>
-            <h3 class="rs-side-title">Vista rápida</h3>
+            <div class="rs-side-title">Vista rápida</div>
 
             <div class="rs-summary-list">
               <div class="rs-summary-item">
                 <div class="rs-summary-label">Cliente</div>
-                <div class="rs-summary-value">
-                  {{ getClienteResumen() || 'No seleccionado' }}
-                </div>
+                <div class="rs-summary-value">{{ getClienteResumen() || 'No seleccionado' }}</div>
               </div>
-
               <div class="rs-summary-item">
                 <div class="rs-summary-label">Equipo</div>
-                <div class="rs-summary-value">
-                  {{ getEquipoResumen() || 'Sin definir' }}
-                </div>
+                <div class="rs-summary-value">{{ getEquipoResumen() || 'Sin definir' }}</div>
               </div>
-
-              <div class="rs-summary-item">
-                <div class="rs-summary-label">Código interno</div>
-                <div class="rs-summary-value">
-                  {{ form.controls.codigoInterno.value || 'Pendiente' }}
-                </div>
-              </div>
-
               <div class="rs-summary-item">
                 <div class="rs-summary-label">Estado</div>
-                <div class="rs-summary-value">
-                  {{ form.controls.estadoActivo.value ? 'Activo' : 'Inactivo' }}
-                </div>
+                <div class="rs-summary-value">{{ form.controls.estadoActivo.value ? 'Activo' : 'Inactivo' }}</div>
               </div>
-
-              <div class="rs-summary-item">
-                <div class="rs-summary-label">Archivos</div>
-                <div class="rs-summary-value">
-                  {{ selectedFiles().length }} adjunto(s)
-                </div>
-              </div>
-            </div>
-
-            <div class="rs-summary-divider"></div>
-
-            <div class="rs-summary-tip">
-              Completa primero cliente, tipo y modelo. Eso mejora mucho la trazabilidad del activo.
             </div>
           </mat-card-content>
         </mat-card>
       </aside>
-    </form>
-  </div>
 
-  <div class="rs-mobile-actionbar">
-    <button mat-stroked-button type="button" class="btn-cancel" (click)="cancelar()">
-      Cancelar
-    </button>
+    </div>
 
-    <button
-      mat-flat-button
-      color="primary"
-      type="submit"
-      form="equipoForm"
-      class="rs-btn-primary"
-      [disabled]="loading()">
-      @if (loading()) { Guardando... } @else { Guardar }
-    </button>
-  </div>
-</div>
+    <div class="rs-global-footer">
+      <div class="rs-status-toggle">
+        <mat-slide-toggle formControlName="estadoActivo" color="primary">
+          Equipo activo en el sistema
+        </mat-slide-toggle>
+      </div>
+      
+      <div class="rs-form-actions">
+        <button mat-stroked-button type="button" class="rs-btn-secondary" (click)="cancelar()">
+          Cancelar
+        </button>
+        <button mat-flat-button type="submit" class="rs-btn rs-btn--primary" [disabled]="loading()">
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">
+            @if (loading()) { Guardando... } @else { Guardar equipo }
+          </span>
+        </button>
+      </div>
+    </div>
+
+  </form>
+</main>

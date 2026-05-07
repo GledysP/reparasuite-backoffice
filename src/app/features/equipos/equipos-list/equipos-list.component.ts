@@ -51,4 +51,10 @@ export class EquiposListComponent implements OnInit {
   irNuevo(): void {
     this.router.navigateByUrl('/equipos/nuevo');
   }
+
+  irCategorias(): void {
+    // TODO: Construiremos esta pantalla más adelante. 
+    // Por ahora, solo evitamos el error de compilación.
+    console.log('Navegar a la gestión de categorías...');
+  }
 }
