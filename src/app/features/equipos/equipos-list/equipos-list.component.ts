@@ -1,15 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // <-- 1. Importamos el Dialog
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip'; 
 
 import { EquiposService } from '../equipos.service';
 import { EquipoResumenDto } from '../../../core/models/tipos';
-// <-- 2. Importa tu componente del modal (Ajusta la ruta si es necesario)
 import { CategoriaEquipoDialogComponent } from '../categoria-equipo-dialog/categoria-equipo-dialog.component'; 
 
 @Component({
@@ -22,7 +22,8 @@ import { CategoriaEquipoDialogComponent } from '../categoria-equipo-dialog/categ
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
-    MatDialogModule 
+    MatDialogModule,
+    MatTooltipModule 
   ],
   templateUrl: './equipos-list.component.html',
   styleUrl: './equipos-list.component.scss'
@@ -34,6 +35,22 @@ export class EquiposListComponent implements OnInit {
 
   loading = signal(false);
   items = signal<EquipoResumenDto[]>([]);
+  
+  // SEÑALES PARA EL BUSCADOR
+  searchTerm = signal('');
+
+  // FILTRO EN TIEMPO REAL
+  filteredItems = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    if (!term) return this.items();
+    
+    return this.items().filter(e => 
+      (e.modelo || '').toLowerCase().includes(term) ||
+      (e.marca || '').toLowerCase().includes(term) ||
+      (e.codigoEquipo || '').toLowerCase().includes(term) ||
+      (e.clienteNombre || '').toLowerCase().includes(term)
+    );
+  });
 
   ngOnInit(): void {
     this.cargar();
@@ -53,24 +70,47 @@ export class EquiposListComponent implements OnInit {
     });
   }
 
+  buscar(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchTerm.set(input.value);
+  }
+
+  // NUEVA FUNCIÓN PARA EL BOTÓN "LIMPIAR"
+  limpiarFiltro(): void {
+    this.searchTerm.set('');
+  }
+
   irNuevo(): void {
     this.router.navigateByUrl('/equipos/nuevo');
   }
 
   irCategorias(): void {
-    // <--  Abrimos tu modal de categorías
     const dialogRef = this.dialog.open(CategoriaEquipoDialogComponent, {
       width: '520px',
       panelClass: 'rs-dialog-custom',
-      disableClose: true, // Evita que se cierre si hace clic afuera por error
-      data: { categoria: null } // Pasamos null porque es una creación nueva
+      disableClose: true, 
+      data: { categoria: null } 
     });
 
-    // Opcional:  recargar algo cuando el modal se cierre
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Categoría guardada. Refrescando datos si es necesario...');
+        // Lógica de recarga si es necesaria
       }
     });
+  }
+
+  inactivarEquipo(equipo: EquipoResumenDto): void {
+    const confirmacion = window.confirm(`¿Estás seguro de archivar el equipo ${equipo.modelo || ''}? Se marcará como inactivo y no aparecerá en nuevas órdenes.`);
+    
+    if (confirmacion) {
+      const actualizados = this.items().map(e => {
+        if (e.id === equipo.id) {
+          return { ...e, estadoActivo: false };
+        }
+        return e;
+      });
+      
+      this.items.set(actualizados);
+    }
   }
 }

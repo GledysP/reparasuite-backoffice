@@ -1,5 +1,6 @@
 <div class="rs-page-wrap rs-equipos-page">
   <div class="rs-page-shell">
+    
     <header class="rs-topbar rs-fade-up">
       <div class="rs-topbar-copy">
         <h1 class="rs-title">Equipos</h1>
@@ -7,26 +8,15 @@
       </div>
 
       <div class="rs-topbar-actions">
-        <button
-          mat-stroked-button
-          type="button"
-          class="rs-btn rs-btn--secondary rs-topbar-btn"
-          (click)="irCategorias()"
-        >
+        <button mat-stroked-button type="button" class="rs-btn rs-btn-secondary" (click)="irCategorias()">
           <span class="rs-btn__label">
             <mat-icon>category</mat-icon>
             Categorías
           </span>
         </button>
 
-        <button
-          mat-flat-button
-          type="button"
-          class="rs-btn rs-btn--primary rs-topbar-btn"
-          (click)="irNuevo()"
-        >
+        <button mat-flat-button type="button" class="rs-btn rs-btn--primary" (click)="irNuevo()">
           <span class="rs-btn__shimmer"></span>
-
           <span class="rs-btn__label">
             <mat-icon>add</mat-icon>
             Nuevo equipo
@@ -34,6 +24,30 @@
         </button>
       </div>
     </header>
+
+    @if (items().length > 0) {
+      <div class="rs-filter-section rs-fade-up" style="animation-delay: 0.1s;">
+        <div class="rs-filter-group">
+          <label class="rs-filter-label">BUSCAR POR EQUIPO O CLIENTE</label>
+          <div class="rs-search-row">
+            <div class="rs-search-box">
+              <mat-icon>search</mat-icon>
+              <input 
+                type="text" 
+                placeholder="Ej.: Laptop, Carlos Pérez o EQ-0001..." 
+                [value]="searchTerm()" 
+                (input)="buscar($event)"
+              >
+            </div>
+            
+            <button mat-stroked-button class="rs-btn rs-btn-secondary rs-btn-clear" [disabled]="!searchTerm()" (click)="limpiarFiltro()">
+              <mat-icon style="font-size: 16px; width: 16px; height: 16px;">filter_alt_off</mat-icon>
+              Limpiar
+            </button>
+          </div>
+        </div>
+      </div>
+    }
 
     @if (loading()) {
       <div class="rs-loading-wrap rs-fade-up">
@@ -47,86 +61,71 @@
           <mat-icon>devices_other</mat-icon>
         </div>
         <h3 class="rs-empty-title">No hay equipos registrados</h3>
-        <p class="rs-empty-subtitle">Comienza registrando el primer dispositivo para llevar el control del taller.</p>
+        <p class="rs-empty-subtitle">Comienza registrando un dispositivo o configura tus categorías para mantener el orden en tu taller.</p>
         
-        <button
-          mat-flat-button
-          type="button"
-          class="rs-btn rs-btn--primary"
-          (click)="irNuevo()"
-        >
-          <span class="rs-btn__shimmer"></span>
-          <span class="rs-btn__label">
-            <mat-icon>add</mat-icon>
-            Nuevo equipo
-          </span>
-        </button>
+        <div class="rs-empty-actions">
+          <button mat-stroked-button type="button" class="rs-btn rs-btn-secondary" (click)="irCategorias()">
+            <span class="rs-btn__label"><mat-icon>category</mat-icon> Categorías</span>
+          </button>
+          
+          <button mat-flat-button type="button" class="rs-btn rs-btn--primary" (click)="irNuevo()">
+            <span class="rs-btn__shimmer"></span>
+            <span class="rs-btn__label"><mat-icon>add</mat-icon> Nuevo equipo</span>
+          </button>
+        </div>
       </div>
     }
 
-    @if (!loading() && items().length > 0) {
+    @if (!loading() && items().length > 0 && filteredItems().length === 0) {
+      <div class="rs-empty-state rs-fade-up" style="padding: 40px; margin-top: 10px;">
+        <mat-icon style="font-size: 40px; width: 40px; height: 40px; color: var(--rs-text-muted); margin-bottom: 12px; opacity: 0.5;">search_off</mat-icon>
+        <h3 class="rs-empty-title" style="margin-bottom: 0;">No se encontraron resultados</h3>
+        <p class="rs-empty-subtitle">Intenta buscar con otra palabra clave.</p>
+      </div>
+    }
+
+    @if (!loading() && filteredItems().length > 0) {
       <section class="rs-grid-cards rs-fade-up">
-        @for (e of items(); track e.id) {
-          <mat-card class="rs-card" appearance="outlined">
-            <div class="rs-card-topline"></div>
-
-            <div class="rs-card-inner">
-              <div class="rs-card-head">
-                <div class="rs-badge">
-                  {{ e.codigoEquipo || 'EQ-S/COD' }}
+        @for (e of filteredItems(); track e.id) {
+          <mat-card class="rs-premium-card" appearance="outlined">
+            
+            <div class="rs-card-header">
+              <span class="rs-card-code">{{ e.codigoEquipo || 'EQ-S/COD' }}</span>
+              
+              <div class="rs-card-actions">
+                <div class="rs-status-pill" [class.inactive]="!e.estadoActivo">
+                  <span class="dot"></span> {{ e.estadoActivo ? 'Activo' : 'Inactivo' }}
                 </div>
-
-                <div class="rs-state" [class.inactive]="!e.estadoActivo">
-                  <span class="rs-state-dot"></span>
-                  {{ e.estadoActivo ? 'Activo' : 'Inactivo' }}
-                </div>
-              </div>
-
-              <div class="rs-card-body">
-                <div class="rs-card-title">
-                  {{
-                    (
-                      (e.marca || '') +
-                      ((e.marca || '') && (e.modelo || '') ? ' ' : '') +
-                      (e.modelo || '')
-                    ).trim() || 'Equipo sin modelo'
-                  }}
-                </div>
-
-                <div class="rs-card-sub">
-                  {{ e.categoriaEquipoNombre || 'Sin categoría' }}
-                </div>
-
-                <div class="rs-client-line">
-                  <mat-icon>person</mat-icon>
-                  <span>{{ e.clienteNombre || '—' }}</span>
-                </div>
-
-                <div class="rs-meta-inline">
-                  <span class="rs-meta-item">
-                    <mat-icon>qr_code_2</mat-icon>
-                    <span>{{ e.numeroSerie || '—' }}</span>
-                  </span>
-
-                  <span class="rs-meta-dot">•</span>
-
-                  <span class="rs-meta-item">
-                    <mat-icon>place</mat-icon>
-                    <span>{{ e.ubicacionHabitual || '—' }}</span>
-                  </span>
-                </div>
-              </div>
-
-              <div class="rs-card-footer">
-                <a
-                  mat-button
-                  class="ghost-view-btn"
-                  [routerLink]="['/equipos', e.id]">
-                  <mat-icon>visibility</mat-icon>
-                  Ver
-                </a>
+                
+                <button mat-icon-button class="rs-delete-btn" (click)="inactivarEquipo(e)" matTooltip="Archivar">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
               </div>
             </div>
+
+            <div class="rs-card-body">
+              <span class="rs-card-brand">{{ e.marca || 'Sin Marca' }}</span>
+              
+              <div class="rs-card-model">{{ e.modelo || 'Equipo sin modelo' }}</div>
+
+              <div class="rs-card-details">
+                <div class="rs-detail-item">
+                  <mat-icon>category</mat-icon>
+                  <span>{{ e.categoriaEquipoNombre || 'Sin categoría' }}</span>
+                </div>
+                <div class="rs-detail-item">
+                  <mat-icon>person_outline</mat-icon>
+                  <span>{{ e.clienteNombre || 'Sin cliente asignado' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rs-card-footer">
+              <button class="rs-full-btn" [routerLink]="['/equipos', e.id]">
+                Ver detalles <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+
           </mat-card>
         }
       </section>
