@@ -255,6 +255,7 @@ export interface EquipoDetalleDto {
   fechaCompra?: string | null;
   garantiaHasta?: string | null;
   ubicacionHabitual?: string | null;
+  fotoBase64?: string | null;
   notasTecnicas?: string | null;
   estadoActivo: boolean;
   createdAt: string;

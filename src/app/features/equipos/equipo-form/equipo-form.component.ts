@@ -64,8 +64,8 @@ export class EquipoFormComponent implements OnInit {
   clientesItems = signal<ClienteResumen[]>([]);
   filteredClientes = signal<ClienteResumen[]>([]);
   
-  // AHORA ES UN SOLO ARCHIVO EN LUGAR DE UN ARREGLO
-  selectedFile = signal<{file: File, url: string} | null>(null);
+  // MODIFICADO: Estructura interna para soportar Base64
+  selectedFile = signal<{file: File | null, url: string, base64: string} | null>(null);
 
   clienteSearchCtrl = new FormControl<ClienteResumen | string>('', [Validators.required]);
 
@@ -92,7 +92,7 @@ export class EquipoFormComponent implements OnInit {
 
     if (this.id) {
       this.equipos.obtener(this.id).subscribe({
-        next: (equipo) => {
+        next: (equipo: any) => {
           this.form.patchValue({
             clienteId: equipo.clienteId,
             categoriaEquipoId: equipo.categoria?.id ?? '',
@@ -108,6 +108,15 @@ export class EquipoFormComponent implements OnInit {
             notasTecnicas: equipo.notasTecnicas ?? '',
             estadoActivo: equipo.estadoActivo
           });
+
+          // MODIFICADO: Carga la imagen desde el backend si existe (fotoBase64)
+          if (equipo.fotoBase64) {
+            this.selectedFile.set({
+              file: null,
+              url: equipo.fotoBase64,
+              base64: equipo.fotoBase64
+            });
+          }
 
           this.syncClienteDisplay();
         }
@@ -178,26 +187,20 @@ export class EquipoFormComponent implements OnInit {
   onDrop(event: DragEvent): void {
     event.preventDefault();
     this.isDragOver.set(false);
-
     const files = event.dataTransfer?.files;
-    if (!files?.length) return;
-
-    this.handleFile(files);
+    if (files?.length) this.handleFile(files);
   }
 
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-
-    this.handleFile(input.files);
+    if (input.files?.length) this.handleFile(input.files);
     input.value = '';
   }
 
-  // LÓGICA PARA UNA SOLA IMAGEN
+  // MODIFICADO: Nueva lógica permanente para Base64
   private handleFile(fileList: FileList): void {
     if (fileList.length === 0) return;
-    
-    const file = fileList[0]; // Toma solo el primer archivo
+    const file = fileList[0];
     
     if (!file.type.startsWith('image/')) {
       this.snack.open('Por favor, selecciona un archivo de imagen (JPG, PNG).', 'OK', { duration: 2500 });
@@ -205,24 +208,25 @@ export class EquipoFormComponent implements OnInit {
     }
 
     const current = this.selectedFile();
-    if (current && current.url) {
-      URL.revokeObjectURL(current.url); // Limpia la memoria de la anterior
+    if (current && current.url && current.file) {
+      URL.revokeObjectURL(current.url); 
     }
 
-    const url = URL.createObjectURL(file);
-    this.selectedFile.set({ file, url });
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      const url = URL.createObjectURL(file);
+      this.selectedFile.set({ file, url, base64 });
+    };
+    reader.readAsDataURL(file);
   }
 
   clearFile(event?: Event): void {
-    if (event) {
-      event.stopPropagation(); // Evita que se abra el diálogo de archivos al hacer clic en borrar
-    }
-    
+    if (event) event.stopPropagation();
     const current = this.selectedFile();
-    if (current?.url) {
+    if (current?.url && current?.file) {
       URL.revokeObjectURL(current.url);
     }
-    
     this.selectedFile.set(null);
     if (this.fileInput?.nativeElement) {
       this.fileInput.nativeElement.value = '';
@@ -243,12 +247,19 @@ export class EquipoFormComponent implements OnInit {
   }
 
   guardar(): void {
-    if (this.form.invalid || this.clienteSearchCtrl.invalid) {
+    // MODIFICADO: Validación del cliente (trampa del autocomplete)
+    if (!this.form.controls.clienteId.value) {
+      this.clienteSearchCtrl.setErrors({ required: true });
+      this.snack.open('Error: Debes seleccionar un cliente de la lista desplegable.', 'OK', {
+        duration: 4000, panelClass: 'rs-toast-error'
+      });
+      return;
+    }
+
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.clienteSearchCtrl.markAsTouched();
-      this.snack.open('Por favor, completa los campos requeridos antes de guardar.', 'OK', {
-        duration: 3500,
-        panelClass: 'rs-toast-error'
+      this.snack.open('Por favor, revisa los campos marcados en rojo.', 'OK', {
+        duration: 3500, panelClass: 'rs-toast-error'
       });
       return;
     }
@@ -256,6 +267,13 @@ export class EquipoFormComponent implements OnInit {
     this.loading.set(true);
     const body = this.form.getRawValue();
 
+    const formatearFecha = (fecha: any) => {
+      if (!fecha) return null;
+      const d = new Date(fecha);
+      return d.toISOString().split('T')[0];
+    };
+
+    // MODIFICADO: Incluye fotoBase64 en el envío
     const req = {
       clienteId: body.clienteId!,
       categoriaEquipoId: body.categoriaEquipoId || null,
@@ -265,16 +283,17 @@ export class EquipoFormComponent implements OnInit {
       modelo: body.modelo || null,
       numeroSerie: body.numeroSerie || null,
       descripcionGeneral: body.descripcionGeneral || null,
-      fechaCompra: body.fechaCompra || null,
-      garantiaHasta: body.garantiaHasta || null,
+      fechaCompra: formatearFecha(body.fechaCompra),
+      garantiaHasta: formatearFecha(body.garantiaHasta),
       ubicacionHabitual: body.ubicacionHabitual || null,
       notasTecnicas: body.notasTecnicas || null,
-      estadoActivo: !!body.estadoActivo
+      estadoActivo: !!body.estadoActivo,
+      fotoBase64: this.selectedFile()?.base64 || null
     };
 
     const request$ = this.id
-      ? this.equipos.actualizar(this.id, req)
-      : this.equipos.crear(req);
+      ? this.equipos.actualizar(this.id, req as any)
+      : this.equipos.crear(req as any);
 
     request$.subscribe({
       next: (res) => {
@@ -282,9 +301,10 @@ export class EquipoFormComponent implements OnInit {
         this.snack.open('Equipo guardado correctamente.', 'OK', { duration: 2200, panelClass: 'rs-toast-success' });
         this.router.navigate(['/equipos', res.id]);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.snack.open('No se pudo guardar el equipo.', 'OK', { duration: 3000, panelClass: 'rs-toast-error' });
+        console.error("Error del backend:", err);
+        this.snack.open('No se pudo guardar el equipo en la base de datos.', 'OK', { duration: 3000, panelClass: 'rs-toast-error' });
       }
     });
   }

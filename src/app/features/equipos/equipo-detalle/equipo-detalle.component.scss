@@ -1,17 +1,383 @@
-.rs-page-wrap { padding:24px; background: transparent !important; min-height:calc(100vh - 64px); }
-.rs-card { border: 1px solid var(--rs-border) !important; background: var(--rs-card) !important; }
-.rs-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; color: var(--rs-text-main); }
-.span-2 { grid-column:span 2; }
+@keyframes rsFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+:host { display: block; background: transparent !important; }
+
+/* PUNTO 4: Layout de ancho completo (Igual a página de Tickets) */
+.rs-page-container {
+  padding: var(--rs-page-pad) !important; /* Usamos tu variable global de padding */
+  min-height: calc(100vh - 64px);
+  max-width: none !important; /* Eliminamos el ancho máximo */
+  margin: 0 !important; /* Contenido alineado a la izquierda */
+
+  @media (max-width: 1024px) { padding: 24px !important; }
+  @media (max-width: 768px) { padding: 16px !important; }
+}
+
+.rs-fade-up {
+  opacity: 0;
+  animation: rsFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* --- HEADER --- */
+.rs-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.rs-page-title {
+  margin: 0;
+  color: var(--rs-text-navy);
+  font-size: var(--rs-title); /* Usamos tu variable de título */
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.rs-page-subtitle {
+  margin: 6px 0 0;
+  color: var(--rs-text-muted);
+  font-size: 13px;
+}
 
 .rs-header-actions {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
 }
 
+/* --- LAYOUT COLUMNAS --- */
+.rs-columns-wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 20px;
+  /* 1. Cambiamos 'start' por 'stretch' para que ambas columnas igualen su altura total */
+  align-items: stretch; 
+
+  @media (max-width: 1280px) { 
+    grid-template-columns: 1fr;
+  }
+}
+
+.rs-main-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 2. MAGIA: Obligamos a la última tarjeta izquierda (Contexto) a estirarse si hay espacio sobrante */
+.rs-main-content > .rs-form-card:last-child {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.rs-main-content > .rs-form-card:last-child .rs-form-content {
+  flex-grow: 1;
+}
+
+.rs-side-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%; /* Permite aprovechar toda la altura estirada */
+}
+
+/* 3. MAGIA: Empujamos la última tarjeta derecha (Resumen) hacia el fondo por si la izquierda es más grande */
+.rs-side-rail > .rs-side-card:last-child {
+  margin-top: auto;
+}
+
+/* --- TARJETAS BASE --- */
+.rs-form-card, .rs-side-card {
+  background: var(--rs-card) !important; /* SOLUCIÓN: Usar variable para Dark Mode */
+  border: 1px solid var(--rs-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
+}
+
+.rs-form-content { padding: 24px !important; }
+.rs-side-content { padding: 20px !important; }
+
+/* PUNTO 2: Estilo específico para Tarjeta Navy */
+.rs-card-navy {
+  background: #081a4b !important; /* Navy base */
+  border-color: rgba(255, 255, 255, 0.05) !important;
+
+  .rs-side-eyebrow { color: rgba(255, 255, 255, 0.6) !important; }
+  .rs-side-title { color: #ffffff !important; }
+  
+  .rs-category-box {
+    background: rgba(0, 209, 255, 0.08) !important;
+    border-color: rgba(0, 209, 255, 0.15) !important;
+    .rs-cat-icon mat-icon { color: #00d1ff !important; }
+    .rs-cat-name { color: #ffffff !important; }
+  }
+}
+
+/* --- TITULOS DE SECCIONES --- */
+.rs-group-eyebrow, .rs-side-eyebrow {
+  color: var(--rs-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.rs-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--rs-text-navy);
+  font-size: 15px;
+  font-weight: 700;
+  
+  mat-icon {
+    color: var(--rs-primary);
+    font-size: 20px; width: 20px; height: 20px;
+  }
+}
+
+.rs-side-title {
+  margin: 0 0 16px;
+  color: var(--rs-text-navy);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* --- GRIDS Y ESPACIADOS --- */
+.rs-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.rs-grid-inner { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+.rs-span-6 { grid-column: span 6; }
+.rs-span-full { grid-column: 1 / -1; }
+
+.rs-mb-3 { margin-bottom: 16px; }
+.rs-mb-4 { margin-bottom: 20px; }
+
 @media (max-width: 768px) {
-  .rs-page-wrap { padding:16px; }
-  .rs-grid { grid-template-columns:1fr; }
-  .span-2 { grid-column:auto; }
+  .rs-span-6 { grid-column: span 12; }
+  .rs-grid-inner { grid-template-columns: 1fr; }
+}
+
+/* --- DATA BOXES --- */
+.rs-data-box {
+  background: rgba(148, 163, 184, 0.05); 
+  border: 1px solid var(--rs-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rs-flex-row {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.rs-data-label {
+  color: var(--rs-text-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rs-data-value {
+  color: var(--rs-text-main);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* PUNTO 3: Estilo para texto sin caja de Descripción y Notas */
+.rs-data-text {
+  margin: 4px 0 0; /* Pequeño margen superior */
+  padding-left: 2px;
+  color: var(--rs-text-main);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.rs-text-bold { font-weight: 800; }
+.rs-icon-muted { color: var(--rs-text-muted); font-size: 20px; width: 20px; height: 20px; }
+.rs-code-text { font-family: monospace; color: var(--rs-primary); font-weight: 700; }
+
+.rs-code-bg { 
+  display: inline-block;
+  background: rgba(100, 116, 139, 0.1); 
+  padding: 4px 8px; 
+  border-radius: 6px; 
+  font-family: monospace; 
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* --- SIDEBAR COMPONENTS --- */
+.rs-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.rs-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(34, 197, 94, 0.08);
+  color: var(--rs-success);
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  &.inactive {
+    background: rgba(239, 68, 68, 0.08);
+    color: var(--rs-error);
+  }
+}
+
+.rs-asset-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .rs-asset-avatar {
+    width: 48px; height: 48px;
+    background: rgba(0, 191, 245, 0.1);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--rs-primary);
+    mat-icon { font-size: 28px; width: 28px; height: 28px; }
+  }
+
+  .rs-asset-name {
+    color: var(--rs-text-navy);
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-top: 4px;
+  }
+}
+
+.rs-divider {
+  height: 1px;
+  background: var(--rs-border);
+  margin: 0 -20px 16px;
+}
+
+.rs-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rs-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* CATEGORÍA SELECCIONADA */
+.rs-category-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 191, 245, 0.05);
+  border: 1px solid rgba(0, 191, 245, 0.2);
+  padding: 12px 16px;
+  border-radius: 8px;
+  .rs-cat-icon { color: var(--rs-primary); display: flex; align-items: center; }
+  .rs-cat-name { color: var(--rs-primary); font-weight: 700; font-size: 14px; }
+}
+
+/* EVIDENCIA VISUAL */
+.rs-evidence-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 30px 20px;
+  background: rgba(148, 163, 184, 0.05);
+  border: 1px dashed var(--rs-border);
+  border-radius: 8px;
+  color: var(--rs-text-muted);
+  mat-icon { font-size: 28px; width: 28px; height: 28px; opacity: 0.5; }
+  span { font-size: 12px; font-weight: 600; }
+}
+
+/* MODO OSCURO (Ajustes de Data Box) */
+body.dark-theme, .dark-theme, :host-context(.dark-theme) {
+  .rs-data-box { background: rgba(255, 255, 255, 0.02) !important; }
+  .rs-evidence-placeholder { background: rgba(255, 255, 255, 0.01) !important; }
+}
+
+/* --- CONTENEDOR DE LA IMAGEN EN DETALLES --- */
+.rs-image-preview-container {
+  width: 100%;
+  height: 180px; /* Obliga a la tarjeta a no crecer infinitamente */
+  background: rgba(148, 163, 184, 0.05);
+  border: 1px dashed var(--rs-border);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.has-image {
+    cursor: pointer;
+    border-style: solid;
+    
+    &:hover .rs-image-overlay {
+      opacity: 1; /* Muestra el fondo oscuro al pasar el mouse */
+    }
+    &:hover .rs-img-fit {
+      transform: scale(1.05); /* Efecto zoom suave */
+    }
+  }
+}
+
+.rs-img-fit {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.rs-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 26, 75, 0.6); /* Transparencia Navy */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  
+  mat-icon { font-size: 32px; width: 32px; height: 32px; }
+  span { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+}
+
+/* Evita que el contenedor por defecto de Angular Material le ponga márgenes blancos al Modal */
+::ng-deep .rs-image-modal-panel .mat-mdc-dialog-container {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }

@@ -104,9 +104,9 @@
             </div>
 
             <div class="rs-card-body">
-              <span class="rs-card-brand">{{ e.marca || 'Sin Marca' }}</span>
+              <span class="rs-card-brand">{{ e.marca || 'Sin Marca' }} {{ e.modelo ? '· ' + e.modelo : '' }}</span>
               
-              <div class="rs-card-model">{{ e.modelo || 'Equipo sin modelo' }}</div>
+              <div class="rs-card-model">{{ e.tipoEquipo || 'Equipo no especificado' }}</div>
 
               <div class="rs-card-details">
                 <div class="rs-detail-item">
@@ -115,10 +115,10 @@
                 </div>
                 <div class="rs-detail-item">
                   <mat-icon>person_outline</mat-icon>
-                  <span>{{ e.clienteNombre || 'Sin cliente asignado' }}</span>
+                  <span>{{ e.clienteNombre || 'Sin cliente' }}</span>
                 </div>
               </div>
-            </div>
+            </div>  
 
             <div class="rs-card-footer">
               <button class="rs-full-btn" [routerLink]="['/equipos', e.id]">

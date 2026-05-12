@@ -449,5 +449,5 @@
   .rs-span-12, .rs-span-8, .rs-span-6, .rs-span-5, .rs-span-4, .rs-span-3 { grid-column: span 1; }
   .rs-side-rail { grid-template-columns: 1fr; }
   .rs-global-footer { flex-direction: column; align-items: stretch; gap: 16px; }
-  .rs-form-actions { flex-direction: column; }
+  .rs-form-actions { flex-direction: column-reverse; gap: 12px; }
 }

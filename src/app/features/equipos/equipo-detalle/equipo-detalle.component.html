@@ -1,33 +1,198 @@
 @if (item(); as e) {
-  <div class="rs-page-wrap">
+  <main class="rs-page-container rs-fade-up">
+    
     <header class="rs-header-row">
       <div class="rs-header-copy">
-        <h1 class="rs-page-title">{{ e.codigoEquipo }}</h1>
-        <p class="rs-page-subtitle">{{ e.categoria?.nombre || 'Sin categoría' }} · {{ e.clienteNombre }}</p>
+        <h1 class="rs-page-title">Detalles del equipo</h1>
+        <p class="rs-page-subtitle">Consulta las especificaciones y el historial del dispositivo.</p>
       </div>
 
       <div class="rs-header-actions">
-        <a mat-stroked-button class="rs-btn rs-btn-secondary" [routerLink]="['/equipos', e.id, 'editar']">
-          Editar
-        </a>
-        <button mat-flat-button class="rs-btn rs-btn--primary" (click)="desactivar()">
-          <span class="rs-btn__shimmer"></span>
-          <span class="rs-btn__label">Desactivar</span>
+        <button mat-stroked-button class="rs-btn rs-btn-secondary" (click)="desactivar()" [disabled]="!e.estadoActivo">
+          <mat-icon style="color: var(--rs-error);">block</mat-icon>
+          {{ e.estadoActivo ? 'Desactivar' : 'Inactivo' }}
         </button>
+        <a mat-flat-button class="rs-btn rs-btn--primary" [routerLink]="['/equipos', e.id, 'editar']">
+          <span class="rs-btn__shimmer"></span>
+          <span class="rs-btn__label">
+            <mat-icon>edit</mat-icon> Editar equipo
+          </span>
+        </a>
       </div>
     </header>
 
-    <mat-card class="rs-card">
-      <div class="rs-grid">
-        <div><strong>Marca:</strong> {{ e.marca || '—' }}</div>
-        <div><strong>Modelo:</strong> {{ e.modelo || '—' }}</div>
-        <div><strong>Serie:</strong> {{ e.numeroSerie || '—' }}</div>
-        <div><strong>Ubicación:</strong> {{ e.ubicacionHabitual || '—' }}</div>
-        <div><strong>Fecha compra:</strong> {{ e.fechaCompra || '—' }}</div>
-        <div><strong>Garantía:</strong> {{ e.garantiaHasta || '—' }}</div>
-        <div class="span-2"><strong>Descripción:</strong> {{ e.descripcionGeneral || '—' }}</div>
-        <div class="span-2"><strong>Notas técnicas:</strong> {{ e.notasTecnicas || '—' }}</div>
+    <div class="rs-columns-wrapper">
+      
+      <div class="rs-main-content">
+        
+        <mat-card class="rs-form-card rs-mb-4">
+          <mat-card-content class="rs-form-content">
+            <div class="rs-grid">
+              
+              <div class="rs-span-6">
+                <div class="rs-group-eyebrow">Propietario (Cliente)</div>
+                <div class="rs-data-box rs-flex-row">
+                  <mat-icon class="rs-icon-muted">person</mat-icon>
+                  <span class="rs-data-value">{{ e.clienteNombre || 'No asignado' }}</span>
+                </div>
+              </div>
+
+              <div class="rs-span-6">
+                <div class="rs-group-eyebrow">Equipo</div>
+                <div class="rs-data-box rs-flex-row">
+                  <mat-icon class="rs-icon-muted">devices_other</mat-icon>
+                  <span class="rs-data-value">{{ e.tipoEquipo || 'No especificado' }}</span>
+                </div>
+              </div>
+
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="rs-grid rs-mb-4">
+          
+          <mat-card class="rs-form-card rs-span-6">
+            <mat-card-content class="rs-form-content">
+              <div class="rs-group-title rs-mb-3"><mat-icon>info</mat-icon> Detalles Técnicos</div>
+              
+              <div class="rs-grid-inner">
+                <div class="rs-data-box">
+                  <span class="rs-data-label">Marca</span>
+                  <span class="rs-data-value">{{ e.marca || '—' }}</span>
+                </div>
+                <div class="rs-data-box">
+                  <span class="rs-data-label">Modelo</span>
+                  <span class="rs-data-value">{{ e.modelo || '—' }}</span>
+                </div>
+                <div class="rs-data-box">
+                  <span class="rs-data-label">N° de Serie</span>
+                  <span class="rs-data-value">{{ e.numeroSerie || '—' }}</span>
+                </div>
+                <div class="rs-data-box">
+                  <span class="rs-data-label">Código Interno</span>
+                  <span class="rs-data-value rs-code-text">{{ e.codigoEquipo || '—' }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="rs-form-card rs-span-6">
+            <mat-card-content class="rs-form-content">
+              <div class="rs-group-title rs-mb-3"><mat-icon>location_on</mat-icon> Seguimiento</div>
+              
+              <div class="rs-grid-inner">
+                <div class="rs-data-box rs-span-full">
+                  <span class="rs-data-label">Ubicación Habitual</span>
+                  <span class="rs-data-value">{{ e.ubicacionHabitual || 'No registrada' }}</span>
+                </div>
+                <div class="rs-data-box">
+                  <span class="rs-data-label">Fecha Compra</span>
+                  <span class="rs-data-value">{{ (e.fechaCompra | date:'mediumDate') || '—' }}</span>
+                </div>
+                <div class="rs-data-box">
+                  <span class="rs-data-label">Garantía Hasta</span>
+                  <span class="rs-data-value">{{ (e.garantiaHasta | date:'mediumDate') || '—' }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+
+        <mat-card class="rs-form-card">
+          <mat-card-content class="rs-form-content">
+            <div class="rs-group-title rs-mb-3">Contexto y Notas Técnicas</div>
+            
+            <div class="rs-mb-3">
+              <span class="rs-data-label">Descripción General</span>
+              <p class="rs-data-text">{{ e.descripcionGeneral || 'Sin descripción registrada.' }}</p>
+            </div>
+
+            <div>
+              <span class="rs-data-label">Notas Técnicas / Administrativas</span>
+              <p class="rs-data-text">{{ e.notasTecnicas || 'No hay notas técnicas registradas para este equipo.' }}</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
       </div>
-    </mat-card>
-  </div>
+
+      <aside class="rs-side-rail">
+        
+        <mat-card class="rs-side-card rs-card-navy">
+          <mat-card-content class="rs-side-content">
+            <div class="rs-side-eyebrow">Clasificación</div>
+            <div class="rs-side-title">Categoría seleccionada</div>
+
+            <div class="rs-category-box">
+              <div class="rs-cat-icon">
+                <mat-icon>category</mat-icon>
+              </div>
+              <div class="rs-cat-name">{{ e.categoria?.nombre || 'Sin categoría' }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+       <mat-card class="rs-side-card">
+          <mat-card-content class="rs-side-content">
+            <div class="rs-side-eyebrow">Adjuntos</div>
+            <div class="rs-side-title">Evidencia visual</div>
+            
+            <div class="rs-image-preview-container" [class.has-image]="!!e.fotoBase64" (click)="e.fotoBase64 ? abrirImagen(e.fotoBase64) : null">
+              
+              @if (e.fotoBase64) {
+                <img [src]="e.fotoBase64" class="rs-img-fit" alt="Foto del equipo" />
+                <div class="rs-image-overlay">
+                  <mat-icon>zoom_in</mat-icon>
+                  <span>Click para ampliar</span>
+                </div>
+              } @else {
+                <div class="rs-evidence-placeholder">
+                  <mat-icon>image_not_supported</mat-icon>
+                  <span>Sin foto registrada</span>
+                </div>
+              }
+              
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+
+        <mat-card class="rs-side-card">
+          <mat-card-content class="rs-side-content">
+            <div class="rs-summary-header">
+              <div class="rs-side-eyebrow">Resumen del Activo</div>
+              <div class="rs-status-pill" [class.inactive]="!e.estadoActivo">
+                <span class="dot"></span> {{ e.estadoActivo ? 'Activo' : 'Inactivo' }}
+              </div>
+            </div>
+
+            <div class="rs-asset-profile">
+              <div class="rs-asset-avatar">
+                <mat-icon>devices</mat-icon>
+              </div>
+              <div class="rs-asset-info">
+                <div class="rs-data-label">Nombre del Equipo</div>
+                <div class="rs-asset-name">{{ e.modelo || 'Equipo sin nombre' }}</div>
+              </div>
+            </div>
+
+            <div class="rs-divider"></div>
+
+            <div class="rs-summary-list">
+              <div class="rs-summary-item">
+                <div class="rs-data-label">Cliente</div>
+                <div class="rs-data-value rs-text-bold">{{ e.clienteNombre || '—' }}</div>
+              </div>
+              <div class="rs-summary-item">
+                <div class="rs-data-label">Código Interno</div>
+                <div class="rs-data-value rs-code-bg">{{ e.codigoEquipo || '—' }}</div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+      </aside>
+    </div>
+  </main>
 }
