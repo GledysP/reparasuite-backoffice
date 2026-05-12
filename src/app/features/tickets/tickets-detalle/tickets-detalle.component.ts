@@ -113,19 +113,18 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
     this.releaseBlobUrls();
   }
 
-  cargar(): void {
+cargar(): void {
     this.loading = true;
 
     this.ticketsService.obtener(this.id).subscribe({
       next: (ticket) => {
+        // 1. Resolvemos el ID únicamente con la verdad del servidor
         const ordenTrabajoId = this.resolveOrdenTrabajoId(ticket);
 
+        // 2. Asignamos a la variable que controla los botones del HTML
         this.otVinculadaId = ordenTrabajoId;
 
-        if (ticket.id && ordenTrabajoId) {
-          this.saveTicketOtLink(ticket.id, ordenTrabajoId);
-        }
-
+        // 3. Ya NO guardamos en localStorage (eliminamos el if con saveTicketOtLink)
         this.ticket = {
           ...ticket,
           ordenTrabajoId,
@@ -335,15 +334,15 @@ export class TicketsDetalleComponent implements OnInit, AfterViewInit, OnDestroy
     this.blobUrls = {};
   }
 
-  private resolveOrdenTrabajoId(ticket: TicketDetalleDto): string | null {
+private resolveOrdenTrabajoId(ticket: TicketDetalleDto): string | null {
+    // Validamos estrictamente que lo que viene del servidor sea un string con contenido
     const fromBackend =
       typeof ticket.ordenTrabajoId === 'string' && ticket.ordenTrabajoId.trim()
         ? ticket.ordenTrabajoId.trim()
         : null;
 
-    if (fromBackend) return fromBackend;
-
-    return this.getTicketOtLink(ticket.id);
+    // Retornamos lo del backend y PUNTO. Eliminamos el "return this.getTicketOtLink"
+    return fromBackend;
   }
 
   private getTicketOtLink(ticketId?: string | null): string | null {
