@@ -939,3 +939,43 @@ body.dark-theme, .dark-theme {
   }
 }
 
+/* --- SCROLLBAR PREMIUM PARA LOS SELECTS Y MENÚS FLOTANTES --- */
+.cdk-overlay-pane {
+  .mat-mdc-select-panel,
+  .mat-mdc-autocomplete-panel,
+  .mat-mdc-menu-panel {
+    &::-webkit-scrollbar {
+      width: 6px !important; 
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent !important;
+      margin: 4px 0 !important; 
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.35) !important;
+      border-radius: 8px !important;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.55) !important;
+    }
+  }
+}
+
+
+/* --- ESTILO PARA COMPONENTES DUALES (Páginas abiertas como modales) --- */
+.rs-dialog-page {
+  .mat-mdc-dialog-container .mdc-dialog__surface {
+    border-radius: 16px !important;
+    background: var(--rs-bg) !important; /* Usa el fondo global, no el de tarjeta */
+    overflow-y: auto;
+  }
+  
+  /* Le quitamos el min-height de 100vh para que no genere doble scroll */
+  .rs-page-container {
+    min-height: auto !important;
+    padding: 24px !important;
+  }
+}

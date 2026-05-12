@@ -20,6 +20,7 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 import { ClientesService } from '../../clientes/clientes.service';
 import { EquiposService } from '../equipos.service';
 import { CategoriaEquipoDto, ClienteResumen } from '../../../core/models/tipos';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'rs-equipo-form',
@@ -53,6 +54,8 @@ export class EquipoFormComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly equipos = inject(EquiposService);
   private readonly clientes = inject(ClientesService);
+  private readonly dialogRef = inject(MatDialogRef<EquipoFormComponent>, { optional: true });
+  private readonly dialogData = inject(MAT_DIALOG_DATA, { optional: true });
 
   @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
 
@@ -90,6 +93,19 @@ export class EquipoFormComponent implements OnInit {
     this.cargarCatalogos();
     this.setupClienteAutocomplete();
 
+ // SI ESTAMOS EN MODO MODAL (Viniendo desde la Orden de Trabajo)
+    if (this.dialogData && this.dialogData.clienteId) {
+      // 1. Asignamos el ID oculto para la BD
+      this.form.patchValue({ clienteId: this.dialogData.clienteId });
+      
+      // 2. MAGIA VISUAL: Le inyectamos el nombre para que no se vea vacío
+      if (this.dialogData.clienteNombre) {
+        this.clienteSearchCtrl.setValue(this.dialogData.clienteNombre, { emitEvent: false });
+      }
+      
+      // AÑADIMOS emitEvent: false
+      this.clienteSearchCtrl.disable({ emitEvent: false });
+    }
     if (this.id) {
       this.equipos.obtener(this.id).subscribe({
         next: (equipo: any) => {
@@ -139,7 +155,8 @@ export class EquipoFormComponent implements OnInit {
 
       this.filteredClientes.set(filtered);
 
-      if (typeof value === 'string') {
+// Así protegemos el ID cuando el formulario se abre como Modal.
+      if (typeof value === 'string' && !this.clienteSearchCtrl.disabled) {
         this.form.patchValue({ clienteId: '' }, { emitEvent: false });
       }
     });
@@ -295,12 +312,18 @@ export class EquipoFormComponent implements OnInit {
       ? this.equipos.actualizar(this.id, req as any)
       : this.equipos.crear(req as any);
 
-    request$.subscribe({
-      next: (res) => {
-        this.loading.set(false);
-        this.snack.open('Equipo guardado correctamente.', 'OK', { duration: 2200, panelClass: 'rs-toast-success' });
-        this.router.navigate(['/equipos', res.id]);
-      },
+      request$.subscribe({
+        next: (res) => {
+          this.loading.set(false);
+          this.snack.open('Equipo guardado correctamente.', 'OK', { duration: 2200, panelClass: 'rs-toast-success' });
+          
+          // Si estamos en un modal, lo cerramos y devolvemos el ID. Si no, navegamos.
+          if (this.dialogRef) {
+            this.dialogRef.close(res); 
+          } else {
+            this.router.navigate(['/equipos', res.id]);
+          }
+        },
       error: (err) => {
         this.loading.set(false);
         console.error("Error del backend:", err);
@@ -309,7 +332,11 @@ export class EquipoFormComponent implements OnInit {
     });
   }
 
-  cancelar(): void {
+cancelar(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close(); // Cierra el modal
+      return;
+    }
     if (this.id) {
       this.router.navigate(['/equipos', this.id]);
       return;

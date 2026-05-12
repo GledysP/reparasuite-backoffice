@@ -24,6 +24,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectChange } from '@angular/material/select';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { Subscription, forkJoin, of } from 'rxjs';
 import { catchError, finalize, switchMap } from 'rxjs/operators';
@@ -41,6 +43,13 @@ import { TicketsService } from '../../tickets/tickets.service';
 import { UsuariosService } from '../../usuarios/usuarios.service';
 import { EquiposService } from '../../equipos/equipos.service';
 import { ClienteBuscarDialogComponent } from './cliente-buscar-dialog.component';
+import { ClienteFormDialogComponent } from '../../clientes/cliente-form-dialog/cliente-form-dialog.component';
+import {
+  ClientesService,
+  ClienteGuardarRequest,
+} from '../../clientes/clientes.service';
+import { CategoriaEquipoDialogComponent } from '../../equipos/categoria-equipo-dialog/categoria-equipo-dialog.component';
+import { EquipoFormComponent } from '../../equipos/equipo-form/equipo-form.component';
 import {
   OrdenesTrabajoService,
   OtCrearRequest,
@@ -68,6 +77,15 @@ type TicketSummaryRef = {
 
 type PeriodoHora = 'AM' | 'PM';
 
+export interface CategoriaGuardarPayload {
+  codigo: string;
+  nombre: string;
+  descripcion: string;
+  icono: string;
+  ordenVisual: number;
+  activa: boolean;
+}
+
 @Component({
   selector: 'rs-ordenes-trabajo-nueva',
   standalone: true,
@@ -87,6 +105,7 @@ type PeriodoHora = 'AM' | 'PM';
     MatProgressSpinnerModule,
     MatSelectModule,
     MatSnackBarModule,
+    MatDividerModule,
   ],
   templateUrl: './ordenes-trabajo-nueva.component.html',
   styleUrl: './ordenes-trabajo-nueva.component.scss',
@@ -102,6 +121,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly snack = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+  private readonly clientes = inject(ClientesService); // SERVICIO INYECTADO
 
   private readonly subs = new Subscription();
   private readonly ticketOtCacheKey = 'rs_ticket_ot_map';
@@ -109,7 +129,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   private ticketBlobUrls: Record<string, string> = {};
 
   tecnicos: UsuarioResumen[] = [];
-  
+
   readonly categorias = signal<CategoriaEquipoDto[]>([]);
   readonly equiposCliente = signal<EquipoResumenDto[]>([]);
   readonly activeTicketPhoto = signal<FotoPreview | null>(null);
@@ -137,7 +157,6 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
   imageModalUrl = '';
   imageModalName = '';
 
-  // Agrego mi variable bandera para saber si ya presioné el botón de guardar alguna vez
   formSubmitted = false;
 
   form = this.fb.group({
@@ -175,7 +194,10 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
     prioridad: this.fb.nonNullable.control<PrioridadOt>('MEDIA'),
     tecnicoId: this.fb.control<string | null>(null),
-    categoriasTrabajo: [[] as string[], [Validators.required, Validators.minLength(1)]],
+    categoriasTrabajo: [
+      [] as string[],
+      [Validators.required, Validators.minLength(1)],
+    ],
   });
 
   ngOnInit(): void {
@@ -300,8 +322,11 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   hasError(controlName: string): boolean {
     const control = this.form.get(controlName);
-    // Valido que el control exista, esté inválido y que yo lo haya tocado, modificado, o ya haya presionado 'Guardar'
-    return !!(control && control.invalid && (control.dirty || control.touched || this.formSubmitted));
+    return !!(
+      control &&
+      control.invalid &&
+      (control.dirty || control.touched || this.formSubmitted)
+    );
   }
 
   openImageModal(photo?: FotoPreview | null): void {
@@ -396,15 +421,11 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   buscarCliente(): void {
     if (this.guardando) return;
-
     if (this.fromTicket && this.clienteId) {
       this.snack.open(
         'Esta OT proviene de un ticket. El cliente ya está vinculado.',
         'OK',
-        {
-          duration: 2500,
-          panelClass: 'rs-toast-info'
-        },
+        { duration: 2500, panelClass: 'rs-toast-info' },
       );
       return;
     }
@@ -416,23 +437,18 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     });
 
     this.subs.add(
-      dialogRef
-        .afterClosed()
-        .subscribe((cliente: ClienteResumen | undefined) => {
-          if (!cliente) return;
+      dialogRef.afterClosed().subscribe((result: any) => {
+        if (!result) return;
 
-          this.clienteId = cliente.id;
+        // Si el buscador nos dice "crear nuevo", disparamos la creación rápida
+        if (result.accion === 'nuevo') {
+          this.crearClienteRapido(result.nombre);
+          return;
+        }
 
-          this.form.patchValue({
-            clienteNombre: cliente.nombre ?? '',
-            clienteTelefono: String(cliente.telefono ?? '').replace(/\D/g, ''),
-            clienteEmail: cliente.email ?? '',
-            equipoId: null,
-            categoriaEquipoId: null,
-          });
-
-          this.cargarEquiposCliente(cliente.id);
-        }),
+        // Si encontró un cliente, lo asignamos estrictamente
+        this.asignarClienteAlFormulario(result as ClienteResumen);
+      }),
     );
   }
 
@@ -444,14 +460,63 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     if (!this.clienteId) {
       this.snack.open('Por favor, selecciona un cliente primero.', 'OK', {
         duration: 2200,
-        panelClass: 'rs-toast-warning'
+        panelClass: 'rs-toast-warning',
       });
       return;
     }
 
-    this.router.navigate(['/equipos/nuevo'], {
-      queryParams: { clienteId: this.clienteId },
+    const dialogRef = this.dialog.open(EquipoFormComponent, {
+      width: '95vw',
+      maxWidth: '1200px',
+      height: '95vh',
+      panelClass: 'rs-dialog-page',
+      data: {
+        clienteId: this.clienteId,
+        clienteNombre: this.form.controls.clienteNombre.value,
+      },
     });
+
+    this.subs.add(
+      dialogRef.afterClosed().subscribe((res: any) => {
+        if (res && res.id) {
+          this.equiposService
+            .listar({
+              clienteId: this.clienteId!,
+              activo: true,
+              page: 0,
+              size: 100,
+            })
+            .subscribe((resp) => {
+              const equiposActualizados = resp.items ?? [];
+              this.equiposCliente.set(equiposActualizados);
+
+              // Buscamos el equipo recién creado y TypeScript sabe que es un EquipoResumenDto
+              const equipoNuevo = equiposActualizados.find(
+                (e) => e.id === res.id,
+              );
+
+              if (equipoNuevo) {
+                // Solo tomamos el tipoEquipo
+                const nombreEquipo = (equipoNuevo.tipoEquipo || '').trim();
+
+                this.form.patchValue({
+                  equipoId: res.id,
+                  equipo: nombreEquipo || equipoNuevo.codigoEquipo,
+                });
+              } else {
+                this.form.controls.equipoId.setValue(res.id);
+              }
+            });
+        }
+      }),
+    );
+  }
+
+  formatEquipoResumen(eq: EquipoResumenDto): string {
+    const nombre = (eq.tipoEquipo || '').trim();
+    return nombre
+      ? `${nombre} (${eq.codigoEquipo || 'Sin código'})`
+      : eq.codigoEquipo || 'Sin código';
   }
 
   onDragOver(event: DragEvent): void {
@@ -476,39 +541,40 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
   onFileSelected(event: any): void {
     const files: FileList = event.target.files;
-    
+
     if (files && files.length > 0) {
-      // Filtro para asegurarme de que solo pasen imágenes
-      const nuevosArchivos = Array.from(files).filter(file => file.type.startsWith('image/'));
+      const nuevosArchivos = Array.from(files).filter((file) =>
+        file.type.startsWith('image/'),
+      );
 
       if (!nuevosArchivos.length) {
-        this.snack.open('Selecciona imágenes válidas.', 'OK', { duration: 2500, panelClass: 'rs-toast-warning' });
+        this.snack.open('Selecciona imágenes válidas.', 'OK', {
+          duration: 2500,
+          panelClass: 'rs-toast-warning',
+        });
         return;
       }
 
-      // Agrego los nuevos archivos a mi arreglo existente (para poder subir múltiples)
       this.fotos = [...this.fotos, ...nuevosArchivos];
 
-      // Recorro TODOS los archivos nuevos seleccionados para generar sus vistas previas
       for (let i = 0; i < nuevosArchivos.length; i++) {
         const file = nuevosArchivos[i];
-        
+
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.fotoPreviews.push({
             file: file,
             url: e.target.result,
             name: file.name,
-            source: 'local'
+            source: 'local',
           });
         };
         reader.readAsDataURL(file);
       }
 
-      // Muestro mi alerta global verde de que las fotos cargaron
       this.snack.open(`${nuevosArchivos.length} foto(s) agregada(s).`, 'OK', {
         duration: 2500,
-        panelClass: 'rs-toast-success'
+        panelClass: 'rs-toast-success',
       });
     }
   }
@@ -518,16 +584,18 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
     this.syncFechaPrevista();
 
-    // Le digo a mi sistema que ya intenté guardar, así se activan las líneas rojas
     this.formSubmitted = true;
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      // Muestro mi alerta roja usando la clase global que definimos en styles.scss
-      this.snack.open('Por favor, completa los campos obligatorios antes de guardar.', 'Entendido', {
-        duration: 3500,
-        panelClass: 'rs-toast-error'
-      });
+      this.snack.open(
+        'Por favor, completa los campos obligatorios antes de guardar.',
+        'Entendido',
+        {
+          duration: 3500,
+          panelClass: 'rs-toast-error',
+        },
+      );
       return;
     }
 
@@ -557,7 +625,10 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         v.tipo === 'DOMICILIO' ? (v.direccion ?? '').trim() || null : null,
       notasAcceso:
         v.tipo === 'DOMICILIO' ? (v.notasAcceso ?? '').trim() || null : null,
-      categoriasTrabajo: v.categoriasTrabajo && v.categoriasTrabajo.length > 0 ? v.categoriasTrabajo : undefined,
+      categoriasTrabajo:
+        v.categoriasTrabajo && v.categoriasTrabajo.length > 0
+          ? v.categoriasTrabajo
+          : undefined,
     };
 
     this.guardando = true;
@@ -595,7 +666,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         next: ({ id }) => {
           this.snack.open('Orden creada correctamente.', 'OK', {
             duration: 2500,
-            panelClass: 'rs-toast-success'
+            panelClass: 'rs-toast-success',
           });
           this.clearLocalFiles();
           this.router.navigate(['/ordenes-trabajo', id]);
@@ -606,7 +677,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
             'OK',
             {
               duration: 3000,
-              panelClass: 'rs-toast-error'
+              panelClass: 'rs-toast-error',
             },
           );
         },
@@ -714,6 +785,62 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     );
   }
 
+  // --- SECCIÓN: FLUJO DE CREACIÓN DE CLIENTES ESTRICTAMENTE TIPADO --- //
+
+  private asignarClienteAlFormulario(cliente: ClienteResumen): void {
+    this.clienteId = cliente.id;
+    this.form.patchValue({
+      clienteNombre: cliente.nombre ?? '',
+      clienteTelefono: String(cliente.telefono ?? '').replace(/\D/g, ''),
+      clienteEmail: cliente.email ?? '',
+      equipoId: null,
+      categoriaEquipoId: null,
+    });
+    this.cargarEquiposCliente(cliente.id);
+  }
+
+  crearClienteRapido(nombrePrefill: string = ''): void {
+    if (this.guardando) return;
+
+    const dialogRef = this.dialog.open(ClienteFormDialogComponent, {
+      width: '480px',
+      maxWidth: '92vw',
+      panelClass: 'rs-dialog-custom',
+      data: { modo: 'crear', cliente: { nombre: nombrePrefill } },
+    });
+
+    this.subs.add(
+      dialogRef
+        .afterClosed()
+        .subscribe((payload: ClienteGuardarRequest | undefined) => {
+          if (!payload) return;
+
+          this.guardando = true;
+
+          this.clientes.crear(payload).subscribe({
+            next: (nuevoCliente: ClienteResumen) => {
+              this.guardando = false;
+              this.snack.open('Cliente registrado exitosamente.', 'OK', {
+                duration: 2500,
+                panelClass: 'rs-toast-success',
+              });
+              this.asignarClienteAlFormulario(nuevoCliente);
+            },
+            error: (error) => {
+              this.guardando = false;
+              console.error('Error en creación de cliente:', error);
+              this.snack.open('Error al registrar el cliente.', 'OK', {
+                duration: 3000,
+                panelClass: 'rs-toast-error',
+              });
+            },
+          });
+        }),
+    );
+  }
+
+  // ---------------------------------------------------------------- //
+
   private setupEquipoSelectionSync(): void {
     this.subs.add(
       this.form.controls.equipoId.valueChanges.subscribe((equipoId) => {
@@ -724,11 +851,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         );
         if (!found) return;
 
-        const equipoTexto = [found.marca, found.modelo]
-          .filter(Boolean)
-          .join(' ')
-          .trim();
-
+        // Solo tomamos el tipoEquipo (Ej: "disco duro")
+        const equipoTexto = (found.tipoEquipo || '').trim();
         const currentEquipo = String(
           this.form.controls.equipo.value ?? '',
         ).trim();
@@ -790,9 +914,14 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         const direccion = queryParams.get('direccion');
 
         const equipo = queryParams.get('equipo') || queryParams.get('asunto');
-        
+
         const catsStr = queryParams.get('categoriasTrabajo');
-        const categoriasArray = catsStr ? catsStr.split(',').map(c => c.trim().toUpperCase()).filter(Boolean) : [];
+        const categoriasArray = catsStr
+          ? catsStr
+              .split(',')
+              .map((c) => c.trim().toUpperCase())
+              .filter(Boolean)
+          : [];
 
         const descripcionFalla = queryParams.get('descripcionFalla');
         const descripcionLegacy = queryParams.get('descripcion');
@@ -818,14 +947,25 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
         this.form.patchValue(
           {
-            clienteNombre: clienteNombre || this.form.controls.clienteNombre.value || '',
-            clienteTelefono: String(clienteTelefono || this.form.controls.clienteTelefono.value || '').replace(/\D/g, ''),
-            clienteEmail: clienteEmail || this.form.controls.clienteEmail.value || '',
-            tipo: tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : this.form.controls.tipo.value,
+            clienteNombre:
+              clienteNombre || this.form.controls.clienteNombre.value || '',
+            clienteTelefono: String(
+              clienteTelefono || this.form.controls.clienteTelefono.value || '',
+            ).replace(/\D/g, ''),
+            clienteEmail:
+              clienteEmail || this.form.controls.clienteEmail.value || '',
+            tipo:
+              tipo === 'DOMICILIO' || tipo === 'TIENDA'
+                ? tipo
+                : this.form.controls.tipo.value,
             direccion: direccion || this.form.controls.direccion.value || '',
             equipo: equipo || this.form.controls.equipo.value || '',
-            fallaReportada: descripcionLimpia || this.form.controls.fallaReportada.value || '',
-            observaciones: obsQP || this.form.controls.observaciones.value || '',
+            fallaReportada:
+              descripcionLimpia ||
+              this.form.controls.fallaReportada.value ||
+              '',
+            observaciones:
+              obsQP || this.form.controls.observaciones.value || '',
             categoriasTrabajo: categoriasArray,
           },
           { emitEvent: false },
@@ -839,7 +979,8 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
             asunto: queryParams.get('asunto'),
             descripcionFalla: descripcionLimpia || null,
             observacionesOriginales: obsQP || null,
-            tipoServicioSugerido: tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : null,
+            tipoServicioSugerido:
+              tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : null,
             direccion: direccion || null,
           };
         }
@@ -1068,7 +1209,7 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
         error: () => {
           this.snack.open('No se pudo leer el ticket para prellenar.', 'OK', {
             duration: 2500,
-            panelClass: 'rs-toast-warning'
+            panelClass: 'rs-toast-warning',
           });
         },
       }),
@@ -1191,11 +1332,13 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     const onlyImages = files.filter((file) => file.type.startsWith('image/'));
 
     if (!onlyImages.length) {
-      this.snack.open('Selecciona imágenes válidas.', 'OK', { duration: 2000, panelClass: 'rs-toast-warning' });
+      this.snack.open('Selecciona imágenes válidas.', 'OK', {
+        duration: 2000,
+        panelClass: 'rs-toast-warning',
+      });
       return;
     }
 
-    // Aquí también lo cambio para que soporte arrastrar múltiples veces sin borrar las anteriores
     this.fotos = [...this.fotos, ...onlyImages];
 
     const localPreviews: FotoPreview[] = onlyImages.map((file) => ({
@@ -1209,13 +1352,12 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     const ticketRefs = this.fotoPreviews.filter(
       (preview) => preview.source === 'ticket',
     );
-    // Unimos los tickets, las locales viejas y las nuevas agregadas por drag & drop
-    const localsViejas = this.fotoPreviews.filter(p => p.source === 'local');
+    const localsViejas = this.fotoPreviews.filter((p) => p.source === 'local');
     this.fotoPreviews = [...ticketRefs, ...localsViejas, ...localPreviews];
 
     this.snack.open(`${onlyImages.length} foto(s) agregada(s).`, 'OK', {
       duration: 2500,
-      panelClass: 'rs-toast-success'
+      panelClass: 'rs-toast-success',
     });
   }
 
@@ -1363,5 +1505,65 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     } catch {
       // silencioso
     }
+  }
+
+  // --- SECCIÓN: FLUJO DE CREACIÓN DE CATEGORÍAS (JUST-IN-TIME) --- //
+
+  onCategoriaSeleccionada(event: MatSelectChange): void {
+    // Si seleccionaron cualquier categoría normal, no hacemos nada extra
+    if (event.value !== 'NUEVA_CATEGORIA') return;
+
+    // TRUCO UX: Borramos la selección temporal para que el Select no se quede
+    // pegado en la opción "+ Crear nueva categoría" si el usuario cancela el modal.
+    this.form.controls.categoriaEquipoId.setValue(null, { emitEvent: false });
+
+    if (this.guardando) return;
+
+    // 1. Abrimos tu modal de categorías
+    const dialogRef = this.dialog.open(CategoriaEquipoDialogComponent, {
+      width: '480px',
+      maxWidth: '92vw',
+      panelClass: 'rs-dialog-custom',
+      data: { categoria: null }, // Null porque vamos a crear, no a editar
+    });
+
+    this.subs.add(
+      dialogRef
+        .afterClosed()
+        .subscribe((payload: CategoriaGuardarPayload | undefined) => {
+          if (!payload) return; // Si el técnico cerró el modal sin guardar, no hacemos nada
+
+          this.guardando = true;
+
+          // 2. Guardamos en la base de datos (Asumo que tu EquiposService tiene el método crearCategoria)
+          this.equiposService.crearCategoria(payload).subscribe({
+            next: (nuevaCategoria: CategoriaEquipoDto) => {
+              this.guardando = false;
+              this.snack.open(
+                `Categoría "${nuevaCategoria.nombre}" creada exitosamente.`,
+                'OK',
+                {
+                  duration: 2500,
+                  panelClass: 'rs-toast-success',
+                },
+              );
+
+              // 3. Magia con Signals: Añadimos la nueva categoría a la lista sin recargar la página
+              this.categorias.update((cats) => [...cats, nuevaCategoria]);
+
+              // 4. Seleccionamos automáticamente la nueva categoría en el formulario
+              this.form.controls.categoriaEquipoId.setValue(nuevaCategoria.id);
+            },
+            error: (error) => {
+              this.guardando = false;
+              console.error('Error creando categoría:', error);
+              this.snack.open('Error al crear la categoría.', 'OK', {
+                duration: 3000,
+                panelClass: 'rs-toast-error',
+              });
+            },
+          });
+        }),
+    );
   }
 }

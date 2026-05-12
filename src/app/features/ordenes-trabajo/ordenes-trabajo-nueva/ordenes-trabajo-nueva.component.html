@@ -30,7 +30,10 @@
             @if (!fromTicket) {
               <div class="rs-head-actions">
                 <button mat-stroked-button type="button" class="rs-btn-secondary" (click)="buscarCliente()" [disabled]="guardando">
-                  <mat-icon>search</mat-icon> <span>Buscar cliente</span>
+                  <mat-icon>search</mat-icon> <span>Buscar</span>
+                </button>
+                <button mat-flat-button type="button" style="background: rgba(0, 191, 245, 0.1); color: var(--rs-primary); border-radius: 12px; font-weight: 700; height: 48px; padding: 0 16px; box-shadow: none;" (click)="crearClienteRapido()" [disabled]="guardando">
+                  <mat-icon>person_add</mat-icon> <span>Nuevo</span>
                 </button>
               </div>
             }
@@ -155,19 +158,33 @@
               <mat-form-field appearance="outline">
                 <mat-select formControlName="equipoId" panelClass="rs-tech-panel">
                   <mat-option [value]="null">No vincular equipo</mat-option>
-                  @for (eq of equiposCliente(); track eq.id) { <mat-option [value]="eq.id">{{ eq.codigoEquipo }}</mat-option> }
+                  @for (eq of equiposCliente(); track eq.id) { 
+                    <mat-option [value]="eq.id">{{ formatEquipoResumen(eq) }}</mat-option> 
+                  }
                 </mat-select>
               </mat-form-field>
             </div>
             <div class="rs-field rs-col-4">
-              <label class="rs-field-label">Categoría *</label>
-              <mat-form-field appearance="outline" [class.rs-field-error]="hasError('categoriaEquipoId')">
-                <mat-select formControlName="categoriaEquipoId" panelClass="rs-tech-panel">
-                  <mat-option [value]="null">Selecciona una categoría</mat-option>
-                  @for (c of categorias(); track c.id) { <mat-option [value]="c.id">{{ c.nombre }}</mat-option> }
-                </mat-select>
-              </mat-form-field>
-            </div>
+                <label class="rs-field-label">Categoría *</label>
+                <mat-form-field appearance="outline" [class.rs-field-error]="hasError('categoriaEquipoId')">
+                  <mat-select formControlName="categoriaEquipoId" panelClass="rs-tech-panel" (selectionChange)="onCategoriaSeleccionada($event)">
+                    <mat-option [value]="null">Selecciona una categoría</mat-option>
+                    
+                    @for (c of categorias(); track c.id) { 
+                      <mat-option [value]="c.id">{{ c.nombre }}</mat-option> 
+                    }
+                    
+                    <mat-divider></mat-divider>
+                    <mat-option value="NUEVA_CATEGORIA" style="background: rgba(0, 191, 245, 0.05);">
+                      <div style="display: flex; align-items: center; gap: 8px; color: var(--rs-primary); font-weight: 700;">
+                        <mat-icon style="color: var(--rs-primary);">add_circle</mat-icon>
+                        <span>+ Crear nueva categoría</span>
+                      </div>
+                    </mat-option>
+
+                  </mat-select>
+                </mat-form-field>
+              </div>
             <div class="rs-field rs-col-4">
               <label class="rs-field-label">Equipo *</label>
               <mat-form-field appearance="outline" [class.rs-field-error]="hasError('equipo')">
