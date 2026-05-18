@@ -140,7 +140,10 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
   readonly estados: EstadoOt[] = ['RECIBIDA', 'PRESUPUESTO', 'APROBADA', 'EN_CURSO', 'FINALIZADA', 'CERRADA'];
   readonly periodos: PeriodoHora[] = ['AM', 'PM'];
-  readonly modalidades = ['TIENDA', 'DOMICILIO'];
+  readonly modalidades = [
+    { value: 'TIENDA', label: 'Taller' }, 
+    { value: 'DOMICILIO', label: 'Domicilio' }
+  ];
   readonly prioridades = ['ALTA', 'MEDIA', 'BAJA'];
 
   formEstado = this.fb.group({
@@ -155,7 +158,8 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
     fallaReportada: [''],
     direccion: [''],
     notasAcceso: [''],
-    descripcion: ['']
+    descripcion: [''],
+    categoriasTrabajo: [[] as string[]]
   });
 
   formPresupuesto = this.fb.group({
@@ -211,7 +215,7 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
 
   readonly proximaCita = computed(() => (this.ot()?.citas?.length ? this.ot()!.citas[0] : null));
   readonly totalPresupuesto = computed(() => this.ot()?.presupuesto?.importe ?? null);
-
+  readonly catalogoServicios = computed(() => ['REPARACION', 'MANTENIMIENTO', 'INSTALACION']);
   readonly historialPreview = computed(() => (this.ot()?.historial ?? []).slice(0, 8));
 
   readonly otNumber = computed(() => {
@@ -417,6 +421,9 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
     this.editServiceInfo.set(next);
 
     if (next && this.ot()) {
+
+      const categoriasGuardadas = this.ot()?.categoriasTrabajo?.map(c => c.toUpperCase()) || [];
+      
       this.formServicio.patchValue({
         tipo: this.ot()?.tipo ?? '',
         prioridad: this.ot()?.prioridad ?? '',
@@ -425,28 +432,47 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
         fallaReportada: this.ot()?.fallaReportada ?? '',
         direccion: this.ot()?.direccion ?? '',
         notasAcceso: this.ot()?.notasAcceso ?? '',
-        descripcion: this.ot()?.descripcion ?? ''
+        descripcion: this.ot()?.descripcion ?? '',
+        categoriasTrabajo: categoriasGuardadas
+        
       }, { emitEvent: false });
       this.formTecnico.setValue(this.ot()?.tecnico?.id ?? null, { emitEvent: false });
     }
   }
 
-  guardarServiceInfo(): void {
+guardarServiceInfo(): void {
     if (!this.id) return;
+    
+    // 1. Recolectamos los datos de los formularios
+    const formVal = this.formServicio.getRawValue();
+    const tecnicoId = this.formTecnico.value;
+
+    const payload = {
+      tipo: formVal.tipo,
+      prioridad: formVal.prioridad,
+      tecnicoId: tecnicoId,
+      direccion: formVal.direccion,
+      notasAcceso: formVal.notasAcceso,
+      categoriasTrabajo: formVal.categoriasTrabajo ?? []
+    };
+
     this.busy.set(true);
     this.actionInFlight.set('servicio-info');
 
-    of(true).pipe(
-      delay(600),
+    // 2. Llamamos al  Backend
+    this.ordenes.actualizarInfoGeneral(this.id, payload).pipe(
       finalize(() => {
         this.busy.set(false);
         this.actionInFlight.set(null);
       })
     ).subscribe({
-      next: () => {
+      next: (res) => {
         this.toast('Información del servicio actualizada', 'success');
-        this.editServiceInfo.set(false);
-        this.cargar();
+        this.editServiceInfo.set(false); // Cerramos el modo edición
+        
+        // Actualizamos la variable local con la respuesta fresca del backend
+        this.ot.set(res); 
+        this.resolveTecnicoNombre(res); // Para que actualice el nombre del técnico en la vista
       },
       error: () => this.toast('Error al guardar la información', 'error')
     });

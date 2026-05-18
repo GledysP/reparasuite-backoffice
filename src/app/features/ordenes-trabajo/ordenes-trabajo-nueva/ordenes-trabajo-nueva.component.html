@@ -41,15 +41,15 @@
 
           <div class="rs-grid rs-grid--12">
             <div class="rs-field rs-col-12">
-              <label class="rs-field-label">Nombre *</label>
+              <label class="rs-field-label">Nombre </label>
               <mat-form-field appearance="outline" [class.rs-field-error]="hasError('clienteNombre')">
-                <input matInput formControlName="clienteNombre" autocomplete="off" placeholder="Nombre completo o razón social" />
+                <input matInput formControlName="clienteNombre" autocomplete="off" placeholder="Nombre completo" />
               </mat-form-field>
             </div>
             <div class="rs-field rs-col-6">
               <label class="rs-field-label">Teléfono</label>
               <mat-form-field appearance="outline" [class.rs-field-error]="hasError('clienteTelefono')">
-                <input matInput formControlName="clienteTelefono" autocomplete="off" inputmode="numeric" placeholder="8091234567" (input)="onTelefonoInput($event)" />
+                <input matInput formControlName="clienteTelefono" autocomplete="off" inputmode="numeric" placeholder="04249241523" (input)="onTelefonoInput($event)" />
               </mat-form-field>
             </div>
             <div class="rs-field rs-col-6">
@@ -75,7 +75,7 @@
 
           <div class="rs-grid rs-grid--12">
             <div class="rs-field rs-col-12">
-              <label class="rs-field-label">Modalidad *</label>
+              <label class="rs-field-label">Modalidad </label>
               <mat-button-toggle-group formControlName="tipo" class="rs-priority-group" [class.rs-service-group--error]="hasError('tipo')">
                 <mat-button-toggle value="TIENDA" class="rs-priority-segment"><mat-icon>storefront</mat-icon> Taller</mat-button-toggle>
                 <mat-button-toggle value="DOMICILIO" class="rs-priority-segment"><mat-icon>home</mat-icon> Domicilio</mat-button-toggle>
@@ -84,7 +84,7 @@
 
             @if (!isDomicilio) {
               <div class="rs-field rs-col-12 rs-conditional-panel--enter">
-                <label class="rs-field-label">Fecha de recepción *</label>
+                <label class="rs-field-label">Fecha de recepción </label>
                 <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaRecepcion')">
                   <input matInput [matDatepicker]="pickerRecepcion" formControlName="fechaRecepcion" />
                   <mat-datepicker-toggle matSuffix [for]="pickerRecepcion"></mat-datepicker-toggle>
@@ -93,13 +93,13 @@
               </div>
             } @else {
               <div class="rs-field rs-col-12 rs-conditional-panel--enter">
-                <label class="rs-field-label">Dirección / ubicación *</label>
+                <label class="rs-field-label">Dirección / ubicación </label>
                 <mat-form-field appearance="outline" [class.rs-field-error]="hasError('direccion')">
                   <input matInput formControlName="direccion" placeholder="Calle, sector..." />
                 </mat-form-field>
               </div>
               <div class="rs-field rs-col-6 rs-conditional-panel--enter">
-                <label class="rs-field-label">Fecha de visita *</label>
+                <label class="rs-field-label">Fecha de visita </label>
                 <mat-form-field appearance="outline" [class.rs-field-error]="hasError('fechaCita')">
                   <input matInput [matDatepicker]="pickerCita" formControlName="fechaCita" />
                   <mat-datepicker-toggle matSuffix [for]="pickerCita"></mat-datepicker-toggle>
@@ -107,7 +107,7 @@
                 </mat-form-field>
               </div>
               <div class="rs-field rs-col-6 rs-conditional-panel--enter">
-                <label class="rs-field-label">Hora *</label>
+                <label class="rs-field-label">Hora </label>
                 <div class="rs-time-wrapper-white" [class.rs-field-error]="hasError('horaCita')">
                   <input class="rs-time-input-white" formControlName="horaCita" placeholder="09:00" inputmode="numeric" maxlength="5" (input)="onHoraInput($event)" (blur)="onHoraBlur()" />
                   <mat-button-toggle-group formControlName="periodoCita" class="rs-period-group-white">
@@ -142,7 +142,7 @@
 
           <div class="rs-grid rs-grid--12">
             <div class="rs-field rs-col-12">
-              <label class="rs-field-label" [class.rs-field-error]="hasError('categoriasTrabajo')">Servicios a realizar *</label>
+              <label class="rs-field-label" [class.rs-field-error]="hasError('categoriasTrabajo')">Servicios a realizar </label>
               <div [class.rs-chips-error]="hasError('categoriasTrabajo')">
                 <mat-chip-listbox multiple formControlName="categoriasTrabajo" class="rs-custom-chips">
                   <mat-chip-option value="REPARACION"><mat-icon>build</mat-icon> Reparación</mat-chip-option>

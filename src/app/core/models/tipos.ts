@@ -103,6 +103,34 @@ export interface MensajeOtDto {
   createdAt: string;
 }
 
+export interface OtCrearRequest {
+  cliente: {
+    id?: string | null;
+    nombre: string;
+    telefono?: string | null;
+    email?: string | null;
+  };
+  tipo: TipoOt | string;
+  prioridad: PrioridadOt | string;
+  equipo?: string | null;
+  equipoId?: string | null;
+  categoriaEquipoId?: string | null;
+  fallaReportada?: string | null;
+  descripcion: string;
+  ticketId?: string | null;
+  tecnicoId?: string | null;
+  fechaPrevista?: string | null;
+  direccion?: string | null;
+  notasAcceso?: string | null;
+  categoriasTrabajo?: string[];
+}
+
+export interface OtRevisionTecnicaRequest {
+  fallaDetectada?: string | null;
+  diagnosticoTecnico?: string | null;
+  trabajoARealizar?: string | null;
+}
+
 export interface OtDetalle {
   id: string;
   codigo: string;
@@ -137,6 +165,15 @@ export interface OtDetalle {
   categoriasTrabajo?: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface OtInfoGeneralRequest {
+  tipo?: string | null;
+  prioridad?: string | null;
+  tecnicoId?: string | null;
+  direccion?: string | null;
+  notasAcceso?: string | null;
+  categoriasTrabajo?: string[];
 }
 
 export interface ClienteOrdenItem {

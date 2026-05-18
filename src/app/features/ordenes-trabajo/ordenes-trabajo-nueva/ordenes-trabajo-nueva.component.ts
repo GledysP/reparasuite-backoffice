@@ -50,10 +50,8 @@ import {
 } from '../../clientes/clientes.service';
 import { CategoriaEquipoDialogComponent } from '../../equipos/categoria-equipo-dialog/categoria-equipo-dialog.component';
 import { EquipoFormComponent } from '../../equipos/equipo-form/equipo-form.component';
-import {
-  OrdenesTrabajoService,
-  OtCrearRequest,
-} from '../ordenes-trabajo.service';
+import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
+import { OtCrearRequest } from '../../../core/models/tipos';
 
 type FotoPreview = {
   id?: string;

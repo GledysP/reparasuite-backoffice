@@ -11,40 +11,11 @@ import {
   OtListaItem,
   PresupuestoDto,
   CitaDto,
-  MensajeOtDto
+  MensajeOtDto,
+  OtInfoGeneralRequest,
+  OtCrearRequest,             // <-- Añadido
+  OtRevisionTecnicaRequest    // <-- Añadido
 } from '../../core/models/tipos';
-
-export interface OtCrearRequest {
-  cliente: {
-    id?: string | null;
-    nombre: string;
-    telefono?: string | null;
-    email?: string | null;
-  };
-
-  tipo: TipoOt | string;
-  prioridad: PrioridadOt | string;
-
-  equipo?: string | null;
-  equipoId?: string | null;
-  categoriaEquipoId?: string | null;
-  fallaReportada?: string | null;
-
-  descripcion: string;
-  ticketId?: string | null;
-
-  tecnicoId?: string | null;
-  fechaPrevista?: string | null;
-  direccion?: string | null;
-  notasAcceso?: string | null;
-  categoriasTrabajo?: string[];
-}
-
-export interface OtRevisionTecnicaRequest {
-  fallaDetectada?: string | null;
-  diagnosticoTecnico?: string | null;
-  trabajoARealizar?: string | null;
-}
 
 @Injectable({ providedIn: 'root' })
 export class OrdenesTrabajoService {
@@ -192,5 +163,10 @@ export class OrdenesTrabajoService {
       `${this.url}/${encodeURIComponent(idOrCodigo)}/revision-tecnica`,
       body
     );
+  }
+
+  actualizarInfoGeneral(id: string, data: OtInfoGeneralRequest): Observable<OtDetalle> {
+    return this.http.patch<OtDetalle>(
+      `${this.url}/${id}/info-general`, data);
   }
 }
