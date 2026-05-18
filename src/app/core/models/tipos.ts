@@ -9,6 +9,7 @@ export interface ApiListaResponse<T> {
 
 export interface AjustesTaller {
   nombre: string;
+  rif: string | null;
   telefono: string | null;
   email: string | null;
   direccion: string | null;

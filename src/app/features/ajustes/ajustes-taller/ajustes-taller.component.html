@@ -1,128 +1,77 @@
-<div class="rs-page-container rs-ajustes-page">
-  <div class="rs-page-shell">
-    <div class="rs-header-row rs-fade-up">
-      <div class="rs-header-copy">
-        <h1 class="rs-page-title">Configuración del Taller</h1>
-        <p class="rs-page-subtitle">
-          Administra la información base del negocio y la numeración operativa de las órdenes.
-        </p>
-      </div>
+<div class="rs-page-container rs-fade-up">
+  <header class="rs-page-head">
+    <div class="hdr-title-wrap">
+      <h1 class="rs-page-title">Información del Taller</h1>
+      <p class="rs-page-subtitle">
+        Configura los datos de identidad y contacto que aparecerán en tus documentos oficiales.
+      </p>
     </div>
+  </header>
 
-    <mat-card class="rs-settings-card rs-fade-up" [style.animationDelay]="'60ms'">
-      <mat-card-content [formGroup]="form" class="rs-content-padding">
-        <section class="rs-settings-section">
-          <div class="rs-section-head">
-            <div class="rs-section-icon">
-              <mat-icon>business</mat-icon>
-            </div>
+  <mat-card class="premium-card-clean">
+    <mat-card-content [formGroup]="form" class="rs-content-padding">
+      
+      <div class="rs-section-head">
+        <div class="rs-section-icon">
+          <mat-icon>business</mat-icon>
+        </div>
+        <div class="rs-section-copy">
+          <h3 class="rs-section-title">Detalles de la Empresa</h3>
+          <p class="rs-section-subtitle">Información institucional de tu taller.</p>
+        </div>
+      </div>
 
-            <div class="rs-section-copy">
-              <h3 class="rs-section-title">Detalles de la Empresa</h3>
-              <p class="rs-section-subtitle">
-                Información institucional y datos de contacto visibles para la operación del taller.
-              </p>
-            </div>
-          </div>
+      <div class="rs-fields-grid-pro">
+        <div class="field-group">
+          <label>Nombre del Negocio *</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>storefront</mat-icon>
+            <input matInput formControlName="nombre" placeholder="Ej.: Reparaciones Express">
+          </mat-form-field>
+        </div>
 
-          <div class="rs-fields-grid rs-fields-grid--empresa">
-            <div class="field-group">
-              <label>Nombre del Negocio</label>
-              <mat-form-field appearance="outline">
-                <mat-icon matPrefix>storefront</mat-icon>
-                <input matInput formControlName="nombre" placeholder="Ej.: Taller Central">
-              </mat-form-field>
-            </div>
+        <div class="field-group">
+          <label>RIF / ID Fiscal</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>badge</mat-icon>
+            <input matInput formControlName="rif" placeholder="J-12345678-0">
+          </mat-form-field>
+        </div>
 
-            <div class="field-group">
-              <label>RUT / ID Fiscal</label>
-              <mat-form-field appearance="outline">
-                <mat-icon matPrefix>badge</mat-icon>
-                <input matInput placeholder="12.345.678-0">
-              </mat-form-field>
-            </div>
+        <div class="field-group">
+          <label>Teléfono de Contacto</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>call</mat-icon>
+            <input matInput formControlName="telefono" placeholder="+58 ...">
+          </mat-form-field>
+        </div>
 
-            <div class="field-group field-group--wide">
-              <label>Dirección</label>
-              <mat-form-field appearance="outline">
-                <mat-icon matPrefix>location_on</mat-icon>
-                <input matInput formControlName="direccion" placeholder="Calle Principal #123">
-              </mat-form-field>
-            </div>
+        <div class="field-group">
+          <label>Email Institucional</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>mail</mat-icon>
+            <input matInput formControlName="email" placeholder="taller@ejemplo.com">
+          </mat-form-field>
+        </div>
 
-            <div class="field-group">
-              <label>Teléfono</label>
-              <mat-form-field appearance="outline">
-                <mat-icon matPrefix>call</mat-icon>
-                <input matInput formControlName="telefono" placeholder="+56 9 ...">
-              </mat-form-field>
-            </div>
+        <div class="field-group full-width">
+          <label>Dirección Física</label>
+          <mat-form-field appearance="outline">
+            <mat-icon matPrefix>location_on</mat-icon>
+            <input matInput formControlName="direccion" placeholder="Calle, Edificio, Local...">
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
 
-            <div class="field-group">
-              <label>Email de Contacto</label>
-              <mat-form-field appearance="outline">
-                <mat-icon matPrefix>mail</mat-icon>
-                <input matInput formControlName="email" placeholder="contacto@taller.com">
-              </mat-form-field>
-            </div>
-          </div>
-        </section>
-
-        <section class="rs-settings-section rs-settings-section--secondary">
-          <div class="rs-section-head">
-            <div class="rs-section-icon">
-              <mat-icon>tag</mat-icon>
-            </div>
-
-            <div class="rs-section-copy">
-              <h3 class="rs-section-title">Numeración de Órdenes</h3>
-              <p class="rs-section-subtitle">
-                Controla el prefijo operativo y revisa la vista previa del próximo correlativo.
-              </p>
-            </div>
-          </div>
-
-          <div class="rs-fields-grid rs-fields-grid--orders">
-            <div class="field-group field-group--small">
-              <label>Prefijo</label>
-              <mat-form-field appearance="outline">
-                <mat-icon matPrefix>sell</mat-icon>
-                <input matInput formControlName="prefijoOt">
-              </mat-form-field>
-            </div>
-
-            <div class="field-group field-group--small">
-              <label>Contador Inicial</label>
-              <mat-form-field appearance="outline">
-                <mat-icon matPrefix>looks_one</mat-icon>
-                <input matInput value="1" readonly>
-              </mat-form-field>
-            </div>
-
-            <div class="rs-preview-box alive">
-              <div class="rs-preview-head">
-                <span class="rs-preview-eyebrow">Vista previa de la próxima orden</span>
-                <mat-icon>flash_on</mat-icon>
-              </div>
-              <span class="rs-preview-value">OT-000001</span>
-            </div>
-          </div>
-        </section>
-      </mat-card-content>
-
-      <mat-card-actions class="rs-settings-actions">
-        <button mat-stroked-button type="button" class="rs-btn-outline">
-          Cancelar
-        </button>
-
-        <button mat-flat-button type="button" class="rs-btn-primary" (click)="guardar()">
-          <span class="rs-btn-primary__shimmer"></span>
-          <span class="rs-btn-primary__label">
-            <mat-icon>check_circle</mat-icon>
-            <span>Guardar Cambios</span>
-          </span>
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+    <mat-card-actions class="rs-settings-actions">
+      <button mat-flat-button class="rs-btn rs-btn--primary" (click)="guardar()" [disabled]="form.invalid || cargando">
+        <div class="rs-btn__label">
+          <mat-icon>{{ cargando ? 'hourglass_empty' : 'check_circle' }}</mat-icon>
+          <span>{{ cargando ? 'Guardando...' : 'Guardar Cambios' }}</span>
+        </div>
+        <div class="rs-btn__shimmer"></div>
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </div>
