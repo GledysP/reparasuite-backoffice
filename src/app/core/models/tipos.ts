@@ -275,6 +275,7 @@ export interface EquipoResumenDto {
   modelo?: string | null;
   numeroSerie?: string | null;
   ubicacionHabitual?: string | null;
+  fotoBase64?: string | null;
   estadoActivo: boolean;
 }
 

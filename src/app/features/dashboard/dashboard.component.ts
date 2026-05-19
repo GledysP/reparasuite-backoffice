@@ -58,6 +58,7 @@ export class DashboardComponent implements OnInit {
   private readonly snack = inject(MatSnackBar);
 
   readonly weekDays = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+  labelVerTodos = 'Ver todos';
 
   stats = {
     received: 0,
@@ -74,6 +75,7 @@ export class DashboardComponent implements OnInit {
 
   displayedColumns = [
     'codigo',
+    'equipo',
     'cliente',
     'estado',
     'prioridad',
@@ -84,7 +86,7 @@ export class DashboardComponent implements OnInit {
     'accion',
   ];
 
-  equipoColumns = ['codigo', 'modelo', 'cliente', 'accion'];
+  equipoColumns = [ 'codigo', 'foto', 'modelo', 'cliente', 'accion'];
 
   calendarMonthLabel = '';
   calendarDays: CalendarDay[] = [];
@@ -109,7 +111,7 @@ export class DashboardComponent implements OnInit {
       next: (res) => {
         const items = res?.items ?? [];
 
-        this.recentOrders = items.slice(0, 5);
+        this.recentOrders = items.slice(0, 3);
 
         this.stats.received = items.filter((o) => String(o.estado) === 'RECIBIDA').length;
         this.stats.quotation = items.filter((o) => String(o.estado) === 'PRESUPUESTO').length;
@@ -187,11 +189,15 @@ export class DashboardComponent implements OnInit {
     return map[value] ?? this.textLabel(value);
   }
 
-  textLabel(value: string | null | undefined): string {
+textLabel(value: string | null | undefined): string {
     if (!value) return '—';
+    
+    // 1. Normalización total: "TIENDA" o "tienda" -> "Taller"
+    let text = value.toString().trim().toUpperCase();
+    if (text === 'TIENDA') return 'Taller';
 
-    return value
-      .toString()
+    // 2. Capitalización profesional: Transforma "EN_CURSO" -> "En Curso"
+    return text
       .toLowerCase()
       .split('_')
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -217,23 +223,22 @@ export class DashboardComponent implements OnInit {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  getPriorityLabel(order: OtListaItem): string {
+getPriorityLabel(order: OtListaItem): string {
     const tone = this.getPriorityTone(order);
-
-    if (tone === 'alta') return 'Alta';
-    if (tone === 'media') return 'Media';
-    return 'Baja';
+    return tone.charAt(0).toUpperCase() + tone.slice(1);
   }
 
-  getPriorityTone(order: OtListaItem): 'alta' | 'media' | 'baja' {
-    if (this.isOverdue(order)) return 'alta';
+ getPriorityTone(order: OtListaItem): 'alta' | 'media' | 'baja' {
+    const p = String(order.prioridad || '').toUpperCase();
+    const e = String(order.estado || '').toUpperCase();
 
-    const estado = String(order.estado ?? '');
+    // 1. Rojo si es ALTA o está vencida
+    if (this.isOverdue(order) || p === 'ALTA') return 'alta';
 
-    if (estado === 'EN_CURSO' || estado === 'PRESUPUESTO' || estado === 'APROBADA') {
-      return 'media';
-    }
+    // 2. Ámbar si es MEDIA o está en estados intermedios
+    if (p === 'MEDIA' || e === 'EN_CURSO' || e === 'PRESUPUESTO' || e === 'APROBADA') return 'media';
 
+    // 3. El resto es BAJA
     return 'baja';
   }
 
