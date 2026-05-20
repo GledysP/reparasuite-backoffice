@@ -109,7 +109,6 @@
   }
 }
 
-
 /* ==========================================================================
    2. TARJETAS DE INDICADORES (KPIs)
    ========================================================================== */
@@ -182,7 +181,6 @@
   }
 }
 
-/* Estructura interna de los KPIs */
 .rs-kpi-top {
   display: flex;
   align-items: center;
@@ -255,7 +253,7 @@
 .spark-line {
     fill: none;
     stroke: var(--kpi-accent);
-    stroke-width: 2.8; /* Aumentado de 2 a 2.8 */
+    stroke-width: 2.8;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 180;
@@ -266,52 +264,56 @@
   }
 
   .spark-line.glow {
-    stroke-width: 5; /* Base más ancha simula un área tenue */
+    stroke-width: 5;
     opacity: 0.25;
     filter: blur(3px) drop-shadow(0 0 12px var(--kpi-glow));
   }
 }
 
-
 /* ==========================================================================
-   3. ÁREA DE TRABAJO Y ALINEACIÓN 
+   3. ÁREA DE TRABAJO Y ALINEACIÓN (CORREGIDO RESPONSIVE)
    ========================================================================== */
 .rs-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 330px;
   gap: 20px;
-  align-items: stretch; // Alinea la columna izquierda con el calendario
+  align-items: stretch;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .rs-main-stack {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0; 
 }
 
 .rs-bottom-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
-  flex: 1; // Empuja hacia abajo para alinear con el calendario
-  align-items: stretch;
+  align-items: start; /* Cambiamos flex-start por start (más estándar en Grid) */
 
   .rs-panel {
-    height: 100%;
+    height: auto;       /* Evita que el contenedor fuerce alturas */
+    min-height: 350px;  /* Mantiene la profesionalidad incluso si no hay datos */
     display: flex;
     flex-direction: column;
 
     .rs-panel-body {
-      flex: 1;
+      flex: 1;          /* Esto hace que el cuerpo ocupe el espacio necesario */
       display: flex;
       flex-direction: column;
     }
   }
 
-  @media (max-width: 960px) { grid-template-columns: 1fr; }
+  @media (max-width: 960px) { 
+    grid-template-columns: 1fr; 
+  }
 }
-
-
 
 /* Tarjetas base */
 .rs-panel {
@@ -377,9 +379,8 @@
   font-weight: 600;
 }
 
-
 /* ==========================================================================
-   4. BOTONES DE ACCIONES RÁPIDAS (SISTEMA UNIFICADO SAAS)
+   4. BOTONES DE ACCIONES RÁPIDAS
    ========================================================================== */
 .rs-quick-actions {
   display: grid;
@@ -387,13 +388,12 @@
   padding: 14px 20px 18px;
 }
 
-/* Base maestra para TODOS los botones (Forzando el estándar) */
 .rs-quick-actions button {
   width: 100%;
-  height: 40px !important; /* Fijado a 40px exactos */
+  height: 40px !important;
   min-height: 40px !important;
   border-radius: 8px !important;
-  font-family: inherit !important; /* Fuerza la tipografía de ReparaSuite, evita que cambie */
+  font-family: inherit !important;
   transition: all 0.2s ease;
   letter-spacing: -0.01em;
   padding: 0 16px !important;
@@ -405,7 +405,6 @@
     width: 100%;
   }
 
-  /* ÍCONOS: Separación inquebrantable */
   mat-icon, 
   ::ng-deep mat-icon,
   .wa-svg {
@@ -413,14 +412,12 @@
     min-width: 18px !important;
     height: 18px !important;
     font-size: 18px !important;
-    /* La magia está aquí: 0 arriba, 8px a la derecha, 0 abajo, 0 izquierda */
     margin: 0 8px 0 0 !important; 
     display: flex !important;
     align-items: center;
     justify-content: center;
   }
 
-  /* TEXTOS: Forzar el mismo tamaño y peso para los 4 botones */
   .rs-btn__text, 
   .rs-outline-text,
   span {
@@ -431,13 +428,11 @@
   }
 }
 
-/* Botón Principal (Nueva Orden) */
 .rs-btn--primary {
   background-color: var(--rs-primary) !important;
   color: white !important;
 }
 
-/* Botón WhatsApp */
 .rs-btn-whatsapp-dynamic {
   background-color: rgba(16, 185, 129, 0.1) !important;
   border: 1px solid rgba(16, 185, 129, 0.2) !important;
@@ -448,7 +443,6 @@
   }
 }
 
-/* Botones Outline (Ver órdenes / Ver clientes) */
 .mat-mdc-outlined-button {
   border-color: var(--rs-border) !important;
   color: var(--rs-text-main) !important;
@@ -458,7 +452,6 @@
   }
 }
 
-/* Animación brillante del botón principal */
 @keyframes rsShimmer {
   0% { transform: translateX(-160%) skewX(-24deg); }
   100% { transform: translateX(220%) skewX(-24deg); }
@@ -467,9 +460,7 @@
 /* ==========================================================================
    5. GRÁFICOS (DONUT Y CALENDARIO)
    ========================================================================== */
-.rs-chart-body {
-  padding-top: 10px;
-}
+.rs-chart-body { padding-top: 10px; }
 
 .rs-donut-wrap {
   display: flex;
@@ -497,7 +488,6 @@
   }
 }
 
-/* FIX: Centrado del número interior del Donut */
 .rs-donut-core {
   position: relative;
   z-index: 1;
@@ -564,24 +554,12 @@
   align-items: baseline;
   gap: 8px;
 
-  strong {
-    color: var(--rs-text-navy);
-    font-size: 0.92rem;
-    font-weight: 700;
-  }
-
-  span {
-    color: var(--rs-text-muted);
-    font-size: 0.76rem;
-    font-weight: 600;
-  }
+  strong { color: var(--rs-text-navy); font-size: 0.92rem; font-weight: 700; }
+  span { color: var(--rs-text-muted); font-size: 0.76rem; font-weight: 600; }
 }
 
 /* Calendario */
-.rs-calendar {
-  display: grid;
-  gap: 12px;
-}
+.rs-calendar { display: grid; gap: 12px; }
 
 .rs-calendar-weekdays {
   display: grid;
@@ -623,15 +601,11 @@
   place-items: center;
   color: var(--rs-text-navy);
   font-size: 0.92rem;
-  font-weight: 700; /* Subimos a 700 para igualar la fuerza de los KPIs */
+  font-weight: 700;
 }
 
 .rs-calendar-day.is-empty .rs-calendar-day-number { color: #cbd5e1; }
-
-.rs-calendar-day.is-today .rs-calendar-day-number {
-  background: var(--rs-primary); /* Volvemos al color principal para que nunca sea blanco */
-  color: #ffffff !important; /* Forzamos blanco para el número siempre */
-}
+.rs-calendar-day.is-today .rs-calendar-day-number { background: var(--rs-primary); color: #ffffff !important; }
 
 .rs-calendar-dot {
   position: absolute;
@@ -641,20 +615,30 @@
   height: 4px;
   border-radius: 50%;
   transform: translateX(-50%);
-  background: var(--rs-primary); /* Hacemos que el puntito también use el color principal */
+  background: var(--rs-primary);
 }
 
-
 /* ==========================================================================
-   6. TABLAS, BADGES Y AVATARES (SISTEMA COMPACTO PROFESIONAL)
+   6. TABLAS NATIVAS Y DISTRIBUCIÓN
    ========================================================================== */
+.rs-table-shell {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .rs-table {
   width: 100%;
   background: transparent !important;
+  table-layout: auto; /* FIX: Deja que el navegador distribuya inteligentemente */
+
+  th.mat-mdc-header-cell, td.mat-mdc-cell {
+    white-space: nowrap;
+    padding: 10px 8px !important;
+    border-bottom: 1px solid var(--rs-border) !important;
+  }
 
   th.mat-mdc-header-cell {
-    padding: 10px 8px !important; // Altura reducida para que quepa todo
-    border-bottom: 1px solid var(--rs-border) !important;
     color: var(--rs-text-muted);
     font-size: 11px;
     font-weight: 700;
@@ -663,16 +647,31 @@
   }
 
   td.mat-mdc-cell {
-    padding: 8px !important; // Densidad alta (compacto)
-    border-bottom: 1px solid var(--rs-border) !important;
     color: var(--rs-text-main);
     font-size: 13px !important;
     vertical-align: middle;
-    white-space: nowrap; // Evita saltos de línea en OT y Equipo
+  }
+
+  /* FIX: Damos prioridad de espacio a los textos y truncamos si sobra */
+  .mat-column-equipo,
+  .mat-column-modelo {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mat-column-cliente {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mat-column-servicio {
+    /* FIX: Sin anchos estrictos para que las demás columnas respiren */
+    padding-right: 16px !important; 
   }
 }
 
-/* Fila con efecto hover y barra lateral */
 .rs-row:hover {
   background-color: rgba(0, 209, 255, 0.03) !important;
   cursor: pointer;
@@ -685,7 +684,6 @@
   min-width: 125px;
 }
 
-/* AVATARES: Restauración del diseño circular 10/10 */
 .rs-client-cell {
   display: flex;
   align-items: center;
@@ -696,7 +694,7 @@
   width: 28px;
   height: 28px;
   min-width: 28px;
-  border-radius: 50% !important; // Círculo perfecto obligado
+  border-radius: 50% !important;
   display: grid;
   place-items: center;
   font-size: 10px;
@@ -714,62 +712,31 @@
   color: var(--rs-text-main);
 }
 
-/* ==========================================================================
-   BADGES DE PRIORIDAD: Definición Pro con bordes reforzados
-   ========================================================================== */
 .rs-priority-badge {
   padding: 2px 10px;
   border-radius: 999px;
   font-size: 10.5px;
-  font-weight: 800; // Peso extra para legibilidad
+  font-weight: 800;
   text-transform: uppercase;
-  border: 1.5px solid transparent; // Borde más definido para nivel Enterprise
+  border: 1.5px solid transparent;
   
-  &[data-priority='alta'] { 
-    color: #fb5867; 
-    background: rgba(251, 88, 103, 0.1); 
-    border-color: rgba(251, 88, 103, 0.25); 
-  }
-  
-  &[data-priority='media'] { 
-    color: #f3b15b; 
-    background: rgba(243, 177, 91, 0.1); 
-    border-color: rgba(243, 177, 91, 0.35); // Más visible
-  }
-  
-  &[data-priority='baja'] { 
-    color: #4a8df8; 
-    background: rgba(74, 141, 248, 0.1); 
-    border-color: rgba(74, 141, 248, 0.35); // Más visible
-  }
+  &[data-priority='alta'] { color: #fb5867; background: rgba(251, 88, 103, 0.1); border-color: rgba(251, 88, 103, 0.25); }
+  &[data-priority='media'] { color: #f3b15b; background: rgba(243, 177, 91, 0.1); border-color: rgba(243, 177, 91, 0.35); }
+  &[data-priority='baja'] { color: #4a8df8; background: rgba(74, 141, 248, 0.1); border-color: rgba(74, 141, 248, 0.35); }
 }
 
-/* Estilo específico para la celda de texto del equipo */
 .rs-equipo-text-cell {
   font-weight: 700;
   color: var(--rs-text-navy);
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
-/* ==========================================================================
-   7. COLUMNA SERVICIO (MÚLTIPLES BADGES)
-   ========================================================================== */
-/* Fijamos el ancho de la columna Servicio para evitar espacios muertos */
-.mat-column-servicio {
-  width: 200px;
-  padding-right: 24px !important; 
 }
 
 .rs-service-cluster {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Alineación perfecta a la izquierda */
+  justify-content: flex-start;
   gap: 6px;
 
-.badge-servicio {
+  .badge-servicio {
     white-space: nowrap;
     max-width: 130px;
     overflow: hidden;
@@ -777,11 +744,11 @@
     font-size: 10.5px;
     padding: 4px 10px;
     border-radius: 6px;
-    font-weight: 600; /* Bajamos el grosor para que las letras respiren */
+    font-weight: 600;
     text-transform: uppercase;
-    background: rgba(148, 163, 184, 0.15); /* Gris/azulado suave */
-    color: var(--rs-text-main); /* Usa el color principal de texto (se adapta a dark/light) */
-    border: 1px solid rgba(148, 163, 184, 0.2); /* Borde sutil para darle elegancia */
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--rs-text-main);
+    border: 1px solid rgba(148, 163, 184, 0.2);
   }
 
   .service-counter {
@@ -794,26 +761,108 @@
     cursor: help;
     transition: all 0.2s ease;
 
-    &:hover {
-      background: var(--rs-primary);
-      color: white;
-    }
+    &:hover { background: var(--rs-primary); color: white; }
   }
 }
 
-.rs-empty-dash {
-  color: #94a3b8;
-  font-weight: 300;
+.rs-empty-dash { color: #94a3b8; font-weight: 300; }
+
+/* ==========================================================================
+   7. TARJETAS MINIMALISTAS PARA MÓVIL (NUEVO)
+   ========================================================================== */
+.rs-mobile-cards {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
 }
 
+.rs-mobile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--rs-border);
+  border-radius: 10px;
+  background: var(--rs-bg-alt, transparent);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: var(--rs-primary);
+    transform: translateY(-2px);
+  }
+
+  .rs-mc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .rs-mc-code {
+    font-weight: 700;
+    color: var(--rs-text-navy);
+    font-size: 0.9rem;
+  }
+
+  .rs-mc-mid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .rs-mc-equipo {
+    font-size: 0.85rem;
+    color: var(--rs-text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* --- 1. AJUSTE PARA MÓVIL: Tarjeta de Equipos --- */
+.rs-mc-equipo-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px !important; // Reducido para que se vea más compacto
+
+  .rs-equipo-thumbnail {
+    width: 44px; // Un poco más grande para mejor presencia
+    height: 44px;
+    min-width: 44px;
+    margin: 0; // Quitamos el margen auto para alinear a la izquierda
+    border-radius: 10px;
+  }
+
+  .rs-mc-equipo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+  }
+
+  .rs-mc-model {
+    font-weight: 700; // Más peso para jerarquía
+    color: var(--rs-text-navy);
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rs-mc-client {
+    font-size: 0.82rem;
+    color: var(--rs-text-muted);
+  }
+}
 
 /* ==========================================================================
    8. STOCK DE PIEZAS E INVENTARIO
    ========================================================================== */
-.rs-stock-list {
-  display: grid;
-  gap: 12px;
-}
+.rs-stock-list { display: grid; gap: 12px; }
 
 .rs-stock-item {
   display: grid;
@@ -825,45 +874,18 @@
   color: inherit;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
+  &:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
 }
 
-.rs-stock-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
+.rs-stock-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .rs-stock-copy { min-width: 0; }
+.rs-stock-name { color: var(--rs-text-main); font-size: 0.95rem; font-weight: 600; }
+.rs-stock-meta { margin-top: 4px; color: var(--rs-text-muted); font-size: 0.84rem; font-weight: 400; }
+.rs-stock-percent { color: var(--rs-text-navy); font-size: 0.9rem; font-weight: 700; white-space: nowrap; }
 
-.rs-stock-name {
-  color: var(--rs-text-main);
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.rs-stock-meta {
-  margin-top: 4px;
-  color: var(--rs-text-muted);
-  font-size: 0.84rem;
-  font-weight: 400;
-}
-
-.rs-stock-percent {
-  color: var(--rs-text-navy);
-  font-size: 0.9rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-/* FIX: Barra de progreso delgada minimalista */
 .rs-stock-bar {
   width: 100%;
-  height: 8px; /* Aumentado de 4px a 8px */
+  height: 8px;
   border-radius: 999px;
   overflow: hidden;
   background: rgba(148, 163, 184, 0.14);
@@ -880,119 +902,62 @@
   &[data-level='low'] { opacity: 0.74; }
 }
 
-
 /* ==========================================================================
-   9. EMPTY STATES Y MOBILE VIEW
+   9. EMPTY STATES (CORREGIDO)
    ========================================================================== */
-.rs-empty-state {
-  min-height: 160px;
+.rs-empty-central {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  text-align: left;
+  text-align: center;
+  padding: 40px 20px; // Padding fijo para que no sea gigante
+  min-height: 200px; // Altura mínima constante para estabilidad
   color: var(--rs-text-muted);
+  background: rgba(148, 163, 184, 0.03); // Fondo sutil muy elegante
+  border-radius: 12px;
+  margin: 10px; // Espaciado interno para que no toque los bordes del card
 
-  .mat-icon {
-    color: #cbd5e1;
-    width: 28px;
-    height: 28px;
-    font-size: 28px;
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.25; // Transparencia del 25% solicitada
+    margin-bottom: 12px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.7;
   }
 }
-
-.rs-empty-state--compact { min-height: 120px; }
-.rs-empty-title { color: var(--rs-text-navy); font-size: 1rem; font-weight: 600; }
-.rs-empty-subtitle { margin-top: 4px; color: var(--rs-text-muted); font-size: 0.9rem; font-weight: 400; }
-.rs-empty-mini { min-height: 90px; display: grid; place-items: center; color: var(--rs-text-muted); font-size: 0.92rem; font-weight: 500; }
-
-.rs-mobile-cards {
-  display: none;
-  gap: 12px;
-}
-
-.rs-order-card {
-  display: grid;
-  gap: 12px;
-  padding: 16px;
-  background: var(--rs-card);
-  border: 1px solid var(--rs-border) !important;
-  text-decoration: none;
-  color: inherit;
-}
-
-.rs-order-card-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.rs-order-card-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.rs-order-card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  color: var(--rs-text-muted);
-  font-size: 0.86rem;
-}
-
 
 /* ==========================================================================
    10. ANIMACIONES Y MEDIA QUERIES
    ========================================================================== */
-.rs-fade-up {
-  animation: rsFadeUp 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
+.rs-fade-up { animation: rsFadeUp 620ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 @keyframes rsFadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes rsLineIn {
-  to { stroke-dashoffset: 0; }
-}
+@keyframes rsLineIn { to { stroke-dashoffset: 0; } }
 
-@media (max-width: 980px) {
-  .rs-desktop-only { display: none; }
-  .rs-mobile-cards { display: grid; }
+/* FIX: Breakpoint para transicionar de tablas a tarjetas móviles */
+@media (max-width: 860px) {
+  .rs-desktop-only { display: none !important; }
+  .rs-mobile-cards { display: flex; }
 }
 
 @media (max-width: 768px) {
-  .rs-panel-head,
-  .rs-panel-body,
-  .rs-quick-actions {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .rs-donut {
-    width: 162px;
-    height: 162px;
-
-    &::after {
-      width: 96px;
-      height: 96px;
-    }
-  }
-
+  .rs-panel-head, .rs-panel-body, .rs-quick-actions { padding-left: 16px; padding-right: 16px; }
+  .rs-donut { width: 162px; height: 162px; &::after { width: 96px; height: 96px; } }
   .rs-dashboard-head { padding-top: 2px; }
   .rs-kpi-grid { margin-top: 8px; }
 }
-
-@media (hover: none) {
-  .rs-table .mat-mdc-row:hover .mat-mdc-cell {
-    background: transparent !important;
-  }
-}
-
-/* REEMPLAZA estas clases en tu sección de equipos */
 
 .rs-equipo-thumbnail {
   width: 38px;
@@ -1006,31 +971,18 @@
   justify-content: center;
   margin: 0 auto;
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; // Crucial para que el base64 no se estire
-  }
-
-  .rs-icon-fallback {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    opacity: 0.3;
-  }
+  img { width: 100%; height: 100%; object-fit: cover; }
+  .rs-icon-fallback { font-size: 18px; width: 18px; height: 18px; opacity: 0.3; }
 }
 
 /* ==========================================================================
-   11. COLUMNA DERECHA (SIDEBAR STACK) - RESPONSIVE
+   11. COLUMNA DERECHA (SIDEBAR STACK)
    ========================================================================== */
 .rs-side-stack {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Aquí se crea el espacio entre los cards */
+  gap: 20px;
   height: 100%;
 
-  /* Responsive: Cuando la pantalla es pequeña, añade espacio arriba */
-  @media (max-width: 1240px) {
-    margin-top: 20px;
-  }
+  @media (max-width: 1240px) { margin-top: 20px; }
 }
