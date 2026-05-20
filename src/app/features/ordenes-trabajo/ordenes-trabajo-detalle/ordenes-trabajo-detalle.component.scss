@@ -787,3 +787,98 @@ textarea.rs-input-pro {
   .rs-grid-view, .rs-grid-edit, .rs-grid-edit-exp { display: flex !important; flex-direction: column !important; gap: 16px !important; } 
   mat-form-field { width: 100% !important; } 
 }
+
+/* =========================================================
+   GRILLA: EQUIPO VINCULADO (Alineación y tamaño compacto)
+   ========================================================= */
+.rs-equipo-wrapper {
+  display: flex;
+  align-items: center;
+  height: 24px; /* Altura estándar de una fila de texto */
+  margin-top: 2px;
+}
+
+.rs-equipo-enlace {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--rs-text-navy);
+  font-weight: 600;
+  font-size: 13.5px;
+  line-height: 1; 
+}
+
+.rs-equipo-btn-dashed {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px; /* Espacio reducido entre icono y texto */
+  background: transparent;
+  border: 1px dashed var(--rs-border);
+  color: var(--rs-text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; /* Tamaño de letra compacto */
+  font-weight: 600;
+  padding: 0 8px; /* Padding reducido para que no sea ancho */
+  border-radius: 6px;
+  cursor: pointer;
+  height: 24px; /* Altura exacta para alinearse con los otros textos */
+  line-height: 1;
+  transition: all 0.2s ease;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    border-color: var(--rs-primary);
+    color: var(--rs-primary);
+    background: rgba(0, 191, 245, 0.05);
+  }
+}
+
+/* =========================================================
+   UI DEL MODAL (Sin bordes y tipografía unificada)
+   ========================================================= */
+.rs-modal-editorial {
+  background: var(--rs-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif; /* Fuerza la tipografía correcta en todo el modal */
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 8px 24px; /* Ajuste de aire, SIN borde inferior */
+    
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--rs-text-navy);
+      font-family: 'Inter', sans-serif;
+    }
+  }
+
+  .modal-body {
+    padding: 16px 24px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .modal-desc {
+      margin: 0;
+      color: var(--rs-text-muted);
+      font-size: 14px;
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 0; /* SIN borde superior, todo limpio */
+  }
+}

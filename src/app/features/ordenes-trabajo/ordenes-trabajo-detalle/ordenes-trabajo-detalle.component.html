@@ -172,9 +172,27 @@
                   <span class="v-text strong">{{ tecnicoNombre() }}</span>
                 </div>
                 <div class="grid-item">
-                  <span class="label-caps tiny">EQUIPO</span>
-                  <span class="v-text strong">{{ data.equipo || "—" }}</span>
+                  <span class="label-caps tiny">EQUIPO (RECEPCIÓN)</span>
+                  <span class="v-text">{{ data.equipo || "—" }}</span>
                 </div>
+
+               <div class="grid-item">
+                  <span class="label-caps tiny">EQUIPO VINCULADO</span>
+                  
+                  <div class="rs-equipo-wrapper">
+                    @if (data.equipoId) {
+                      <a [routerLink]="['/equipos', data.equipoId]" class="rs-equipo-enlace">
+                        <span>{{ data.equipoRegistradoNombre }}</span>
+                      </a>
+                    } @else {
+                      <button class="rs-equipo-btn-dashed" (click)="abrirModalVincularEquipo()">
+                        <mat-icon>add_link</mat-icon>
+                        <span>Vincular equipo</span>
+                      </button>
+                    }
+                  </div>
+                </div>
+                
                 <div class="grid-item">
                   <span class="label-caps tiny">CATEGORÍA</span>
                   <span class="v-text">{{ data.categoriaEquipoNombre || "—" }}</span>
@@ -573,4 +591,51 @@
       </div>
     </div>
   </ng-template>
+
+<ng-template #vincularEquipoModal>
+  <div class="rs-modal-editorial">
+    <header class="modal-header">
+      <span class="modal-title">Vincular Equipo</span>
+      <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+    </header>
+    
+    <div class="modal-body">
+      <p class="modal-desc">
+        Selecciona un equipo para <strong>{{ ot()?.cliente?.nombre }}</strong>.
+      </p>
+
+      @if (equiposCliente().length > 0) {
+        <div class="rs-field">
+          <label class="rs-field-label">Equipos registrados</label>
+          <mat-form-field appearance="outline" class="rs-select-clean rs-full">
+            <mat-select [formControl]="equipoSeleccionadoCtrl" placeholder="Selecciona un equipo..." panelClass="rs-premium-panel">
+              @for (eq of equiposCliente(); track eq.id) {
+                <mat-option [value]="eq.id">
+                  {{ eq.tipoEquipo || 'Equipo' }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      } @else {
+        <div class="rs-empty-state-mini">
+          <mat-icon>devices</mat-icon>
+          <p>El cliente no tiene equipos registrados.</p>
+        </div>
+      }
+
+      <button mat-stroked-button class="rs-btn rs-btn-secondary rs-full" (click)="abrirCrearEquipoNuevo()">
+        <mat-icon>add_circle_outline</mat-icon>
+        Registrar Equipo Nuevo
+      </button>
+
+      <div class="modal-actions">
+        <button mat-stroked-button mat-dialog-close class="rs-btn rs-btn-secondary">Cancelar</button>
+        <button mat-flat-button class="rs-btn rs-btn--primary" (click)="confirmarVinculacionExistente()">
+          <div class="rs-btn__label">Vincular</div>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
 }

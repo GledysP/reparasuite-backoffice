@@ -37,6 +37,9 @@ import { finalize, switchMap, delay } from 'rxjs/operators';
 
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { UsuariosService } from '../../usuarios/usuarios.service';
+import { EquiposService } from '../../equipos/equipos.service';
+import { EquipoFormComponent } from '../../equipos/equipo-form/equipo-form.component';
+import { EquipoResumenDto } from '../../../core/models/tipos';
 
 import { EstadoOt } from '../../../core/models/enums';
 import { OtDetalle, UsuarioResumen } from '../../../core/models/tipos';
@@ -104,10 +107,12 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private bp = inject(BreakpointObserver);
   private whatsappService = inject(WhatsappService);
+  private equiposService = inject(EquiposService);
 
   @ViewChild('imageModal') imageModal!: TemplateRef<unknown>;
   @ViewChild('comprobanteModal') comprobanteModal!: TemplateRef<unknown>;
   @ViewChild('chatScroll') chatScrollEl?: ElementRef<HTMLDivElement>;
+  @ViewChild('vincularEquipoModal') vincularEquipoModal!: TemplateRef<unknown>;
 
   id = '';
   isMobile = signal(false);
@@ -134,6 +139,13 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
   editBudget = signal(false);
   editCita = signal(false);
   editRevisionTecnica = signal(false);
+
+  equiposCliente = signal<EquipoResumenDto[]>([]);
+  equipoSeleccionadoCtrl = new FormControl<string | null>(null);
+  guardandoEquipo = signal(false);
+
+
+
   private firstLoad = true;
 
   private refreshTimer: number | null = null;
@@ -145,6 +157,13 @@ export class OrdenesTrabajoDetalleComponent implements OnInit, OnDestroy {
     { value: 'DOMICILIO', label: 'Domicilio' }
   ];
   readonly prioridades = ['ALTA', 'MEDIA', 'BAJA'];
+
+    
+  readonly equipoNombreParaMostrar = computed(() => {
+    const data = this.ot();
+    if (!data) return '—';
+    return data.equipo || 'Equipo vinculado';
+  });
 
   formEstado = this.fb.group({
     estado: [null as EstadoOt | null, Validators.required],
@@ -956,4 +975,72 @@ guardarServiceInfo(): void {
       },
     });
   }
+
+  abrirModalVincularEquipo(): void {
+    const clienteId = this.ot()?.cliente?.id;
+    if (!clienteId) return;
+
+    this.busy.set(true);
+    // 1. Buscamos si el cliente ya tiene equipos registrados
+    this.equiposService.listar({ clienteId, activo: true, page: 0, size: 100 }).subscribe({
+      next: (res) => {
+        this.equiposCliente.set(res.items ?? []);
+        this.equipoSeleccionadoCtrl.setValue(null);
+        this.busy.set(false);
+        // 2. Abrimos el modal
+        this.dialog.open(this.vincularEquipoModal, { width: '480px', panelClass: 'rs-dialog-custom' });
+      },
+      error: () => {
+        this.toast('Error al cargar equipos del cliente', 'error');
+        this.busy.set(false);
+      }
+    });
+  }
+
+  confirmarVinculacionExistente(): void {
+    const equipoId = this.equipoSeleccionadoCtrl.value;
+    if (!equipoId || !this.id) return;
+    this.ejecutarVinculacionBackend(equipoId);
+  }
+
+  abrirCrearEquipoNuevo(): void {
+    this.dialog.closeAll(); // Cerramos el modal de selección actual
+    
+    const clienteId = this.ot()?.cliente?.id;
+    const clienteNombre = this.ot()?.cliente?.nombre;
+    if (!clienteId) return;
+
+    // Abrimos TU formulario de creación de equipos de siempre
+    const dialogRef = this.dialog.open(EquipoFormComponent, {
+      width: '95vw',
+      maxWidth: '1200px',
+      height: '95vh',
+      panelClass: 'rs-dialog-page',
+      data: { clienteId, clienteNombre },
+    });
+
+    dialogRef.afterClosed().subscribe((res: any) => {
+      if (res && res.id) {
+        this.ejecutarVinculacionBackend(res.id);
+      }
+    });
+  }
+
+private ejecutarVinculacionBackend(equipoId: string): void {
+    this.guardandoEquipo.set(true);
+    this.ordenes.vincularEquipo(this.id, equipoId).pipe(
+      finalize(() => {
+        this.guardandoEquipo.set(false);
+        this.dialog.closeAll();
+      })
+    ).subscribe({
+        next: (otActualizada: OtDetalle) => { 
+        this.toast('Equipo vinculado exitosamente', 'success');
+        this.ot.set(otActualizada); 
+      },
+      error: () => this.toast('Error al vincular el equipo', 'error')
+    });
+  }
+
+
 }

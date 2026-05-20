@@ -217,6 +217,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
 
     this.applyTipoValidators();
     this.syncFechaPrevista();
+
+    // Nueva línea añadida para la autovinculación
+    this.intentarAutovincularClienteDesdeTicket();
   }
 
   ngOnDestroy(): void {
@@ -454,12 +457,20 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/clientes');
   }
 
-  irANuevoEquipo(): void {
+irANuevoEquipo(): void {
     if (!this.clienteId) {
-      this.snack.open('Por favor, selecciona un cliente primero.', 'OK', {
-        duration: 2200,
-        panelClass: 'rs-toast-warning',
+      // Capturamos todos los datos que ya estén escritos en el formulario
+      const nombreActual = this.form.controls.clienteNombre.value || '';
+      const telefonoActual = this.form.controls.clienteTelefono.value || '';
+      const emailActual = this.form.controls.clienteEmail.value || '';
+
+      this.snack.open('Primero registraremos al cliente, y luego el equipo.', 'OK', {
+        duration: 3500,
+        panelClass: 'rs-toast-info',
       });
+      
+      // Le pasamos todo al modal
+      this.crearClienteRapido(nombreActual, true, telefonoActual, emailActual);
       return;
     }
 
@@ -488,15 +499,10 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
               const equiposActualizados = resp.items ?? [];
               this.equiposCliente.set(equiposActualizados);
 
-              // Buscamos el equipo recién creado y TypeScript sabe que es un EquipoResumenDto
-              const equipoNuevo = equiposActualizados.find(
-                (e) => e.id === res.id,
-              );
+              const equipoNuevo = equiposActualizados.find((e) => e.id === res.id);
 
               if (equipoNuevo) {
-                // Solo tomamos el tipoEquipo
                 const nombreEquipo = (equipoNuevo.tipoEquipo || '').trim();
-
                 this.form.patchValue({
                   equipoId: res.id,
                   equipo: nombreEquipo || equipoNuevo.codigoEquipo,
@@ -797,43 +803,61 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     this.cargarEquiposCliente(cliente.id);
   }
 
-  crearClienteRapido(nombrePrefill: string = ''): void {
+crearClienteRapido(
+    nombrePrefill: string = '', 
+    autoOpenEquipo: boolean = false,
+    telefonoPrefill: string = '',
+    emailPrefill: string = ''
+  ): void {
     if (this.guardando) return;
 
     const dialogRef = this.dialog.open(ClienteFormDialogComponent, {
       width: '480px',
       maxWidth: '92vw',
       panelClass: 'rs-dialog-custom',
-      data: { modo: 'crear', cliente: { nombre: nombrePrefill } },
+      // Inyectamos todos los datos al modal
+      data: { 
+        modo: 'crear', 
+        cliente: { 
+          nombre: nombrePrefill,
+          telefono: telefonoPrefill,
+          email: emailPrefill
+        } 
+      },
     });
 
     this.subs.add(
-      dialogRef
-        .afterClosed()
-        .subscribe((payload: ClienteGuardarRequest | undefined) => {
-          if (!payload) return;
+      dialogRef.afterClosed().subscribe((payload: ClienteGuardarRequest | undefined) => {
+        if (!payload) return;
 
-          this.guardando = true;
+        this.guardando = true;
 
-          this.clientes.crear(payload).subscribe({
-            next: (nuevoCliente: ClienteResumen) => {
-              this.guardando = false;
-              this.snack.open('Cliente registrado exitosamente.', 'OK', {
-                duration: 2500,
-                panelClass: 'rs-toast-success',
-              });
-              this.asignarClienteAlFormulario(nuevoCliente);
-            },
-            error: (error) => {
-              this.guardando = false;
-              console.error('Error en creación de cliente:', error);
-              this.snack.open('Error al registrar el cliente.', 'OK', {
-                duration: 3000,
-                panelClass: 'rs-toast-error',
-              });
-            },
-          });
-        }),
+        this.clientes.crear(payload).subscribe({
+          next: (nuevoCliente: ClienteResumen) => {
+            this.guardando = false;
+            this.snack.open('Cliente registrado exitosamente.', 'OK', {
+              duration: 2500,
+              panelClass: 'rs-toast-success',
+            });
+            this.asignarClienteAlFormulario(nuevoCliente);
+            
+            if (autoOpenEquipo) {
+              setTimeout(() => this.irANuevoEquipo(), 300);
+            }
+          },
+          error: (error) => {
+            this.guardando = false;
+            console.error('Error en creación de cliente:', error);
+            
+            // Si el backend rechaza porque el teléfono ya existe, lo mostramos aquí
+            const msg = error?.error?.message || 'Error al registrar el cliente.';
+            this.snack.open(msg, 'OK', {
+              duration: 4000,
+              panelClass: 'rs-toast-error',
+            });
+          },
+        });
+      }),
     );
   }
 
@@ -1563,5 +1587,34 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
           });
         }),
     );
+  }
+
+private intentarAutovincularClienteDesdeTicket(): void {
+    setTimeout(() => {
+      const tel = this.form.controls.clienteTelefono.value;
+      const email = this.form.controls.clienteEmail.value;
+      const busqueda = (tel || email || '').trim();
+
+      if (!busqueda) return;
+
+      // Usamos 'listar' con el parámetro query tal como lo definiste en el servicio
+      this.clientes.listar(busqueda, 0, 1).subscribe({
+        next: (response: any) => {
+          // Accedemos a la propiedad 'items' de tu RespuestaPaginada
+          const clientesEncontrados: ClienteResumen[] = response.items || [];
+          
+          if (clientesEncontrados.length > 0) {
+            this.asignarClienteAlFormulario(clientesEncontrados[0]);
+            this.snack.open('Cliente vinculado automáticamente.', 'OK', {
+              duration: 2000,
+              panelClass: 'rs-toast-success'
+            });
+          }
+        },
+        error: (err: any) => {
+          console.warn('Autovínculo omitido:', err);
+        }
+      });
+    }, 1000);
   }
 }

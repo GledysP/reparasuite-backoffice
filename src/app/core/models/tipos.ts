@@ -142,6 +142,7 @@ export interface OtDetalle {
   equipo?: string | null;
 
   equipoId?: string | null;
+  equipoRegistradoNombre?: string | null;
   categoriaEquipoId?: string | null;
   categoriaEquipoNombre?: string | null;
   fallaReportada?: string | null;

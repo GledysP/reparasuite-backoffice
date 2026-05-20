@@ -169,4 +169,15 @@ export class OrdenesTrabajoService {
     return this.http.patch<OtDetalle>(
       `${this.url}/${id}/info-general`, data);
   }
+
+  vincularEquipo(idOrCodigo: string, equipoId: string): Observable<OtDetalle> {
+    const headers = { 'Content-Type': 'application/json' };
+    return this.http.patch<OtDetalle>(
+      `${this.url}/${encodeURIComponent(idOrCodigo)}/vincular-equipo`,
+      JSON.stringify(equipoId), 
+      { headers }
+    );
+  }
+
+  
 }
