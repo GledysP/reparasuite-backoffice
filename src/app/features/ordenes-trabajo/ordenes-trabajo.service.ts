@@ -177,7 +177,5 @@ export class OrdenesTrabajoService {
       JSON.stringify(equipoId), 
       { headers }
     );
-  }
-
-  
+  }  
 }

@@ -198,10 +198,9 @@ export class OrdenesTrabajoNuevaComponent implements OnInit, OnDestroy {
     ],
   });
 
-  ngOnInit(): void {
+ngOnInit(): void {
     this.ticketId = this.route.snapshot.queryParamMap.get('ticketId');
-    this.fromTicket =
-      this.route.snapshot.queryParamMap.get('fromTicket') === '1';
+    this.fromTicket = this.route.snapshot.queryParamMap.get('fromTicket') === '1';
 
     this.loadTecnicos();
     this.loadCategorias();
@@ -924,7 +923,7 @@ crearClienteRapido(
     );
   }
 
-  private setupPrefillFromQueryParams(): void {
+private setupPrefillFromQueryParams(): void {
     this.subs.add(
       this.route.queryParamMap.subscribe((queryParams) => {
         const clienteId = queryParams.get('clienteId');
@@ -939,27 +938,15 @@ crearClienteRapido(
 
         const catsStr = queryParams.get('categoriasTrabajo');
         const categoriasArray = catsStr
-          ? catsStr
-              .split(',')
-              .map((c) => c.trim().toUpperCase())
-              .filter(Boolean)
+          ? catsStr.split(',').map((c) => c.trim().toUpperCase()).filter(Boolean)
           : [];
 
         const descripcionFalla = queryParams.get('descripcionFalla');
         const descripcionLegacy = queryParams.get('descripcion');
-
-        const descripcionLimpia = this.buildDescripcionTrabajoPrefill(
-          descripcionFalla,
-          descripcionLegacy,
-        );
+        const descripcionLimpia = this.buildDescripcionTrabajoPrefill(descripcionFalla, descripcionLegacy);
 
         const obsQP = this.cleanObservacionesText(
-          (
-            queryParams.get('observaciones') ||
-            queryParams.get('detalleAdicional') ||
-            queryParams.get('comentarios') ||
-            ''
-          ).trim(),
+          (queryParams.get('observaciones') || queryParams.get('detalleAdicional') || queryParams.get('comentarios') || '').trim(),
         );
 
         if (clienteId) {
@@ -969,25 +956,14 @@ crearClienteRapido(
 
         this.form.patchValue(
           {
-            clienteNombre:
-              clienteNombre || this.form.controls.clienteNombre.value || '',
-            clienteTelefono: String(
-              clienteTelefono || this.form.controls.clienteTelefono.value || '',
-            ).replace(/\D/g, ''),
-            clienteEmail:
-              clienteEmail || this.form.controls.clienteEmail.value || '',
-            tipo:
-              tipo === 'DOMICILIO' || tipo === 'TIENDA'
-                ? tipo
-                : this.form.controls.tipo.value,
+            clienteNombre: clienteNombre || this.form.controls.clienteNombre.value || '',
+            clienteTelefono: String(clienteTelefono || this.form.controls.clienteTelefono.value || '').replace(/\D/g, ''),
+            clienteEmail: clienteEmail || this.form.controls.clienteEmail.value || '',
+            tipo: tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : this.form.controls.tipo.value,
             direccion: direccion || this.form.controls.direccion.value || '',
             equipo: equipo || this.form.controls.equipo.value || '',
-            fallaReportada:
-              descripcionLimpia ||
-              this.form.controls.fallaReportada.value ||
-              '',
-            observaciones:
-              obsQP || this.form.controls.observaciones.value || '',
+            fallaReportada: descripcionLimpia || this.form.controls.fallaReportada.value || '',
+            observaciones: obsQP || this.form.controls.observaciones.value || '',
             categoriasTrabajo: categoriasArray,
           },
           { emitEvent: false },
@@ -1001,8 +977,7 @@ crearClienteRapido(
             asunto: queryParams.get('asunto'),
             descripcionFalla: descripcionLimpia || null,
             observacionesOriginales: obsQP || null,
-            tipoServicioSugerido:
-              tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : null,
+            tipoServicioSugerido: tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : null,
             direccion: direccion || null,
           };
         }
@@ -1010,6 +985,12 @@ crearClienteRapido(
         this.applyTipoValidators();
         this.ensureDefaultDates();
         this.syncFechaPrevista();
+
+        // BUENA PRÁCTICA: Si no hay ticket (porque el flujo anterior lo ignoraría), 
+        // pero mandaron parámetros por URL, intentamos autovincular aquí.
+        if (!this.ticketId) {
+          this.intentarAutovincularClienteDesdeTicket();
+        }
       }),
     );
   }
@@ -1138,7 +1119,7 @@ crearClienteRapido(
     this.form.controls.fechaPrevista.setValue(iso, { emitEvent: false });
   }
 
-  private cargarTicketParaPrefill(ticketId: string): void {
+private cargarTicketParaPrefill(ticketId: string): void {
     this.subs.add(
       this.tickets.obtener(ticketId).subscribe({
         next: (ticket: TicketDetalleDto) => {
@@ -1152,20 +1133,13 @@ crearClienteRapido(
           );
 
           const tipo =
-            x.tipoServicioSugerido === 'DOMICILIO' ||
-            x.tipoServicioSugerido === 'TIENDA'
+            x.tipoServicioSugerido === 'DOMICILIO' || x.tipoServicioSugerido === 'TIENDA'
               ? x.tipoServicioSugerido
               : null;
 
-          const direccion = this.firstNonBlank(
-            x.direccion,
-            x.direccionSolicitud,
-          );
+          const direccion = this.firstNonBlank(x.direccion, x.direccionSolicitud);
           const obs = this.cleanObservacionesText(
-            this.firstNonBlank(
-              x.observaciones,
-              this.pickObservacionesOnly(x),
-            ) || '',
+            this.firstNonBlank(x.observaciones, this.pickObservacionesOnly(x)) || '',
           );
 
           this.ticketRef = {
@@ -1179,46 +1153,18 @@ crearClienteRapido(
             direccion,
           };
 
-          this.clienteId = this.firstNonBlank(x.clienteId, this.clienteId) as
-            | string
-            | null;
+          this.clienteId = this.firstNonBlank(x.clienteId, this.clienteId) as string | null;
           this.cargarEquiposCliente(this.clienteId);
 
           this.form.patchValue(
             {
-              clienteNombre:
-                this.firstNonBlank(
-                  x.clienteNombre,
-                  this.form.controls.clienteNombre.value,
-                ) || '',
-              clienteTelefono: String(
-                this.firstNonBlank(
-                  x.clienteTelefono,
-                  this.form.controls.clienteTelefono.value,
-                ) || '',
-              ).replace(/\D/g, ''),
-              clienteEmail:
-                this.firstNonBlank(
-                  x.clienteEmail,
-                  this.form.controls.clienteEmail.value,
-                ) || '',
-              tipo:
-                tipo === 'DOMICILIO' || tipo === 'TIENDA'
-                  ? tipo
-                  : this.form.controls.tipo.value,
-              direccion:
-                this.firstNonBlank(
-                  direccion,
-                  this.form.controls.direccion.value,
-                ) || '',
-              equipo:
-                this.firstNonBlank(equipo, this.form.controls.equipo.value) ||
-                '',
-              fallaReportada:
-                this.firstNonBlank(
-                  descripcion,
-                  this.form.controls.fallaReportada.value,
-                ) || '',
+              clienteNombre: this.firstNonBlank(x.clienteNombre, this.form.controls.clienteNombre.value) || '',
+              clienteTelefono: String(this.firstNonBlank(x.clienteTelefono, this.form.controls.clienteTelefono.value) || '').replace(/\D/g, ''),
+              clienteEmail: this.firstNonBlank(x.clienteEmail, this.form.controls.clienteEmail.value) || '',
+              tipo: tipo === 'DOMICILIO' || tipo === 'TIENDA' ? tipo : this.form.controls.tipo.value,
+              direccion: this.firstNonBlank(direccion, this.form.controls.direccion.value) || '',
+              equipo: this.firstNonBlank(equipo, this.form.controls.equipo.value) || '',
+              fallaReportada: this.firstNonBlank(descripcion, this.form.controls.fallaReportada.value) || '',
               observaciones: obs || '',
             },
             { emitEvent: false },
@@ -1227,6 +1173,10 @@ crearClienteRapido(
           this.applyTipoValidators();
           this.ensureDefaultDates();
           this.syncFechaPrevista();
+
+          // BUENA PRÁCTICA: Evaluación secuencial estricta. 
+          // Intentamos autovincular SOLO si el ticket vino huérfano de cliente.
+          this.intentarAutovincularClienteDesdeTicket();
         },
         error: () => {
           this.snack.open('No se pudo leer el ticket para prellenar.', 'OK', {
@@ -1589,32 +1539,37 @@ crearClienteRapido(
     );
   }
 
-private intentarAutovincularClienteDesdeTicket(): void {
-    setTimeout(() => {
-      const tel = this.form.controls.clienteTelefono.value;
-      const email = this.form.controls.clienteEmail.value;
-      const busqueda = (tel || email || '').trim();
+ private intentarAutovincularClienteDesdeTicket(): void {
+    // ESCUDO 1: Si ya tenemos un cliente oficial asignado (ej. vino del ticket), abortamos inmediatamente.
+    if (this.clienteId) return;
 
-      if (!busqueda) return;
+    const tel = this.form.controls.clienteTelefono.value;
+    const email = this.form.controls.clienteEmail.value;
+    const busqueda = (tel || email || '').trim();
 
-      // Usamos 'listar' con el parámetro query tal como lo definiste en el servicio
+    // ESCUDO 2: No disparamos peticiones HTTP innecesarias si no hay parámetros de búsqueda.
+    if (!busqueda) return;
+
+    // BUENA PRÁCTICA: Usamos this.subs.add para evitar memory leaks si el componente se destruye.
+    this.subs.add(
       this.clientes.listar(busqueda, 0, 1).subscribe({
         next: (response: any) => {
-          // Accedemos a la propiedad 'items' de tu RespuestaPaginada
           const clientesEncontrados: ClienteResumen[] = response.items || [];
           
-          if (clientesEncontrados.length > 0) {
+          // ESCUDO 3: Doble verificación. Por si el usuario seleccionó un cliente a mano
+          // justo en los milisegundos que el backend tardó en responder.
+          if (clientesEncontrados.length > 0 && !this.clienteId) {
             this.asignarClienteAlFormulario(clientesEncontrados[0]);
-            this.snack.open('Cliente vinculado automáticamente.', 'OK', {
-              duration: 2000,
-              panelClass: 'rs-toast-success'
+            this.snack.open('Cliente vinculado automáticamente por coincidencia de datos.', 'OK', {
+              duration: 3500,
+              panelClass: 'rs-toast-info'
             });
           }
         },
         error: (err: any) => {
           console.warn('Autovínculo omitido:', err);
         }
-      });
-    }, 1000);
+      })
+    );
   }
 }
